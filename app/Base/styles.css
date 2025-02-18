@@ -69,6 +69,7 @@ p {
     --color-text-light: rgba(0, 0, 0, 0.6);
     --color-text-gray: #666666;
     --color-accent: #4746f6;
+    --color-warning: #c07000;
     --color-danger: #e04656;
     --color-success: #53b391;
     --color-banner-alert: #fdf4dc;
