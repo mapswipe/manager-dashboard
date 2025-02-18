@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     _cs,
     isNotDefined,
     isDefined,
+    isFalsyString,
 } from '@togglecorp/fujs';
 import {
     getDatabase,
@@ -162,6 +163,14 @@ function UserGroupFormModal(props: Props) {
     );
 
     const hasErrors = analyzeErrors(error);
+    const hasNonKeyboardCharactersInName = useMemo(() => {
+        if (isFalsyString(value.name)) {
+            return false;
+        }
+
+        const nonKeyboardRegex = /[^\x20-\x7E]/;
+        return nonKeyboardRegex.test(value.name);
+    }, [value.name]);
 
     return (
         <Modal
@@ -203,6 +212,13 @@ function UserGroupFormModal(props: Props) {
             footerClassName={styles.footer}
             onCloseButtonClick={onCloseButtonClick}
         >
+            {hasNonKeyboardCharactersInName && (
+                <div className={styles.warning}>
+                    The group name contains some special character,
+                    please note that it might be difficult for other
+                    user to search and find the group name!
+                </div>
+            )}
             {isNotDefined(submissionStatus) && (
                 <>
                     {nonFieldError && (
