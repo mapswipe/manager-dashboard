@@ -1,13 +1,21 @@
 import React, { useCallback } from 'react';
-import { EntriesAsList, ObjectError, SetBaseValueArg } from '@togglecorp/toggle-form';
-import TextInput from '#components/TextInput';
-import { generateProjectName, PartialProjectFormType } from '#views/NewProject/utils';
-import { labelSelector, valueSelector } from '#utils/common';
-import NumberInput from '#components/NumberInput';
-import TextArea from '#components/TextArea';
+import {
+    EntriesAsList,
+    ObjectError,
+    SetBaseValueArg,
+} from '@togglecorp/toggle-form';
+
 import ImageInput from '#components/ImageInput';
+import NumberInput from '#components/NumberInput';
 import SelectInput from '#components/SelectInput';
+import TextArea from '#components/TextArea';
+import TextInput from '#components/TextInput';
+import {
+    labelSelector,
+    valueSelector,
+} from '#utils/common';
 import useProjectOptions from '#views/NewProject/useProjectOptions';
+import { generateProjectName, PartialProjectFormType } from '#views/NewProject/utils';
 import styles from '#views/NewProject/styles.css';
 
 export interface Props<T extends PartialProjectFormType> {

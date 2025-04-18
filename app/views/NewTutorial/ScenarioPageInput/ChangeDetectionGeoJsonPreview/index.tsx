@@ -1,12 +1,16 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import MobilePreview from '#components/MobilePreview';
 import GeoJsonPreview from '#components/GeoJsonPreview';
-import { iconMap, IconKey } from '#utils/common';
+import MobilePreview from '#components/MobilePreview';
+import {
+    IconKey,
+    iconMap,
+} from '#utils/common';
 
 import { ChangeDetectionGeoJSON } from '../../utils';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

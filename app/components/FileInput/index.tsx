@@ -1,16 +1,16 @@
 import React from 'react';
+import { MdAttachFile } from 'react-icons/md';
 import {
     _cs,
     randomString,
 } from '@togglecorp/fujs';
-import { MdAttachFile } from 'react-icons/md';
 
 import { useButtonFeatures } from '#components/Button';
-import RawInput from '#components/RawInput';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
 import Preview from '#components/Preview';
+import RawInput from '#components/RawInput';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props<Name> extends Omit<InputContainerProps, 'input'> {
     value: File | undefined | null;
@@ -99,8 +99,8 @@ function FileInput<Name>(props: Props<Name>) {
             icons={(
                 <>
                     {icons}
-                    {/* eslint-disable-next-line max-len */}
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */}
+                    { }
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label
                         htmlFor={inputId}
                         {...labelProps}

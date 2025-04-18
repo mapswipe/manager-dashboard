@@ -1,28 +1,27 @@
 import React from 'react';
+import { MdSearch } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 import {
-    getDatabase,
-    ref,
     equalTo,
-    query,
+    getDatabase,
     orderByChild,
+    query,
+    ref,
 } from 'firebase/database';
-import { MdSearch } from 'react-icons/md';
 
-import route from '#base/configs/routes';
 import SmartLink from '#base/components/SmartLink';
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
-import usePagination from '#hooks/usePagination';
-import useInputState from '#hooks/useInputState';
+import route from '#base/configs/routes';
 import Pager from '#components/Pager';
-import RadioInput from '#components/RadioInput';
-import TextInput from '#components/TextInput';
 import PendingMessage from '#components/PendingMessage';
+import RadioInput from '#components/RadioInput';
 import { rankedSearchOnList } from '#components/SelectInput/utils';
-
+import TextInput from '#components/TextInput';
+import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
+import useInputState from '#hooks/useInputState';
+import usePagination from '#hooks/usePagination';
 import {
-    valueSelector,
     labelSelector,
+    valueSelector,
 } from '#utils/common';
 
 import ProjectDetails, {
@@ -30,7 +29,7 @@ import ProjectDetails, {
     projectStatusOptions,
 } from './ProjectDetails';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

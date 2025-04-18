@@ -1,5 +1,9 @@
+import {
+    isDefined,
+    isNotDefined,
+    listToMap,
+} from '@togglecorp/fujs';
 import { nonFieldError } from '@togglecorp/toggle-form';
-import { listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 interface Error {
     [nonFieldError]?: string | undefined;

@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-    getDatabase,
-    ref,
-    query,
-    orderByChild,
     equalTo,
+    getDatabase,
+    orderByChild,
+    query,
+    ref,
 } from 'firebase/database';
 
 import useFirebaseDatabase from '#hooks/useFirebaseDatabase';

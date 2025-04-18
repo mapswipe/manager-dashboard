@@ -1,11 +1,11 @@
 import React from 'react';
-import { _cs } from '@togglecorp/fujs';
 import {
-    IoRadioButtonOn,
     IoRadioButtonOff,
+    IoRadioButtonOn,
 } from 'react-icons/io5';
+import { _cs } from '@togglecorp/fujs';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props<N> {
     className?: string;
@@ -37,7 +37,7 @@ function Radio<N>(props: Props<N>) {
     }, [name, onClick]);
 
     return (
-        // eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for
+        // eslint-disable-next-line jsx-a11y/label-has-associated-control
         <label
             className={_cs(
                 styles.radio,

@@ -1,7 +1,7 @@
 import {
     DataSnapshot,
-    Query,
     onValue,
+    Query,
 } from 'firebase/database';
 
 // eslint-disable-next-line import/prefer-default-export

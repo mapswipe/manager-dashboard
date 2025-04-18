@@ -1,8 +1,8 @@
 import {
     useCallback,
+    useMemo,
     useRef,
     useState,
-    useMemo,
 } from 'react';
 
 function useConfirmation<N>(

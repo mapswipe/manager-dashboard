@@ -1,104 +1,100 @@
 import React from 'react';
+import { IoIosTrash } from 'react-icons/io';
+import { IoInformationCircleOutline } from 'react-icons/io5';
+import {
+    MdAdd,
+    MdOutlinePublishedWithChanges,
+    MdOutlineUnpublished,
+    MdSwipe,
+} from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import {
     _cs,
+    difference,
     isDefined,
-    unique,
     isNotDefined,
     isTruthyString,
-    difference,
     listToMap,
+    unique,
 } from '@togglecorp/fujs';
 import {
-    useForm,
-    getErrorObject,
-    createSubmitHandler,
     analyzeErrors,
+    createSubmitHandler,
+    getErrorObject,
+    useForm,
     useFormArray,
 } from '@togglecorp/toggle-form';
 import {
-    getStorage,
-    ref as storageRef,
-    uploadBytes,
-    getDownloadURL,
-} from 'firebase/storage';
-import {
     getDatabase,
-    ref as databaseRef,
     push as pushToDatabase,
+    ref as databaseRef,
     set as setToDatabase,
 } from 'firebase/database';
 import {
-    MdSwipe,
-    MdOutlinePublishedWithChanges,
-    MdOutlineUnpublished,
-    MdAdd,
-} from 'react-icons/md';
-import {
-    IoIosTrash,
-} from 'react-icons/io';
-import {
-    IoInformationCircleOutline,
-} from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+    getDownloadURL,
+    getStorage,
+    ref as storageRef,
+    uploadBytes,
+} from 'firebase/storage';
 
-import UserContext from '#base/context/UserContext';
 import projectTypeOptions from '#base/configs/projectTypes';
-import useMountedRef from '#hooks/useMountedRef';
-import Modal from '#components/Modal';
-import TextInput from '#components/TextInput';
-import NumberInput from '#components/NumberInput';
-import Heading from '#components/Heading';
-import SegmentInput from '#components/SegmentInput';
-import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import UserContext from '#base/context/UserContext';
+import AlertBanner from '#components/AlertBanner';
+import Button from '#components/Button';
+import EmptyMessage from '#components/EmptyMessage';
 import ExpandableContainer from '#components/ExpandableContainer';
+import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import Heading from '#components/Heading';
+import InputSection from '#components/InputSection';
+import Modal from '#components/Modal';
+import NonFieldError from '#components/NonFieldError';
+import NumberInput from '#components/NumberInput';
 import PopupButton from '#components/PopupButton';
+import SegmentInput from '#components/SegmentInput';
+import TextInput from '#components/TextInput';
 import TileServerInput, {
     TILE_SERVER_BING,
     TILE_SERVER_ESRI,
     tileServerDefaultCredits,
 } from '#components/TileServerInput';
-import InputSection from '#components/InputSection';
-import Button from '#components/Button';
-import NonFieldError from '#components/NonFieldError';
-import EmptyMessage from '#components/EmptyMessage';
-import AlertBanner from '#components/AlertBanner';
+import useMountedRef from '#hooks/useMountedRef';
 import {
-    valueSelector,
     labelSelector,
     PROJECT_TYPE_BUILD_AREA,
-    PROJECT_TYPE_COMPLETENESS,
     PROJECT_TYPE_CHANGE_DETECTION,
+    PROJECT_TYPE_COMPLETENESS,
     PROJECT_TYPE_FOOTPRINT,
     ProjectType,
     projectTypeLabelMap,
+    valueSelector,
 } from '#utils/common';
-
-import {
-    tileServerUrls,
-    tutorialFormSchema,
-    defaultFootprintCustomOptions,
-    TutorialFormType,
-    PartialTutorialFormType,
-    PartialInformationPagesType,
-    ScenarioPagesType,
-    CustomOptionType,
-    InformationPagesType,
-    InformationPageTemplateKey,
-    infoPageTemplateOptions,
-    infoPageBlocksMap,
-    MAX_INFO_PAGES,
-    MAX_OPTIONS,
-    deleteKey,
-    TutorialTasksGeoJSON,
-    BuildAreaProperties,
-    ChangeDetectionProperties,
-} from './utils';
 
 import CustomOptionPreview from './CustomOptionInput/CustomOptionPreview';
 import CustomOptionInput from './CustomOptionInput';
-import ScenarioPageInput from './ScenarioPageInput';
 import InformationPageInput from './InformationPageInput';
-import styles from './styles.css';
+import ScenarioPageInput from './ScenarioPageInput';
+import {
+    BuildAreaProperties,
+    ChangeDetectionProperties,
+    CustomOptionType,
+    defaultFootprintCustomOptions,
+    deleteKey,
+    infoPageBlocksMap,
+    infoPageTemplateOptions,
+    InformationPagesType,
+    InformationPageTemplateKey,
+    MAX_INFO_PAGES,
+    MAX_OPTIONS,
+    PartialInformationPagesType,
+    PartialTutorialFormType,
+    ScenarioPagesType,
+    tileServerUrls,
+    tutorialFormSchema,
+    TutorialFormType,
+    TutorialTasksGeoJSON,
+} from './utils';
+
+import styles from './styles.module.css';
 
 export function getDuplicates<T, K extends string | number>(
     list: T[],

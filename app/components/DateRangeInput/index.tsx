@@ -1,32 +1,34 @@
 import React, { useMemo } from 'react';
 import {
-    _cs,
-    randomString,
-    isDefined,
-    isNotDefined,
-} from '@togglecorp/fujs';
-import {
     IoCalendarOutline,
     IoClose,
 } from 'react-icons/io5';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+    randomString,
+} from '@togglecorp/fujs';
 
 import useBlurEffect from '../../hooks/useBlurEffect';
 import useBooleanState from '../../hooks/useBooleanState';
-import InputContainer, { Props as InputContainerProps } from '../InputContainer';
-import RawInput from '../RawInput';
-import RawButton from '../RawButton';
+import {
+    dateStringToDate,
+    ymdToDateString,
+} from '../../utils/common.tsx';
 import Button from '../Button';
-import Popup from '../Popup';
 import Calendar, { Props as CalendarProps } from '../Calendar';
 import CalendarDate, { Props as CalendarDateProps } from '../Calendar/CalendarDate';
-import { ymdToDateString, dateStringToDate } from '../../utils/common.tsx';
-
+import InputContainer, { Props as InputContainerProps } from '../InputContainer';
+import Popup from '../Popup';
+import RawButton from '../RawButton';
+import RawInput from '../RawInput';
 import {
-    predefinedDateRangeOptions,
     PredefinedDateRangeKey,
+    predefinedDateRangeOptions,
 } from './predefinedDateRange';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 // FIXME: this is problematic when on end months
 function prevMonth(date: Date) {

@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-    Query,
-    onValue,
     DataSnapshot,
+    onValue,
+    Query,
 } from 'firebase/database';
 
 function useFirebaseDatabase<T = unknown>({

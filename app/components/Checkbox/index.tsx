@@ -3,7 +3,7 @@ import { _cs } from '@togglecorp/fujs';
 
 import DefaultCheckmark, { Props as CheckmarkProps } from '#components/Checkmark';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props<N> {
     className?: string;
@@ -55,7 +55,7 @@ function Checkbox<N>(props: Props<N>) {
     );
 
     return (
-        <label // eslint-disable-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for
+        <label // eslint-disable-line jsx-a11y/label-has-associated-control
             className={className}
             title={tooltip}
         >

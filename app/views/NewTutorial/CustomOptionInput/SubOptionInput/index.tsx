@@ -1,16 +1,18 @@
 import React from 'react';
 import {
     Error,
-    SetValueArg,
     getErrorObject,
+    SetValueArg,
     useFormObject,
 } from '@togglecorp/toggle-form';
-import TextInput from '#components/TextInput';
+
 import Button from '#components/Button';
 import NumberInput from '#components/NumberInput';
+import TextInput from '#components/TextInput';
 
 import { PartialCustomOptionsType } from '..';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 type PartialSubOptionType = NonNullable<PartialCustomOptionsType['subOptions']>[number]
 

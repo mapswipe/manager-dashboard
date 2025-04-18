@@ -1,28 +1,26 @@
 import React from 'react';
-import {
-    _cs,
-    // isNotDefined,
-} from '@togglecorp/fujs';
+import { MdSearch } from 'react-icons/md';
+// isNotDefined,
+import { _cs } from '@togglecorp/fujs';
 import {
     getDatabase,
     ref,
 } from 'firebase/database';
-import { MdSearch } from 'react-icons/md';
 
+import Button from '#components/Button';
+import Pager from '#components/Pager';
+import PendingMessage from '#components/PendingMessage';
+import { rankedSearchOnList } from '#components/SelectInput/utils';
+import TextInput from '#components/TextInput';
 import useBooleanState from '#hooks/useBooleanState';
 import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
 import useInputState from '#hooks/useInputState';
 import usePagination from '#hooks/usePagination';
-import Pager from '#components/Pager';
-import TextInput from '#components/TextInput';
-import Button from '#components/Button';
-import PendingMessage from '#components/PendingMessage';
-import { rankedSearchOnList } from '#components/SelectInput/utils';
 
-import UserGroupItem, { UserGroup } from './UserGroupItem';
 import UserGroupFormModal from './UserGroupFormModal';
+import UserGroupItem, { UserGroup } from './UserGroupItem';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

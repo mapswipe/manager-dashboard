@@ -1,10 +1,13 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import {
+    typedMemo,
+    ymdToDateString,
+} from '../../../utils/common.tsx';
 import RawButton, { Props as RawButtonProps } from '../../RawButton';
-import { ymdToDateString, typedMemo } from '../../../utils/common.tsx';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props {
     className?: string;

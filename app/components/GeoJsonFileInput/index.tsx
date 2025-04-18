@@ -1,9 +1,12 @@
 import React from 'react';
-import { check, HintError } from '@placemarkio/check-geojson';
+import {
+    check,
+    HintError,
+} from '@placemarkio/check-geojson';
 
 import FileInput, { Props as FileInputProps } from '#components/FileInput';
-import useMountedRef from '#hooks/useMountedRef';
 import GeoJsonPreview from '#components/GeoJsonPreview';
+import useMountedRef from '#hooks/useMountedRef';
 
 type ParseGeoJSONResponse = {
     errored?: false,

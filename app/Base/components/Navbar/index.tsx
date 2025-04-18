@@ -2,16 +2,14 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { getAuth } from 'firebase/auth';
 
-import useMountedRef from '#hooks/useMountedRef';
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
 import { UserContext } from '#base/context/UserContext';
-
 import Button from '#components/Button';
-
+import useMountedRef from '#hooks/useMountedRef';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

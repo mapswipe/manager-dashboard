@@ -1,16 +1,16 @@
 import React from 'react';
 import {
-    SetValueArg,
     Error,
-    useFormObject,
     getErrorObject,
+    SetValueArg,
+    useFormObject,
 } from '@togglecorp/toggle-form';
 
 import FileInput from '#components/FileInput';
 import MarkdownEditor from '#components/MarkdownEditor';
 
 import { PartialBlocksType } from '../../utils';
-// import styles from './styles.css';
+// import styles from './styles.module.css';
 
 type PartialBlockType = NonNullable<PartialBlocksType>[number];
 interface Props {

@@ -1,12 +1,15 @@
 import React from 'react';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import {
+    IoIosArrowDown,
+    IoIosArrowUp,
+} from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import Button, { ButtonProps } from '#components/Button';
-import useBlurEffect from '#hooks/useBlurEffect';
 import Popup from '#components/Popup';
+import useBlurEffect from '#hooks/useBlurEffect';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label'> {
     popupClassName?: string;

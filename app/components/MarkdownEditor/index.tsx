@@ -4,7 +4,7 @@ import Markdown from 'react-mde';
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
 import MarkdownPreview from '../MarkdownPreview';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface MarkdownEditorProps<NAME extends string> {
     name: NAME;

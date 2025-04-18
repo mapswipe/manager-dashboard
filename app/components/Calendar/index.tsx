@@ -1,25 +1,24 @@
 import React from 'react';
 import {
-    _cs,
-    isNotDefined,
-    isDefined,
-} from '@togglecorp/fujs';
-import {
-    IoTimeOutline,
-    IoChevronForward,
-    IoChevronBack,
     IoCalendarOutline,
+    IoChevronBack,
+    IoChevronForward,
+    IoTimeOutline,
 } from 'react-icons/io5';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 
+import useInputState from '../../hooks/useInputState';
+import { typedMemo } from '../../utils/common.tsx';
 import Button from '../Button';
 import NumberInput from '../NumberInput';
 import SelectInput from '../SelectInput';
-import useInputState from '../../hooks/useInputState';
-import { typedMemo } from '../../utils/common.tsx';
-
 import CalendarDate, { Props as CalendarDateProps } from './CalendarDate';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 const weekDayNames = [
     'Sunday',
@@ -232,9 +231,7 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
                         };
 
                         const combinedProps = {
-                            ...(rendererParams ? rendererParams(
-                                date.date, month, year,
-                            ) : undefined),
+                            ...(rendererParams ? rendererParams(date.date, month, year) : undefined),
                             ...defaultProps,
                         } as P;
 

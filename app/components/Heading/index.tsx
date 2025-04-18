@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5;
 

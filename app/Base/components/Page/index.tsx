@@ -1,15 +1,18 @@
-import React, { useEffect, useContext } from 'react';
+import React, {
+    useContext,
+    useEffect,
+} from 'react';
 import { Redirect } from 'react-router-dom';
 
+import ErrorBoundary from '#base/components/ErrorBoundary';
+import PageTitle from '#base/components/PageTitle';
 import PreloadMessage from '#base/components/PreloadMessage';
-import { UserContext } from '#base/context/UserContext';
 import { NavbarContext } from '#base/context/NavbarContext';
 import { ProjectContext } from '#base/context/ProjectContext';
-import PageTitle from '#base/components/PageTitle';
+import { UserContext } from '#base/context/UserContext';
 import { Project } from '#base/types/project';
-import ErrorBoundary from '#base/components/ErrorBoundary';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 type Visibility = 'is-authenticated' | 'is-not-authenticated' | 'is-anything';
 

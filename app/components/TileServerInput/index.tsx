@@ -1,22 +1,22 @@
 import React from 'react';
 import {
-    useFormObject,
-    getErrorObject,
-    PartialForm,
-    Error,
-    SetValueArg,
-    ObjectSchema,
-    requiredStringCondition,
     addCondition,
+    Error,
+    getErrorObject,
     nullValue,
+    ObjectSchema,
+    PartialForm,
+    requiredStringCondition,
+    SetValueArg,
+    useFormObject,
 } from '@togglecorp/toggle-form';
 
-import TextInput from '#components/TextInput';
 import RadioInput from '#components/RadioInput';
+import TextInput from '#components/TextInput';
 import {
-    valueSelector,
-    labelSelector,
     getNoMoreThanNCharacterCondition,
+    labelSelector,
+    valueSelector,
 } from '#utils/common';
 
 export type TileServerType = 'bing' | 'mapbox' | 'maxar_standard' | 'maxar_premium' | 'esri' | 'esri_beta' | 'custom';

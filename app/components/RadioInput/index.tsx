@@ -4,7 +4,7 @@ import { _cs } from '@togglecorp/fujs';
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
 import Radio from './Radio';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'input' | 'actions' | 'icons' | 'actionsContainerClassName' | 'iconsContainerClassName'> {
     options: Option[];

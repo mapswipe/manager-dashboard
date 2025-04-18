@@ -1,28 +1,26 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 import {
-    signInWithEmailAndPassword,
-    getAuth,
-    AuthError,
-    AuthErrorCodes,
-} from 'firebase/auth';
-import {
+    createSubmitHandler,
+    getErrorObject,
+    nonFieldError,
     ObjectSchema,
     requiredStringCondition,
     useForm,
-    getErrorObject,
-    createSubmitHandler,
-    nonFieldError,
 } from '@togglecorp/toggle-form';
+import {
+    AuthError,
+    AuthErrorCodes,
+    getAuth,
+    signInWithEmailAndPassword,
+} from 'firebase/auth';
 
-import TextInput from '#components/TextInput';
 import Button from '#components/Button';
-
+import TextInput from '#components/TextInput';
 import useMountedRef from '#hooks/useMountedRef';
-
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface LoginFormFields {
     email?: string | undefined;

@@ -1,25 +1,24 @@
 import React from 'react';
-import { _cs } from '@togglecorp/fujs';
-import {
-    getDatabase,
-    ref,
-    query,
-    orderByChild,
-    equalTo,
-} from 'firebase/database';
-
 import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
+import { _cs } from '@togglecorp/fujs';
+import {
+    equalTo,
+    getDatabase,
+    orderByChild,
+    query,
+    ref,
+} from 'firebase/database';
 
-import usePagination from '#hooks/usePagination';
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
 import Button from '#components/Button';
 import Pager from '#components/Pager';
 import PendingMessage from '#components/PendingMessage';
+import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
+import usePagination from '#hooks/usePagination';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Team {
     teamName: string;

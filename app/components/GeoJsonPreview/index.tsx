@@ -1,16 +1,16 @@
 import React from 'react';
-import {
-    map as createMap,
-    Map,
-    geoJSON,
-    TileLayer,
-    Coords,
-    StyleFunction,
-    PointExpression,
-} from 'leaflet';
 import { _cs } from '@togglecorp/fujs';
+import {
+    Coords,
+    geoJSON,
+    Map,
+    map as createMap,
+    PointExpression,
+    StyleFunction,
+    TileLayer,
+} from 'leaflet';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 const toQuadKey = (x: number, y: number, z: number) => {
     let index = '';

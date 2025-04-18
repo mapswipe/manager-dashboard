@@ -1,19 +1,19 @@
 import React from 'react';
 import {
-    SetValueArg,
     Error,
-    useFormObject,
     getErrorObject,
+    SetValueArg,
     useFormArray,
+    useFormObject,
 } from '@togglecorp/toggle-form';
 
 import TextInput from '#components/TextInput';
-import InformationPagePreview from './InformationPagePreview';
 
 import { InformationPagesType } from '../utils';
 import BlockInput from './BlockInput';
+import InformationPagePreview from './InformationPagePreview';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     value: InformationPagesType,

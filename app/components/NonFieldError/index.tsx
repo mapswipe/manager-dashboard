@@ -1,12 +1,15 @@
 import React from 'react';
-import { _cs, isNotDefined } from '@togglecorp/fujs';
+import {
+    _cs,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     Error,
-    nonFieldError,
     getErrorObject,
+    nonFieldError,
 } from '@togglecorp/toggle-form';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props<T> {
     className?: string;

@@ -1,34 +1,45 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { Router } from 'react-router-dom';
+import 'react-mde/lib/styles/css/react-mde-all.css';
+
 import {
-    init,
-    ErrorBoundary,
-    setUser as setUserOnSentry,
-    User as SentryUser,
-} from '@sentry/react';
-import { _cs } from '@togglecorp/fujs';
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
+import { Router } from 'react-router-dom';
 import {
     ApolloClient,
     ApolloProvider,
 } from '@apollo/client';
+import {
+    ErrorBoundary,
+    init,
+    setUser as setUserOnSentry,
+    User as SentryUser,
+} from '@sentry/react';
+import { _cs } from '@togglecorp/fujs';
 import { initializeApp } from 'firebase/app';
-import 'react-mde/lib/styles/css/react-mde-all.css';
 
-import Init from '#base/components/Init';
-import PreloadMessage from '#base/components/PreloadMessage';
-import browserHistory from '#base/configs/history';
-import sentryConfig from '#base/configs/sentry';
-import { UserContext, UserContextInterface } from '#base/context/UserContext';
-import { NavbarContext, NavbarContextInterface } from '#base/context/NavbarContext';
 import AuthPopup from '#base/components/AuthPopup';
-import { sync } from '#base/hooks/useAuthSync';
+import Init from '#base/components/Init';
 import Navbar from '#base/components/Navbar';
+import PreloadMessage from '#base/components/PreloadMessage';
 import Routes from '#base/components/Routes';
-import { User } from '#base/types/user';
 import apolloConfig from '#base/configs/apollo';
 import firebaseConfig from '#base/configs/firebase';
+import browserHistory from '#base/configs/history';
+import sentryConfig from '#base/configs/sentry';
+import {
+    NavbarContext,
+    NavbarContextInterface,
+} from '#base/context/NavbarContext';
+import {
+    UserContext,
+    UserContextInterface,
+} from '#base/context/UserContext';
+import { sync } from '#base/hooks/useAuthSync';
+import { User } from '#base/types/user';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 if (sentryConfig) {
     init(sentryConfig);

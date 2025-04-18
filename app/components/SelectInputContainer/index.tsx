@@ -1,22 +1,29 @@
-import React, { useCallback, useRef } from 'react';
+import React, {
+    useCallback,
+    useRef,
+} from 'react';
+import {
+    IoIosArrowDown,
+    IoIosArrowUp,
+    IoMdClose,
+} from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
-import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from 'react-icons/io';
 
+import Button from '#components/Button';
 import GenericOption, {
     ContentBaseProps,
     OptionKey,
 } from '#components/GenericOption';
-import Popup from '#components/Popup';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
+import Popup from '#components/Popup';
 import RawInput from '#components/RawInput';
-import Button from '#components/Button';
-import List from '../List';
-
 import useBlurEffect from '#hooks/useBlurEffect';
 import useKeyboard from '#hooks/useKeyboard';
 
+import List from '../List';
 import EmptyOptions from './EmptyOptions';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 interface GroupProps {
     title: string;

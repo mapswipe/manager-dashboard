@@ -1,24 +1,24 @@
 import React from 'react';
-import { _cs } from '@togglecorp/fujs';
-import { Link } from 'react-router-dom';
 import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
 import { MdSearch } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { _cs } from '@togglecorp/fujs';
 
-import route from '#base/configs/routes';
 import SmartLink from '#base/components/SmartLink';
-import useBooleanState from '#hooks/useBooleanState';
-
+import route from '#base/configs/routes';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import useBooleanState from '#hooks/useBooleanState';
 import useInputState from '#hooks/useInputState';
 
 import OrganisationFormModal from './OrganisationFormModal';
 import OrganisationList from './OrganisationList';
 import TutorialList from './TutorialList';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

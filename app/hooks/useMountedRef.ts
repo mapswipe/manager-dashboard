@@ -1,4 +1,7 @@
-import { useRef, useEffect } from 'react';
+import {
+    useEffect,
+    useRef,
+} from 'react';
 
 function useMountedRef() {
     const mountedRef = useRef(true);

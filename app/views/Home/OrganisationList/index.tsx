@@ -1,21 +1,21 @@
 import React from 'react';
+import { CgOrganisation } from 'react-icons/cg';
+import { IoTrashBin } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 import {
     getDatabase,
     ref,
     update,
 } from 'firebase/database';
-import { CgOrganisation } from 'react-icons/cg';
-import { IoTrashBin } from 'react-icons/io5';
 
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
-import usePagination from '#hooks/usePagination';
-import PendingMessage from '#components/PendingMessage';
 import Button from '#components/Button';
 import Modal from '#components/Modal';
 import Pager from '#components/Pager';
+import PendingMessage from '#components/PendingMessage';
+import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
+import usePagination from '#hooks/usePagination';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Organisation {
     name: string;
