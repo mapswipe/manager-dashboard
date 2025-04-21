@@ -12,9 +12,9 @@
     .header {
         display: flex;
         flex-shrink: 0;
+        gap: var(--spacing-medium);
         background-color: var(--color-primary);
         padding: var(--spacing-medium);
-        gap: var(--spacing-medium);
 
         .heading {
             display: flex;

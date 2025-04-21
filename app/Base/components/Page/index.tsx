@@ -2,14 +2,14 @@ import React, {
     useContext,
     useEffect,
 } from 'react';
-import { Redirect } from 'react-router-dom';
+import { redirect } from 'react-router';
 
 import ErrorBoundary from '#base/components/ErrorBoundary';
 import PageTitle from '#base/components/PageTitle';
 import PreloadMessage from '#base/components/PreloadMessage';
-import { NavbarContext } from '#base/context/NavbarContext';
-import { ProjectContext } from '#base/context/ProjectContext';
-import { UserContext } from '#base/context/UserContext';
+import NavbarContext from '#base/context/NavbarContext';
+import ProjectContext from '#base/context/ProjectContext';
+import UserContext from '#base/context/UserContext';
 import { Project } from '#base/types/project';
 
 import styles from './styles.module.css';
@@ -61,34 +61,28 @@ function Page<T extends { className?: string }>(props: Props<T>) {
 
     const redirectToSignIn = visibility === 'is-authenticated' && !authenticated;
     const redirectToHome = visibility === 'is-not-authenticated' && authenticated;
-    const redirect = redirectToSignIn || redirectToHome;
+    const shouldRedirect = redirectToSignIn || redirectToHome;
 
     useEffect(
         () => {
             // NOTE: should not set visibility for redirection or, navbar will
             // flash
-            if (!redirect) {
+            if (!shouldRedirect) {
                 setNavbarVisibility(navbarVisibility);
             }
         },
         // NOTE: setNavbarVisibility will not change
         // NOTE: navbarVisibility will not change
         // NOTE: adding path because Path component is reused when used in Switch > Routes
-        [setNavbarVisibility, navbarVisibility, path, redirect],
+        [setNavbarVisibility, navbarVisibility, path, shouldRedirect],
     );
 
     if (redirectToSignIn) {
-        // console.warn('Redirecting to sign-in');
-        return (
-            <Redirect to={loginPage} />
-        );
+        redirect(loginPage);
     }
 
     if (redirectToHome) {
-        // console.warn('Redirecting to dashboard');
-        return (
-            <Redirect to={defaultPage} />
-        );
+        redirect(defaultPage);
     }
 
     // FIXME: custom error message from checkPermissions
@@ -112,7 +106,9 @@ function Page<T extends { className?: string }>(props: Props<T>) {
             <ErrorBoundary>
                 <Comp
                     className={styles.page}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...componentProps}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...overrideProps}
                 />
             </ErrorBoundary>

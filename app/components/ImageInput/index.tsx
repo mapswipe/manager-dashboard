@@ -22,8 +22,7 @@ function readImage(data: string) {
     return promise;
 }
 
-interface Props<Name> extends Omit<FileInputProps<Name>, 'accept'> {
-}
+type Props<Name> = Omit<FileInputProps<Name>, 'accept'>;
 
 function ImageInput<Name>(props: Props<Name>) {
     const {
@@ -66,7 +65,9 @@ function ImageInput<Name>(props: Props<Name>) {
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
             const blob = await new Promise<Blob | null>(
-                (resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.6),
+                (resolve) => {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.6);
+                },
             );
 
             const reducedFile = blob

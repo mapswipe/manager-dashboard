@@ -1,5 +1,3 @@
-import React from 'react';
-
 import SearchSelectInput, { SearchSelectInputProps } from './SearchSelectInput';
 import {
     OptionKey,

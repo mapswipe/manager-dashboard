@@ -3,9 +3,9 @@
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    gap: var(--spacing-small);
     padding: var(--spacing-extra-large);
     color: var(--color-text-gray);
+    gap: var(--spacing-small);
 
     .empty-message-title {
         font-size: var(--font-size-large);

@@ -1,12 +1,12 @@
 .user-group-form-modal {
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-extra-large);
     padding: var(--spacing-large);
     width: calc(100% - var(--spacing-large));
     max-width: 40rem;
     height: calc(100% - var(--spacing-large));
     max-height: 30rem;
-    gap: var(--spacing-extra-large);
 
     .body {
         display: flex;

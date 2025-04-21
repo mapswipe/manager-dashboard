@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 
 import PreloadMessage from '#base/components/PreloadMessage';
-import { UserContext } from '#base/context/UserContext';
+import UserContext from '#base/context/UserContext';
 
 interface Props {
     preloadClassName?: string;
@@ -113,10 +113,6 @@ function Init(props: Props) {
         );
     }
 
-    return (
-        <>
-            {children}
-        </>
-    );
+    return children;
 }
 export default Init;

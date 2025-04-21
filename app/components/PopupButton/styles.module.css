@@ -1,6 +1,6 @@
 .popup {
-    padding-top: calc(var(--tui-spacing-large) - var(--tui-spacing-medium));
-    padding-bottom: calc(var(--tui-spacing-large) - var(--tui-spacing-medium));
+    padding-top: calc(var(--spacing-large) - var(--spacing-medium));
+    padding-bottom: calc(var(--spacing-large) - var(--spacing-medium));
 
     .popup-content {
         display: flex;

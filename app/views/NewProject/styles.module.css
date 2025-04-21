@@ -83,8 +83,8 @@
 
         .warning-item {
             display: flex;
-            gap: var(--spacing-small);
             align-items: flex-start;
+            gap: var(--spacing-small);
         }
     }
 }

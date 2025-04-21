@@ -19,8 +19,8 @@
 
         .heading {
             display: flex;
-            align-items: center;
             gap: var(--spacing-medium);
+            align-items: center;
 
             .icon {
                 flex-shrink: 0;
@@ -42,8 +42,8 @@
 
     .footer-actions {
         display: flex;
-        align-items: center;
         gap: var(--spacing-large);
+        align-items: center;
         justify-content: flex-end;
     }
 }

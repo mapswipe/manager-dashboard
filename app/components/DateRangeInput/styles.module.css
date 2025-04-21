@@ -9,7 +9,7 @@
         color: var(--color);
 
         &.empty {
-            --color: var(--color-input-placeholder); /* TODO */
+            --color: var(--color-text-light);
         }
 
         &.errored {
@@ -71,7 +71,7 @@
 
         &:not(.ghost) {
             background-color: var(--color-accent);
-            color: var(--color-text-ligth);
+            color: var(--color-text-light);
         }
         &.ghost {
             background-color: var(--color-background-hover-light);

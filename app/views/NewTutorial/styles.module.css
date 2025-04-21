@@ -4,8 +4,8 @@
     flex-direction: column;
     background-color: var(--color-background);
     padding: var(--spacing-large);
-    gap: var(--spacing-extra-large);
     overflow: auto;
+    gap: var(--spacing-extra-large);
 
     .container {
         display: flex;
@@ -46,8 +46,8 @@
 
         .warning-item {
             display: flex;
-            gap: var(--spacing-small);
             align-items: flex-start;
+            gap: var(--spacing-small);
 
             .icon-container {
                 font-size: var(--font-size-large);

@@ -125,11 +125,7 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
         renderGroup(groupKey, i, groups[groupKey], groups[groupKey].map(renderListItem))
     ));
 
-    return (
-        <>
-            {children}
-        </>
-    );
+    return children;
 }
 
 function List<D, P, K extends OptionKey, GP extends GroupCommonProps, GK extends OptionKey>(

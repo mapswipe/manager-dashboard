@@ -21,8 +21,8 @@
         .actions {
             display: flex;
             align-items: center;
-            gap: var(--spacing-medium);
             flex-shrink: 0;
+            gap: var(--spacing-medium);
         }
     }
 
@@ -39,8 +39,8 @@
             flex-direction: column;
             flex-shrink: 0;
             padding: var(--spacing-large);
-            gap: var(--spacing-large);
             width: 12rem;
+            gap: var(--spacing-large);
 
             .filters {
                 display: flex;

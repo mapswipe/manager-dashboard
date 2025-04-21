@@ -10,7 +10,7 @@ import Button from '#components/Button';
 import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
 
-import { PartialCustomOptionsType } from '..';
+import type { PartialCustomOptionsType } from '..';
 
 import styles from './styles.module.css';
 

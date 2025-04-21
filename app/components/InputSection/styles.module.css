@@ -23,8 +23,8 @@
     .content {
         display: flex;
         flex-direction: column;
-        border-radius: var(--radius-card-border);
         gap: var(--spacing-extra-large);
+        border-radius: var(--radius-card-border);
         background-color: var(--color-foreground);
         padding: var(--spacing-large);
         min-height: 14rem;

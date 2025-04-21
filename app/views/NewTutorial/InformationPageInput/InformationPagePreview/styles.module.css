@@ -5,8 +5,8 @@
 
     .content {
         display: flex;
-        gap: var(--spacing-large);
         flex-direction: column;
+        gap: var(--spacing-large);
     }
 
     .image-preview {

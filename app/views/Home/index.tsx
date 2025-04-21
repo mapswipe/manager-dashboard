@@ -4,7 +4,7 @@ import {
     IoChevronUp,
 } from 'react-icons/io5';
 import { MdSearch } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { _cs } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';

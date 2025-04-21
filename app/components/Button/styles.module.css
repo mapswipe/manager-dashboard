@@ -1,12 +1,12 @@
 .button {
     display: flex;
+    gap: var(--spacing-small);
     align-items: center;
     border: var(--width-separator-thin) solid rgba(0, 0, 0, 0.3);
     border-radius: var(--radius-button-border);
     padding: var(--spacing-small) var(--spacing-medium);
     width: fit-content;
     color: rgba(0, 0, 0, 0.8);
-    gap: var(--spacing-small);
 
     .icons,
     .actions {
@@ -19,12 +19,12 @@
     }
 
     &.primary {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
+        border-color: var(--color-primary);
+        color: var(--color-primary);
     }
     &.secondary {
-        border-color: var(--primary-accent);
-        color: var(--primary-accent);
+        border-color: var(--color-accent);
+        color: var(--color-accent);
     }
 
     &.transparent {

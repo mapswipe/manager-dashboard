@@ -11,8 +11,9 @@ import {
     unique,
 } from '@togglecorp/fujs';
 
-import SelectInputContainer, { SelectInputContainerProps } from '../SelectInputContainer';
-import { rankedSearchOnList } from './utils';
+import SelectInputContainer, { SelectInputContainerProps } from '#components/SelectInputContainer';
+
+import { rankedSearchOnList } from '../utils';
 
 import styles from './styles.module.css';
 

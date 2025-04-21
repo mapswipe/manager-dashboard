@@ -202,7 +202,7 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
                             key={wd}
                             className={styles.weekDayName}
                         >
-                            {wd.substr(0, 2)}
+                            {wd.substring(0, 2)}
                         </div>
                     ))}
                 </div>
@@ -231,7 +231,10 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
                         };
 
                         const combinedProps = {
-                            ...(rendererParams ? rendererParams(date.date, month, year) : undefined),
+                            ...(rendererParams
+                                ? rendererParams(date.date, month, year)
+                                : undefined
+                            ),
                             ...defaultProps,
                         } as P;
 

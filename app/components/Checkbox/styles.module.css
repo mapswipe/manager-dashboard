@@ -1,14 +1,15 @@
 .checkbox {
     display: flex;
     position: relative;
+    gap: var(--spacing-small);
     align-items: center;
     cursor: pointer;
     user-select: none;
-    gap: var(--spacing-small);
 
     .checkmark {
         flex-shrink: 0;
-        color: var(--color-checkmark);
+        color: var(--color-text);
+        /* color: var(--color-checkmark); */
         font-size: 1.12em;
     }
 

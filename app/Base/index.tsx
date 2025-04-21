@@ -5,7 +5,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import {
     ApolloClient,
     ApolloProvider,
@@ -16,26 +16,22 @@ import {
     setUser as setUserOnSentry,
     User as SentryUser,
 } from '@sentry/react';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 import { initializeApp } from 'firebase/app';
 
+import AppRoutes from '#base/components/AppRoutes';
 import AuthPopup from '#base/components/AuthPopup';
 import Init from '#base/components/Init';
 import Navbar from '#base/components/Navbar';
 import PreloadMessage from '#base/components/PreloadMessage';
-import Routes from '#base/components/Routes';
 import apolloConfig from '#base/configs/apollo';
 import firebaseConfig from '#base/configs/firebase';
-import browserHistory from '#base/configs/history';
 import sentryConfig from '#base/configs/sentry';
-import {
-    NavbarContext,
-    NavbarContextInterface,
-} from '#base/context/NavbarContext';
-import {
-    UserContext,
-    UserContextInterface,
-} from '#base/context/UserContext';
+import NavbarContext, { type NavbarContextInterface } from '#base/context/NavbarContext';
+import UserContext, { type UserContextInterface } from '#base/context/UserContext';
 import { sync } from '#base/hooks/useAuthSync';
 import { User } from '#base/types/user';
 
@@ -63,7 +59,10 @@ function Base() {
                         id: newUser.id,
                         username: newUser.displayName,
                     }) : null;
-                    sync(!!sanitizedUser, sanitizedUser?.id);
+                    sync(
+                        !!sanitizedUser,
+                        isDefined(sanitizedUser) ? String(sanitizedUser.id) : undefined,
+                    );
                     setUserOnSentry(sanitizedUser);
 
                     return newUser;
@@ -73,7 +72,10 @@ function Base() {
                     id: u.id,
                     username: u.displayName,
                 }) : null;
-                sync(!!sanitizedUser, sanitizedUser?.id);
+                sync(
+                    !!sanitizedUser,
+                    isDefined(sanitizedUser) ? String(sanitizedUser.id) : undefined,
+                );
                 setUserOnSentry(sanitizedUser);
                 setUser(u);
             }
@@ -121,7 +123,7 @@ function Base() {
                     <UserContext.Provider value={userContext}>
                         <NavbarContext.Provider value={navbarContext}>
                             <AuthPopup />
-                            <Router history={browserHistory}>
+                            <BrowserRouter>
                                 <Init preloadClassName={styles.init}>
                                     <Navbar
                                         className={_cs(
@@ -129,11 +131,11 @@ function Base() {
                                             !navbarVisibility && styles.hidden,
                                         )}
                                     />
-                                    <Routes
-                                        className={styles.view}
+                                    <AppRoutes
+                                        routeClassName={styles.view}
                                     />
                                 </Init>
-                            </Router>
+                            </BrowserRouter>
                         </NavbarContext.Provider>
                     </UserContext.Provider>
                 </ApolloProvider>

@@ -78,11 +78,8 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
                 actions={(
                     <>
                         {actions}
-                        {!arrowHidden && (
-                            <>
-                                {popupShown ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                            </>
-                        )}
+                        {!arrowHidden && popupShown && <IoIosArrowUp />}
+                        {!arrowHidden && !popupShown && <IoIosArrowDown />}
                     </>
                 )}
             >

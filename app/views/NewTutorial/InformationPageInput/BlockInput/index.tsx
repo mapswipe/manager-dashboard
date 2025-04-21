@@ -1,7 +1,7 @@
-import React from 'react';
 import {
     Error,
     getErrorObject,
+    getErrorString,
     SetValueArg,
     useFormObject,
 } from '@togglecorp/toggle-form';
@@ -54,7 +54,7 @@ export default function BlockInput(props: Props) {
                     hint="Make sure you have the rights to
                     use this image. It should end with  .jpg or .png."
                     accept="image/png, image/jpeg"
-                    error={error?.imageFile}
+                    error={getErrorString(error?.imageFile)}
                     disabled={disabled}
                 />
             )}

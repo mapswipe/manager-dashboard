@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { generatePath } from 'react-router-dom';
+import { generatePath } from 'react-router';
 
 import ProjectContext from '#base/context/ProjectContext';
 import UserContext from '#base/context/UserContext';

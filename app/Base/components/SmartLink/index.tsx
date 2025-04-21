@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Link,
     LinkProps,
-} from 'react-router-dom';
+} from 'react-router';
 
 import useRouteMatching, {
     Attrs,
@@ -42,7 +42,9 @@ function SmartLink(props: Props) {
 
     return (
         <Link
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...extraProps}
             to={routeData.to}
         >

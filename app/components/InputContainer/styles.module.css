@@ -5,9 +5,9 @@
 
     .input-section {
         display: flex;
+        gap: var(--spacing-medium);
         align-items: center;
         border-bottom: var(--width-separator-thin) solid transparent;
-        gap: var(--spacing-medium);
 
         .input {
             flex-grow: 1;
@@ -42,12 +42,6 @@
         font-weight: var(--font-weight-bold);
     }
 
-    &:focus-within {
-        .input-label {
-            color: var(--color-primary);
-        }
-    }
-
     .hint {
         color: var(--color-text-light);
         font-size: var(--font-size-small);
@@ -61,9 +55,15 @@
     .icons,
     .actions {
         display: flex;
+        gap: var(--spacing-small);
         align-items: center;
         font-size: 1.2em;
-        gap: var(--spacing-small);
+    }
+
+    &:focus-within {
+        .input-label {
+            color: var(--color-primary);
+        }
     }
 
     &.read-only {

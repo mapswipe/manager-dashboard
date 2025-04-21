@@ -2,11 +2,11 @@
     display: flex;
     position: relative;
     flex-direction: column;
+    gap: var(--spacing-large);
     border-radius: var(--radius-card-border);
     box-shadow: var(--shadow-card);
     background-color: var(--color-foreground);
     padding: var(--spacing-large);
-    gap: var(--spacing-large);
 
     .pending-message {
         display: flex;
@@ -23,8 +23,8 @@
 
     .header {
         display: flex;
-        align-items: baseline;
         gap: var(--spacing-medium);
+        align-items: baseline;
 
         .heading {
             flex-grow: 1;
@@ -54,8 +54,8 @@
             flex-basis: 0;
             flex-direction: column;
             flex-grow: 1;
-            justify-content: center;
             gap: var(--spacing-small);
+            justify-content: center;
 
             .text-output {
                 display: flex;

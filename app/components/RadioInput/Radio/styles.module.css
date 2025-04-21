@@ -1,9 +1,19 @@
 .radio {
     --cursor: default;
     display: flex;
+    gap: var(--spacing-small);
     align-items: center;
     cursor: var(--cursor);
-    gap: var(--spacing-small);
+
+    &:not(.disabled) {
+        &:hover {
+            background-color: var(--color-background-hover-light);
+        }
+
+        &:not(.read-only) {
+            --cursor: pointer;
+        }
+    }
 
     .icon {
         font-size: 1.2em;
@@ -21,15 +31,5 @@
 
     &.disabled {
         opacity: var(--opacity-disabled-element);
-    }
-
-    &:not(.disabled) {
-        &:hover {
-            background-color: var(--color-background-hover-light);
-        }
-
-        &:not(.read-only) {
-            --cursor: pointer;
-        }
     }
 }

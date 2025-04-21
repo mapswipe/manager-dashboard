@@ -3,7 +3,7 @@ import {
     MdOutlinePublishedWithChanges,
     MdOutlineUnpublished,
 } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
     _cs,
     isDefined,
@@ -86,7 +86,6 @@ import {
     validateProjectIdOnHotTaskingManager,
 } from './utils';
 
-// eslint-disable-next-line postcss-modules/no-unused-class
 import styles from './styles.module.css';
 
 const defaultProjectFormValue: PartialProjectFormType = {

@@ -17,8 +17,8 @@
 
         .icons {
             display: flex;
-            gap: var(--spacing-medium);
             flex-shrink: 0;
+            gap: var(--spacing-medium);
 
             >* {
                 font-size: var(--font-size-large);
@@ -27,12 +27,19 @@
 
         .actions {
             display: flex;
-            gap: var(--spacing-medium);
             flex-shrink: 0;
+            gap: var(--spacing-medium);
 
             >* {
                 font-size: var(--font-size-large);
             }
+        }
+    }
+
+    &:not(.expanded) {
+        .header-container {
+            border-bottom-left-radius: var(--radius-card-border);
+            border-bottom-right-radius: var(--radius-card-border);
         }
     }
 
@@ -42,12 +49,5 @@
         border-bottom-left-radius: var(--radius-card-border);
         border-bottom-right-radius: var(--radius-card-border);
         padding: var(--spacing-medium);
-    }
-
-    &:not(.expanded) {
-        .header-container {
-            border-bottom-left-radius: var(--radius-card-border);
-            border-bottom-right-radius: var(--radius-card-border);
-        }
     }
 }

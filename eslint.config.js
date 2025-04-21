@@ -90,7 +90,9 @@ const appConfigs = compat.config({
         'react/require-default-props': ['warn', { ignoreFunctionalComponents: true }],
         'simple-import-sort/imports': 'warn',
         'simple-import-sort/exports': 'warn',
-        'import-newlines/enforce': ['warn', 1]
+        'import-newlines/enforce': ['warn', 1],
+
+        'react/jsx-props-no-spreading': 'warn'
     },
     overrides: [
         {
@@ -116,10 +118,17 @@ const appConfigs = compat.config({
                 ]
             }
         }
-    ]
+    ],
 }).map((conf) => ({
     ...conf,
     files: ['app/**/*.tsx', 'app/**/*.jsx', 'app/**/*.ts', 'app/**/*.js', 'generated/**/*.ts'],
+    ignores: [
+        "node_modules/",
+        "build/",
+        "coverage/",
+        'src/generated/types.ts'
+    ],
+
 }));
 
 const otherConfig = {

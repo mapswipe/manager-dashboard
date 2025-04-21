@@ -1,4 +1,10 @@
-import React from 'react';
+import {
+    useCallback,
+    useContext,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { IoIosTrash } from 'react-icons/io';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 import {
@@ -7,7 +13,7 @@ import {
     MdOutlineUnpublished,
     MdSwipe,
 } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
     _cs,
     difference,
@@ -21,6 +27,7 @@ import {
     analyzeErrors,
     createSubmitHandler,
     getErrorObject,
+    getErrorString,
     useForm,
     useFormArray,
 } from '@togglecorp/toggle-form';
@@ -64,6 +71,7 @@ import {
     PROJECT_TYPE_CHANGE_DETECTION,
     PROJECT_TYPE_COMPLETENESS,
     PROJECT_TYPE_FOOTPRINT,
+    PROJECT_TYPE_STREET,
     ProjectType,
     projectTypeLabelMap,
     valueSelector,
@@ -133,6 +141,7 @@ function checkSchema<T extends object>(
                 if (indexOfType === -1) {
                     return `type of ${key} expected to be one of type ${expectedType.join(', ')}`;
                 }
+            // eslint-disable-next-line valid-typeof
             } else if (typeof currentValue !== expectedType) {
                 return `type of ${key} expected to be of ${expectedType}`;
             }
@@ -184,6 +193,9 @@ function getGeoJSONError(
             tile_x: 'number',
             tile_y: 'number',
             tile_z: 'number',
+        },
+        [PROJECT_TYPE_STREET]: {
+            // TODO
         },
     };
     const schemaErrors = tutorialTasks.features.map(
@@ -351,18 +363,18 @@ function NewTutorial(props: Props) {
         className,
     } = props;
 
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const mountedRef = useMountedRef();
 
-    const popupElementRef = React.useRef<{
+    const popupElementRef = useRef<{
         setPopupVisibility: React.Dispatch<React.SetStateAction<boolean>>;
     }>(null);
 
     const [
         tutorialSubmissionStatus,
         setTutorialSubmissionStatus,
-    ] = React.useState<SubmissionStatus | undefined>();
+    ] = useState<SubmissionStatus | undefined>();
 
     const {
         setFieldValue,
@@ -397,7 +409,7 @@ function NewTutorial(props: Props) {
         InformationPagesType
     >('informationPages', setFieldValue);
 
-    const handleSubmission = React.useCallback((
+    const handleSubmission = useCallback((
         finalValuesFromProps: PartialTutorialFormType,
     ) => {
         const userId = user?.id;
@@ -527,7 +539,7 @@ function NewTutorial(props: Props) {
         submitToFirebase();
     }, [user, mountedRef]);
 
-    const handleSubmitButtonClick = React.useCallback(
+    const handleSubmitButtonClick = useCallback(
         () => {
             createSubmitHandler(
                 validate,
@@ -538,7 +550,7 @@ function NewTutorial(props: Props) {
         [validate, setError, handleSubmission],
     );
 
-    const handleAddDefineOptions = React.useCallback(
+    const handleAddDefineOptions = useCallback(
         () => {
             setFieldValue(
                 (oldValue: PartialTutorialFormType['customOptions']) => {
@@ -569,7 +581,7 @@ function NewTutorial(props: Props) {
         ],
     );
 
-    const handleGeoJsonFile = React.useCallback((
+    const handleGeoJsonFile = useCallback((
         geoProps: GeoJSON.GeoJSON | undefined,
     ) => {
         const projectType = value?.projectType;
@@ -611,7 +623,7 @@ function NewTutorial(props: Props) {
         setFieldValue(tutorialTaskArray, 'scenarioPages');
     }, [setFieldValue, setError, value?.projectType]);
 
-    const handleAddInformationPage = React.useCallback(
+    const handleAddInformationPage = useCallback(
         (template: InformationPageTemplateKey) => {
             setFieldValue(
                 (oldValue: PartialInformationPagesType) => {
@@ -645,31 +657,31 @@ function NewTutorial(props: Props) {
     const tileServerBVisible = value.projectType === PROJECT_TYPE_CHANGE_DETECTION
         || value.projectType === PROJECT_TYPE_COMPLETENESS;
 
-    const error = React.useMemo(
+    const error = useMemo(
         () => getErrorObject(formError),
         [formError],
     );
-    const scenarioError = React.useMemo(
+    const scenarioError = useMemo(
         () => getErrorObject(error?.scenarioPages),
         [error?.scenarioPages],
     );
 
-    const optionsError = React.useMemo(
+    const optionsError = useMemo(
         () => getErrorObject(error?.customOptions),
         [error?.customOptions],
     );
 
-    const informationPagesError = React.useMemo(
+    const informationPagesError = useMemo(
         () => getErrorObject(error?.informationPages),
         [error?.informationPages],
     );
 
-    const hasErrors = React.useMemo(
+    const hasErrors = useMemo(
         () => analyzeErrors(error),
         [error],
     );
 
-    const warning = React.useMemo(
+    const warning = useMemo(
         () => {
             const options = value?.customOptions?.map((option) => option.value) ?? [];
             const subOptions = value?.customOptions?.flatMap(
@@ -707,7 +719,7 @@ function NewTutorial(props: Props) {
         informationPages,
     } = value;
 
-    const handleProjectTypeChange = React.useCallback(
+    const handleProjectTypeChange = useCallback(
         (newValue: ProjectType | undefined) => {
             setFieldValue(undefined, 'tutorialTasks');
             setFieldValue(undefined, 'scenarioPages');
@@ -945,7 +957,7 @@ function NewTutorial(props: Props) {
                         value={value.tutorialTasks}
                         onChange={handleGeoJsonFile}
                         hint="It should end with .geojson or .geo.json"
-                        error={error?.tutorialTasks}
+                        error={getErrorString(error?.tutorialTasks)}
                         disabled={submissionPending || projectTypeEmpty}
                     />
                     <div className={styles.scenarioList}>

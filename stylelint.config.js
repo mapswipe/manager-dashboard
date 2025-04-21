@@ -1,22 +1,34 @@
-module.exports = {
+import path from 'path';
+
+const __filename = new URL(import.meta.url).pathname;
+const __dirname = path.dirname(__filename);
+
+const cssPaths = [
+    path.resolve(__dirname, './app/Base/styles.module.css'),
+];
+
+/** @type {import('stylelint').Config} */
+const config = {
+    extends: [
+        'stylelint-config-recommended',
+        'stylelint-config-concentric',
+    ],
     plugins: [
         'stylelint-no-unused-selectors',
         'stylelint-value-no-unknown-custom-properties',
     ],
-    extends: [
-        'stylelint-config-recommended',
-        'stylelint-config-concentric-order',
-    ],
     rules: {
-        'plugin/no-unused-selectors': {
-            "suffixesToStrip": [".module"],
-            "documents": [
-                "{cssDir}/{cssName}.tsx",
-            ],
-        },
+        'plugin/no-unused-selectors': [
+            true,
+            {
+                suffixesToStrip: ['.module'],
+                documents: ['{cssDir}/{cssName}.tsx'],
+            },
+        ],
         'csstools/value-no-unknown-custom-properties': [
-            true, {
-                importFrom: ['./app/index.css']
+            true,
+            {
+                importFrom: cssPaths,
             },
         ],
         'selector-pseudo-class-no-unknown': [
@@ -28,3 +40,4 @@ module.exports = {
     },
 };
 
+export default config;

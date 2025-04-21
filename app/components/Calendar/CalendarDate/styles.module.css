@@ -3,13 +3,13 @@
     width: var(--width-calendar-date);
     height: var(--width-calendar-date);
 
+    &:hover {
+        background-color: var(--color-background-hover-light);
+    }
+
     &.today {
         color: var(--color-accent);
         font-weight: var(--font-weight-bold);
-    }
-
-    &:hover {
-        background-color: var(--color-background-hover-light);
     }
 
     &.active {

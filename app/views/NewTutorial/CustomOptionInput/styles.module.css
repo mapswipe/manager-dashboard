@@ -23,8 +23,8 @@
     .sub-options {
         display: flex;
         flex-direction: column;
-        border-radius: var(--radius-card-border);
         gap: var(--spacing-medium);
+        border-radius: var(--radius-card-border);
         background-color: var(--color-background);
         padding: var(--spacing-medium);
     }

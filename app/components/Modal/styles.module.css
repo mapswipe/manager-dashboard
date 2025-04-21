@@ -1,12 +1,12 @@
 .modal {
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-large);
     border: var(--width-separator-thin) solid var(--color-separator);
     border-radius: var(--radius-modal);
     background-color: var(--color-foreground);
     overflow: auto;
     color: var(--color-text);
-    gap: var(--spacing-large);
 
     .modal-header {
         display: flex;

@@ -9,8 +9,8 @@
 
         .preview-content {
             display: flex;
-            align-items: center;
             gap: var(--spacing-medium);
+            align-items: center;
             color: var(--color-text-on-dark);
 
             .preview-icon {

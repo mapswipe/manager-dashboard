@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
-import { UserContext } from '#base/context/UserContext';
+import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import useMountedRef from '#hooks/useMountedRef';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
@@ -60,25 +60,21 @@ function Navbar(props: Props) {
                 <div className={styles.main}>
                     <div className={styles.navLinks}>
                         <SmartNavLink
-                            exact
                             route={route.home}
                             className={styles.link}
                             activeClassName={styles.active}
                         />
                         <SmartNavLink
-                            exact
                             route={route.projects}
                             className={styles.link}
                             activeClassName={styles.active}
                         />
                         <SmartNavLink
-                            exact
                             route={route.teams}
                             className={styles.link}
                             activeClassName={styles.active}
                         />
                         <SmartNavLink
-                            exact
                             route={route.userGroups}
                             className={styles.link}
                             activeClassName={styles.active}

@@ -2,8 +2,8 @@
     .content {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         gap: var(--spacing-extra-large);
+        justify-content: space-between;
 
         .map-preview {
             align-self: center;
