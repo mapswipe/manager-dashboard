@@ -1,4 +1,3 @@
-import React from 'react';
 import { MdAttachFile } from 'react-icons/md';
 import {
     _cs,

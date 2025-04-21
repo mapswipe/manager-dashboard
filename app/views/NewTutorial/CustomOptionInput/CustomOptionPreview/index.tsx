@@ -1,5 +1,3 @@
-import React from 'react';
-
 import MobilePreview from '#components/MobilePreview';
 import { iconMap } from '#utils/common';
 

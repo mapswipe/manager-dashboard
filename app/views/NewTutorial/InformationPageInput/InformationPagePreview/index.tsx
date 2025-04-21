@@ -1,5 +1,3 @@
-import React from 'react';
-
 import MarkdownPreview from '#components/MarkdownPreview';
 import MobilePreview from '#components/MobilePreview';
 import Preview from '#components/Preview';

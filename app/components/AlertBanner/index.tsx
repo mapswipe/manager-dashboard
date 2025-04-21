@@ -1,4 +1,3 @@
-import React from 'react';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import MarkdownView, { MarkdownViewProps } from 'react-showdown';
 
 export const markdownOptions: MarkdownViewProps['options'] = {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { CgOrganisation } from 'react-icons/cg';
 import { IoTrashBin } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';

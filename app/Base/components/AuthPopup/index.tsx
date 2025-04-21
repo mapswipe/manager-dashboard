@@ -1,5 +1,3 @@
-import React from 'react';
-
 import useAuthSync from '#base/hooks/useAuthSync';
 import Button from '#components/Button';
 import Modal from '#components/Modal';

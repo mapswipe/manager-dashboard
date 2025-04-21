@@ -1,5 +1,3 @@
-import React from 'react';
-
 function useBlurEffect(
     shouldWatch: boolean,
     callback: (isClickedWithin: boolean, e: MouseEvent) => void,

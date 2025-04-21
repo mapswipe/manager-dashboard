@@ -1,5 +1,3 @@
-import React from 'react';
-
 type SetTrueFn = () => void;
 type SetFalseFn = () => void;
 type ToggleFn = () => void;

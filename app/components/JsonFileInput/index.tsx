@@ -1,5 +1,3 @@
-import React from 'react';
-
 import FileInput, { Props as FileInputProps } from '#components/FileInput';
 import useMountedRef from '#hooks/useMountedRef';
 

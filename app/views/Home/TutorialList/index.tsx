@@ -1,4 +1,3 @@
-import React from 'react';
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import { _cs } from '@togglecorp/fujs';
 import {

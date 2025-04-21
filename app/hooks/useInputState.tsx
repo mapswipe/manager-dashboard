@@ -1,5 +1,3 @@
-import React from 'react';
-
 type ValueOrSetterFn<T> = T | ((value: T) => T);
 function isSetterFn<T>(value: ValueOrSetterFn<T>): value is ((value: T) => T) {
     return typeof value === 'function';

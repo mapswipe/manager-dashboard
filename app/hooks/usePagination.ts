@@ -1,5 +1,3 @@
-import React from 'react';
-
 const defaultPagePerItemOptions = [
     { value: 5, label: '5 items / page' },
     { value: 10, label: '10 items / page' },

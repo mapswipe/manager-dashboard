@@ -1,4 +1,3 @@
-import React from 'react';
 import { ImSpinner } from 'react-icons/im';
 import { _cs } from '@togglecorp/fujs';
 

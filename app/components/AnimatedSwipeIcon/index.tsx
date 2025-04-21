@@ -1,4 +1,3 @@
-import React from 'react';
 import { MdSwipe } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 
