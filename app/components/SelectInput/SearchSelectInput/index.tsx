@@ -57,7 +57,7 @@ export type SearchSelectInputProps<
     readOnly?: boolean;
     onOptionsChange?: React.Dispatch<React.SetStateAction<O[] | undefined | null>>;
     sortFunction?: (options: O[], search: string, labelSelector: (option: O) => string) => O[];
-    onSearchValueChange?: (value: string) => void;
+    onSearchValueChange?: (value: string | undefined) => void;
     onShowDropdownChange?: (value: boolean) => void;
 }, OMISSION> & (
     SelectInputContainerProps<T, K, O, P,
@@ -116,7 +116,7 @@ function SearchSelectInput<
     const options = optionsFromProps ?? (emptyList as O[]);
     const searchOptions = searchOptionsFromProps ?? (emptyList as O[]);
 
-    const [searchInputValue, setSearchInputValue] = React.useState('');
+    const [searchInputValue, setSearchInputValue] = React.useState<string | undefined>('');
     const [showDropdown, setShowDropdown] = React.useState(false);
     const [focused, setFocused] = React.useState(false);
     const [
@@ -161,7 +161,7 @@ function SearchSelectInput<
             if (sortFunction) {
                 return [
                     ...rankedSearchOnList(initiallySelected, searchInputValue, labelSelector),
-                    ...sortFunction(initiallyNotSelected, searchInputValue, labelSelector),
+                    ...sortFunction(initiallyNotSelected, searchInputValue ?? '', labelSelector),
                 ];
             }
 
@@ -182,7 +182,7 @@ function SearchSelectInput<
     );
 
     const handleSearchValueChange = useCallback(
-        (searchValue: string) => {
+        (searchValue: string | undefined) => {
             setSearchInputValue(searchValue);
             if (onSearchValueChange) {
                 onSearchValueChange(searchValue);
@@ -263,11 +263,12 @@ function SearchSelectInput<
 
     return (
         <SelectInputContainer
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
             name={name}
             options={realOptions}
             optionsPending={optionsPending}
-            optionsFiltered={searchInputValue?.length > 0}
+            optionsFiltered={(searchInputValue?.length ?? 0) > 0}
             optionKeySelector={keySelector}
             optionRenderer={Option}
             optionRendererParams={optionRendererParams}

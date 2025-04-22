@@ -1,4 +1,8 @@
 import {
+    useCallback,
+    useState,
+} from 'react';
+import {
     check,
     HintError,
 } from '@placemarkio/check-geojson';
@@ -75,11 +79,11 @@ function GeoJsonFileInput<N>(props: Props<N>) {
     const [
         internalErrorMessage,
         setInternalErrorMessage,
-    ] = React.useState<string>();
+    ] = useState<string>();
 
-    const [tempValue, setTempValue] = React.useState<File | undefined>(undefined);
+    const [tempValue, setTempValue] = useState<File | undefined>(undefined);
 
-    const handleChange = React.useCallback(
+    const handleChange = useCallback(
         (newValue: File | undefined) => {
             if (!newValue) {
                 setInternalErrorMessage(undefined);
@@ -158,6 +162,7 @@ function GeoJsonFileInput<N>(props: Props<N>) {
             onChange={handleChange}
             accept=".geojson,.geo.json"
             error={internalErrorMessage ?? error}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         />
     );

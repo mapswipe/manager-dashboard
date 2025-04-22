@@ -25,8 +25,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-# - name: Typecheck
-# run: pnpm typecheck
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Lint CSS
         run: pnpm lint:css

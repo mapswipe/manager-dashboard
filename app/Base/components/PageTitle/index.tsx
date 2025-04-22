@@ -1,10 +1,12 @@
+import { useEffect } from 'react';
+
 interface Props {
     value: string;
 }
 
 function PageTitle(props: Props) {
     const { value } = props;
-    React.useEffect(
+    useEffect(
         () => {
             document.title = value;
         },

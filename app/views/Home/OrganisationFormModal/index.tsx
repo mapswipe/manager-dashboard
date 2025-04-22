@@ -1,4 +1,10 @@
 import {
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
+import {
     MdOutlinePublishedWithChanges,
     MdOutlineUnpublished,
 } from 'react-icons/md';
@@ -83,12 +89,12 @@ function OrganisationFormModal(props: Props) {
     } = useForm(organisationFormSchema, { value: defaultOrganisationFormValue });
 
     const mountedRef = useMountedRef();
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
     const error = getErrorObject(formError);
-    const [submissionStatus, setSubmissionStatus] = React.useState<'pending' | 'success' | 'failed' | undefined>(undefined);
-    const [nonFieldError, setNonFieldError] = React.useState<string | undefined>();
+    const [submissionStatus, setSubmissionStatus] = useState<'pending' | 'success' | 'failed' | undefined>(undefined);
+    const [nonFieldError, setNonFieldError] = useState<string | undefined>();
 
-    const handleFormSubmission = React.useCallback((finalValues: OrganisationFormFields) => {
+    const handleFormSubmission = useCallback((finalValues: OrganisationFormFields) => {
         async function submitToFirebase() {
             setSubmissionStatus('pending');
             try {
@@ -153,7 +159,7 @@ function OrganisationFormModal(props: Props) {
         submitToFirebase();
     }, [user, setError, mountedRef]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
@@ -171,7 +177,6 @@ function OrganisationFormModal(props: Props) {
                             className={styles.submitButton}
                             name={undefined}
                             onClick={handleSubmitButtonClick}
-                            disabled={submissionStatus === 'pending'}
                         >
                             Submit
                         </Button>

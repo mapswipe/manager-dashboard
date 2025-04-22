@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
     Error,
     getErrorObject,
@@ -41,7 +42,7 @@ export default function InformationPageInput(props: Props) {
 
     const error = getErrorObject(riskyError);
 
-    const blockError = React.useMemo(
+    const blockError = useMemo(
         () => getErrorObject(error?.blocks),
         [error?.blocks],
     );

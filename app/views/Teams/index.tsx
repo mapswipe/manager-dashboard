@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { MdSearch } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 import {
@@ -28,7 +29,7 @@ function Teams(props: Props) {
 
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
-    const teamsQuery = React.useMemo(
+    const teamsQuery = useMemo(
         () => {
             const db = getDatabase();
             return ref(db, '/v2/teams');
@@ -43,9 +44,9 @@ function Teams(props: Props) {
         query: teamsQuery,
     });
 
-    const teamList = React.useMemo(() => (teams
+    const teamList = useMemo(() => (teams
         ? Object.entries(teams).reverse() : []), [teams]);
-    const filteredTeamList = React.useMemo(
+    const filteredTeamList = useMemo(
         () => rankedSearchOnList(
             teamList,
             searchText,

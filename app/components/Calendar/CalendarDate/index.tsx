@@ -1,10 +1,8 @@
+import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import {
-    typedMemo,
-    ymdToDateString,
-} from '../../../utils/common.tsx';
-import RawButton, { Props as RawButtonProps } from '../../RawButton';
+import RawButton, { Props as RawButtonProps } from '#components/RawButton';
+import { ymdToDateString } from '#utils/common.tsx';
 
 import styles from './styles.module.css';
 
@@ -37,7 +35,7 @@ function CalendarDate(props: Props) {
         ghost,
     } = props;
 
-    const handleClick = React.useCallback(() => {
+    const handleClick = useCallback(() => {
         if (onClick) {
             onClick(year, month, date);
         }
@@ -67,4 +65,4 @@ function CalendarDate(props: Props) {
     );
 }
 
-export default typedMemo(CalendarDate);
+export default CalendarDate;

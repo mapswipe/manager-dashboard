@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-interface NavbarContextInterface {
+export interface NavbarContextInterface {
     navbarVisibility: boolean;
     setNavbarVisibility: React.Dispatch<React.SetStateAction<boolean>>;
 }

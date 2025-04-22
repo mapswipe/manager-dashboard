@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { IoEllipsisHorizontal } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 
@@ -78,7 +79,7 @@ function Pager(props: Props) {
         onActivePageChange,
     } = props;
 
-    const pageItems = React.useMemo(
+    const pageItems = useMemo(
         () => {
             const items: React.ReactNode[] = [];
             const getButton = (i: number) => (

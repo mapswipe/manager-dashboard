@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { MdSearch } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 import {
@@ -42,7 +43,7 @@ function Projects(props: Props) {
     const [selectedProjectStat, setSelectedProjectStat] = useInputState<string>('active');
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
-    const projectQuery = React.useMemo(
+    const projectQuery = useMemo(
         () => {
             const db = getDatabase();
             return query(
@@ -61,7 +62,7 @@ function Projects(props: Props) {
         query: projectQuery,
     });
 
-    const projectList = React.useMemo(
+    const projectList = useMemo(
         () => (
             projects
                 ? Object.values(projects)
@@ -72,7 +73,7 @@ function Projects(props: Props) {
         [projects],
     );
 
-    const filteredProjectList = React.useMemo(
+    const filteredProjectList = useMemo(
         () => rankedSearchOnList(
             projectList,
             searchText,

@@ -1,4 +1,10 @@
 import {
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
+import {
     IoChevronDown,
     IoChevronUp,
     IoOpenOutline,
@@ -63,17 +69,17 @@ function UserGroupItem(props: Props) {
         data,
     } = props;
 
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
     const mountedRef = useMountedRef();
 
-    const [userListPending, setUserListPending] = React.useState(false);
-    const [userList, setUserList] = React.useState<User[]>([]);
-    const [showDetails, setShowDetails] = React.useState(false);
+    const [userListPending, setUserListPending] = useState(false);
+    const [userList, setUserList] = useState<User[]>([]);
+    const [showDetails, setShowDetails] = useState(false);
 
-    const [archivePending, setArchivePending] = React.useState(false);
+    const [archivePending, setArchivePending] = useState(false);
     const isArchived = !!data.archivedBy || !!data.archivedAt;
 
-    const handleArchive = React.useCallback(
+    const handleArchive = useCallback(
         () => {
             async function submitToFirebase() {
                 setArchivePending(true);
@@ -106,7 +112,7 @@ function UserGroupItem(props: Props) {
         [groupKey, mountedRef, user?.id],
     );
 
-    const handleUnarchive = React.useCallback(
+    const handleUnarchive = useCallback(
         () => {
             async function submitToFirebase() {
                 setArchivePending(true);
@@ -153,7 +159,7 @@ function UserGroupItem(props: Props) {
         onDenyButtonClick: onUnarchiveDenyButtonClick,
     } = useConfirmation(handleUnarchive);
 
-    React.useEffect(
+    useEffect(
         () => {
             if (!showDetails) {
                 return;

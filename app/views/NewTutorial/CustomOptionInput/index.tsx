@@ -1,3 +1,7 @@
+import {
+    useCallback,
+    useMemo,
+} from 'react';
 import { MdAdd } from 'react-icons/md';
 import {
     Error,
@@ -62,12 +66,12 @@ export default function CustomOptionInput(props: Props) {
 
     const error = getErrorObject(riskyError);
 
-    const subOptionsError = React.useMemo(
+    const subOptionsError = useMemo(
         () => getErrorObject(error?.subOptions),
         [error?.subOptions],
     );
 
-    const handleSubOptionsAdd = React.useCallback(
+    const handleSubOptionsAdd = useCallback(
         () => {
             onOptionChange(
                 (oldValue: PartialCustomOptionsType['subOptions']) => {

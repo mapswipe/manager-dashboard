@@ -1,3 +1,8 @@
+import {
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
@@ -63,9 +68,9 @@ function Login(props: Props) {
     } = useForm(loginFormSchema, { value: defaultLoginFormValue });
     const error = getErrorObject(formError);
 
-    const [pending, setPending] = React.useState(false);
+    const [pending, setPending] = useState(false);
 
-    const handleFormSubmission = React.useCallback((finalValues: LoginFormFields) => {
+    const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
             if (!finalValues || !finalValues.email || !finalValues.password) {
                 // eslint-disable-next-line no-console
@@ -130,7 +135,7 @@ function Login(props: Props) {
         login();
     }, [mountedRef, setError]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );

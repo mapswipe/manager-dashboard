@@ -1,4 +1,10 @@
-import React, { useMemo } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import {
     IoCalendarOutline,
     IoClose,
@@ -75,6 +81,7 @@ function DateRenderer(props: DateRendererProps) {
 
     return (
         <CalendarDate
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
             className={_cs(
                 styles.calendarDate,
@@ -130,14 +137,14 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         placeholder,
     } = props;
 
-    const [tempDate, setTempDate] = React.useState<Partial<Value>>({
+    const [tempDate, setTempDate] = useState<Partial<Value>>({
         startDate: undefined,
         endDate: undefined,
     });
-    const [calendarMonthSelectionPopupClassName] = React.useState(randomString(16));
-    const createdContainerRef = React.useRef<HTMLDivElement>(null);
-    const createdInputSectionRef = React.useRef<HTMLDivElement>(null);
-    const popupRef = React.useRef<HTMLDivElement>(null);
+    const [calendarMonthSelectionPopupClassName] = useState(randomString(16));
+    const createdContainerRef = useRef<HTMLDivElement>(null);
+    const createdInputSectionRef = useRef<HTMLDivElement>(null);
+    const popupRef = useRef<HTMLDivElement>(null);
 
     const containerRef = containerRefFromProps ?? createdContainerRef;
     const inputSectionRef = inputSectionRefFromProps ?? createdInputSectionRef;
@@ -148,7 +155,7 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         toggleShowCalendar,
     ] = useBooleanState(false);
 
-    const hideCalendar = React.useCallback(() => {
+    const hideCalendar = useCallback(() => {
         setTempDate({
             startDate: undefined,
             endDate: undefined,
@@ -156,7 +163,7 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         setShowCalendarFalse();
     }, [setShowCalendarFalse]);
 
-    const handlePopupBlur = React.useCallback(
+    const handlePopupBlur = useCallback(
         (isClickedWithin: boolean, e: MouseEvent) => {
             // Following is to prevent the popup blur when
             // month selection is changed in the calendar
@@ -180,15 +187,15 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         inputSectionRef,
     );
 
-    const dateRendererParams = React.useCallback(() => ({
+    const dateRendererParams = useCallback(() => ({
         startDate: tempDate.startDate ?? value?.startDate,
         // we only set end date if user hasn't set the start date
         // i.e. to show previously selected end date)
         endDate: !tempDate.startDate ? value?.endDate : undefined,
     }), [tempDate.startDate, value]);
 
-    const handleCalendarDateClick: CalendarProps<CalendarDateProps>['onDateClick'] = React.useCallback(
-        (year, month, day) => {
+    const handleCalendarDateClick: CalendarProps<CalendarDateProps>['onDateClick'] = useCallback(
+        (year: number, month: number, day: number) => {
             setTempDate((prevTempDate) => {
                 if (isDefined(prevTempDate.startDate)) {
                     const lastDate = ymdToDateString(year, month, day);
@@ -214,7 +221,7 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         [],
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isDefined(tempDate.endDate)) {
             if (onChange) {
                 onChange(tempDate as Value, name);
@@ -223,7 +230,7 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         }
     }, [tempDate, hideCalendar, onChange, name]);
 
-    const handlePredefinedOptionClick = React.useCallback((optionKey: PredefinedDateRangeKey) => {
+    const handlePredefinedOptionClick = useCallback((optionKey: PredefinedDateRangeKey) => {
         if (onChange) {
             const option = predefinedDateRangeOptions.find((d) => d.key === optionKey);
 
@@ -251,7 +258,7 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         hideCalendar();
     }, [onChange, hideCalendar, name]);
 
-    const handleClearButtonClick = React.useCallback(() => {
+    const handleClearButtonClick = useCallback(() => {
         if (onChange) {
             onChange(undefined, name);
         }

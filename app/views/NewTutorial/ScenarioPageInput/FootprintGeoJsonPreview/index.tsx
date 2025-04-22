@@ -18,7 +18,7 @@ import {
 import styles from './styles.module.css';
 
 // NOTE: the padding is selected wrt the size of the preview
-const footprintGeojsonPadding = [140, 140];
+const footprintGeojsonPadding: [number, number] = [140, 140];
 
 interface Props {
     className?: string;

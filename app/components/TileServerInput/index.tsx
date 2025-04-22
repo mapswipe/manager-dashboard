@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
     addCondition,
     Error,
@@ -152,7 +153,7 @@ function TileServerInput<Name extends string | number>(props: Props<Name>) {
     const setFieldValue = useFormObject(name, onChange, defaultValue);
     const error = getErrorObject(formError);
 
-    const handleTileServerChange = React.useCallback(
+    const handleTileServerChange = useCallback(
         (val: TileServerType | undefined) => {
             onChange(
                 (oldValue) => {

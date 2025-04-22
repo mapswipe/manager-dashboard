@@ -1,4 +1,8 @@
 import {
+    useMemo,
+    useState,
+} from 'react';
+import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
@@ -49,8 +53,8 @@ function TeamItem(props: Props) {
         teamId,
     } = props;
 
-    const [showDetails, setShowDetails] = React.useState(false);
-    const teamMembersQuery = React.useMemo(
+    const [showDetails, setShowDetails] = useState(false);
+    const teamMembersQuery = useMemo(
         () => {
             const db = getDatabase();
             return query(
@@ -70,7 +74,7 @@ function TeamItem(props: Props) {
         query: teamMembersQuery,
     });
 
-    const teamMemberList = React.useMemo(
+    const teamMemberList = useMemo(
         () => (teamMembers ? Object.entries(teamMembers) : []),
         [teamMembers],
     );

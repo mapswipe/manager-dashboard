@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.module.css';
@@ -24,7 +25,7 @@ function RawButton<N>(props: Props<N>) {
         ...otherProps
     } = props;
 
-    const handleClick = React.useCallback(
+    const handleClick = useCallback(
         (e: React.MouseEvent<HTMLButtonElement>) => {
             if (onClick) {
                 onClick(name, e);
@@ -41,6 +42,7 @@ function RawButton<N>(props: Props<N>) {
             disabled={disabled}
             onClick={onClick ? handleClick : undefined}
             name={typeof name === 'string' ? name : undefined}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         >
             { children }

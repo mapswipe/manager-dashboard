@@ -1,4 +1,10 @@
 import {
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
+import {
     MdOutlinePublishedWithChanges,
     MdOutlineUnpublished,
 } from 'react-icons/md';
@@ -84,13 +90,13 @@ function UserGroupFormModal(props: Props) {
     } = useForm(userGroupFormSchema, { value: defaultUserGroupFormValue });
 
     const mountedRef = useMountedRef();
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const error = getErrorObject(formError);
-    const [submissionStatus, setSubmissionStatus] = React.useState<'pending' | 'success' | 'failed' | undefined>(undefined);
-    const [nonFieldError, setNonFieldError] = React.useState<string | undefined>();
+    const [submissionStatus, setSubmissionStatus] = useState<'pending' | 'success' | 'failed' | undefined>(undefined);
+    const [nonFieldError, setNonFieldError] = useState<string | undefined>();
 
-    const handleFormSubmission = React.useCallback((finalValues: UserGroupFormFields) => {
+    const handleFormSubmission = useCallback((finalValues: UserGroupFormFields) => {
         async function submitToFirebase() {
             setSubmissionStatus('pending');
             try {
@@ -154,7 +160,7 @@ function UserGroupFormModal(props: Props) {
         submitToFirebase();
     }, [user, setError, mountedRef]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );

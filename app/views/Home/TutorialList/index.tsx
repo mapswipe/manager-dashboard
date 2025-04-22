@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import { _cs } from '@togglecorp/fujs';
 import {
@@ -33,7 +34,7 @@ interface Props {
 
 function TutorialList(props: Props) {
     const { className, searchText } = props;
-    const tutorialsQuery = React.useMemo(
+    const tutorialsQuery = useMemo(
         () => {
             const db = getDatabase();
             return query(
@@ -52,12 +53,12 @@ function TutorialList(props: Props) {
         query: tutorialsQuery,
     });
 
-    const tutorialList = React.useMemo(
+    const tutorialList = useMemo(
         () => (tutorials ? Object.entries(tutorials).reverse() : []),
         [tutorials],
     );
 
-    const filteredTutorialList = React.useMemo(
+    const filteredTutorialList = useMemo(
         () => rankedSearchOnList(
             tutorialList,
             searchText,

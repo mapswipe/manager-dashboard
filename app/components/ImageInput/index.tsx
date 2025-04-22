@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 import FileInput, { Props as FileInputProps } from '#components/FileInput';
 
 function readFileAsDataURL(data: File) {
@@ -28,7 +30,7 @@ function ImageInput<Name>(props: Props<Name>) {
         ...otherProps
     } = props;
 
-    const handleChange: typeof onChange = React.useCallback(
+    const handleChange: typeof onChange = useCallback(
         async (newValue, name) => {
             if (!onChange) {
                 return;
@@ -87,6 +89,7 @@ function ImageInput<Name>(props: Props<Name>) {
         <FileInput
             onChange={handleChange}
             accept="image/png, image/jpeg"
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         />
     );

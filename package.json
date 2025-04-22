@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Manager Dashboard for the MapSwipe",
     "type": "module",
-    "license": "MIT",
+    "license": "ISC",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/mapswipe/python-mapswipe-workers.git"
@@ -11,7 +11,7 @@
     "scripts": {
         "generate:type": "dotenv -- cross-var openapi-typescript \"%APP_API_ENDPOINT%api-docs/\" -o ./generated/types.ts --alphabetize",
         "prestart": "pnpm initialize:type",
-        "initialize:type": "echo 'TODO: implement type initialization'",
+        "initialize:type": "mkdir -p generated/ && test -f ./generated/types.ts && true || cp types.stub.ts ./generated/types.ts",
         "start": "vite",
         "build": "vite build",
         "preview": "vite preview",
@@ -105,5 +105,11 @@
         "node": "20",
         "pnpm": "10.6.1"
     },
-    "packageManager": "pnpm@10.6.1+sha512.40ee09af407fa9fbb5fbfb8e1cb40fbb74c0af0c3e10e9224d7b53c7658528615b2c92450e74cfad91e3a2dcafe3ce4050d80bda71d757756d2ce2b66213e9a3"
+    "packageManager": "pnpm@10.6.1+sha512.40ee09af407fa9fbb5fbfb8e1cb40fbb74c0af0c3e10e9224d7b53c7658528615b2c92450e74cfad91e3a2dcafe3ce4050d80bda71d757756d2ce2b66213e9a3",
+    "pnpm": {
+        "patchedDependencies": {
+            "@turf/area": "patches/@turf__area.patch",
+            "@turf/invariant": "patches/@turf__invariant.patch"
+        }
+    }
 }

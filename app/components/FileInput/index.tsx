@@ -1,3 +1,7 @@
+import {
+    useCallback,
+    useState,
+} from 'react';
 import { MdAttachFile } from 'react-icons/md';
 import {
     _cs,
@@ -45,7 +49,7 @@ function FileInput<Name>(props: Props<Name>) {
         descriptionContainerClassName,
     } = props;
 
-    const [inputId] = React.useState(randomString);
+    const [inputId] = useState(randomString);
     const labelProps = useButtonFeatures({
         children: (
             <>
@@ -60,7 +64,7 @@ function FileInput<Name>(props: Props<Name>) {
 
     const status = value?.name ?? 'No file chosen';
 
-    const handleFiles = React.useCallback(
+    const handleFiles = useCallback(
         (files: FileList | null) => {
             if (!files || !onChange) {
                 return;
@@ -74,7 +78,7 @@ function FileInput<Name>(props: Props<Name>) {
         [onChange, name],
     );
 
-    const handleChange = React.useCallback((
+    const handleChange = useCallback((
         _: string | undefined,
         __: Name,
         e?: React.FormEvent<HTMLInputElement>,
@@ -102,6 +106,7 @@ function FileInput<Name>(props: Props<Name>) {
                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label
                         htmlFor={inputId}
+                        // eslint-disable-next-line react/jsx-props-no-spreading
                         {...labelProps}
                     />
                 </>

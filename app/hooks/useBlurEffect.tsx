@@ -1,10 +1,12 @@
+import { useEffect } from 'react';
+
 function useBlurEffect(
     shouldWatch: boolean,
     callback: (isClickedWithin: boolean, e: MouseEvent) => void,
     elementRef: React.RefObject<HTMLElement>,
     parentRef: React.RefObject<HTMLElement>,
 ) {
-    React.useEffect(
+    useEffect(
         () => {
             if (!shouldWatch) {
                 return undefined;

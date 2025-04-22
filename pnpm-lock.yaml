@@ -4,6 +4,14 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@turf/area':
+    hash: 61a921270f15ff243bcf07643bc23e74939ba2fd6a1553ecf95dc6fa46210c24
+    path: patches/@turf__area.patch
+  '@turf/invariant':
+    hash: 53dc109ce9cbf49226f25b78e5d932ea8c4561d1fe2903a92515f28cd92b21d7
+    path: patches/@turf__invariant.patch
+
 importers:
 
   .:
@@ -34,10 +42,10 @@ importers:
         version: 2.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@turf/area':
         specifier: ^6.5.0
-        version: 6.5.0
+        version: 6.5.0(patch_hash=61a921270f15ff243bcf07643bc23e74939ba2fd6a1553ecf95dc6fa46210c24)
       '@turf/invariant':
         specifier: ^6.5.0
-        version: 6.5.0
+        version: 6.5.0(patch_hash=53dc109ce9cbf49226f25b78e5d932ea8c4561d1fe2903a92515f28cd92b21d7)
       apollo-link:
         specifier: ^1.2.14
         version: 1.2.14(graphql@16.10.0)
@@ -6991,14 +6999,14 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@turf/area@6.5.0':
+  '@turf/area@6.5.0(patch_hash=61a921270f15ff243bcf07643bc23e74939ba2fd6a1553ecf95dc6fa46210c24)':
     dependencies:
       '@turf/helpers': 6.5.0
       '@turf/meta': 6.5.0
 
   '@turf/helpers@6.5.0': {}
 
-  '@turf/invariant@6.5.0':
+  '@turf/invariant@6.5.0(patch_hash=53dc109ce9cbf49226f25b78e5d932ea8c4561d1fe2903a92515f28cd92b21d7)':
     dependencies:
       '@turf/helpers': 6.5.0
 

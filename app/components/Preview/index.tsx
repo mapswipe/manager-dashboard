@@ -1,3 +1,7 @@
+import {
+    useEffect,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.module.css';
@@ -14,9 +18,9 @@ function Preview(props: PreviewProps) {
     } = props;
 
     const isPreviewable = file?.name?.match(/.(jpg|jpeg|png|gif)$/i) ?? false;
-    const [imageUrl, setImageUrl] = React.useState<string>();
+    const [imageUrl, setImageUrl] = useState<string>();
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!file) {
             return undefined;
         }

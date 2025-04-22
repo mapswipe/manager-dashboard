@@ -68,8 +68,8 @@ export type SelectInputContainerProps<
     onFocusedChange: (value: boolean) => void;
     focusedKey: { key: OK, mouse?: boolean } | undefined;
     onFocusedKeyChange: (value: { key: OK, mouse?: boolean } | undefined) => void;
-    searchText: string;
-    onSearchTextChange: (search: string) => void;
+    searchText: string | undefined;
+    onSearchTextChange: (search: string | undefined) => void;
     optionContainerClassName?: string;
     optionKeySelector: (datum: O, index: number) => OK;
     optionRenderer: (props: Pick<P, Exclude<keyof P, 'containerClassName' | 'title'>>) => React.ReactNode;
@@ -167,10 +167,11 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
     );
 
     const handleSearchInputChange = useCallback(
-        (value) => {
+        (value: string | undefined) => {
             if (!dropdownShown) {
                 onDropdownShownChange(true);
             }
+
             onSearchTextChange(value);
         },
         [
@@ -242,7 +243,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
     );
 
     const optionListRendererParams = useCallback(
-        (key, option) => ({
+        (key: OK, option: O) => ({
             contentRendererParam: optionRendererParams,
             option,
             optionKey: key,

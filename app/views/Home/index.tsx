@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
     IoChevronDown,
     IoChevronUp,
@@ -33,8 +34,8 @@ function Home(props: Props) {
     ] = useBooleanState(false);
 
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
-    const [showOrganisationList, setShowOrganisationList] = React.useState(false);
-    const [showTutorialList, setShowTutorialList] = React.useState(false);
+    const [showOrganisationList, setShowOrganisationList] = useState(false);
+    const [showTutorialList, setShowTutorialList] = useState(false);
 
     return (
         <div className={_cs(styles.home, className)}>

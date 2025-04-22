@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { IconType } from 'react-icons';
 import {
     IoAddOutline,
@@ -338,4 +339,4 @@ export function dateStringToDate(value: string) {
     return new Date(`${value}T00:00`);
 }
 
-export const typedMemo: (<T>(c: T) => T) = React.memo;
+export const typedMemo: (<T>(c: T) => T) = memo;

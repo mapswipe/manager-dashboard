@@ -1,5 +1,5 @@
+import { useMemo } from 'react';
 import { MdSearch } from 'react-icons/md';
-// isNotDefined,
 import { _cs } from '@togglecorp/fujs';
 import {
     getDatabase,
@@ -37,7 +37,7 @@ function UserGroups(props: Props) {
         setShowNewUserGroupModalFalse,
     ] = useBooleanState(false);
 
-    const userGroupsQuery = React.useMemo(
+    const userGroupsQuery = useMemo(
         () => {
             const db = getDatabase();
             return ref(db, '/v2/userGroups');
@@ -52,14 +52,14 @@ function UserGroups(props: Props) {
         query: userGroupsQuery,
     });
 
-    const userGroupList = React.useMemo(
+    const userGroupList = useMemo(
         () => {
             const list = userGroups ? Object.entries(userGroups).reverse() : [];
             return list;
         },
         [userGroups],
     );
-    const filteredUserGroupList = React.useMemo(
+    const filteredUserGroupList = useMemo(
         () => rankedSearchOnList(
             userGroupList,
             searchText,

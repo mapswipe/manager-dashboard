@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
@@ -43,7 +44,7 @@ function SegmentInput<
         readOnly,
     } = props;
 
-    const handleSegmentClick = React.useCallback((newValue: Value) => {
+    const handleSegmentClick = useCallback((newValue: Value) => {
         onChange(newValue, name);
     }, [onChange, name]);
 

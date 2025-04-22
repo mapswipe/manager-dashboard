@@ -1,3 +1,9 @@
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Portal from '#components/Portal';
@@ -81,7 +87,7 @@ function getFloatPlacement(parentRef: React.RefObject<HTMLElement>): FloatingPla
 }
 
 function useAttachedFloatingPlacement(parentRef: React.RefObject<HTMLElement>) {
-    const [placement, setPlacement] = React.useState<FloatingPlacementProps>({
+    const [placement, setPlacement] = useState<FloatingPlacementProps>({
         placement: defaultPlacement,
         width: 'auto',
         maxHeight: 'auto',
@@ -89,21 +95,21 @@ function useAttachedFloatingPlacement(parentRef: React.RefObject<HTMLElement>) {
         verticalPosition: 'top',
     });
 
-    React.useLayoutEffect(() => {
+    useLayoutEffect(() => {
         setPlacement(getFloatPlacement(parentRef));
     }, [setPlacement, parentRef]);
 
     // FIXME: throttle
-    const handleScroll = React.useCallback(() => {
+    const handleScroll = useCallback(() => {
         setPlacement(getFloatPlacement(parentRef));
     }, [setPlacement, parentRef]);
 
     // FIXME: throttle
-    const handleResize = React.useCallback(() => {
+    const handleResize = useCallback(() => {
         setPlacement(getFloatPlacement(parentRef));
     }, [setPlacement, parentRef]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener('scroll', handleScroll, true);
         window.addEventListener('resize', handleResize, true);
 

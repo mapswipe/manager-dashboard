@@ -300,7 +300,7 @@ export const projectFormSchema: ProjectFormSchema = {
             },
             samplingThreshold: {
                 required: false,
-                validation: [
+                validations: [
                     greaterThanCondition(0),
                 ],
             },

@@ -1,4 +1,9 @@
 import {
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
+import {
     Error,
     getErrorObject,
     PartialForm,
@@ -103,7 +108,7 @@ export default function ScenarioPageInput(props: Props) {
         lookFor,
     } = props;
 
-    const [activeSegmentInputFromState, setActiveInput] = React.useState<ScenarioSegmentType['value']>('instructions');
+    const [activeSegmentInputFromState, setActiveInput] = useState<ScenarioSegmentType['value']>('instructions');
 
     const onFieldChange = useFormObject(
         index,
@@ -127,7 +132,7 @@ export default function ScenarioPageInput(props: Props) {
         {},
     );
 
-    const handleInstructionFieldChange = React.useCallback<typeof onInstructionFieldChange>(
+    const handleInstructionFieldChange = useCallback<typeof onInstructionFieldChange>(
         (...args) => {
             setActiveInput('instructions');
             onInstructionFieldChange(...args);
@@ -135,7 +140,7 @@ export default function ScenarioPageInput(props: Props) {
         [onInstructionFieldChange],
     );
 
-    const handleHintFieldChange = React.useCallback<typeof onHintFieldChange>(
+    const handleHintFieldChange = useCallback<typeof onHintFieldChange>(
         (...args) => {
             setActiveInput('hint');
             onHintFieldChange(...args);
@@ -143,7 +148,7 @@ export default function ScenarioPageInput(props: Props) {
         [onHintFieldChange],
     );
 
-    const handleSuccessFieldChange = React.useCallback<typeof onSuccessFieldChange>(
+    const handleSuccessFieldChange = useCallback<typeof onSuccessFieldChange>(
         (...args) => {
             setActiveInput('success');
             onSuccessFieldChange(...args);
@@ -156,7 +161,7 @@ export default function ScenarioPageInput(props: Props) {
     const hintError = getErrorObject(error?.hint);
     const successError = getErrorObject(error?.success);
 
-    const geoJson = React.useMemo(
+    const geoJson = useMemo(
         () => {
             if (!geoJsonFromProps) {
                 return undefined;

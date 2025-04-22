@@ -1,4 +1,10 @@
 import {
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
+import {
     MdOutlinePublishedWithChanges,
     MdOutlineUnpublished,
 } from 'react-icons/md';
@@ -117,7 +123,7 @@ function NewProject(props: Props) {
         className,
     } = props;
 
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const mountedRef = useMountedRef();
 
@@ -132,21 +138,21 @@ function NewProject(props: Props) {
         value: defaultProjectFormValue,
     });
 
-    const [testPending, setTestPending] = React.useState(false);
-    const [geometryDescription, setGeometryDescription] = React.useState<string>();
-    const [TMIdDescription, setTMIdDescription] = React.useState<string>();
+    const [testPending, setTestPending] = useState(false);
+    const [geometryDescription, setGeometryDescription] = useState<string>();
+    const [TMIdDescription, setTMIdDescription] = useState<string>();
 
     const [
         projectSubmissionStatus,
         setProjectSubmissionStatus,
-    ] = React.useState<'started' | 'imageUpload' | 'projectSubmit' | 'success' | 'failed' | undefined>();
+    ] = useState<'started' | 'imageUpload' | 'projectSubmit' | 'success' | 'failed' | undefined>();
 
-    const error = React.useMemo(
+    const error = useMemo(
         () => getErrorObject(formError),
         [formError],
     );
 
-    const handleProjectTypeChange = React.useCallback(
+    const handleProjectTypeChange = useCallback(
         (projectType: ProjectType | undefined) => {
             setValue((oldVal) => ({
                 ...oldVal,
@@ -167,7 +173,7 @@ function NewProject(props: Props) {
         [setValue],
     );
 
-    const handleInputTypeChange = React.useCallback(
+    const handleInputTypeChange = useCallback(
         (inputType: ProjectInputType | undefined) => {
             setValue((oldVal) => ({
                 ...oldVal,
@@ -182,7 +188,7 @@ function NewProject(props: Props) {
         [setValue],
     );
 
-    const setFieldValueAndClearTestMessage: typeof setFieldValue = React.useCallback(
+    const setFieldValueAndClearTestMessage: typeof setFieldValue = useCallback(
         (...params) => {
             setFieldValue(...params);
             setGeometryDescription(undefined);
@@ -191,7 +197,7 @@ function NewProject(props: Props) {
         [setFieldValue],
     );
 
-    const handleTestAoi = React.useCallback(() => {
+    const handleTestAoi = useCallback(() => {
         const finalValues = value;
         async function submitToFirebase() {
             if (!mountedRef.current) {
@@ -251,7 +257,7 @@ function NewProject(props: Props) {
         submitToFirebase();
     }, [mountedRef, setError, value]);
 
-    const handleFormSubmission = React.useCallback((
+    const handleFormSubmission = useCallback((
         finalValuesFromProps: PartialProjectFormType,
     ) => {
         const userId = user?.id;
@@ -407,12 +413,12 @@ function NewProject(props: Props) {
         submitToFirebase();
     }, [user, mountedRef, setError]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
 
-    const hasErrors = React.useMemo(
+    const hasErrors = useMemo(
         () => analyzeErrors(error),
         [error],
     );
@@ -435,7 +441,7 @@ function NewProject(props: Props) {
 
     const { customOptions: customOptionsFromValue } = value;
 
-    const customOptions = React.useMemo(() => (customOptionsFromValue?.map((option) => ({
+    const customOptions = useMemo(() => (customOptionsFromValue?.map((option) => ({
         ...option,
         optionId: option.value,
         subOptions: option.subOptions?.map((subOption) => ({
@@ -444,7 +450,7 @@ function NewProject(props: Props) {
         })),
     }))), [customOptionsFromValue]);
 
-    const optionsError = React.useMemo(
+    const optionsError = useMemo(
         () => getErrorObject(error?.customOptions),
         [error?.customOptions],
     );

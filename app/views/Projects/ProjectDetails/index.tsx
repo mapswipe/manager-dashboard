@@ -1,4 +1,8 @@
 import {
+    useCallback,
+    useState,
+} from 'react';
+import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
@@ -105,13 +109,13 @@ function ProjectDetails(props: Props) {
         data,
     } = props;
 
-    const [detailsShown, setDetailsShown] = React.useState(false);
-    const [statusUpdatePending, setStatusUpdatePending] = React.useState(false);
-    const [featuredUpdatePending, setFeaturedUpdatePending] = React.useState(false);
+    const [detailsShown, setDetailsShown] = useState(false);
+    const [statusUpdatePending, setStatusUpdatePending] = useState(false);
+    const [featuredUpdatePending, setFeaturedUpdatePending] = useState(false);
 
     const mountedRef = useMountedRef();
 
-    const updateStatus = React.useCallback(
+    const updateStatus = useCallback(
         async (newStatus: ProjectStatus) => {
             setStatusUpdatePending(true);
             const db = getDatabase();
@@ -139,7 +143,7 @@ function ProjectDetails(props: Props) {
         [data.projectId, mountedRef],
     );
 
-    const updateFeatured = React.useCallback(
+    const updateFeatured = useCallback(
         async (newValue: boolean) => {
             setFeaturedUpdatePending(true);
             const db = getDatabase();

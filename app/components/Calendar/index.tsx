@@ -1,4 +1,8 @@
 import {
+    useCallback,
+    useMemo,
+} from 'react';
+import {
     IoCalendarOutline,
     IoChevronBack,
     IoChevronForward,
@@ -11,7 +15,6 @@ import {
 } from '@togglecorp/fujs';
 
 import useInputState from '../../hooks/useInputState';
-import { typedMemo } from '../../utils/common.tsx';
 import Button from '../Button';
 import NumberInput from '../NumberInput';
 import SelectInput from '../SelectInput';
@@ -132,13 +135,13 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
 
     const dates = year ? getDates(year, month) : undefined;
 
-    const handleGotoCurrentButtonClick = React.useCallback(() => {
+    const handleGotoCurrentButtonClick = useCallback(() => {
         const date = new Date();
         setYear(date.getFullYear());
         setMonth(date.getMonth());
     }, [setMonth, setYear]);
 
-    const handleNextMonthButtonClick = React.useCallback(() => {
+    const handleNextMonthButtonClick = useCallback(() => {
         if (isDefined(year)) {
             const date = new Date(year, month + 1, 1);
             setYear(date.getFullYear());
@@ -146,7 +149,7 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
         }
     }, [year, month, setMonth, setYear]);
 
-    const handlePreviousMonthButtonClick = React.useCallback(() => {
+    const handlePreviousMonthButtonClick = useCallback(() => {
         if (isDefined(year)) {
             const date = new Date(year, month - 1, 1);
             setYear(date.getFullYear());
@@ -154,7 +157,7 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
         }
     }, [year, month, setMonth, setYear]);
 
-    const isValidYear = React.useMemo(() => {
+    const isValidYear = useMemo(() => {
         if (isNotDefined(year)) {
             return false;
         }
@@ -239,6 +242,7 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
 
                         const children = (
                             <DateRenderer
+                                // eslint-disable-next-line react/jsx-props-no-spreading
                                 {...combinedProps}
                             />
                         );
@@ -288,4 +292,4 @@ function Calendar<P extends CalendarDateProps>(props: Props<P>) {
     );
 }
 
-export default typedMemo(Calendar);
+export default Calendar;

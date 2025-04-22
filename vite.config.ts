@@ -59,13 +59,6 @@ export default defineConfig(({ mode }) => {
         build: {
             outDir: 'build',
             sourcemap: isProd,
-            rollupOptions: {
-                output: {
-                    manualChunks: {
-                        'mapbox-gl': ['mapbox-gl'],
-                    }
-                },
-            },
         },
         test: {
             environment: 'happy-dom',

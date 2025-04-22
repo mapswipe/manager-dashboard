@@ -1,3 +1,8 @@
+import {
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { CgOrganisation } from 'react-icons/cg';
 import { IoTrashBin } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
@@ -28,10 +33,10 @@ interface Props {
 
 function OrganisationList(props: Props) {
     const { className } = props;
-    const [orgKeyToRemove, setOrgKeyToRemove] = React.useState<string | undefined>(undefined);
-    const [removePending, setRemovePending] = React.useState(false);
+    const [orgKeyToRemove, setOrgKeyToRemove] = useState<string | undefined>(undefined);
+    const [removePending, setRemovePending] = useState(false);
 
-    const organisationsQuery = React.useMemo(
+    const organisationsQuery = useMemo(
         () => {
             const db = getDatabase();
             return ref(db, '/v2/organisations');
@@ -46,12 +51,12 @@ function OrganisationList(props: Props) {
         query: organisationsQuery,
     });
 
-    const organisationList = React.useMemo(
+    const organisationList = useMemo(
         () => (organisations ? Object.entries(organisations).reverse() : []),
         [organisations],
     );
 
-    const removeOrganisation = React.useCallback(
+    const removeOrganisation = useCallback(
         async (orgKey: string) => {
             const db = getDatabase();
             const updates = {

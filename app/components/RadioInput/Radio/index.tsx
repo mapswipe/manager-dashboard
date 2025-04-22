@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
     IoRadioButtonOff,
     IoRadioButtonOn,
@@ -29,7 +30,7 @@ function Radio<N>(props: Props<N>) {
         readOnly,
     } = props;
 
-    const handleClick = React.useCallback(() => {
+    const handleClick = useCallback(() => {
         if (onClick) {
             onClick(name);
         }

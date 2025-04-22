@@ -2,7 +2,7 @@ import { createContext } from 'react';
 
 import { User } from '#base/types/user';
 
-interface UserContextInterface {
+export interface UserContextInterface {
     user: User | undefined;
     setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
     authenticated: boolean,

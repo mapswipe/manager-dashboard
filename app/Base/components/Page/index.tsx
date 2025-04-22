@@ -4,7 +4,6 @@ import React, {
 } from 'react';
 import { redirect } from 'react-router';
 
-import ErrorBoundary from '#base/components/ErrorBoundary';
 import PageTitle from '#base/components/PageTitle';
 import PreloadMessage from '#base/components/PreloadMessage';
 import NavbarContext from '#base/context/NavbarContext';
@@ -103,15 +102,13 @@ function Page<T extends { className?: string }>(props: Props<T>) {
     return (
         <>
             <PageTitle value={title} />
-            <ErrorBoundary>
-                <Comp
-                    className={styles.page}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...componentProps}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...overrideProps}
-                />
-            </ErrorBoundary>
+            <Comp
+                className={styles.page}
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...componentProps}
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...overrideProps}
+            />
         </>
     );
 }

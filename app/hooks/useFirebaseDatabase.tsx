@@ -1,4 +1,9 @@
 import {
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import {
     DataSnapshot,
     onValue,
     Query,
@@ -11,10 +16,10 @@ function useFirebaseDatabase<T = unknown>({
     query: Query;
     skip?: boolean;
 }) {
-    const [pending, setPending] = React.useState(!skip);
-    const [data, setData] = React.useState<Record<string, T>>();
+    const [pending, setPending] = useState(!skip);
+    const [data, setData] = useState<Record<string, T>>();
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (skip) {
             return undefined;
         }
@@ -45,7 +50,7 @@ function useFirebaseDatabase<T = unknown>({
         };
     }, [query, skip]);
 
-    const returnValue = React.useMemo(() => ({
+    const returnValue = useMemo(() => ({
         data,
         pending,
     }), [data, pending]);

@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
@@ -41,7 +42,7 @@ function RadioInput<
         listContainerClassName,
     } = props;
 
-    const handleRadioClick = React.useCallback((radioKey) => {
+    const handleRadioClick = useCallback((radioKey: V) => {
         if (onChange && !readOnly) {
             onChange(radioKey, name);
         }

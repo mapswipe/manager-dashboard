@@ -1,3 +1,8 @@
+import {
+    useCallback,
+    useContext,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { getAuth } from 'firebase/auth';
 
@@ -19,12 +24,12 @@ function Navbar(props: Props) {
     const {
         user,
         setUser,
-    } = React.useContext(UserContext);
+    } = useContext(UserContext);
     const mountedRef = useMountedRef();
 
-    const [logoutPending, setLogoutPending] = React.useState(false);
+    const [logoutPending, setLogoutPending] = useState(false);
 
-    const handleLogoutClick = React.useCallback(async () => {
+    const handleLogoutClick = useCallback(async () => {
         setLogoutPending(true);
         const auth = getAuth();
 
