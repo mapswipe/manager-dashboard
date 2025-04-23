@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import webfontDownload from 'vite-plugin-webfont-dl';
 import reactSwc from '@vitejs/plugin-react-swc';
@@ -6,7 +6,6 @@ import { execSync } from 'child_process';
 import { compression } from 'vite-plugin-compression2';
 import checker from 'vite-plugin-checker';
 import { ValidateEnv as validateEnv } from '@julr/vite-plugin-validate-env';
-import { VitePluginRadar } from 'vite-plugin-radar';
 
 import managerDashboardPackage from './package.json';
 
@@ -15,7 +14,6 @@ const commitHash = execSync('git rev-parse --short HEAD').toString();
 
 export default defineConfig(({ mode }) => {
     const isProd = mode === 'production';
-    const env = loadEnv(mode, process.cwd(), '')
 
     return {
         define: {
@@ -38,11 +36,6 @@ export default defineConfig(({ mode }) => {
             webfontDownload(),
             validateEnv(),
             isProd ? compression() : undefined,
-            VitePluginRadar({
-                analytics: {
-                    id: env.APP_GOOGLE_ANALYTICS_ID,
-                },
-            })
         ],
         css: {
             devSourcemap: isProd,

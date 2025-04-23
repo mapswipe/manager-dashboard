@@ -2,9 +2,6 @@ import { defineConfig, Schema } from '@julr/vite-plugin-validate-env';
 
 // TODO: Integrate .env for CI and remove optional() call on required fields
 export default defineConfig({
-    // Used in vite
-    REACT_APP_GOOGLE_ANALYTICS_ID: Schema.string.optional(),
-
     REACT_APP_SENTRY_DSN: Schema.string.optional(),
     REACT_APP_SENTRY_TRACES_SAMPLE_RATE: Schema.string.optional(),
 
@@ -32,4 +29,3 @@ export default defineConfig({
     REACT_APP_COMMIT_HASH: Schema.string.optional(),
     REACT_APP_VERSION: Schema.string.optional(),
 })
-
