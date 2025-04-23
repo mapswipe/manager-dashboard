@@ -1,22 +1,21 @@
-import { useMemo } from 'react';
 import { MdSearch } from 'react-icons/md';
-import { _cs } from '@togglecorp/fujs';
 import {
-    equalTo,
-    getDatabase,
-    orderByChild,
-    query,
-    ref,
-} from 'firebase/database';
+    gql,
+    useQuery,
+} from '@apollo/client';
+import { _cs } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import route from '#base/configs/routes';
 import Pager from '#components/Pager';
 import PendingMessage from '#components/PendingMessage';
 import RadioInput from '#components/RadioInput';
-import { rankedSearchOnList } from '#components/SelectInput/utils';
 import TextInput from '#components/TextInput';
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
+import {
+    ProjectsListQuery,
+    ProjectsListQueryVariables,
+} from '#generated/types/graphql';
+import useDebouncedValue from '#hooks/useDebouncedValue';
 import useInputState from '#hooks/useInputState';
 import usePagination from '#hooks/usePagination';
 import {
@@ -24,12 +23,49 @@ import {
     valueSelector,
 } from '#utils/common';
 
-import ProjectDetails, {
-    Project,
-    projectStatusOptions,
-} from './ProjectDetails';
+import ProjectDetails, { projectStatusOptions } from './ProjectDetails';
 
 import styles from './styles.module.css';
+
+const PROJECT_LIST_QUERY = gql`
+query ProjectsList($search: String, $offset: Int!, $limit: Int) {
+    projects(pagination: {offset: $offset, limit: $limit}, filters: {name: {iContains: $search}}) {
+        totalCount
+        results {
+            id
+            name
+            projectType
+            projectTypeSpecifics {
+                ... on CompareProjectPropertyType {
+                    __typename
+                    zoomLevel
+                    tileServerProperty {
+                        name
+                    }
+                    tileServerBProperty {
+                        name
+                    }
+                }
+                ... on FindProjectPropertyType {
+                    __typename
+                    zoomLevel
+                    tileServerProperty {
+                        name
+                    }
+                }
+            }
+            requestingOrganization {
+                name
+                id
+            }
+        }
+        pageInfo {
+            limit
+            offset
+        }
+    }
+}
+`;
 
 interface Props {
     className?: string;
@@ -43,44 +79,23 @@ function Projects(props: Props) {
     const [selectedProjectStat, setSelectedProjectStat] = useInputState<string>('active');
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
-    const projectQuery = useMemo(
-        () => {
-            const db = getDatabase();
-            return query(
-                ref(db, '/v2/projects'),
-                orderByChild('status'),
-                equalTo(selectedProjectStat),
-            );
-        },
-        [selectedProjectStat],
-    );
+    const debouncedSearchText = useDebouncedValue(searchText);
 
     const {
-        data: projects,
-        pending,
-    } = useFirebaseDatabase<Project>({
-        query: projectQuery,
-    });
-
-    const projectList = useMemo(
-        () => (
-            projects
-                ? Object.values(projects)
-                    .filter((project) => !!project.projectId && project.status !== 'tutorial')
-                    .reverse()
-                : []
-        ),
-        [projects],
+        data: projectsResponse,
+        loading: pending,
+    } = useQuery<ProjectsListQuery, ProjectsListQueryVariables>(
+        PROJECT_LIST_QUERY,
+        {
+            variables: {
+                search: debouncedSearchText,
+                offset: 0,
+                limit: 10,
+            },
+        },
     );
 
-    const filteredProjectList = useMemo(
-        () => rankedSearchOnList(
-            projectList,
-            searchText,
-            (project) => project.name,
-        ),
-        [projectList, searchText],
-    );
+    const filteredProjectList = projectsResponse?.projects.results ?? [];
 
     const {
         showPager,
@@ -154,7 +169,7 @@ function Projects(props: Props) {
                     )}
                     {!pending && filteredProjectListInCurrentPage.map((project) => (
                         <ProjectDetails
-                            key={project.projectId}
+                            key={project.id}
                             data={project}
                         />
                     ))}

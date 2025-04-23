@@ -1,12 +1,17 @@
 import {
     useCallback,
+    useContext,
     useMemo,
 } from 'react';
 import {
+    ApolloError,
     gql,
     useMutation,
 } from '@apollo/client';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 import {
     createSubmitHandler,
     getErrorObject,
@@ -16,6 +21,7 @@ import {
     useForm,
 } from '@togglecorp/toggle-form';
 
+import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
 import {
@@ -66,6 +72,8 @@ function Login(props: Props) {
         className,
     } = props;
 
+    const { setUser } = useContext(UserContext);
+
     const {
         setFieldValue,
         error: formError,
@@ -73,6 +81,7 @@ function Login(props: Props) {
         validate,
         setError,
     } = useForm(loginFormSchema, { value: defaultLoginFormValue });
+
     const error = getErrorObject(formError);
 
     const [
@@ -88,68 +97,29 @@ function Login(props: Props) {
                 return;
             }
 
-            loginToGql({
-                variables: { username: finalValues.email, password: finalValues.password },
-            });
-
-            /*
             try {
-                setPending(true);
+                const result = await loginToGql({
+                    variables: { username: finalValues.email, password: finalValues.password },
+                });
 
-                const auth = getAuth();
-                await signInWithEmailAndPassword(
-                    auth,
-                    finalValues.email as string,
-                    finalValues.password as string,
-                );
-                // NOTE: we will udpate the current user on <Init />
-                if (!mountedRef.current) {
-                    return;
+                if (isDefined(result) && isDefined(result.data)) {
+                    setUser({
+                        id: result.data.login.id,
+                        displayName: result.data.login.displayName,
+                    });
                 }
-                setPending(false);
-            } catch (submissionError) {
-                // eslint-disable-next-line no-console
-                console.error(submissionError);
-
-                if (!mountedRef.current) {
-                    return;
+            } catch (loginError) {
+                if (loginError instanceof ApolloError) {
+                    setError({ [nonFieldError]: loginError.message });
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.error(loginError);
                 }
-
-                const errorCode = (submissionError as AuthError).code;
-
-                if (errorCode === AuthErrorCodes.USER_DELETED) {
-                    setError((prevError) => ({
-                        ...getErrorObject(prevError),
-                        email: 'User not found',
-                    }));
-                }
-
-                if (errorCode === AuthErrorCodes.INVALID_EMAIL) {
-                    setError((prevError) => ({
-                        ...getErrorObject(prevError),
-                        email: 'Invalid email',
-                    }));
-                }
-
-                if (errorCode === AuthErrorCodes.INVALID_PASSWORD) {
-                    setError((prevError) => ({
-                        ...getErrorObject(prevError),
-                        password: 'Invalid password',
-                    }));
-                }
-
-                setError((prevError) => ({
-                    ...getErrorObject(prevError),
-                    [nonFieldError]: 'Failed to authenticate',
-                }));
-
-                setPending(false);
             }
-                */
         }
 
         login();
-    }, [loginToGql]);
+    }, [loginToGql, setError, setUser]);
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),

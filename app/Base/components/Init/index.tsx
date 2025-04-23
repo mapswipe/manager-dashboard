@@ -7,10 +7,14 @@ import {
     gql,
     useQuery,
 } from '@apollo/client';
+import { isDefined } from '@togglecorp/fujs';
 
 import PreloadMessage from '#base/components/PreloadMessage';
 import UserContext from '#base/context/UserContext';
-import { MeQuery, MeQueryVariables } from '#generated/types/graphql';
+import {
+    MeQuery,
+    MeQueryVariables,
+} from '#generated/types/graphql';
 
 const ME_QUERY = gql`
 query Me {
@@ -31,26 +35,35 @@ function Init(props: Props) {
         children,
     } = props;
 
-    const { setUser } = React.useContext(UserContext);
-    const [ready, setReady] = useState(false);
+    const { authenticated, setUser } = React.useContext(UserContext);
+    const [ready, setReady] = useState(authenticated);
 
     const {
         loading: meResponseLoading,
         data: meResponseData,
-    } = useQuery<MeQuery, MeQueryVariables>(ME_QUERY);
+    } = useQuery<MeQuery, MeQueryVariables>(
+        ME_QUERY,
+        { skip: authenticated },
+    );
 
     useEffect(() => {
-        if (meResponseLoading) {
+        if (authenticated || meResponseLoading) {
             return;
         }
 
-        if (!meResponseData) {
-            ReactDOM.unstable_batchedUpdates(() => {
+        ReactDOM.unstable_batchedUpdates(() => {
+            if (isDefined(meResponseData) && isDefined(meResponseData.me)) {
+                setUser({
+                    id: meResponseData.me.id,
+                    displayName: meResponseData.me.displayName,
+                });
+            } else {
                 setUser(undefined);
-                setReady(true);
-            });
-        }
-    }, [meResponseLoading, meResponseData, setUser]);
+            }
+
+            setReady(true);
+        });
+    }, [authenticated, meResponseLoading, meResponseData, setUser]);
 
     if (!ready) {
         return (

@@ -1,19 +1,26 @@
 import {
     useCallback,
     useContext,
-    useState,
 } from 'react';
+import {
+    gql,
+    useMutation,
+} from '@apollo/client';
 import { _cs } from '@togglecorp/fujs';
-import { getAuth } from 'firebase/auth';
 
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
 import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
-import useMountedRef from '#hooks/useMountedRef';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
 import styles from './styles.module.css';
+
+const LOGOUT_MUTATION = gql`
+mutation Logout {
+    logout
+}
+`;
 
 interface Props {
     className?: string;
@@ -25,31 +32,18 @@ function Navbar(props: Props) {
         user,
         setUser,
     } = useContext(UserContext);
-    const mountedRef = useMountedRef();
 
-    const [logoutPending, setLogoutPending] = useState(false);
+    const [logout, { loading: logoutPending }] = useMutation(LOGOUT_MUTATION);
 
     const handleLogoutClick = useCallback(async () => {
-        setLogoutPending(true);
-        const auth = getAuth();
-
         try {
-            await auth.signOut();
-            if (!mountedRef.current) {
-                return;
-            }
-
+            await logout();
             setUser(undefined);
-            setLogoutPending(false);
         } catch (error) {
             // eslint-disable-next-line no-console
-            console.error('Failed to sign out', error);
-            if (!mountedRef.current) {
-                return;
-            }
-            setLogoutPending(false);
+            console.error(error);
         }
-    }, [mountedRef, setUser]);
+    }, [logout, setUser]);
 
     return (
         <nav className={_cs(className, styles.navbar)}>
