@@ -20,15 +20,15 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
-import { initializeApp } from 'firebase/app';
 
+// import { initializeApp } from 'firebase/app';
 import AppRoutes from '#base/components/AppRoutes';
 import AuthPopup from '#base/components/AuthPopup';
 import Init from '#base/components/Init';
 import Navbar from '#base/components/Navbar';
 import PreloadMessage from '#base/components/PreloadMessage';
 import apolloConfig from '#base/configs/apollo';
-import firebaseConfig from '#base/configs/firebase';
+// import firebaseConfig from '#base/configs/firebase';
 import sentryConfig from '#base/configs/sentry';
 import NavbarContext, { type NavbarContextInterface } from '#base/context/NavbarContext';
 import UserContext, { type UserContextInterface } from '#base/context/UserContext';
@@ -42,7 +42,7 @@ if (sentryConfig) {
 }
 
 const apolloClient = new ApolloClient(apolloConfig);
-initializeApp(firebaseConfig);
+// initializeApp(firebaseConfig);
 
 function Base() {
     const [user, setUser] = useState<User | undefined>();
