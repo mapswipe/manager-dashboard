@@ -1,5 +1,3 @@
-import React from 'react';
-
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
 import RawTextArea, { Props as RawTextAreaProps } from '../RawTextArea';
 

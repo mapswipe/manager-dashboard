@@ -1,6 +1,4 @@
-import React from 'react';
-
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface DefaultEmptyComponentProps {
     pending?: boolean;

@@ -1,104 +1,108 @@
-import React from 'react';
+import {
+    useCallback,
+    useContext,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import { IoIosTrash } from 'react-icons/io';
+import { IoInformationCircleOutline } from 'react-icons/io5';
+import {
+    MdAdd,
+    MdOutlinePublishedWithChanges,
+    MdOutlineUnpublished,
+    MdSwipe,
+} from 'react-icons/md';
+import { Link } from 'react-router';
 import {
     _cs,
+    difference,
     isDefined,
-    unique,
     isNotDefined,
     isTruthyString,
-    difference,
     listToMap,
+    unique,
 } from '@togglecorp/fujs';
 import {
-    useForm,
-    getErrorObject,
-    createSubmitHandler,
     analyzeErrors,
+    createSubmitHandler,
+    getErrorObject,
+    getErrorString,
+    useForm,
     useFormArray,
 } from '@togglecorp/toggle-form';
 import {
-    getStorage,
-    ref as storageRef,
-    uploadBytes,
-    getDownloadURL,
-} from 'firebase/storage';
-import {
     getDatabase,
-    ref as databaseRef,
     push as pushToDatabase,
+    ref as databaseRef,
     set as setToDatabase,
 } from 'firebase/database';
 import {
-    MdSwipe,
-    MdOutlinePublishedWithChanges,
-    MdOutlineUnpublished,
-    MdAdd,
-} from 'react-icons/md';
-import {
-    IoIosTrash,
-} from 'react-icons/io';
-import {
-    IoInformationCircleOutline,
-} from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+    getDownloadURL,
+    getStorage,
+    ref as storageRef,
+    uploadBytes,
+} from 'firebase/storage';
 
-import UserContext from '#base/context/UserContext';
 import projectTypeOptions from '#base/configs/projectTypes';
-import useMountedRef from '#hooks/useMountedRef';
-import Modal from '#components/Modal';
-import TextInput from '#components/TextInput';
-import NumberInput from '#components/NumberInput';
-import Heading from '#components/Heading';
-import SegmentInput from '#components/SegmentInput';
-import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import UserContext from '#base/context/UserContext';
+import AlertBanner from '#components/AlertBanner';
+import Button from '#components/Button';
+import EmptyMessage from '#components/EmptyMessage';
 import ExpandableContainer from '#components/ExpandableContainer';
+import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import Heading from '#components/Heading';
+import InputSection from '#components/InputSection';
+import Modal from '#components/Modal';
+import NonFieldError from '#components/NonFieldError';
+import NumberInput from '#components/NumberInput';
 import PopupButton from '#components/PopupButton';
+import SegmentInput from '#components/SegmentInput';
+import TextInput from '#components/TextInput';
 import TileServerInput, {
     TILE_SERVER_BING,
     TILE_SERVER_ESRI,
     tileServerDefaultCredits,
 } from '#components/TileServerInput';
-import InputSection from '#components/InputSection';
-import Button from '#components/Button';
-import NonFieldError from '#components/NonFieldError';
-import EmptyMessage from '#components/EmptyMessage';
-import AlertBanner from '#components/AlertBanner';
+import useMountedRef from '#hooks/useMountedRef';
 import {
-    valueSelector,
     labelSelector,
     PROJECT_TYPE_BUILD_AREA,
-    PROJECT_TYPE_COMPLETENESS,
     PROJECT_TYPE_CHANGE_DETECTION,
+    PROJECT_TYPE_COMPLETENESS,
     PROJECT_TYPE_FOOTPRINT,
+    PROJECT_TYPE_STREET,
     ProjectType,
     projectTypeLabelMap,
+    valueSelector,
 } from '#utils/common';
-
-import {
-    tileServerUrls,
-    tutorialFormSchema,
-    defaultFootprintCustomOptions,
-    TutorialFormType,
-    PartialTutorialFormType,
-    PartialInformationPagesType,
-    ScenarioPagesType,
-    CustomOptionType,
-    InformationPagesType,
-    InformationPageTemplateKey,
-    infoPageTemplateOptions,
-    infoPageBlocksMap,
-    MAX_INFO_PAGES,
-    MAX_OPTIONS,
-    deleteKey,
-    TutorialTasksGeoJSON,
-    BuildAreaProperties,
-    ChangeDetectionProperties,
-} from './utils';
 
 import CustomOptionPreview from './CustomOptionInput/CustomOptionPreview';
 import CustomOptionInput from './CustomOptionInput';
-import ScenarioPageInput from './ScenarioPageInput';
 import InformationPageInput from './InformationPageInput';
-import styles from './styles.css';
+import ScenarioPageInput from './ScenarioPageInput';
+import {
+    BuildAreaProperties,
+    ChangeDetectionProperties,
+    CustomOptionType,
+    defaultFootprintCustomOptions,
+    deleteKey,
+    infoPageBlocksMap,
+    infoPageTemplateOptions,
+    InformationPagesType,
+    InformationPageTemplateKey,
+    MAX_INFO_PAGES,
+    MAX_OPTIONS,
+    PartialInformationPagesType,
+    PartialTutorialFormType,
+    ScenarioPagesType,
+    tileServerUrls,
+    tutorialFormSchema,
+    TutorialFormType,
+    TutorialTasksGeoJSON,
+} from './utils';
+
+import styles from './styles.module.css';
 
 export function getDuplicates<T, K extends string | number>(
     list: T[],
@@ -137,6 +141,7 @@ function checkSchema<T extends object>(
                 if (indexOfType === -1) {
                     return `type of ${key} expected to be one of type ${expectedType.join(', ')}`;
                 }
+            // eslint-disable-next-line valid-typeof
             } else if (typeof currentValue !== expectedType) {
                 return `type of ${key} expected to be of ${expectedType}`;
             }
@@ -188,6 +193,9 @@ function getGeoJSONError(
             tile_x: 'number',
             tile_y: 'number',
             tile_z: 'number',
+        },
+        [PROJECT_TYPE_STREET]: {
+            // TODO
         },
     };
     const schemaErrors = tutorialTasks.features.map(
@@ -355,18 +363,18 @@ function NewTutorial(props: Props) {
         className,
     } = props;
 
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const mountedRef = useMountedRef();
 
-    const popupElementRef = React.useRef<{
+    const popupElementRef = useRef<{
         setPopupVisibility: React.Dispatch<React.SetStateAction<boolean>>;
     }>(null);
 
     const [
         tutorialSubmissionStatus,
         setTutorialSubmissionStatus,
-    ] = React.useState<SubmissionStatus | undefined>();
+    ] = useState<SubmissionStatus | undefined>();
 
     const {
         setFieldValue,
@@ -401,7 +409,7 @@ function NewTutorial(props: Props) {
         InformationPagesType
     >('informationPages', setFieldValue);
 
-    const handleSubmission = React.useCallback((
+    const handleSubmission = useCallback((
         finalValuesFromProps: PartialTutorialFormType,
     ) => {
         const userId = user?.id;
@@ -531,7 +539,7 @@ function NewTutorial(props: Props) {
         submitToFirebase();
     }, [user, mountedRef]);
 
-    const handleSubmitButtonClick = React.useCallback(
+    const handleSubmitButtonClick = useCallback(
         () => {
             createSubmitHandler(
                 validate,
@@ -542,7 +550,7 @@ function NewTutorial(props: Props) {
         [validate, setError, handleSubmission],
     );
 
-    const handleAddDefineOptions = React.useCallback(
+    const handleAddDefineOptions = useCallback(
         () => {
             setFieldValue(
                 (oldValue: PartialTutorialFormType['customOptions']) => {
@@ -573,7 +581,7 @@ function NewTutorial(props: Props) {
         ],
     );
 
-    const handleGeoJsonFile = React.useCallback((
+    const handleGeoJsonFile = useCallback((
         geoProps: GeoJSON.GeoJSON | undefined,
     ) => {
         const projectType = value?.projectType;
@@ -615,7 +623,7 @@ function NewTutorial(props: Props) {
         setFieldValue(tutorialTaskArray, 'scenarioPages');
     }, [setFieldValue, setError, value?.projectType]);
 
-    const handleAddInformationPage = React.useCallback(
+    const handleAddInformationPage = useCallback(
         (template: InformationPageTemplateKey) => {
             setFieldValue(
                 (oldValue: PartialInformationPagesType) => {
@@ -649,31 +657,31 @@ function NewTutorial(props: Props) {
     const tileServerBVisible = value.projectType === PROJECT_TYPE_CHANGE_DETECTION
         || value.projectType === PROJECT_TYPE_COMPLETENESS;
 
-    const error = React.useMemo(
+    const error = useMemo(
         () => getErrorObject(formError),
         [formError],
     );
-    const scenarioError = React.useMemo(
+    const scenarioError = useMemo(
         () => getErrorObject(error?.scenarioPages),
         [error?.scenarioPages],
     );
 
-    const optionsError = React.useMemo(
+    const optionsError = useMemo(
         () => getErrorObject(error?.customOptions),
         [error?.customOptions],
     );
 
-    const informationPagesError = React.useMemo(
+    const informationPagesError = useMemo(
         () => getErrorObject(error?.informationPages),
         [error?.informationPages],
     );
 
-    const hasErrors = React.useMemo(
+    const hasErrors = useMemo(
         () => analyzeErrors(error),
         [error],
     );
 
-    const warning = React.useMemo(
+    const warning = useMemo(
         () => {
             const options = value?.customOptions?.map((option) => option.value) ?? [];
             const subOptions = value?.customOptions?.flatMap(
@@ -711,7 +719,7 @@ function NewTutorial(props: Props) {
         informationPages,
     } = value;
 
-    const handleProjectTypeChange = React.useCallback(
+    const handleProjectTypeChange = useCallback(
         (newValue: ProjectType | undefined) => {
             setFieldValue(undefined, 'tutorialTasks');
             setFieldValue(undefined, 'scenarioPages');
@@ -949,7 +957,7 @@ function NewTutorial(props: Props) {
                         value={value.tutorialTasks}
                         onChange={handleGeoJsonFile}
                         hint="It should end with .geojson or .geo.json"
-                        error={error?.tutorialTasks}
+                        error={getErrorString(error?.tutorialTasks)}
                         disabled={submissionPending || projectTypeEmpty}
                     />
                     <div className={styles.scenarioList}>

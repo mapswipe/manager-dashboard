@@ -1,17 +1,29 @@
-import React, { useCallback } from 'react';
-import { EntriesAsList, ObjectError, SetBaseValueArg } from '@togglecorp/toggle-form';
-import TextInput from '#components/TextInput';
-import { generateProjectName, PartialProjectFormType } from '#views/NewProject/utils';
-import { labelSelector, valueSelector } from '#utils/common';
-import NumberInput from '#components/NumberInput';
-import TextArea from '#components/TextArea';
+import { useCallback } from 'react';
+import {
+    EntriesAsList,
+    getErrorString,
+    ObjectError,
+    SetBaseValueArg,
+} from '@togglecorp/toggle-form';
+
 import ImageInput from '#components/ImageInput';
+import NumberInput from '#components/NumberInput';
 import SelectInput from '#components/SelectInput';
+import TextArea from '#components/TextArea';
+import TextInput from '#components/TextInput';
+import {
+    labelSelector,
+    valueSelector,
+} from '#utils/common';
+import styles from '#views/NewProject/styles.module.css';
 import useProjectOptions from '#views/NewProject/useProjectOptions';
-import styles from '#views/NewProject/styles.css';
+import {
+    generateProjectName,
+    type PartialProjectFormType,
+} from '#views/NewProject/utils';
 
 export interface Props<T extends PartialProjectFormType> {
-    className?: string;
+    // className?: string;
     disabled: boolean;
     value: T;
     setValue: (value: SetBaseValueArg<T>, doNotReset?: boolean) => void;
@@ -37,7 +49,7 @@ function BasicProjectInfoForm(props: Props<PartialProjectFormType>) {
         organisationsPending,
     } = useProjectOptions(value?.projectType);
 
-    const setFieldValueAndGenerateName = React.useCallback(
+    const setFieldValueAndGenerateName = useCallback(
         (...entries: EntriesAsList<PartialProjectFormType>) => {
             // NOTE: we need to use setFieldValue to set error on change
             setFieldValue(...entries);
@@ -170,7 +182,7 @@ function BasicProjectInfoForm(props: Props<PartialProjectFormType>) {
                     label="Upload Project Image (Image)"
                     hint="Make sure you have the rights to use the image. It should end with .jpg or .png."
                     showPreview
-                    error={error?.projectImage}
+                    error={getErrorString(error?.projectImage)}
                     disabled={disabled}
                 />
                 <div className={styles.verticalInputGroup}>

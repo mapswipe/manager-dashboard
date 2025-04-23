@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+    useEffect,
+    useState,
+} from 'react';
 import ReactDOM from 'react-dom';
 import {
     getAuth,
-    User,
     onAuthStateChanged,
+    User,
 } from 'firebase/auth';
 
 import PreloadMessage from '#base/components/PreloadMessage';
-import { UserContext } from '#base/context/UserContext';
+import UserContext from '#base/context/UserContext';
 
 interface Props {
     preloadClassName?: string;
@@ -110,10 +113,6 @@ function Init(props: Props) {
         );
     }
 
-    return (
-        <>
-            {children}
-        </>
-    );
+    return children;
 }
 export default Init;

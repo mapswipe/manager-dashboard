@@ -1,16 +1,19 @@
-import React from 'react';
+import {
+    useCallback,
+    useState,
+} from 'react';
+import { MdAttachFile } from 'react-icons/md';
 import {
     _cs,
     randomString,
 } from '@togglecorp/fujs';
-import { MdAttachFile } from 'react-icons/md';
 
 import { useButtonFeatures } from '#components/Button';
-import RawInput from '#components/RawInput';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
 import Preview from '#components/Preview';
+import RawInput from '#components/RawInput';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props<Name> extends Omit<InputContainerProps, 'input'> {
     value: File | undefined | null;
@@ -46,7 +49,7 @@ function FileInput<Name>(props: Props<Name>) {
         descriptionContainerClassName,
     } = props;
 
-    const [inputId] = React.useState(randomString);
+    const [inputId] = useState(randomString);
     const labelProps = useButtonFeatures({
         children: (
             <>
@@ -61,7 +64,7 @@ function FileInput<Name>(props: Props<Name>) {
 
     const status = value?.name ?? 'No file chosen';
 
-    const handleFiles = React.useCallback(
+    const handleFiles = useCallback(
         (files: FileList | null) => {
             if (!files || !onChange) {
                 return;
@@ -75,7 +78,7 @@ function FileInput<Name>(props: Props<Name>) {
         [onChange, name],
     );
 
-    const handleChange = React.useCallback((
+    const handleChange = useCallback((
         _: string | undefined,
         __: Name,
         e?: React.FormEvent<HTMLInputElement>,
@@ -99,10 +102,11 @@ function FileInput<Name>(props: Props<Name>) {
             icons={(
                 <>
                     {icons}
-                    {/* eslint-disable-next-line max-len */}
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */}
+                    { }
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label
                         htmlFor={inputId}
+                        // eslint-disable-next-line react/jsx-props-no-spreading
                         {...labelProps}
                     />
                 </>

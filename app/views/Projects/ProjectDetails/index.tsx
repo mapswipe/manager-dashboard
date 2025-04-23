@@ -1,34 +1,37 @@
-import React from 'react';
+import {
+    useCallback,
+    useState,
+} from 'react';
+import {
+    IoChevronDown,
+    IoChevronUp,
+} from 'react-icons/io5';
+import { MdLock } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 import {
     getDatabase,
     ref,
     update,
 } from 'firebase/database';
-import {
-    IoChevronDown,
-    IoChevronUp,
-} from 'react-icons/io5';
-import { MdLock } from 'react-icons/md';
 
+import Button from '#components/Button';
+import Checkbox from '#components/Checkbox';
+import Modal from '#components/Modal';
+import PendingMessage from '#components/PendingMessage';
+import SelectInput from '#components/SelectInput';
+import { TileServerType } from '#components/TileServerInput';
 import useConfirmation from '#hooks/useConfirmation';
 import useMountedRef from '#hooks/useMountedRef';
-import Modal from '#components/Modal';
-import Button from '#components/Button';
-import SelectInput from '#components/SelectInput';
-import Checkbox from '#components/Checkbox';
-import PendingMessage from '#components/PendingMessage';
-import { TileServerType } from '#components/TileServerInput';
 import {
     labelSelector,
-    valueSelector,
-    ProjectType,
-    projectTypeLabelMap,
     ProjectInputType,
     ProjectStatus,
+    ProjectType,
+    projectTypeLabelMap,
+    valueSelector,
 } from '#utils/common';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Project {
     contributorCount: number;
@@ -106,13 +109,13 @@ function ProjectDetails(props: Props) {
         data,
     } = props;
 
-    const [detailsShown, setDetailsShown] = React.useState(false);
-    const [statusUpdatePending, setStatusUpdatePending] = React.useState(false);
-    const [featuredUpdatePending, setFeaturedUpdatePending] = React.useState(false);
+    const [detailsShown, setDetailsShown] = useState(false);
+    const [statusUpdatePending, setStatusUpdatePending] = useState(false);
+    const [featuredUpdatePending, setFeaturedUpdatePending] = useState(false);
 
     const mountedRef = useMountedRef();
 
-    const updateStatus = React.useCallback(
+    const updateStatus = useCallback(
         async (newStatus: ProjectStatus) => {
             setStatusUpdatePending(true);
             const db = getDatabase();
@@ -140,7 +143,7 @@ function ProjectDetails(props: Props) {
         [data.projectId, mountedRef],
     );
 
-    const updateFeatured = React.useCallback(
+    const updateFeatured = useCallback(
         async (newValue: boolean) => {
             setFeaturedUpdatePending(true);
             const db = getDatabase();

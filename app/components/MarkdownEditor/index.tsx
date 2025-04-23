@@ -4,7 +4,7 @@ import Markdown from 'react-mde';
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
 import MarkdownPreview from '../MarkdownPreview';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface MarkdownEditorProps<NAME extends string> {
     name: NAME;
@@ -40,7 +40,7 @@ function MarkdownEditor<NAME extends string>(props: Props<NAME>) {
 
     const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>('write');
     const handleValueChange = useCallback(
-        (newVal) => {
+        (newVal: string) => {
             if (!disabled && !readOnly && onChange) {
                 onChange(newVal, name);
             }

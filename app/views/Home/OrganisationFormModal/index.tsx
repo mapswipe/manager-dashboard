@@ -1,42 +1,46 @@
-import React from 'react';
 import {
-    _cs,
-    isNotDefined,
-    isDefined,
-} from '@togglecorp/fujs';
-import {
-    getDatabase,
-    ref as databaseRef,
-    push as pushToDatabase,
-    set as setToDatabase,
-    query,
-    orderByChild,
-    equalTo,
-} from 'firebase/database';
-import {
-    ObjectSchema,
-    useForm,
-    getErrorObject,
-    createSubmitHandler,
-    analyzeErrors,
-    requiredStringCondition,
-} from '@togglecorp/toggle-form';
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
 import {
     MdOutlinePublishedWithChanges,
     MdOutlineUnpublished,
 } from 'react-icons/md';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
+import {
+    analyzeErrors,
+    createSubmitHandler,
+    getErrorObject,
+    ObjectSchema,
+    requiredStringCondition,
+    useForm,
+} from '@togglecorp/toggle-form';
+import {
+    equalTo,
+    getDatabase,
+    orderByChild,
+    push as pushToDatabase,
+    query,
+    ref as databaseRef,
+    set as setToDatabase,
+} from 'firebase/database';
 
-import useMountedRef from '#hooks/useMountedRef';
 import UserContext from '#base/context/UserContext';
-import { getValueFromFirebase } from '#utils/firebase';
+import AnimatedSwipeIcon from '#components/AnimatedSwipeIcon';
+import Button from '#components/Button';
 import Modal from '#components/Modal';
 import TextInput from '#components/TextInput';
-import Button from '#components/Button';
-import AnimatedSwipeIcon from '#components/AnimatedSwipeIcon';
-
+import useMountedRef from '#hooks/useMountedRef';
 import { getNoMoreThanNCharacterCondition } from '#utils/common';
+import { getValueFromFirebase } from '#utils/firebase';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface OrganisationFormFields {
     name?: string | undefined;
@@ -85,12 +89,12 @@ function OrganisationFormModal(props: Props) {
     } = useForm(organisationFormSchema, { value: defaultOrganisationFormValue });
 
     const mountedRef = useMountedRef();
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
     const error = getErrorObject(formError);
-    const [submissionStatus, setSubmissionStatus] = React.useState<'pending' | 'success' | 'failed' | undefined>(undefined);
-    const [nonFieldError, setNonFieldError] = React.useState<string | undefined>();
+    const [submissionStatus, setSubmissionStatus] = useState<'pending' | 'success' | 'failed' | undefined>(undefined);
+    const [nonFieldError, setNonFieldError] = useState<string | undefined>();
 
-    const handleFormSubmission = React.useCallback((finalValues: OrganisationFormFields) => {
+    const handleFormSubmission = useCallback((finalValues: OrganisationFormFields) => {
         async function submitToFirebase() {
             setSubmissionStatus('pending');
             try {
@@ -155,7 +159,7 @@ function OrganisationFormModal(props: Props) {
         submitToFirebase();
     }, [user, setError, mountedRef]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
@@ -173,7 +177,6 @@ function OrganisationFormModal(props: Props) {
                             className={styles.submitButton}
                             name={undefined}
                             onClick={handleSubmitButtonClick}
-                            disabled={submissionStatus === 'pending'}
                         >
                             Submit
                         </Button>

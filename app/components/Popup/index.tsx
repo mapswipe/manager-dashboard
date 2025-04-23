@@ -1,9 +1,14 @@
-import React from 'react';
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Portal from '#components/Portal';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface PopupProps {
     className?: string;
@@ -46,7 +51,9 @@ function getFloatPlacement(parentRef: React.RefObject<HTMLElement>): FloatingPla
 
     if (parentRef?.current) {
         const parentBCR = parentRef.current.getBoundingClientRect();
-        const { x, y, width, height } = parentBCR;
+        const {
+            x, y, width, height,
+        } = parentBCR;
 
         const cX = window.innerWidth / 2;
         const cY = window.innerHeight / 2;
@@ -80,7 +87,7 @@ function getFloatPlacement(parentRef: React.RefObject<HTMLElement>): FloatingPla
 }
 
 function useAttachedFloatingPlacement(parentRef: React.RefObject<HTMLElement>) {
-    const [placement, setPlacement] = React.useState<FloatingPlacementProps>({
+    const [placement, setPlacement] = useState<FloatingPlacementProps>({
         placement: defaultPlacement,
         width: 'auto',
         maxHeight: 'auto',
@@ -88,21 +95,21 @@ function useAttachedFloatingPlacement(parentRef: React.RefObject<HTMLElement>) {
         verticalPosition: 'top',
     });
 
-    React.useLayoutEffect(() => {
+    useLayoutEffect(() => {
         setPlacement(getFloatPlacement(parentRef));
     }, [setPlacement, parentRef]);
 
     // FIXME: throttle
-    const handleScroll = React.useCallback(() => {
+    const handleScroll = useCallback(() => {
         setPlacement(getFloatPlacement(parentRef));
     }, [setPlacement, parentRef]);
 
     // FIXME: throttle
-    const handleResize = React.useCallback(() => {
+    const handleResize = useCallback(() => {
         setPlacement(getFloatPlacement(parentRef));
     }, [setPlacement, parentRef]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener('scroll', handleScroll, true);
         window.addEventListener('resize', handleResize, true);
 

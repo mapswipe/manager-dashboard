@@ -1,4 +1,7 @@
-import React from 'react';
+import {
+    useCallback,
+    useState,
+} from 'react';
 
 import FileInput, { Props as FileInputProps } from '#components/FileInput';
 import useMountedRef from '#hooks/useMountedRef';
@@ -45,11 +48,11 @@ function JsonFileInput<N, T>(props: Props<N, T>) {
     const [
         internalErrorMessage,
         setInternalErrorMessage,
-    ] = React.useState<string>();
+    ] = useState<string>();
 
-    const [tempValue, setTempValue] = React.useState<File | undefined>(undefined);
+    const [tempValue, setTempValue] = useState<File | undefined>(undefined);
 
-    const handleChange = React.useCallback(
+    const handleChange = useCallback(
         (newValue: File | undefined) => {
             if (!newValue) {
                 setInternalErrorMessage(undefined);
@@ -108,6 +111,7 @@ function JsonFileInput<N, T>(props: Props<N, T>) {
             onChange={handleChange}
             accept=".json"
             error={internalErrorMessage ?? error}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         />
     );

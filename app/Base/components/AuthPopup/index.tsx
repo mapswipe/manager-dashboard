@@ -1,9 +1,8 @@
-import React from 'react';
-import Modal from '#components/Modal';
-import Button from '#components/Button';
-
 import useAuthSync from '#base/hooks/useAuthSync';
-import styles from './styles.css';
+import Button from '#components/Button';
+import Modal from '#components/Modal';
+
+import styles from './styles.module.css';
 
 function AuthPopup() {
     const {

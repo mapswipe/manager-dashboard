@@ -1,19 +1,19 @@
-import React from 'react';
+import { useMemo } from 'react';
 import {
-    SetValueArg,
     Error,
-    useFormObject,
     getErrorObject,
+    SetValueArg,
     useFormArray,
+    useFormObject,
 } from '@togglecorp/toggle-form';
 
 import TextInput from '#components/TextInput';
-import InformationPagePreview from './InformationPagePreview';
 
 import { InformationPagesType } from '../utils';
 import BlockInput from './BlockInput';
+import InformationPagePreview from './InformationPagePreview';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     value: InformationPagesType,
@@ -42,7 +42,7 @@ export default function InformationPageInput(props: Props) {
 
     const error = getErrorObject(riskyError);
 
-    const blockError = React.useMemo(
+    const blockError = useMemo(
         () => getErrorObject(error?.blocks),
         [error?.blocks],
     );

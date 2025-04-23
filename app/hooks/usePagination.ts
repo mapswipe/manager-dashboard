@@ -1,4 +1,9 @@
-import React from 'react';
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 
 const defaultPagePerItemOptions = [
     { value: 5, label: '5 items / page' },
@@ -9,7 +14,7 @@ const defaultPagePerItemOptions = [
 ];
 
 function usePagination<Item>(items: Item[]) {
-    const [pageState, setPageState] = React.useState<{
+    const [pageState, setPageState] = useState<{
         pagePerItem: number,
         activePage: number,
     }>({
@@ -20,7 +25,7 @@ function usePagination<Item>(items: Item[]) {
     const totalItems = items.length;
 
     // Reset page when number of items is changed
-    React.useEffect(() => {
+    useEffect(() => {
         setPageState((prevState) => ({
             ...prevState,
             activePage: 1,
@@ -29,12 +34,12 @@ function usePagination<Item>(items: Item[]) {
 
     const showPager = totalItems > 0;
     const startIndex = showPager ? ((pageState.activePage - 1) * pageState.pagePerItem) : 0;
-    const filteredItems = React.useMemo(
+    const filteredItems = useMemo(
         () => (showPager ? items.slice(startIndex, startIndex + pageState.pagePerItem) : items),
         [showPager, items, startIndex, pageState.pagePerItem],
     );
 
-    const handlePagePerItemChange = React.useCallback((newPagePerItem: number) => {
+    const handlePagePerItemChange = useCallback((newPagePerItem: number) => {
         setPageState((prevState) => {
             const oldPagePerItem = prevState.pagePerItem;
             const oldActivePage = prevState.activePage;
@@ -60,14 +65,14 @@ function usePagination<Item>(items: Item[]) {
         });
     }, [totalItems]);
 
-    const handleActivePageChage = React.useCallback((newActivePage: number) => {
+    const handleActivePageChage = useCallback((newActivePage: number) => {
         setPageState((prevState) => ({
             ...prevState,
             activePage: newActivePage,
         }));
     }, []);
 
-    return React.useMemo(() => ({
+    return useMemo(() => ({
         showPager,
         activePage: pageState.activePage,
         setActivePage: handleActivePageChage,

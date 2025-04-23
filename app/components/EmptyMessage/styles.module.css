@@ -1,0 +1,19 @@
+.empty-message {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--spacing-extra-large);
+    color: var(--color-text-gray);
+    gap: var(--spacing-small);
+
+    .empty-message-title {
+        font-size: var(--font-size-large);
+        font-weight: var(--font-weight-bold);
+    }
+
+    .empty-message-description {
+        font-size: var(--font-size-medium);
+        font-weight: var(--font-weight-medium);
+    }
+}

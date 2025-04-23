@@ -1,21 +1,25 @@
-import React from 'react';
+import {
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
+import { CgOrganisation } from 'react-icons/cg';
+import { IoTrashBin } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 import {
     getDatabase,
     ref,
     update,
 } from 'firebase/database';
-import { CgOrganisation } from 'react-icons/cg';
-import { IoTrashBin } from 'react-icons/io5';
 
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
-import usePagination from '#hooks/usePagination';
-import PendingMessage from '#components/PendingMessage';
 import Button from '#components/Button';
 import Modal from '#components/Modal';
 import Pager from '#components/Pager';
+import PendingMessage from '#components/PendingMessage';
+import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
+import usePagination from '#hooks/usePagination';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Organisation {
     name: string;
@@ -29,10 +33,10 @@ interface Props {
 
 function OrganisationList(props: Props) {
     const { className } = props;
-    const [orgKeyToRemove, setOrgKeyToRemove] = React.useState<string | undefined>(undefined);
-    const [removePending, setRemovePending] = React.useState(false);
+    const [orgKeyToRemove, setOrgKeyToRemove] = useState<string | undefined>(undefined);
+    const [removePending, setRemovePending] = useState(false);
 
-    const organisationsQuery = React.useMemo(
+    const organisationsQuery = useMemo(
         () => {
             const db = getDatabase();
             return ref(db, '/v2/organisations');
@@ -47,12 +51,12 @@ function OrganisationList(props: Props) {
         query: organisationsQuery,
     });
 
-    const organisationList = React.useMemo(
+    const organisationList = useMemo(
         () => (organisations ? Object.entries(organisations).reverse() : []),
         [organisations],
     );
 
-    const removeOrganisation = React.useCallback(
+    const removeOrganisation = useCallback(
         async (orgKey: string) => {
             const db = getDatabase();
             const updates = {

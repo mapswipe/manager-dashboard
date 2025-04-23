@@ -1,28 +1,30 @@
-import React from 'react';
+import {
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 import {
-    signInWithEmailAndPassword,
-    getAuth,
-    AuthError,
-    AuthErrorCodes,
-} from 'firebase/auth';
-import {
+    createSubmitHandler,
+    getErrorObject,
+    nonFieldError,
     ObjectSchema,
     requiredStringCondition,
     useForm,
-    getErrorObject,
-    createSubmitHandler,
-    nonFieldError,
 } from '@togglecorp/toggle-form';
+import {
+    AuthError,
+    AuthErrorCodes,
+    getAuth,
+    signInWithEmailAndPassword,
+} from 'firebase/auth';
 
-import TextInput from '#components/TextInput';
 import Button from '#components/Button';
-
+import TextInput from '#components/TextInput';
 import useMountedRef from '#hooks/useMountedRef';
-
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface LoginFormFields {
     email?: string | undefined;
@@ -66,9 +68,9 @@ function Login(props: Props) {
     } = useForm(loginFormSchema, { value: defaultLoginFormValue });
     const error = getErrorObject(formError);
 
-    const [pending, setPending] = React.useState(false);
+    const [pending, setPending] = useState(false);
 
-    const handleFormSubmission = React.useCallback((finalValues: LoginFormFields) => {
+    const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
             if (!finalValues || !finalValues.email || !finalValues.password) {
                 // eslint-disable-next-line no-console
@@ -133,7 +135,7 @@ function Login(props: Props) {
         login();
     }, [mountedRef, setError]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );

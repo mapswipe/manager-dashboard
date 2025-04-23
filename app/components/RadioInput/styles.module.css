@@ -1,0 +1,8 @@
+.radio-input {
+    .radio-list-container {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: var(--spacing-small);
+    }
+}

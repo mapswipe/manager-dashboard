@@ -1,4 +1,5 @@
-import React from 'react';
+import { memo } from 'react';
+import { IconType } from 'react-icons';
 import {
     IoAddOutline,
     IoAlertOutline,
@@ -27,14 +28,16 @@ import {
     IoTriangleOutline,
     IoWarningOutline,
 } from 'react-icons/io5';
-import { isDefined, listToMap } from '@togglecorp/fujs';
-import { IconType } from 'react-icons';
+import {
+    isDefined,
+    listToMap,
+} from '@togglecorp/fujs';
 
 import oneTapIcon from '#resources/icons/1_Tap_Black.png';
 import twoTapIcon from '#resources/icons/2_Tap_Black.png';
 import threeTapIcon from '#resources/icons/3_Tap_Black.png';
-import angularTapIcon from '#resources/icons/tap_icon_angular.png';
 import swipeIcon from '#resources/icons/swipeleft_icon_black.png';
+import angularTapIcon from '#resources/icons/tap_icon_angular.png';
 import check from '#resources/icons/tick_green_on_white.png';
 
 export function valueSelector<T>(item: { value: T }) {
@@ -336,4 +339,4 @@ export function dateStringToDate(value: string) {
     return new Date(`${value}T00:00`);
 }
 
-export const typedMemo: (<T>(c: T) => T) = React.memo;
+export const typedMemo: (<T>(c: T) => T) = memo;

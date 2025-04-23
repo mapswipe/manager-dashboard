@@ -1,22 +1,22 @@
-import React from 'react';
+import { useCallback } from 'react';
 import {
-    useFormObject,
-    getErrorObject,
-    PartialForm,
-    Error,
-    SetValueArg,
-    ObjectSchema,
-    requiredStringCondition,
     addCondition,
+    Error,
+    getErrorObject,
     nullValue,
+    ObjectSchema,
+    PartialForm,
+    requiredStringCondition,
+    SetValueArg,
+    useFormObject,
 } from '@togglecorp/toggle-form';
 
-import TextInput from '#components/TextInput';
 import RadioInput from '#components/RadioInput';
+import TextInput from '#components/TextInput';
 import {
-    valueSelector,
-    labelSelector,
     getNoMoreThanNCharacterCondition,
+    labelSelector,
+    valueSelector,
 } from '#utils/common';
 
 export type TileServerType = 'bing' | 'mapbox' | 'maxar_standard' | 'maxar_premium' | 'esri' | 'esri_beta' | 'custom';
@@ -153,7 +153,7 @@ function TileServerInput<Name extends string | number>(props: Props<Name>) {
     const setFieldValue = useFormObject(name, onChange, defaultValue);
     const error = getErrorObject(formError);
 
-    const handleTileServerChange = React.useCallback(
+    const handleTileServerChange = useCallback(
         (val: TileServerType | undefined) => {
             onChange(
                 (oldValue) => {

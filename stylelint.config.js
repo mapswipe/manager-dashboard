@@ -1,11 +1,36 @@
+import path from 'path';
+
+const __filename = new URL(import.meta.url).pathname;
+const __dirname = path.dirname(__filename);
+
+const cssPaths = [
+    path.resolve(__dirname, './app/Base/styles.module.css'),
+];
+
+/** @type {import('stylelint').Config} */
 const config = {
-    plugins: [],
     extends: [
         'stylelint-config-recommended',
         'stylelint-config-concentric',
     ],
+    plugins: [
+        'stylelint-no-unused-selectors',
+        'stylelint-value-no-unknown-custom-properties',
+    ],
     rules: {
-        indentation: 4,
+        'plugin/no-unused-selectors': [
+            true,
+            {
+                suffixesToStrip: ['.module'],
+                documents: ['{cssDir}/{cssName}.tsx'],
+            },
+        ],
+        'csstools/value-no-unknown-custom-properties': [
+            true,
+            {
+                importFrom: cssPaths,
+            },
+        ],
         'selector-pseudo-class-no-unknown': [
             true,
             {
@@ -15,4 +40,4 @@ const config = {
     },
 };
 
-module.exports = config;
+export default config;

@@ -1,8 +1,7 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
 import { ImSpinner } from 'react-icons/im';
+import { _cs } from '@togglecorp/fujs';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

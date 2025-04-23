@@ -1,0 +1,10 @@
+.popup {
+    padding-top: calc(var(--spacing-large) - var(--spacing-medium));
+    padding-bottom: calc(var(--spacing-large) - var(--spacing-medium));
+
+    .popup-content {
+        display: flex;
+        flex-direction: column;
+        max-width: max(50vw, 300px);
+    }
+}

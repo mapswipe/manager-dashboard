@@ -1,5 +1,14 @@
-import React, { useState, useLayoutEffect, useCallback } from 'react';
-import { isDefined, isFalsyString, isTruthyString, bound } from '@togglecorp/fujs';
+import React, {
+    useCallback,
+    useLayoutEffect,
+    useState,
+} from 'react';
+import {
+    bound,
+    isDefined,
+    isFalsyString,
+    isTruthyString,
+} from '@togglecorp/fujs';
 
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
 import RawInput, { Props as RawInputProps } from '#components/RawInput';

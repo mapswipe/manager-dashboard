@@ -1,38 +1,38 @@
 import {
+    getDuplicates,
+    isDefined,
+} from '@togglecorp/fujs';
+import {
+    addCondition,
+    ArraySchema,
+    greaterThanOrEqualToCondition,
+    integerCondition,
+    lessThanOrEqualToCondition,
+    nullValue,
     ObjectSchema,
     PartialForm,
     requiredStringCondition,
-    greaterThanOrEqualToCondition,
-    lessThanOrEqualToCondition,
-    integerCondition,
-    nullValue,
-    ArraySchema,
-    addCondition,
 } from '@togglecorp/toggle-form';
-import {
-    isDefined,
-    getDuplicates,
-} from '@togglecorp/fujs';
 
 import {
     TileServer,
-    TileServerType,
     tileServerFieldsSchema,
+    TileServerType,
 } from '#components/TileServerInput';
 import {
     getNoMoreThanNCharacterCondition,
-    ProjectType,
+    IconKey,
     PROJECT_TYPE_BUILD_AREA,
     PROJECT_TYPE_CHANGE_DETECTION,
     PROJECT_TYPE_COMPLETENESS,
     PROJECT_TYPE_FOOTPRINT,
-    IconKey,
+    ProjectType,
 } from '#utils/common';
 
-const BING_KEY = process.env.REACT_APP_IMAGE_BING_API_KEY;
-const MAPBOX_KEY = process.env.REACT_APP_IMAGE_MAPBOX_API_KEY;
-const MAXAR_PREMIUM = process.env.REACT_APP_IMAGE_MAXAR_PREMIUM_API_KEY;
-const MAXAR_STANDARD = process.env.REACT_APP_IMAGE_MAXAR_STANDARD_API_KEY;
+const BING_KEY = import.meta.env.REACT_APP_IMAGE_BING_API_KEY;
+const MAPBOX_KEY = import.meta.env.REACT_APP_IMAGE_MAPBOX_API_KEY;
+const MAXAR_PREMIUM = import.meta.env.REACT_APP_IMAGE_MAXAR_PREMIUM_API_KEY;
+const MAXAR_STANDARD = import.meta.env.REACT_APP_IMAGE_MAXAR_STANDARD_API_KEY;
 
 export type ColorKey = (
     'red'
@@ -271,13 +271,13 @@ export function deleteKey<T extends object, K extends keyof T>(
 export interface BuildAreaProperties {
     reference: number;
     screen: number;
-    // eslint-disable-next-line camelcase
+
     task_id: string;
-    // eslint-disable-next-line camelcase
+
     tile_x: number;
-    // eslint-disable-next-line camelcase
+
     tile_y: number;
-    // eslint-disable-next-line camelcase
+
     tile_z: number;
 
     // groupId: string;
@@ -294,13 +294,13 @@ export interface FootprintProperties {
 export interface ChangeDetectionProperties {
     reference: number;
     screen: number;
-    // eslint-disable-next-line camelcase
+
     task_id: string;
-    // eslint-disable-next-line camelcase
+
     tile_x: number;
-    // eslint-disable-next-line camelcase
+
     tile_y: number;
-    // eslint-disable-next-line camelcase
+
     tile_z: number;
 
     // category: string;

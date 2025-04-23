@@ -1,16 +1,19 @@
-import React from 'react';
 import {
-    map as createMap,
-    Map,
-    geoJSON,
-    TileLayer,
-    Coords,
-    StyleFunction,
-    PointExpression,
-} from 'leaflet';
+    useEffect,
+    useRef,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
+import {
+    Coords,
+    geoJSON,
+    Map,
+    map as createMap,
+    PointExpression,
+    StyleFunction,
+    TileLayer,
+} from 'leaflet';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 const toQuadKey = (x: number, y: number, z: number) => {
     let index = '';
@@ -63,10 +66,10 @@ function GeoJsonPreview(props: Props) {
         padding,
     } = props;
 
-    const mapRef = React.useRef<Map>();
-    const mapContainerRef = React.useRef<HTMLDivElement>(null);
+    const mapRef = useRef<Map>();
+    const mapContainerRef = useRef<HTMLDivElement>(null);
 
-    React.useEffect(
+    useEffect(
         () => {
             if (mapContainerRef.current && !mapRef.current) {
                 mapRef.current = createMap(mapContainerRef.current, {
@@ -111,7 +114,7 @@ function GeoJsonPreview(props: Props) {
         [url],
     );
 
-    React.useEffect(
+    useEffect(
         () => {
             if (!geoJson) {
                 return undefined;

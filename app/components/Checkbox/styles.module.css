@@ -1,0 +1,29 @@
+.checkbox {
+    display: flex;
+    position: relative;
+    gap: var(--spacing-small);
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+
+    .checkmark {
+        flex-shrink: 0;
+        color: var(--color-text);
+        /* color: var(--color-checkmark); */
+        font-size: 1.12em;
+    }
+
+    .input {
+        display: none;
+    }
+
+    &.read-only {
+        cursor: default;
+        user-select: initial;
+    }
+
+    &.disabled {
+        opacity: var(--opacity-disabled-element);
+        cursor: not-allowed;
+    }
+}

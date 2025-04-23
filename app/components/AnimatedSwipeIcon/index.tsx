@@ -1,8 +1,7 @@
-import React from 'react';
 import { MdSwipe } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

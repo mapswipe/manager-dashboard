@@ -1,6 +1,12 @@
-import { ApolloClientOptions, NormalizedCacheObject, InMemoryCache, ApolloLink as ApolloLinkFromClient, HttpLink } from '@apollo/client';
+import {
+    ApolloClientOptions,
+    ApolloLink as ApolloLinkFromClient,
+    HttpLink,
+    InMemoryCache,
+    NormalizedCacheObject,
+} from '@apollo/client';
 
-const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT as string;
+const GRAPHQL_ENDPOINT = import.meta.env.REACT_APP_GRAPHQL_ENDPOINT;
 
 const link = new HttpLink({
     uri: GRAPHQL_ENDPOINT,

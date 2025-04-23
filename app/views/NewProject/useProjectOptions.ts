@@ -1,10 +1,10 @@
-import React from 'react';
+import { useMemo } from 'react';
 import {
-    getDatabase,
-    ref,
-    query,
-    orderByChild,
     equalTo,
+    getDatabase,
+    orderByChild,
+    query,
+    ref,
 } from 'firebase/database';
 
 import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
@@ -61,7 +61,7 @@ interface Tutorial {
 }
 
 function useProjectOptions(selectedProjectType: number | undefined) {
-    const teamsQuery = React.useMemo(
+    const teamsQuery = useMemo(
         () => {
             const db = getDatabase();
             return query(
@@ -72,7 +72,7 @@ function useProjectOptions(selectedProjectType: number | undefined) {
         [],
     );
 
-    const tutorialQuery = React.useMemo(
+    const tutorialQuery = useMemo(
         () => {
             const db = getDatabase();
             return query(
@@ -84,7 +84,7 @@ function useProjectOptions(selectedProjectType: number | undefined) {
         [],
     );
 
-    const organisationQuery = React.useMemo(
+    const organisationQuery = useMemo(
         () => {
             const db = getDatabase();
             return ref(db, '/v2/organisations');
@@ -113,7 +113,7 @@ function useProjectOptions(selectedProjectType: number | undefined) {
         query: organisationQuery,
     });
 
-    const teamOptions = React.useMemo(
+    const teamOptions = useMemo(
         () => ([
             { value: 'public', label: 'Public' },
             ...((teams ? Object.entries(teams) : [])
@@ -125,7 +125,7 @@ function useProjectOptions(selectedProjectType: number | undefined) {
         [teams],
     );
 
-    const tutorialOptions = React.useMemo(
+    const tutorialOptions = useMemo(
         () => (tutorials ? Object.values(tutorials) : [])
             .filter((tutorial) => tutorial.projectType === selectedProjectType)
             .map((tutorial) => ({
@@ -136,7 +136,7 @@ function useProjectOptions(selectedProjectType: number | undefined) {
         [tutorials, selectedProjectType],
     );
 
-    const organisationOptions = React.useMemo(
+    const organisationOptions = useMemo(
         () => (organisations ? Object.values(organisations) : [])
             .map((organisation) => ({
                 value: organisation.name,
@@ -145,7 +145,7 @@ function useProjectOptions(selectedProjectType: number | undefined) {
         [organisations],
     );
 
-    const options = React.useMemo(
+    const options = useMemo(
         () => ({
             teamOptions,
             tutorialOptions,

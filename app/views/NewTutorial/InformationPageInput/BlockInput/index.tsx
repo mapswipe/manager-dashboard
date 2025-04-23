@@ -1,16 +1,16 @@
-import React from 'react';
 import {
-    SetValueArg,
     Error,
-    useFormObject,
     getErrorObject,
+    getErrorString,
+    SetValueArg,
+    useFormObject,
 } from '@togglecorp/toggle-form';
 
 import FileInput from '#components/FileInput';
 import MarkdownEditor from '#components/MarkdownEditor';
 
 import { PartialBlocksType } from '../../utils';
-// import styles from './styles.css';
+// import styles from './styles.module.css';
 
 type PartialBlockType = NonNullable<PartialBlocksType>[number];
 interface Props {
@@ -54,7 +54,7 @@ export default function BlockInput(props: Props) {
                     hint="Make sure you have the rights to
                     use this image. It should end with  .jpg or .png."
                     accept="image/png, image/jpeg"
-                    error={error?.imageFile}
+                    error={getErrorString(error?.imageFile)}
                     disabled={disabled}
                 />
             )}

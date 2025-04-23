@@ -1,11 +1,10 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
+import { _cs } from '@togglecorp/fujs';
 
-import Button from '../Button';
 import BodyBackdrop from '../BodyBackdrop';
+import Button from '../Button';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface ModalProps {
     children?: React.ReactNode;

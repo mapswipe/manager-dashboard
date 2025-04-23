@@ -1,17 +1,19 @@
-import React from 'react';
+import {
+    useCallback,
+    useContext,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { getAuth } from 'firebase/auth';
 
-import useMountedRef from '#hooks/useMountedRef';
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
-import { UserContext } from '#base/context/UserContext';
-
+import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
-
+import useMountedRef from '#hooks/useMountedRef';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;
@@ -22,12 +24,12 @@ function Navbar(props: Props) {
     const {
         user,
         setUser,
-    } = React.useContext(UserContext);
+    } = useContext(UserContext);
     const mountedRef = useMountedRef();
 
-    const [logoutPending, setLogoutPending] = React.useState(false);
+    const [logoutPending, setLogoutPending] = useState(false);
 
-    const handleLogoutClick = React.useCallback(async () => {
+    const handleLogoutClick = useCallback(async () => {
         setLogoutPending(true);
         const auth = getAuth();
 
@@ -62,25 +64,21 @@ function Navbar(props: Props) {
                 <div className={styles.main}>
                     <div className={styles.navLinks}>
                         <SmartNavLink
-                            exact
                             route={route.home}
                             className={styles.link}
                             activeClassName={styles.active}
                         />
                         <SmartNavLink
-                            exact
                             route={route.projects}
                             className={styles.link}
                             activeClassName={styles.active}
                         />
                         <SmartNavLink
-                            exact
                             route={route.teams}
                             className={styles.link}
                             activeClassName={styles.active}
                         />
                         <SmartNavLink
-                            exact
                             route={route.userGroups}
                             className={styles.link}
                             activeClassName={styles.active}

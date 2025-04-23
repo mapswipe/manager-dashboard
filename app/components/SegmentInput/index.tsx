@@ -1,10 +1,10 @@
-import React from 'react';
+import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
 import RawButton from '#components/RawButton';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props<Value extends string | number | boolean, Option, Name> extends Omit<InputContainerProps, 'input'> {
     options: Option[];
@@ -44,7 +44,7 @@ function SegmentInput<
         readOnly,
     } = props;
 
-    const handleSegmentClick = React.useCallback((newValue: Value) => {
+    const handleSegmentClick = useCallback((newValue: Value) => {
         onChange(newValue, name);
     }, [onChange, name]);
 

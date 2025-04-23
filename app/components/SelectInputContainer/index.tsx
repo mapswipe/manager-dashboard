@@ -1,22 +1,29 @@
-import React, { useCallback, useRef } from 'react';
+import React, {
+    useCallback,
+    useRef,
+} from 'react';
+import {
+    IoIosArrowDown,
+    IoIosArrowUp,
+    IoMdClose,
+} from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
-import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from 'react-icons/io';
 
+import Button from '#components/Button';
 import GenericOption, {
     ContentBaseProps,
     OptionKey,
 } from '#components/GenericOption';
-import Popup from '#components/Popup';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
+import Popup from '#components/Popup';
 import RawInput from '#components/RawInput';
-import Button from '#components/Button';
-import List from '../List';
-
 import useBlurEffect from '#hooks/useBlurEffect';
 import useKeyboard from '#hooks/useKeyboard';
 
+import List from '../List';
 import EmptyOptions from './EmptyOptions';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 interface GroupProps {
     title: string;
@@ -61,8 +68,8 @@ export type SelectInputContainerProps<
     onFocusedChange: (value: boolean) => void;
     focusedKey: { key: OK, mouse?: boolean } | undefined;
     onFocusedKeyChange: (value: { key: OK, mouse?: boolean } | undefined) => void;
-    searchText: string;
-    onSearchTextChange: (search: string) => void;
+    searchText: string | undefined;
+    onSearchTextChange: (search: string | undefined) => void;
     optionContainerClassName?: string;
     optionKeySelector: (datum: O, index: number) => OK;
     optionRenderer: (props: Pick<P, Exclude<keyof P, 'containerClassName' | 'title'>>) => React.ReactNode;
@@ -160,10 +167,11 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
     );
 
     const handleSearchInputChange = useCallback(
-        (value) => {
+        (value: string | undefined) => {
             if (!dropdownShown) {
                 onDropdownShownChange(true);
             }
+
             onSearchTextChange(value);
         },
         [
@@ -235,7 +243,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
     );
 
     const optionListRendererParams = useCallback(
-        (key, option) => ({
+        (key: OK, option: O) => ({
             contentRendererParam: optionRendererParams,
             option,
             optionKey: key,

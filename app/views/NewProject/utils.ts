@@ -1,43 +1,41 @@
 import {
     isDefined,
-    sum,
-    listToGroupList,
-    isNotDefined,
     isFalsyString,
+    isNotDefined,
+    listToGroupList,
+    sum,
 } from '@togglecorp/fujs';
 import {
-    ObjectSchema,
+    addCondition,
     ArraySchema,
-    PartialForm,
-    requiredStringCondition,
-    integerCondition,
     greaterThanCondition,
     greaterThanOrEqualToCondition,
+    integerCondition,
     lessThanOrEqualToCondition,
-    addCondition,
     nullValue,
+    ObjectSchema,
+    PartialForm,
+    requiredStringCondition,
     urlCondition,
 } from '@togglecorp/toggle-form';
-import { getType as getFeatureType } from '@turf/invariant';
 import getFeatureArea from '@turf/area';
+import { getType as getFeatureType } from '@turf/invariant';
 
+import { Value as DateRange } from '#components/DateRangeInput';
 import {
     TileServer,
     tileServerFieldsSchema,
 } from '#components/TileServerInput';
-
-import { Value as DateRange } from '#components/DateRangeInput';
-
 import {
     getNoMoreThanNCharacterCondition,
-    ProjectType,
-    ProjectInputType,
+    IconKey,
     PROJECT_TYPE_BUILD_AREA,
-    PROJECT_TYPE_FOOTPRINT,
     PROJECT_TYPE_CHANGE_DETECTION,
     PROJECT_TYPE_COMPLETENESS,
+    PROJECT_TYPE_FOOTPRINT,
     PROJECT_TYPE_STREET,
-    IconKey,
+    ProjectInputType,
+    ProjectType,
 } from '#utils/common';
 
 export type CustomOptionsForProject = {
@@ -302,7 +300,7 @@ export const projectFormSchema: ProjectFormSchema = {
             },
             samplingThreshold: {
                 required: false,
-                validation: [
+                validations: [
                     greaterThanCondition(0),
                 ],
             },

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useCallback } from 'react';
 
 import FileInput, { Props as FileInputProps } from '#components/FileInput';
 
@@ -22,8 +22,7 @@ function readImage(data: string) {
     return promise;
 }
 
-interface Props<Name> extends Omit<FileInputProps<Name>, 'accept'> {
-}
+type Props<Name> = Omit<FileInputProps<Name>, 'accept'>;
 
 function ImageInput<Name>(props: Props<Name>) {
     const {
@@ -31,7 +30,7 @@ function ImageInput<Name>(props: Props<Name>) {
         ...otherProps
     } = props;
 
-    const handleChange: typeof onChange = React.useCallback(
+    const handleChange: typeof onChange = useCallback(
         async (newValue, name) => {
             if (!onChange) {
                 return;
@@ -66,7 +65,9 @@ function ImageInput<Name>(props: Props<Name>) {
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
             const blob = await new Promise<Blob | null>(
-                (resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.6),
+                (resolve) => {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.6);
+                },
             );
 
             const reducedFile = blob
@@ -88,6 +89,7 @@ function ImageInput<Name>(props: Props<Name>) {
         <FileInput
             onChange={handleChange}
             accept="image/png, image/jpeg"
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         />
     );

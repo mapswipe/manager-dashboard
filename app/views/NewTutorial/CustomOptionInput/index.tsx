@@ -1,28 +1,35 @@
-import React from 'react';
-import { MdAdd } from 'react-icons/md';
-
 import {
-    SetValueArg,
+    useCallback,
+    useMemo,
+} from 'react';
+import { MdAdd } from 'react-icons/md';
+import {
     Error,
-    useFormObject,
     getErrorObject,
+    SetValueArg,
     useFormArray,
+    useFormObject,
 } from '@togglecorp/toggle-form';
+
 import Button from '#components/Button';
 import Heading from '#components/Heading';
-import TextInput from '#components/TextInput';
+import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import SelectInput from '#components/SelectInput';
-import NonFieldError from '#components/NonFieldError';
-import { customOptionsOnlyIconList, keySelector, labelSelector } from '#utils/common';
-
-import SubOptionInput from './SubOptionInput';
+import TextInput from '#components/TextInput';
 import {
-    PartialTutorialFormType,
-    iconColorOptions,
-} from '../utils';
+    customOptionsOnlyIconList,
+    keySelector,
+    labelSelector,
+} from '#utils/common';
 
-import styles from './styles.css';
+import {
+    iconColorOptions,
+    PartialTutorialFormType,
+} from '../utils';
+import SubOptionInput from './SubOptionInput';
+
+import styles from './styles.module.css';
 
 export type PartialCustomOptionsType = NonNullable<PartialTutorialFormType['customOptions']>[number]
 const defaultCustomOptionsValue: PartialCustomOptionsType = {
@@ -59,12 +66,12 @@ export default function CustomOptionInput(props: Props) {
 
     const error = getErrorObject(riskyError);
 
-    const subOptionsError = React.useMemo(
+    const subOptionsError = useMemo(
         () => getErrorObject(error?.subOptions),
         [error?.subOptions],
     );
 
-    const handleSubOptionsAdd = React.useCallback(
+    const handleSubOptionsAdd = useCallback(
         () => {
             onOptionChange(
                 (oldValue: PartialCustomOptionsType['subOptions']) => {

@@ -1,10 +1,9 @@
-import React from 'react';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 
 import Heading from '#components/Heading';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;

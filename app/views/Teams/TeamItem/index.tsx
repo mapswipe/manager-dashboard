@@ -1,25 +1,27 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
 import {
-    getDatabase,
-    ref,
-    query,
-    orderByChild,
-    equalTo,
-} from 'firebase/database';
-
+    useMemo,
+    useState,
+} from 'react';
 import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
+import { _cs } from '@togglecorp/fujs';
+import {
+    equalTo,
+    getDatabase,
+    orderByChild,
+    query,
+    ref,
+} from 'firebase/database';
 
-import usePagination from '#hooks/usePagination';
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
 import Button from '#components/Button';
 import Pager from '#components/Pager';
 import PendingMessage from '#components/PendingMessage';
+import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
+import usePagination from '#hooks/usePagination';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Team {
     teamName: string;
@@ -51,8 +53,8 @@ function TeamItem(props: Props) {
         teamId,
     } = props;
 
-    const [showDetails, setShowDetails] = React.useState(false);
-    const teamMembersQuery = React.useMemo(
+    const [showDetails, setShowDetails] = useState(false);
+    const teamMembersQuery = useMemo(
         () => {
             const db = getDatabase();
             return query(
@@ -72,7 +74,7 @@ function TeamItem(props: Props) {
         query: teamMembersQuery,
     });
 
-    const teamMemberList = React.useMemo(
+    const teamMemberList = useMemo(
         () => (teamMembers ? Object.entries(teamMembers) : []),
         [teamMembers],
     );

@@ -1,24 +1,22 @@
-import React from 'react';
+import { useMemo } from 'react';
+import { MdSearch } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 import {
     getDatabase,
     ref,
 } from 'firebase/database';
-import {
-    MdSearch,
-} from 'react-icons/md';
 
-import usePagination from '#hooks/usePagination';
+import Pager from '#components/Pager';
+import PendingMessage from '#components/PendingMessage';
+import { rankedSearchOnList } from '#components/SelectInput/utils';
+import TextInput from '#components/TextInput';
 import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
 import useInputState from '#hooks/useInputState';
-import TextInput from '#components/TextInput';
-import PendingMessage from '#components/PendingMessage';
-import Pager from '#components/Pager';
-import { rankedSearchOnList } from '#components/SelectInput/utils';
+import usePagination from '#hooks/usePagination';
 
 import TeamItem, { Team } from './TeamItem';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;
@@ -31,7 +29,7 @@ function Teams(props: Props) {
 
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
-    const teamsQuery = React.useMemo(
+    const teamsQuery = useMemo(
         () => {
             const db = getDatabase();
             return ref(db, '/v2/teams');
@@ -46,9 +44,9 @@ function Teams(props: Props) {
         query: teamsQuery,
     });
 
-    const teamList = React.useMemo(() => (teams
+    const teamList = useMemo(() => (teams
         ? Object.entries(teams).reverse() : []), [teams]);
-    const filteredTeamList = React.useMemo(
+    const filteredTeamList = useMemo(
         () => rankedSearchOnList(
             teamList,
             searchText,

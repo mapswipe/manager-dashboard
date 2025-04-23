@@ -1,94 +1,97 @@
-import React from 'react';
+import {
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
+import {
+    MdOutlinePublishedWithChanges,
+    MdOutlineUnpublished,
+} from 'react-icons/md';
+import { Link } from 'react-router';
 import {
     _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
-    useForm,
-    getErrorObject,
-    createSubmitHandler,
     analyzeErrors,
+    createSubmitHandler,
+    getErrorObject,
     nonFieldError,
+    useForm,
 } from '@togglecorp/toggle-form';
 import {
+    equalTo,
+    getDatabase,
+    orderByChild,
+    push as pushToDatabase,
+    query,
+    ref as databaseRef,
+    set as setToDatabase,
+} from 'firebase/database';
+import {
+    getDownloadURL,
     getStorage,
     ref as storageRef,
     uploadBytes,
-    getDownloadURL,
 } from 'firebase/storage';
-import {
-    getDatabase,
-    ref as databaseRef,
-    push as pushToDatabase,
-    set as setToDatabase,
-    query,
-    orderByChild,
-    equalTo,
-} from 'firebase/database';
-import {
-    MdOutlinePublishedWithChanges,
-    MdOutlineUnpublished,
-} from 'react-icons/md';
-import { Link } from 'react-router-dom';
 
-import UserContext from '#base/context/UserContext';
 import projectTypeOptions from '#base/configs/projectTypes';
-import useMountedRef from '#hooks/useMountedRef';
+import UserContext from '#base/context/UserContext';
+import AlertBanner from '#components/AlertBanner';
+import AnimatedSwipeIcon from '#components/AnimatedSwipeIcon';
+import Button from '#components/Button';
+import Checkbox from '#components/Checkbox';
+import DateRangeInput from '#components/DateRangeInput';
+import ExpandableContainer from '#components/ExpandableContainer';
+import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import InputSection from '#components/InputSection';
 import Modal from '#components/Modal';
-import TextInput from '#components/TextInput';
+import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import SegmentInput from '#components/SegmentInput';
-import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import TextInput from '#components/TextInput';
 import TileServerInput, {
     TILE_SERVER_BING,
     TILE_SERVER_ESRI,
     tileServerDefaultCredits,
 } from '#components/TileServerInput';
-import InputSection from '#components/InputSection';
-import Button from '#components/Button';
-import NonFieldError from '#components/NonFieldError';
-import AnimatedSwipeIcon from '#components/AnimatedSwipeIcon';
-import ExpandableContainer from '#components/ExpandableContainer';
-import AlertBanner from '#components/AlertBanner';
-import Checkbox from '#components/Checkbox';
-import DateRangeInput from '#components/DateRangeInput';
+import useMountedRef from '#hooks/useMountedRef';
 import {
-    valueSelector,
-    labelSelector,
-    ProjectType,
-    ProjectInputType,
-    PROJECT_TYPE_BUILD_AREA,
-    PROJECT_TYPE_FOOTPRINT,
-    PROJECT_TYPE_COMPLETENESS,
-    PROJECT_TYPE_CHANGE_DETECTION,
-    PROJECT_TYPE_STREET,
     formatProjectTopic,
+    labelSelector,
+    PROJECT_TYPE_BUILD_AREA,
+    PROJECT_TYPE_CHANGE_DETECTION,
+    PROJECT_TYPE_COMPLETENESS,
+    PROJECT_TYPE_FOOTPRINT,
+    PROJECT_TYPE_STREET,
+    ProjectInputType,
+    ProjectType,
+    valueSelector,
 } from '#utils/common';
 import { getValueFromFirebase } from '#utils/firebase';
-
 import CustomOptionInput from '#views/NewTutorial/CustomOptionInput';
 import CustomOptionPreview from '#views/NewTutorial/CustomOptionInput/CustomOptionPreview';
 
+import BasicProjectInfoForm from './BasicProjectInfoForm';
 import {
-    projectFormSchema,
-    ProjectFormType,
-    PartialProjectFormType,
-    projectInputTypeOptions,
-    filterOptions,
-    PROJECT_INPUT_TYPE_UPLOAD,
-    PROJECT_INPUT_TYPE_LINK,
-    PROJECT_INPUT_TYPE_TASKING_MANAGER_ID,
     FILTER_BUILDINGS,
     FILTER_OTHERS,
+    filterOptions,
     getGroupSize,
+    PartialProjectFormType,
+    PROJECT_INPUT_TYPE_LINK,
+    PROJECT_INPUT_TYPE_TASKING_MANAGER_ID,
+    PROJECT_INPUT_TYPE_UPLOAD,
+    projectFormSchema,
+    ProjectFormType,
+    projectInputTypeOptions,
     validateAoiOnOhsome,
     validateProjectIdOnHotTaskingManager,
 } from './utils';
-import BasicProjectInfoForm from './BasicProjectInfoForm';
 
-// eslint-disable-next-line postcss-modules/no-unused-class
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 const defaultProjectFormValue: PartialProjectFormType = {
     // projectType: PROJECT_TYPE_BUILD_AREA,
@@ -120,7 +123,7 @@ function NewProject(props: Props) {
         className,
     } = props;
 
-    const { user } = React.useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const mountedRef = useMountedRef();
 
@@ -135,21 +138,21 @@ function NewProject(props: Props) {
         value: defaultProjectFormValue,
     });
 
-    const [testPending, setTestPending] = React.useState(false);
-    const [geometryDescription, setGeometryDescription] = React.useState<string>();
-    const [TMIdDescription, setTMIdDescription] = React.useState<string>();
+    const [testPending, setTestPending] = useState(false);
+    const [geometryDescription, setGeometryDescription] = useState<string>();
+    const [TMIdDescription, setTMIdDescription] = useState<string>();
 
     const [
         projectSubmissionStatus,
         setProjectSubmissionStatus,
-    ] = React.useState<'started' | 'imageUpload' | 'projectSubmit' | 'success' | 'failed' | undefined>();
+    ] = useState<'started' | 'imageUpload' | 'projectSubmit' | 'success' | 'failed' | undefined>();
 
-    const error = React.useMemo(
+    const error = useMemo(
         () => getErrorObject(formError),
         [formError],
     );
 
-    const handleProjectTypeChange = React.useCallback(
+    const handleProjectTypeChange = useCallback(
         (projectType: ProjectType | undefined) => {
             setValue((oldVal) => ({
                 ...oldVal,
@@ -170,7 +173,7 @@ function NewProject(props: Props) {
         [setValue],
     );
 
-    const handleInputTypeChange = React.useCallback(
+    const handleInputTypeChange = useCallback(
         (inputType: ProjectInputType | undefined) => {
             setValue((oldVal) => ({
                 ...oldVal,
@@ -185,7 +188,7 @@ function NewProject(props: Props) {
         [setValue],
     );
 
-    const setFieldValueAndClearTestMessage: typeof setFieldValue = React.useCallback(
+    const setFieldValueAndClearTestMessage: typeof setFieldValue = useCallback(
         (...params) => {
             setFieldValue(...params);
             setGeometryDescription(undefined);
@@ -194,7 +197,7 @@ function NewProject(props: Props) {
         [setFieldValue],
     );
 
-    const handleTestAoi = React.useCallback(() => {
+    const handleTestAoi = useCallback(() => {
         const finalValues = value;
         async function submitToFirebase() {
             if (!mountedRef.current) {
@@ -254,7 +257,7 @@ function NewProject(props: Props) {
         submitToFirebase();
     }, [mountedRef, setError, value]);
 
-    const handleFormSubmission = React.useCallback((
+    const handleFormSubmission = useCallback((
         finalValuesFromProps: PartialProjectFormType,
     ) => {
         const userId = user?.id;
@@ -410,12 +413,12 @@ function NewProject(props: Props) {
         submitToFirebase();
     }, [user, mountedRef, setError]);
 
-    const handleSubmitButtonClick = React.useMemo(
+    const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
 
-    const hasErrors = React.useMemo(
+    const hasErrors = useMemo(
         () => analyzeErrors(error),
         [error],
     );
@@ -438,7 +441,7 @@ function NewProject(props: Props) {
 
     const { customOptions: customOptionsFromValue } = value;
 
-    const customOptions = React.useMemo(() => (customOptionsFromValue?.map((option) => ({
+    const customOptions = useMemo(() => (customOptionsFromValue?.map((option) => ({
         ...option,
         optionId: option.value,
         subOptions: option.subOptions?.map((subOption) => ({
@@ -447,12 +450,11 @@ function NewProject(props: Props) {
         })),
     }))), [customOptionsFromValue]);
 
-    const optionsError = React.useMemo(
+    const optionsError = useMemo(
         () => getErrorObject(error?.customOptions),
         [error?.customOptions],
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const noOp = () => {};
 
     return (

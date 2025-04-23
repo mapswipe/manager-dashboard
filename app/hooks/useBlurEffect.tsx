@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 
 function useBlurEffect(
     shouldWatch: boolean,
@@ -6,7 +6,7 @@ function useBlurEffect(
     elementRef: React.RefObject<HTMLElement>,
     parentRef: React.RefObject<HTMLElement>,
 ) {
-    React.useEffect(
+    useEffect(
         () => {
             if (!shouldWatch) {
                 return undefined;

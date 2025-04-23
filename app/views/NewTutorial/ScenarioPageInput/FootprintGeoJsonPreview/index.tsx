@@ -1,21 +1,24 @@
-import React from 'react';
-import { StyleFunction } from 'leaflet';
 import { _cs } from '@togglecorp/fujs';
+import { StyleFunction } from 'leaflet';
 
-import MobilePreview from '#components/MobilePreview';
 import GeoJsonPreview from '#components/GeoJsonPreview';
-import { IconKey, iconMap } from '#utils/common';
+import MobilePreview from '#components/MobilePreview';
+import {
+    IconKey,
+    iconMap,
+} from '#utils/common';
 
 import {
-    PartialCustomOptionsType,
     colorKeyToColorMap,
     FootprintGeoJSON,
     FootprintProperties,
+    PartialCustomOptionsType,
 } from '../../utils';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 // NOTE: the padding is selected wrt the size of the preview
-const footprintGeojsonPadding = [140, 140];
+const footprintGeojsonPadding: [number, number] = [140, 140];
 
 interface Props {
     className?: string;

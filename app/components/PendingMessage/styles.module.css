@@ -1,0 +1,15 @@
+.pending-message {
+    display: flex;
+    gap: var(--spacing-medium);
+    align-items: center;
+
+    .icon {
+        animation: rotate 1s linear infinite;
+        font-size: 1.2em;
+    }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg) }
+    to { transform: rotate(360deg) }
+}

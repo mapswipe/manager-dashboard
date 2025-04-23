@@ -1,9 +1,9 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import RawButton, { Props as RawButtonProps } from '../RawButton';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export type ButtonVariant = (
     'default'

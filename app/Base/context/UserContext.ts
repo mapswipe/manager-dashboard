@@ -8,7 +8,7 @@ export interface UserContextInterface {
     authenticated: boolean,
 }
 
-export const UserContext = createContext<UserContextInterface>({
+const UserContext = createContext<UserContextInterface>({
     authenticated: false,
     user: undefined,
     setUser: (value: unknown) => {

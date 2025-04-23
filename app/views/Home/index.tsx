@@ -1,24 +1,24 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
 import { MdSearch } from 'react-icons/md';
+import { Link } from 'react-router';
+import { _cs } from '@togglecorp/fujs';
 
-import route from '#base/configs/routes';
 import SmartLink from '#base/components/SmartLink';
-import useBooleanState from '#hooks/useBooleanState';
-
+import route from '#base/configs/routes';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import useBooleanState from '#hooks/useBooleanState';
 import useInputState from '#hooks/useInputState';
 
 import OrganisationFormModal from './OrganisationFormModal';
 import OrganisationList from './OrganisationList';
 import TutorialList from './TutorialList';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 interface Props {
     className?: string;
@@ -34,8 +34,8 @@ function Home(props: Props) {
     ] = useBooleanState(false);
 
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
-    const [showOrganisationList, setShowOrganisationList] = React.useState(false);
-    const [showTutorialList, setShowTutorialList] = React.useState(false);
+    const [showOrganisationList, setShowOrganisationList] = useState(false);
+    const [showTutorialList, setShowTutorialList] = useState(false);
 
     return (
         <div className={_cs(styles.home, className)}>

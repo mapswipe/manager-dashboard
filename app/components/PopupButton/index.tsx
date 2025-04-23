@@ -1,12 +1,20 @@
-import React from 'react';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
+import {
+    IoIosArrowDown,
+    IoIosArrowUp,
+} from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import Button, { ButtonProps } from '#components/Button';
-import useBlurEffect from '#hooks/useBlurEffect';
 import Popup from '#components/Popup';
+import useBlurEffect from '#hooks/useBlurEffect';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label'> {
     popupClassName?: string;
@@ -35,12 +43,12 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
         ...otherProps
     } = props;
 
-    const buttonRef = React.useRef<HTMLButtonElement>(null);
-    const popupRef = React.useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const popupRef = useRef<HTMLDivElement>(null);
 
-    const [popupShown, setPopupShown] = React.useState(defaultShown ?? false);
+    const [popupShown, setPopupShown] = useState(defaultShown ?? false);
 
-    React.useEffect(
+    useEffect(
         () => {
             if (componentRef) {
                 componentRef.current = {
@@ -58,7 +66,7 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
         buttonRef,
     );
 
-    const handleShowPopup = React.useCallback(
+    const handleShowPopup = useCallback(
         () => {
             setPopupShown((prevState) => !prevState);
         },
@@ -68,6 +76,7 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
     return (
         <>
             <Button
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...otherProps}
                 name={name}
                 elementRef={buttonRef}
@@ -75,11 +84,8 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
                 actions={(
                     <>
                         {actions}
-                        {!arrowHidden && (
-                            <>
-                                {popupShown ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                            </>
-                        )}
+                        {!arrowHidden && popupShown && <IoIosArrowUp />}
+                        {!arrowHidden && !popupShown && <IoIosArrowDown />}
                     </>
                 )}
             >

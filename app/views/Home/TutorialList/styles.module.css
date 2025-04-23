@@ -1,0 +1,49 @@
+.tutorial-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+
+    .list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-super-small);
+    }
+
+    .empty-list {
+        padding: var(--spacing-medium);
+        color: var(--color-text-watermark);
+    }
+
+    .tutorial {
+        padding: var(--spacing-medium);
+
+        .heading {
+            display: flex;
+            gap: var(--spacing-medium);
+            align-items: center;
+
+            .icon {
+                flex-shrink: 0;
+            }
+
+            .name {
+                font-weight: var(--font-weight-bold);
+            }
+        }
+
+        .look-for {
+            color: var(--color-text-light);
+        }
+    }
+
+    .tutorial-count {
+        font-weight: var(--font-weight-bold);
+    }
+
+    .footer-actions {
+        display: flex;
+        gap: var(--spacing-large);
+        align-items: center;
+        justify-content: flex-end;
+    }
+}

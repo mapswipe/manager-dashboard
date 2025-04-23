@@ -1,13 +1,12 @@
-import React from 'react';
-
-import { iconMap } from '#utils/common';
 import MobilePreview from '#components/MobilePreview';
+import { iconMap } from '#utils/common';
 
 import {
     colorKeyToColorMap,
     PartialTutorialFormType,
 } from '../../utils';
-import styles from './styles.css';
+
+import styles from './styles.module.css';
 
 interface Props {
     value: PartialTutorialFormType['customOptions'];

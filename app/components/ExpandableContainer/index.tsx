@@ -1,10 +1,13 @@
-import React from 'react';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { useState } from 'react';
+import {
+    IoIosArrowDown,
+    IoIosArrowUp,
+} from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 interface Props {
     icons?: React.ReactNode;
@@ -25,7 +28,7 @@ function ExpandableContainer(props: Props) {
         openByDefault = false,
     } = props;
 
-    const [isExpanded, setIsExpanded] = React.useState(openByDefault);
+    const [isExpanded, setIsExpanded] = useState(openByDefault);
 
     return (
         <div

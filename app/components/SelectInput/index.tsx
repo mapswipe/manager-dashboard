@@ -1,9 +1,7 @@
-import React from 'react';
-
 import SearchSelectInput, { SearchSelectInputProps } from './SearchSelectInput';
 import {
-    rankedSearchOnList,
     OptionKey,
+    rankedSearchOnList,
 } from './utils';
 
 type Def = { containerClassName?: string };

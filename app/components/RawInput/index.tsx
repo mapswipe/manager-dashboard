@@ -1,7 +1,7 @@
-import React from 'react';
+import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import styles from './styles.css';
+import styles from './styles.module.css';
 
 export interface Props<N> extends Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'value' | 'name'> {
     /**
@@ -44,7 +44,7 @@ function RawInput<N>(
         ...otherProps
     }: Props<N>,
 ) {
-    const handleChange = React.useCallback(
+    const handleChange = useCallback(
         (e: React.FormEvent<HTMLInputElement>) => {
             const {
                 currentTarget: {
@@ -72,6 +72,7 @@ function RawInput<N>(
             value={value ?? ''}
             disabled={disabled || readOnly}
             readOnly={readOnly}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         />
     );
