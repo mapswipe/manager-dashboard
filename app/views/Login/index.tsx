@@ -1,8 +1,11 @@
 import {
     useCallback,
     useMemo,
-    useState,
 } from 'react';
+import {
+    gql,
+    useMutation,
+} from '@apollo/client';
 import { _cs } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
@@ -12,19 +15,25 @@ import {
     requiredStringCondition,
     useForm,
 } from '@togglecorp/toggle-form';
-import {
-    AuthError,
-    AuthErrorCodes,
-    getAuth,
-    signInWithEmailAndPassword,
-} from 'firebase/auth';
 
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
-import useMountedRef from '#hooks/useMountedRef';
+import {
+    LoginMutation,
+    LoginMutationVariables,
+} from '#generated/types/graphql';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
 import styles from './styles.module.css';
+
+const LOGIN_MUTATION = gql`
+mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+        id
+        displayName
+    }
+}
+`;
 
 interface LoginFormFields {
     email?: string | undefined;
@@ -57,8 +66,6 @@ function Login(props: Props) {
         className,
     } = props;
 
-    const mountedRef = useMountedRef();
-
     const {
         setFieldValue,
         error: formError,
@@ -68,7 +75,10 @@ function Login(props: Props) {
     } = useForm(loginFormSchema, { value: defaultLoginFormValue });
     const error = getErrorObject(formError);
 
-    const [pending, setPending] = useState(false);
+    const [
+        loginToGql,
+        { loading: pending },
+    ] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION);
 
     const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
@@ -78,6 +88,11 @@ function Login(props: Props) {
                 return;
             }
 
+            loginToGql({
+                variables: { username: finalValues.email, password: finalValues.password },
+            });
+
+            /*
             try {
                 setPending(true);
 
@@ -130,10 +145,11 @@ function Login(props: Props) {
 
                 setPending(false);
             }
+                */
         }
 
         login();
-    }, [mountedRef, setError]);
+    }, [loginToGql]);
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),

@@ -1,3 +1,4 @@
+import { Cookies } from 'react-cookie';
 import {
     ApolloClientOptions,
     ApolloLink as ApolloLinkFromClient,
@@ -8,9 +9,15 @@ import {
 
 const GRAPHQL_ENDPOINT = import.meta.env.REACT_APP_GRAPHQL_ENDPOINT;
 
+const cookies = new Cookies();
+
 const link = new HttpLink({
     uri: GRAPHQL_ENDPOINT,
     credentials: 'include',
+    headers: {
+        // 'X-CSRFToken': cookies.get(import.meta.env.REACT_APP_CSRF_TOKEN_KEY),
+        XCSRFToken: cookies.get(import.meta.env.REACT_APP_CSRF_TOKEN_KEY),
+    },
 }) as unknown as ApolloLinkFromClient;
 
 /*

@@ -38,6 +38,7 @@ jobs:
         run: pnpm build
         env:
           REACT_APP_ENVIRONMENT: 'ci'
+          REACT_APP_CSRF_TOKEN_KEY: 'random-csrf-token-key'
           REACT_APP_SENTRY_DSN: 'https://random-token@sentry.io'
           REACT_APP_SENTRY_TRACES_SAMPLE_RATE: 0.2
           REACT_APP_FIREBASE_API_KEY: 'random-firebase-key'
