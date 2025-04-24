@@ -4,7 +4,7 @@ import RawTextArea, { Props as RawTextAreaProps } from '../RawTextArea';
 export type TextInputProps<N> = Omit<InputContainerProps, 'input'>
     & Omit<RawTextAreaProps<N>, 'containerRef' | 'inputSectionRef'>;
 
-function TextInput<N>(props: TextInputProps<N>) {
+function TextInput<const N>(props: TextInputProps<N>) {
     const {
         actions,
         actionsContainerClassName,

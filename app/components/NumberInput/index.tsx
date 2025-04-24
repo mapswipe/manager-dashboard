@@ -31,7 +31,7 @@ export type Props<N> = Omit<InputContainerProps, 'input'>
         ) => void;
     };
 
-function NumberInput<N>(props: Props<N>) {
+function NumberInput<const N>(props: Props<N>) {
     const {
         actions,
         actionsContainerClassName,

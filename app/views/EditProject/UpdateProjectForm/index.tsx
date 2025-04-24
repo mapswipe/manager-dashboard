@@ -1,0 +1,370 @@
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+} from 'react';
+import {
+    MdArrowForward,
+    MdSave,
+} from 'react-icons/md';
+import { useParams } from 'react-router';
+import {
+    gql,
+    useMutation,
+} from '@apollo/client';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
+import {
+    createSubmitHandler,
+    getErrorObject,
+    removeNull,
+    useForm,
+    useFormObject,
+} from '@togglecorp/toggle-form';
+
+import Button from '#components/Button';
+import Heading from '#components/Heading';
+import NonFieldError from '#components/NonFieldError';
+import NumberInput from '#components/NumberInput';
+import PageLayout from '#components/PageLayout';
+import ProjectStatusOutput from '#components/ProjectStatusOutput';
+import TextArea from '#components/TextArea';
+import TextInput from '#components/TextInput';
+import {
+    ProjectDetailsQuery,
+    ProjectStatusEnum,
+    ProjectTypeEnum,
+    ProjectTypeSpecificInput,
+    ProjectUpdateInput,
+    UpdateProjectMutation,
+    UpdateProjectMutationVariables,
+} from '#generated/types/graphql';
+import { transformErrors } from '#utils/error';
+
+import CompareProjectSpecifics from '../ProjectSpecifics/Compare';
+import {
+    defaultCompareSpecificFormValue,
+    PartialCompareSpecificFields,
+} from '../ProjectSpecifics/Compare/schema';
+import FindProjectSpecifics from '../ProjectSpecifics/Find';
+import {
+    defaultFindSpecificFormValue,
+    PartialFindSpecificFields,
+} from '../ProjectSpecifics/Find/schema';
+import projectUpdateFormSchema, {
+    PartialProjectTypeSpecificInput,
+    type PartialProjectUpdateInput,
+} from './schema.ts';
+
+import styles from './styles.module.css';
+
+const UPDATE_PROJECT_MUTATION = gql`
+mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
+    updateProject(data: $data, pk: $id) {
+        ... on ProjectTypeMutationResponseType {
+            errors
+            ok
+            result {
+                id
+                status
+            }
+        }
+    }
+}
+`;
+
+const defaultProjectTypeSpecificsValue: PartialProjectTypeSpecificInput = {
+};
+
+const defaultBaseProjectFormValue: PartialProjectUpdateInput = {
+};
+
+interface Props {
+    className?: string;
+    projectData: ProjectDetailsQuery;
+}
+
+function UpdateProjectForm(props: Props) {
+    const { id: projectIdFromParams } = useParams<{ id: string }>();
+
+    const {
+        className,
+        projectData,
+    } = props;
+
+    const [
+        updateProject,
+        { loading: updateProjectPending },
+    ] = useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UPDATE_PROJECT_MUTATION);
+
+    const projectContext = useMemo(() => ({
+        projectType: projectData?.project.projectType,
+    }), [projectData]);
+
+    const {
+        value,
+        error: formError,
+        setFieldValue,
+        validate,
+        setError,
+        setValue,
+    } = useForm(projectUpdateFormSchema, {
+        value: defaultBaseProjectFormValue,
+    }, projectContext);
+
+    useEffect(() => {
+        if (isNotDefined(projectData)) {
+            return;
+        }
+
+        const {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            id,
+            projectType,
+            requestingOrganization,
+            projectTypeSpecifics,
+            ...other
+        } = removeNull(projectData.project);
+
+        const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
+            [ProjectTypeEnum.Find]: 'find',
+            [ProjectTypeEnum.Compare]: 'compare',
+            [ProjectTypeEnum.Completeness]: 'completeness',
+        };
+
+        setValue({
+            ...other,
+            requestingOrganization: requestingOrganization.id,
+            projectTypeSpecifics: {
+                [projectTypeToKeyMap[projectType]]: projectTypeSpecifics,
+            },
+        });
+    }, [projectData, setValue]);
+
+    const error = getErrorObject(formError);
+
+    const submitUpdateForm = useCallback(async (
+        finalValues: ProjectUpdateInput,
+    ) => {
+        if (isDefined(projectIdFromParams)) {
+            const results = await updateProject({
+                variables: {
+                    id: projectIdFromParams,
+                    data: finalValues,
+                },
+            });
+
+            if (isDefined(results.data)
+                // eslint-disable-next-line no-underscore-dangle
+                && results.data.updateProject.__typename === 'ProjectTypeMutationResponseType'
+            ) {
+                const {
+                    ok,
+                    errors,
+                    // result,
+                } = results.data.updateProject;
+
+                if (!ok) {
+                    setError(transformErrors(errors));
+                }
+            }
+        }
+    }, [projectIdFromParams, updateProject, setError]);
+
+    const handleUpdateDraft = useCallback(async (
+        submittedFormValues: PartialProjectUpdateInput,
+    ) => {
+        const finalValues = submittedFormValues as ProjectUpdateInput;
+        submitUpdateForm(finalValues);
+    }, [submitUpdateForm]);
+
+    const handleUpdateDraftButtonClick = useMemo(
+        () => createSubmitHandler(validate, setError, handleUpdateDraft),
+        [validate, setError, handleUpdateDraft],
+    );
+
+    const handleStartProcessing = useCallback((
+        submittedFormValues: PartialProjectUpdateInput,
+    ) => {
+        const finalValues = { ...submittedFormValues } as ProjectUpdateInput;
+        finalValues.status = ProjectStatusEnum.MarkedAsReady;
+
+        submitUpdateForm(finalValues);
+    }, [submitUpdateForm]);
+
+    const handleStartProcessingButtonClick = useMemo(
+        () => createSubmitHandler(validate, setError, handleStartProcessing),
+        [validate, setError, handleStartProcessing],
+    );
+
+    const setProjectSpecificFieldValue = useFormObject<'projectTypeSpecifics', PartialProjectTypeSpecificInput>(
+        'projectTypeSpecifics',
+        setFieldValue,
+        defaultProjectTypeSpecificsValue,
+    );
+
+    const setFindProjectSpecificsFieldValue = useFormObject<'find', PartialFindSpecificFields>(
+        'find',
+        setProjectSpecificFieldValue,
+        defaultFindSpecificFormValue,
+    );
+
+    const setCompareProjectSpecificsFieldValue = useFormObject<'compare', PartialCompareSpecificFields>(
+        'compare',
+        setProjectSpecificFieldValue,
+        defaultCompareSpecificFormValue,
+    );
+
+    const pending = updateProjectPending;
+    const baseInputsEditable = isDefined(projectData) && (
+        projectData.project.status === ProjectStatusEnum.Draft
+        || projectData.project.status === ProjectStatusEnum.Failed
+        || projectData.project.status === ProjectStatusEnum.Ready
+    );
+    const projectTypeSpecificInputsEditable = isDefined(projectData) && (
+        projectData.project.status === ProjectStatusEnum.Draft
+        || projectData.project.status === ProjectStatusEnum.Failed
+    );
+
+    const baseInputsDisabled = pending || !baseInputsEditable;
+    const projectTypeSpecificInputsDisabled = pending || !projectTypeSpecificInputsEditable;
+
+    return (
+        <PageLayout
+            heading="Update project"
+            className={_cs(styles.updateProjectForm, className)}
+            footerActions={(
+                <Button
+                    name={undefined}
+                    onClick={handleStartProcessingButtonClick}
+                    disabled={baseInputsDisabled}
+                    variant="primary"
+                    actions={<MdArrowForward />}
+                >
+                    Save and Start processing
+                </Button>
+            )}
+            headerActions={(
+                <Button
+                    name={undefined}
+                    onClick={handleUpdateDraftButtonClick}
+                    disabled={baseInputsDisabled}
+                    icons={<MdSave />}
+                >
+                    Update draft
+                </Button>
+            )}
+            aside={(
+                <ProjectStatusOutput
+                    value={projectData?.project.status}
+                />
+            )}
+            mainContentClassName={styles.mainContent}
+        >
+            {projectData?.project.status === ProjectStatusEnum.Failed && (
+                <div className={styles.processingsFailedMessage}>
+                    There was an error while processing the project.
+                    Please make the necessary changes before proceeding!
+                </div>
+            )}
+            <div className={styles.baseInputs}>
+                <TextInput
+                    label="Project title"
+                    name="name"
+                    value={value.name}
+                    onChange={setFieldValue}
+                    error={error?.name}
+                    disabled={baseInputsDisabled}
+                />
+                <TextArea
+                    label="Project description"
+                    name="description"
+                    value={value.description}
+                    onChange={setFieldValue}
+                    error={error?.description}
+                    disabled={baseInputsDisabled}
+                    rows={4}
+                />
+                <TextInput
+                    label="Look for"
+                    name="lookFor"
+                    value={value.lookFor}
+                    onChange={setFieldValue}
+                    error={error?.lookFor}
+                    disabled={baseInputsDisabled}
+                />
+                <TextInput
+                    label="Organization"
+                    name="requestingOrganization"
+                    value={value.requestingOrganization}
+                    onChange={setFieldValue}
+                    error={error?.requestingOrganization}
+                    disabled={baseInputsDisabled}
+                />
+                <TextInput
+                    label="Additional info URL"
+                    name="additionalInfoUrl"
+                    value={value.additionalInfoUrl}
+                    onChange={setFieldValue}
+                    error={error?.additionalInfoUrl}
+                    disabled={baseInputsDisabled}
+                />
+                <NumberInput
+                    label="Verification number"
+                    name="verificationNumber"
+                    value={value.verificationNumber}
+                    onChange={setFieldValue}
+                    error={error?.verificationNumber}
+                    disabled={baseInputsDisabled}
+                />
+                <NumberInput
+                    label="Group size"
+                    name="groupSize"
+                    value={value.groupSize}
+                    onChange={setFieldValue}
+                    error={error?.groupSize}
+                    disabled={baseInputsDisabled}
+                />
+                <NumberInput
+                    label="Max tasks per user"
+                    name="maxTasksPerUser"
+                    value={value.maxTasksPerUser}
+                    onChange={setFieldValue}
+                    error={error?.maxTasksPerUser}
+                    disabled={baseInputsDisabled}
+                />
+            </div>
+            <div className={styles.projectTypeSpecificInputs}>
+                <Heading level={3}>
+                    {`ProjectType: ${projectContext.projectType}`}
+                </Heading>
+                <NonFieldError
+                    error={error?.projectTypeSpecifics}
+                />
+                {projectContext.projectType === ProjectTypeEnum.Find
+                    && isDefined(projectIdFromParams) && (
+                    <FindProjectSpecifics
+                        projectId={projectIdFromParams}
+                        value={value.projectTypeSpecifics?.find}
+                        setFieldValue={setFindProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.find}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                )}
+                {projectContext.projectType === ProjectTypeEnum.Compare && (
+                    <CompareProjectSpecifics
+                        value={value.projectTypeSpecifics?.compare}
+                        setFieldValue={setCompareProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.compare}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                )}
+            </div>
+        </PageLayout>
+    );
+}
+
+export default UpdateProjectForm;

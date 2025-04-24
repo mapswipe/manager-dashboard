@@ -7,6 +7,10 @@
     color: var(--color-text-gray);
     gap: var(--spacing-small);
 
+    .icon {
+        font-size: 10rem;
+    }
+
     .empty-message-title {
         font-size: var(--font-size-large);
         font-weight: var(--font-weight-bold);

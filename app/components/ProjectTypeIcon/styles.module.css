@@ -1,0 +1,22 @@
+.project-type-icon {
+    display: block;
+    --height: 1rem;
+    width: var(--height);
+    height: var(--height);
+
+    path {
+        fill: currentColor;
+    }
+
+    &.small {
+        --height: 0.8rem;
+    }
+
+    &.medium {
+        --height: 1rem;
+    }
+
+    &.large {
+        --height: 1.2rem;
+    }
+}

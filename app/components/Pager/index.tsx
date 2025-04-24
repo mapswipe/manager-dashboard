@@ -88,7 +88,7 @@ function Pager(props: Props) {
                     name={i}
                     onClick={onActivePageChange}
                     className={_cs(styles.page, i === activePage && styles.active)}
-                    variant={i === activePage ? 'primary' : 'default'}
+                    variant={i === activePage ? 'secondary' : 'default'}
                 >
                     {i}
                 </Button>

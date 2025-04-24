@@ -9,6 +9,7 @@ export type ButtonVariant = (
     'default'
     | 'primary'
     | 'secondary'
+    | 'tertiary'
     | 'action'
     | 'transparent'
 );
@@ -76,6 +77,7 @@ export function useButtonFeatures(
         styles.button,
         variant === 'primary' && styles.primary,
         variant === 'secondary' && styles.secondary,
+        variant === 'tertiary' && styles.tertiary,
         variant === 'transparent' && styles.transparent,
         variant === 'action' && styles.action,
         disabled && styles.disabled,
@@ -141,7 +143,9 @@ function Button<N>(props: ButtonProps<N>) {
     return (
         <RawButton
             type={type}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...buttonProps}
         />
     );

@@ -17,6 +17,7 @@ export type Props = Omit<LinkProps, 'to'> & {
     attrs?: Attrs;
     children?: React.ReactNode;
     variant?: ButtonProps<unknown>['variant'];
+    icons?: React.ReactNode;
 };
 
 function SmartLink(props: Props) {
@@ -26,10 +27,12 @@ function SmartLink(props: Props) {
         children,
         variant,
         className,
+        icons,
         ...otherProps
     } = props;
 
     const extraProps = useButtonFeatures({
+        icons,
         className,
         variant,
     });

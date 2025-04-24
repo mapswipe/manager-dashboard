@@ -32,7 +32,7 @@ export interface Props<N> extends Omit<React.HTMLProps<HTMLTextAreaElement>, 're
 /**
  * The most basic input component (without styles)
  */
-function RawInput<N>(
+function RawInput<const N>(
     {
         className,
         onChange,

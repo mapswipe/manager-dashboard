@@ -1,0 +1,13 @@
+.update-processed-project-form {
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-extra-large);
+
+        .base-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-medium);
+        }
+    }
+}

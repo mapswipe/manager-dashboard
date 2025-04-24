@@ -1,6 +1,9 @@
 .input-container {
     display: flex;
     flex-direction: column;
+    border-radius: var(--radius-input-border);
+    background-color: var(--color-background-input);
+    padding: var(--spacing-medium);
     gap: var(--spacing-extra-small);
 
     .input-section {
@@ -11,17 +14,13 @@
 
         .input {
             flex-grow: 1;
-            padding: var(--spacing-small) 0;
         }
 
     }
 
     &.with-input-section-border {
         .input-section {
-            border-radius: var(--radius-input-border);
             border-bottom-color: var(--color-input-border);
-            background-color: var(--color-input-background);
-            padding: 0 var(--spacing-small);
 
             &:focus-within {
                 border-bottom-color: var(--color-active-input-border);
@@ -38,8 +37,7 @@
 
     .input-label {
         color: var(--color-text-light);
-        font-size: var(--font-size-small);
-        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-extra-small);
     }
 
     .hint {
@@ -62,7 +60,7 @@
 
     &:focus-within {
         .input-label {
-            color: var(--color-primary);
+            color: var(--color-accent);
         }
     }
 

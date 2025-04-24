@@ -1,8 +1,15 @@
 .radio-input {
     .radio-list-container {
         display: flex;
-        flex-direction: column;
         flex-wrap: wrap;
-        gap: var(--spacing-small);
+        gap: var(--spacing-extra-small) var(--spacing-medium);
+
+        &.inline-layout {
+            flex-direction: row;
+        }
+
+        &.block-layout {
+            flex-direction: column;
+        }
     }
 }

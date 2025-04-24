@@ -19,7 +19,7 @@ interface Props<Value extends string | number | boolean, Option, Name> extends O
 function SegmentInput<
     Value extends string | number | boolean,
     Option,
-    Name,
+    const Name,
 >(props: Props<Value, Option, Name>) {
     const {
         options,

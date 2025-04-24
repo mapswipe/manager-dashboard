@@ -1,24 +1,33 @@
 import { Cookies } from 'react-cookie';
 import {
     ApolloClientOptions,
-    ApolloLink as ApolloLinkFromClient,
     HttpLink,
+    HttpOptions,
     InMemoryCache,
     NormalizedCacheObject,
+    split,
 } from '@apollo/client';
+import { createUploadLink } from 'apollo-upload-client';
 
 const GRAPHQL_ENDPOINT = import.meta.env.REACT_APP_GRAPHQL_ENDPOINT;
-
 const cookies = new Cookies();
+const headers: NonNullable<HttpOptions['headers']> = {
+    'X-CSRFToken': cookies.get(import.meta.env.REACT_APP_CSRF_TOKEN_KEY),
+};
 
-const link = new HttpLink({
-    uri: GRAPHQL_ENDPOINT,
-    credentials: 'include',
-    headers: {
-        'X-CSRFToken': cookies.get(import.meta.env.REACT_APP_CSRF_TOKEN_KEY),
-        // XCSRFToken: cookies.get(import.meta.env.REACT_APP_CSRF_TOKEN_KEY),
-    },
-}) as unknown as ApolloLinkFromClient;
+const link = split(
+    (operation) => operation.getContext().hasUpload,
+    createUploadLink({
+        uri: GRAPHQL_ENDPOINT,
+        credentials: 'include',
+        headers,
+    }),
+    new HttpLink({
+        uri: GRAPHQL_ENDPOINT,
+        credentials: 'include',
+        headers,
+    }),
+);
 
 /*
 const link: ApolloLinkFromClient = ApolloLink.from([

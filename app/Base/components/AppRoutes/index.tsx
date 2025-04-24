@@ -52,6 +52,10 @@ function AppRoutes(props: Props) {
                     element={routes.newProject.load({ className })}
                 />
                 <Route
+                    path={routes.editProject.path}
+                    element={routes.editProject.load({ className })}
+                />
+                <Route
                     path={routes.newTutorial.path}
                     element={routes.newTutorial.load({ className })}
                 />

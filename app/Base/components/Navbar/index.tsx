@@ -55,31 +55,29 @@ function Navbar(props: Props) {
                         alt="MapSwipe"
                     />
                 </div>
-                <div className={styles.main}>
-                    <div className={styles.navLinks}>
-                        <SmartNavLink
-                            route={route.home}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                        <SmartNavLink
-                            route={route.projects}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                        <SmartNavLink
-                            route={route.teams}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                        <SmartNavLink
-                            route={route.userGroups}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                    </div>
+                <div className={styles.navLinks}>
+                    <SmartNavLink
+                        route={route.home}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
+                    <SmartNavLink
+                        route={route.projects}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
+                    <SmartNavLink
+                        route={route.teams}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
+                    <SmartNavLink
+                        route={route.userGroups}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
                 </div>
-                { user && (
+                {user && (
                     <div className={styles.userDetails}>
                         <div>
                             {user.displayName}

@@ -1,0 +1,45 @@
+.asset-input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-extra-small);
+
+    .input {
+        display: none;
+    }
+
+    .error {
+        color: var(--color-danger);
+        font-size: var(--font-size-small);
+    }
+
+    .input-section-container {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-small);
+
+        .select-file-button {
+            cursor: pointer;
+        }
+
+        .preview {
+            padding: 0 var(--spacing-small);
+        }
+    }
+
+    .label {
+        color: var(--color-text-light);
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight-bold);
+    }
+
+    .hint {
+        color: var(--color-text-light);
+        font-size: var(--font-size-small);
+    }
+
+    &:focus-within {
+        .label {
+            color: var(--color-primary);
+        }
+    }
+}

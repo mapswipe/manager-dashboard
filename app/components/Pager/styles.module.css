@@ -1,5 +1,6 @@
 .pager {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: var(--spacing-medium);
 
@@ -14,10 +15,6 @@
 
         .page {
             padding: var(--spacing-small) var(--spacing-medium);
-
-            &.active {
-                background-color: var(--color-background-accent-hint);
-            }
         }
 
         .ellipsis {

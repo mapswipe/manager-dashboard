@@ -15,10 +15,11 @@ export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'i
     onChange: (newValue: Value, name: Name) => void;
     className?: string;
     listContainerClassName?: string;
+    layout?: 'inline' | 'block';
 }
 
 function RadioInput<
-    N,
+    const N,
     O,
     V extends boolean | string | number,
 >(props: Props<N, O, V>) {
@@ -40,6 +41,7 @@ function RadioInput<
         labelContainerClassName,
         readOnly,
         listContainerClassName,
+        layout = 'inline',
     } = props;
 
     const handleRadioClick = useCallback((radioKey: V) => {
@@ -61,7 +63,12 @@ function RadioInput<
             hint={hint}
             hintContainerClassName={hintContainerClassName}
             inputSectionClassName={inputSectionClassName}
-            inputContainerClassName={_cs(styles.radioListContainer, listContainerClassName)}
+            inputContainerClassName={_cs(
+                styles.radioListContainer,
+                layout === 'inline' && styles.inlineLayout,
+                layout === 'block' && styles.blockLayout,
+                listContainerClassName,
+            )}
             label={label}
             labelContainerClassName={labelContainerClassName}
             readOnly={readOnly}
