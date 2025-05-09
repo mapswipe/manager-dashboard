@@ -54,7 +54,8 @@
         "react-mde": "^11.5.0",
         "react-router": "^7.5.1",
         "react-showdown": "^2.3.1",
-        "stylelint-config-concentric-order": "^5.2.1"
+        "stylelint-config-concentric-order": "^5.2.1",
+        "ulid": "^3.0.0"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.1.0",

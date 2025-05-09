@@ -1,0 +1,7 @@
+.block-input {
+    .meta-inputs {
+        display: grid;
+        gap: var(--spacing-medium);
+        grid-template-columns: 7rem 1fr;
+    }
+}

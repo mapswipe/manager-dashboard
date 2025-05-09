@@ -3,16 +3,18 @@ import {
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
-    Error,
+    ArrayError,
     getErrorObject,
+    LeafError,
     nonFieldError,
+    ObjectError,
 } from '@togglecorp/toggle-form';
 
 import styles from './styles.module.css';
 
 interface Props<T> {
     className?: string;
-    error: Error<T>;
+    error: ArrayError<T> | ObjectError<T> | LeafError;
 }
 
 function NonFieldError<T>(props: Props<T>) {

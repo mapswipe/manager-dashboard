@@ -3,7 +3,7 @@ import styles from './styles.module.css';
 interface Props {
     icon?: React.ReactNode;
     title: React.ReactNode;
-    description: React.ReactNode;
+    description?: React.ReactNode;
 }
 
 function EmptyMessage(props: Props) {

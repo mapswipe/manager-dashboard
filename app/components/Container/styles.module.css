@@ -1,0 +1,38 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-medium);
+
+        .heading-row {
+            display: flex;
+            gap: var(--spacing-medium);
+
+            .heading {
+                flex-grow: 1;
+            }
+        }
+
+        .description {
+            &:empty {
+                display: none;
+            }
+        }
+    }
+
+    .header-border {
+        margin: 0;
+        border-width: var(--width-separator-thin);
+        border-color: var(--color-separator);
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-medium);
+    }
+}

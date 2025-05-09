@@ -7,7 +7,6 @@ import {
     MdArrowForward,
     MdSave,
 } from 'react-icons/md';
-import { useParams } from 'react-router';
 import {
     gql,
     useMutation,
@@ -88,8 +87,6 @@ interface Props {
 }
 
 function UpdateProjectForm(props: Props) {
-    const { id: projectIdFromParams } = useParams<{ id: string }>();
-
     const {
         className,
         projectData,
@@ -149,30 +146,28 @@ function UpdateProjectForm(props: Props) {
     const submitUpdateForm = useCallback(async (
         finalValues: ProjectUpdateInput,
     ) => {
-        if (isDefined(projectIdFromParams)) {
-            const results = await updateProject({
-                variables: {
-                    id: projectIdFromParams,
-                    data: finalValues,
-                },
-            });
+        const results = await updateProject({
+            variables: {
+                id: projectData.project.id,
+                data: finalValues,
+            },
+        });
 
-            if (isDefined(results.data)
-                // eslint-disable-next-line no-underscore-dangle
-                && results.data.updateProject.__typename === 'ProjectTypeMutationResponseType'
-            ) {
-                const {
-                    ok,
-                    errors,
-                    // result,
-                } = results.data.updateProject;
+        if (isDefined(results.data)
+            // eslint-disable-next-line no-underscore-dangle
+            && results.data.updateProject.__typename === 'ProjectTypeMutationResponseType'
+        ) {
+            const {
+                ok,
+                errors,
+                // result,
+            } = results.data.updateProject;
 
-                if (!ok) {
-                    setError(transformErrors(errors));
-                }
+            if (!ok) {
+                setError(transformErrors(errors));
             }
         }
-    }, [projectIdFromParams, updateProject, setError]);
+    }, [projectData.project.id, updateProject, setError]);
 
     const handleUpdateDraft = useCallback(async (
         submittedFormValues: PartialProjectUpdateInput,
@@ -344,10 +339,9 @@ function UpdateProjectForm(props: Props) {
                 <NonFieldError
                     error={error?.projectTypeSpecifics}
                 />
-                {projectContext.projectType === ProjectTypeEnum.Find
-                    && isDefined(projectIdFromParams) && (
+                {projectContext.projectType === ProjectTypeEnum.Find && (
                     <FindProjectSpecifics
-                        projectId={projectIdFromParams}
+                        projectId={projectData.project.id}
                         value={value.projectTypeSpecifics?.find}
                         setFieldValue={setFindProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.find}

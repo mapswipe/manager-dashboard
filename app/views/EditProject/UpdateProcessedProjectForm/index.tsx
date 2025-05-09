@@ -7,7 +7,6 @@ import {
     MdArrowForward,
     MdSave,
 } from 'react-icons/md';
-import { useParams } from 'react-router';
 import {
     gql,
     useMutation,
@@ -65,8 +64,6 @@ interface Props {
 }
 
 function UpdateProcessedProjectForm(props: Props) {
-    const { id: projectIdFromParams } = useParams<{ id: string }>();
-
     const {
         className,
         projectData,
@@ -121,30 +118,28 @@ function UpdateProcessedProjectForm(props: Props) {
     const submitUpdateProcessedForm = useCallback(async (
         finalValues: ProcessedProjectUpdateInput,
     ) => {
-        if (isDefined(projectIdFromParams)) {
-            const results = await updateProcessedProject({
-                variables: {
-                    id: projectIdFromParams,
-                    data: finalValues,
-                },
-            });
+        const results = await updateProcessedProject({
+            variables: {
+                id: projectData.project.id,
+                data: finalValues,
+            },
+        });
 
-            if (isDefined(results.data)
-                // eslint-disable-next-line no-underscore-dangle
-                && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
-            ) {
-                const {
-                    ok,
-                    errors,
-                    // result,
-                } = results.data.updateProcessedProject;
+        if (isDefined(results.data)
+            // eslint-disable-next-line no-underscore-dangle
+            && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
+        ) {
+            const {
+                ok,
+                errors,
+                // result,
+            } = results.data.updateProcessedProject;
 
-                if (!ok) {
-                    setError(transformErrors(errors));
-                }
+            if (!ok) {
+                setError(transformErrors(errors));
             }
         }
-    }, [projectIdFromParams, updateProcessedProject, setError]);
+    }, [projectData.project.id, updateProcessedProject, setError]);
 
     const handlePublish = useCallback((submittedValue: PartialProcessedProjectUpdateInput) => {
         const finalValues = { ...submittedValue } as ProcessedProjectUpdateInput;

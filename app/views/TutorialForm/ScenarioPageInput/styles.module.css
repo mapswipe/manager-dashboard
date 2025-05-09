@@ -1,0 +1,40 @@
+.scenario-page-input {
+    .content {
+        flex-direction: row;
+        gap: var(--spacing-medium);
+
+        .form-fields {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-medium);
+            flex-grow: 1;
+
+            .meta-inputs {
+                display: grid;
+                gap: var(--spacing-medium);
+                grid-template-columns: 16rem 1fr;
+
+                .description {
+                    grid-column: span 2;
+                }
+            }
+        }
+
+        .preview {
+            display: flex;
+            align-items: center;
+            align-self: start;
+            flex-shrink: 0;
+            justify-content: center;
+            background-color: var(--color-background-accent-hint);
+            width: 20rem;
+            height: 30rem;
+        }
+    }
+
+    .tasks {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-background-accent-hint);
+        padding: var(--spacing-medium);
+    }
+}

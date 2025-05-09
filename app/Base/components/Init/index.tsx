@@ -10,8 +10,11 @@ import {
 import { isDefined } from '@togglecorp/fujs';
 
 import PreloadMessage from '#base/components/PreloadMessage';
+import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';
 import UserContext from '#base/context/UserContext';
 import {
+    AllEnumsQuery,
+    AllEnumsQueryVariables,
     MeQuery,
     MeQueryVariables,
 } from '#generated/types/graphql';
@@ -21,6 +24,33 @@ query Me {
     me {
         id
         displayName
+    }
+}
+`;
+
+const ALL_ENUMS_QUERY = gql`
+query AllEnums {
+    enums {
+        ProjectStatusEnum {
+            key
+            label
+        }
+        ProjectTypeEnum {
+            key
+            label
+        }
+        TileServerNameEnum {
+            key
+            label
+        }
+        TutorialInformationPageBlockTypeEnum {
+            key
+            label
+        }
+        TutorialScenarioIconEnum {
+            key
+            label
+        }
     }
 }
 `;
@@ -44,6 +74,13 @@ function Init(props: Props) {
     } = useQuery<MeQuery, MeQueryVariables>(
         ME_QUERY,
         { skip: authenticated },
+    );
+
+    const {
+        // loading: allEnumsResponseLoading,
+        data: allEnumsResponse,
+    } = useQuery<AllEnumsQuery, AllEnumsQueryVariables>(
+        ALL_ENUMS_QUERY,
     );
 
     useEffect(() => {
@@ -74,6 +111,12 @@ function Init(props: Props) {
         );
     }
 
-    return children;
+    return (
+        <EnumsContext.Provider
+            value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+        >
+            {children}
+        </EnumsContext.Provider>
+    );
 }
 export default Init;

@@ -43,6 +43,7 @@ import {
     ProjectTypeEnum,
 } from '#generated/types/graphql';
 import { keySelector } from '#utils/common';
+import { transformErrors } from '#utils/error';
 
 import styles from './styles.module.css';
 
@@ -149,30 +150,41 @@ function NewProject(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const handleFormSubmission = useCallback(async (
-        submittedFormValues: PartialProjectCreateInputFields,
-    ) => {
-        const finalValues = submittedFormValues as ProjectCreateInput;
-        const result = await createNewProject({
-            variables: {
-                data: finalValues,
-            },
-        });
+    const handleFormSubmission = useCallback(
+        async (submittedFormValues: PartialProjectCreateInputFields) => {
+            const finalValues = submittedFormValues as ProjectCreateInput;
+            const result = await createNewProject({
+                variables: {
+                    data: finalValues,
+                },
+            });
 
-        if (
             // eslint-disable-next-line no-underscore-dangle
-            result.data?.createProject.__typename === 'ProjectTypeMutationResponseType'
-            && result.data.createProject.ok
-            && result.data.createProject.result
-        ) {
-            navigate(
-                generatePath(
-                    routes.editProject.originalPath,
-                    { id: result.data.createProject.result.id },
-                ),
-            );
-        }
-    }, [createNewProject, navigate]);
+            if (result.data?.createProject.__typename === 'ProjectTypeMutationResponseType') {
+                const {
+                    ok,
+                    errors,
+                    // result,
+                } = result.data.createProject;
+
+                if (!ok) {
+                    setError(transformErrors(errors));
+                }
+
+                if (result.data.createProject.ok
+                    && result.data.createProject.result
+                ) {
+                    navigate(
+                        generatePath(
+                            routes.editProject.originalPath,
+                            { id: result.data.createProject.result.id },
+                        ),
+                    );
+                }
+            }
+        },
+        [createNewProject, navigate, setError],
+    );
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),

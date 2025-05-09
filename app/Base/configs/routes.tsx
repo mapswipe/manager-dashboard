@@ -75,10 +75,19 @@ const editProject = wrap({
 });
 
 const newTutorial = wrap({
-    path: '/new-tutorial/',
+    path: '/tutorial/new/',
     title: 'New Tutorial',
     navbarVisibility: true,
-    component: lazy(() => import('#views/NewTutorial')),
+    component: lazy(() => import('#views/TutorialForm')),
+    componentProps: {},
+    visibility: 'is-authenticated',
+});
+
+const editTutorial = wrap({
+    path: '/tutorial/:id/edit/',
+    title: 'Edit Tutorial',
+    navbarVisibility: true,
+    component: lazy(() => import('#views/TutorialForm')),
     componentProps: {},
     visibility: 'is-authenticated',
 });
@@ -92,6 +101,7 @@ const routes = {
     newProject,
     editProject,
     newTutorial,
+    editTutorial,
     fourHundredFour,
 };
 export default routes;
