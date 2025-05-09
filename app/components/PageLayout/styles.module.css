@@ -2,9 +2,9 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    gap: var(--spacing-extra-large);
-    padding: var(--spacing-large);
+    padding: var(--spacing-small) 0;
     overflow: auto;
+    background-color: var(--color-background);
 
     .page-header {
         display: flex;
@@ -13,6 +13,7 @@
         width: 100%;
         max-width: var(--width-page-content-max);
         gap: var(--spacing-medium);
+        padding: var(--spacing-medium) var(--spacing-large);
 
         .heading-row {
             display: flex;
@@ -45,16 +46,18 @@
         display: flex;
         width: 100%;
         max-width: var(--width-page-content-max);
+        padding: 0 var(--spacing-small);
         overflow: auto;
-        gap: var(--spacing-large);
 
         .aside {
             flex-shrink: 0;
             width: calc(10rem + 10%);
+            padding: var(--spacing-medium) var(--spacing-medium);
         }
 
         .main {
             flex-grow: 1;
+            padding: var(--spacing-medium) var(--spacing-medium);
             overflow: auto;
         }
 
@@ -76,5 +79,6 @@
         align-items: center;
         flex-shrink: 0;
         justify-content: center;
+        padding: var(--spacing-medium) var(--spacing-large);
     }
 }

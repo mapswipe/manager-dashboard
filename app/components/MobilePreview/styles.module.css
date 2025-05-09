@@ -21,6 +21,7 @@
             flex-direction: column;
             flex-grow: 1;
             text-align: center;
+            color: var(--color-text-on-dark);
 
             .label {
                 font-weight: var(--font-weight-medium);
@@ -77,8 +78,13 @@
             .details {
                 flex-grow: 1;
 
-                .popup-title {
+                .title {
                     font-weight: var(--font-weight-bold);
+                }
+
+                .description {
+                    line-height: 1.25;
+                    font-size: var(--font-size-small);
                 }
             }
 

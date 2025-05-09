@@ -7,7 +7,6 @@ import {
     MdArrowForward,
     MdSave,
 } from 'react-icons/md';
-import { useParams } from 'react-router';
 import {
     gql,
     useMutation,
@@ -27,6 +26,7 @@ import {
 import Button from '#components/Button';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
+import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import {
     ProcessedProjectUpdateInput,
@@ -35,6 +35,11 @@ import {
     UpdateProcessedProjectMutation,
     UpdateProcessedProjectMutationVariables,
 } from '#generated/types/graphql';
+import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
+import {
+    idSelector,
+    nameSelector,
+} from '#utils/common';
 import { transformErrors } from '#utils/error';
 
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
@@ -65,12 +70,17 @@ interface Props {
 }
 
 function UpdateProcessedProjectForm(props: Props) {
-    const { id: projectIdFromParams } = useParams<{ id: string }>();
-
     const {
         className,
         projectData,
     } = props;
+
+    const {
+        data: organizationListResponse,
+    } = useOrganizationListQuery({
+        limit: 20,
+        offset: 0,
+    });
 
     const [
         updateProcessedProject,
@@ -121,30 +131,28 @@ function UpdateProcessedProjectForm(props: Props) {
     const submitUpdateProcessedForm = useCallback(async (
         finalValues: ProcessedProjectUpdateInput,
     ) => {
-        if (isDefined(projectIdFromParams)) {
-            const results = await updateProcessedProject({
-                variables: {
-                    id: projectIdFromParams,
-                    data: finalValues,
-                },
-            });
+        const results = await updateProcessedProject({
+            variables: {
+                id: projectData.project.id,
+                data: finalValues,
+            },
+        });
 
-            if (isDefined(results.data)
-                // eslint-disable-next-line no-underscore-dangle
-                && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
-            ) {
-                const {
-                    ok,
-                    errors,
-                    // result,
-                } = results.data.updateProcessedProject;
+        if (isDefined(results.data)
+            // eslint-disable-next-line no-underscore-dangle
+            && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
+        ) {
+            const {
+                ok,
+                errors,
+                // result,
+            } = results.data.updateProcessedProject;
 
-                if (!ok) {
-                    setError(transformErrors(errors));
-                }
+            if (!ok) {
+                setError(transformErrors(errors));
             }
         }
-    }, [projectIdFromParams, updateProcessedProject, setError]);
+    }, [projectData.project.id, updateProcessedProject, setError]);
 
     const handlePublish = useCallback((submittedValue: PartialProcessedProjectUpdateInput) => {
         const finalValues = { ...submittedValue } as ProcessedProjectUpdateInput;
@@ -198,6 +206,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     name={undefined}
                     onClick={handleUpdateBasicDetailsButtonClick}
                     disabled={baseInputsDisabled}
+                    variant="tertiary"
                     icons={<MdSave />}
                 >
                     Update basic details
@@ -241,13 +250,15 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.lookFor}
                     disabled={baseInputsDisabled}
                 />
-                <TextInput
-                    label="Organization"
+                <SelectInput
+                    label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
+                    options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    disabled={baseInputsDisabled}
+                    keySelector={idSelector}
+                    labelSelector={nameSelector}
                 />
                 <TextInput
                     label="Additional info URL"

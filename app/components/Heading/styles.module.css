@@ -5,7 +5,8 @@
     margin: 0;
     line-height: var(--line-height);
     font-size: var(--font-size);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-light);
+    color: var(--color-primary);
 
     &.level1 {
         --font-size: var(--font-size-super-large);

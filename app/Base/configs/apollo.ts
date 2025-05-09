@@ -9,7 +9,7 @@ import {
 } from '@apollo/client';
 import { createUploadLink } from 'apollo-upload-client';
 
-const GRAPHQL_ENDPOINT = import.meta.env.REACT_APP_GRAPHQL_ENDPOINT;
+const GRAPHQL_ENDPOINT = import.meta.env.REACT_APP_GRAPHQL_API_ENDPOINT;
 const cookies = new Cookies();
 const headers: NonNullable<HttpOptions['headers']> = {
     'X-CSRFToken': cookies.get(import.meta.env.REACT_APP_CSRF_TOKEN_KEY),

@@ -7,7 +7,6 @@
     padding: var(--spacing-extra-small) var(--spacing-medium);
     width: fit-content;
     color: var(--color-text);
-    font-size: var(--font-size-small);
 
     .icons,
     .actions {
@@ -39,13 +38,14 @@
     &.transparent {
         border: none;
         padding: 0;
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-small);
     }
 
     &.action {
         border: none;
         padding: 0;
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-small);
+        line-height: 1;
     }
 
     &.disabled {

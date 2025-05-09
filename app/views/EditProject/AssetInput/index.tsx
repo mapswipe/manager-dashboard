@@ -7,7 +7,11 @@ import {
     gql,
     useMutation,
 } from '@apollo/client';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isNotDefined,
+} from '@togglecorp/fujs';
+import { ulid } from 'ulid';
 
 import { useButtonFeatures } from '#components/Button';
 import RawInput from '#components/RawInput';
@@ -15,7 +19,6 @@ import {
     CreateProjectAssetMutation,
     CreateProjectAssetMutationVariables,
     ProjectAssetMimetypeEnum,
-    ProjectAssetTypeEnum,
 } from '#generated/types/graphql';
 
 import styles from './styles.module.css';
@@ -45,6 +48,7 @@ interface Props<NAME> {
     hint?: React.ReactNode;
     className?: string;
     disabled?: boolean;
+    inputType?: 'geojson' | 'image';
 }
 
 function AssetInput<const NAME>(props: Props<NAME>) {
@@ -59,6 +63,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         selectFileButtonLabel = 'Select file',
         error,
         hint,
+        inputType = 'geojson',
     } = props;
 
     const inputId = useId();
@@ -79,12 +84,28 @@ function AssetInput<const NAME>(props: Props<NAME>) {
             // React.FormEvent<HTMLInputElement> does not have target.files
             const { files } = (e as React.ChangeEvent<HTMLInputElement>).target;
             if (files && files.length > 0) {
+                const { type } = files[0];
+                const mimetypeEnumMap: Record<string, ProjectAssetMimetypeEnum> = {
+                    'image/jpeg': ProjectAssetMimetypeEnum.ImageJpeg,
+                    'image/png': ProjectAssetMimetypeEnum.ImagePng,
+                    'image/gif': ProjectAssetMimetypeEnum.ImageGif,
+                    'application/geo+json': ProjectAssetMimetypeEnum.Geojson,
+                };
+
+                const selectedEnum = mimetypeEnumMap[type];
+
+                if (isNotDefined(selectedEnum)) {
+                    // eslint-disable-next-line no-console
+                    console.error('Invalid file selected!');
+                    return;
+                }
+
                 const result = await createProjectAsset({
                     variables: {
                         data: {
+                            clientId: ulid(),
                             file: files[0],
-                            type: ProjectAssetTypeEnum.Input,
-                            mimetype: ProjectAssetMimetypeEnum.Geojson,
+                            mimetype: selectedEnum,
                             project: projectId,
                         },
                     },
@@ -124,7 +145,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 type="file"
                 value={undefined}
                 onChange={handleFileInputChange}
-                accept=".json"
+                accept={inputType === 'geojson' ? '.geojson' : 'image/png, image/gif, image/jpeg'}
                 disabled={disabled || createProjectAssetPending}
             />
             <div className={styles.inputSectionContainer}>

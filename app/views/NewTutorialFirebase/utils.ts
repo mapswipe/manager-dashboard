@@ -28,6 +28,7 @@ import {
     PROJECT_TYPE_FOOTPRINT,
     ProjectType,
 } from '#utils/common';
+import { TileServerNameEnum } from '#generated/types/graphql';
 
 const BING_KEY = import.meta.env.REACT_APP_IMAGE_BING_API_KEY;
 const MAPBOX_KEY = import.meta.env.REACT_APP_IMAGE_MAPBOX_API_KEY;
@@ -134,14 +135,14 @@ export const iconColorOptions: ColorOptions[] = [
 ];
 
 export const tileServerUrls: {
-    [key in Exclude<TileServerType, 'custom'>]: string;
+    [key in Exclude<TileServerNameEnum, 'CUSTOM'>]: string;
 } = {
-    bing: `https://ecn.t0.tiles.virtualearth.net/tiles/a{quad_key}.jpeg?g=7505&token=${BING_KEY}`,
-    mapbox: `https://d.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.jpg?access_token=${MAPBOX_KEY}`,
-    maxar_premium: `https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe%3AImageryTileService@EPSG%3A3857@jpg/{z}/{x}/{y}.jpg?connectId=${MAXAR_PREMIUM}`,
-    maxar_standard: `https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe%3AImageryTileService@EPSG%3A3857@jpg/{z}/{x}/{y}.jpg?connectId=${MAXAR_STANDARD}`,
-    esri: 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    esri_beta: 'https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    [TileServerNameEnum.Bing]: `https://ecn.t0.tiles.virtualearth.net/tiles/a{quad_key}.jpeg?g=7505&token=${BING_KEY}`,
+    [TileServerNameEnum.Mapbox]: `https://d.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.jpg?access_token=${MAPBOX_KEY}`,
+    [TileServerNameEnum.MaxarPremium]: `https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe%3AImageryTileService@EPSG%3A3857@jpg/{z}/{x}/{y}.jpg?connectId=${MAXAR_PREMIUM}`,
+    [TileServerNameEnum.MaxarStandard]: `https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe%3AImageryTileService@EPSG%3A3857@jpg/{z}/{x}/{y}.jpg?connectId=${MAXAR_STANDARD}`,
+    [TileServerNameEnum.Esri]: 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    [TileServerNameEnum.EsriBeta]: 'https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 };
 
 export type InformationPageTemplateKey = '1-picture' | '2-picture' | '3-picture';

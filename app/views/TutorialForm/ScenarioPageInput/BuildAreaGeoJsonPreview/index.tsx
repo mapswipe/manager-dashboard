@@ -6,10 +6,8 @@ import {
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
-import {
-    IconKey,
-    iconMap,
-} from '#utils/common';
+import { TutorialScenarioIconEnum } from '#generated/types/graphql';
+import { iconMap } from '#utils/icon';
 
 import {
     BuildAreaGeoJSON,
@@ -24,7 +22,7 @@ interface Props {
     previewPopUp?: {
         title?: string;
         description?: string;
-        icon?: IconKey;
+        icon?: TutorialScenarioIconEnum;
     }
     url: string | undefined;
     lookFor: string | undefined;
@@ -62,14 +60,14 @@ function BuildAreaGeoJsonPreview(props: Props) {
         lookFor,
     } = props;
 
-    const Comp = previewPopUp?.icon ? iconMap[previewPopUp.icon] : undefined;
+    const Icon = previewPopUp?.icon ? iconMap[previewPopUp.icon] : undefined;
 
     return (
         <MobilePreview
             className={_cs(styles.scenarioGeoJsonPreview, className)}
             heading={lookFor || '{look for}'}
             headingLabel="You are looking for:"
-            popupIcons={Comp && <Comp />}
+            popupIcons={Icon && <Icon />}
             popupTitle={previewPopUp?.title || '{title}'}
             popupDescription={previewPopUp?.description || '{description}'}
             contentClassName={styles.content}

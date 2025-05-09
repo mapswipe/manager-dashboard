@@ -39,6 +39,7 @@ type ProjectTypeSpecificFormFields = ReturnType<ProjectSpecificFieldsFormSchema[
 
 const projectUpdateFormSchema: ProjectUpdateFormSchema = {
     fields: (_, __, context): ProjectUpdateFormFields => ({
+        clientId: {},
         name: {
             required: true,
             requiredValidation: requiredStringCondition,
@@ -54,6 +55,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
         groupSize: {},
         maxTasksPerUser: {},
         description: {},
+        image: {},
         projectTypeSpecifics: {
             fields: (): ProjectTypeSpecificFormFields => {
                 if (context?.projectType === ProjectTypeEnum.Find) {

@@ -38,6 +38,7 @@ const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
         },
         additionalInfoUrl: {},
         description: {},
+        image: {},
     }),
 };
 

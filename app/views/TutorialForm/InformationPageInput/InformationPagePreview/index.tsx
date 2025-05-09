@@ -1,21 +1,20 @@
 import MarkdownPreview from '#components/MarkdownPreview';
 import MobilePreview from '#components/MobilePreview';
 import Preview from '#components/Preview';
+import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
 
-import { PartialTutorialFormType } from '../../utils';
+import { PartialInformationPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
 interface Props {
-    value: NonNullable<PartialTutorialFormType['informationPages']>[number];
-    index: number;
+    value: PartialInformationPageInputFields;
     lookFor: string | undefined;
 }
 
 export default function InformationPagePreview(props: Props) {
     const {
         value,
-        index,
         lookFor,
     } = props;
 
@@ -26,25 +25,27 @@ export default function InformationPagePreview(props: Props) {
             headingLabel="You are looking for:"
             contentClassName={styles.content}
         >
-            {value?.title || `{page title ${index}}`}
-            {value?.blocks?.map((preview) => {
-                if (preview.blockType === 'text') {
+            {value?.title || `{page title ${value.pageNumber}}`}
+            {value?.blocks?.map((page) => {
+                if (page.blockType === TutorialInformationPageBlockTypeEnum.Text) {
                     return (
                         <MarkdownPreview
-                            key={preview.blockNumber}
-                            markdown={preview.textDescription || '{block}'}
+                            key={page.blockNumber}
+                            markdown={page.text || '{block}'}
                         />
                     );
                 }
-                if (preview.blockType === 'image') {
+
+                if (page.blockType === TutorialInformationPageBlockTypeEnum.Image) {
                     return (
                         <Preview
-                            key={preview.blockNumber}
+                            key={page.blockNumber}
                             className={styles.imagePreview}
-                            file={preview.imageFile}
+                            file={page.image}
                         />
                     );
                 }
+
                 return null;
             })}
         </MobilePreview>

@@ -3,20 +3,14 @@ import {
     IoChevronDown,
     IoChevronUp,
 } from 'react-icons/io5';
-import { MdSearch } from 'react-icons/md';
 import { Link } from 'react-router';
 import { _cs } from '@togglecorp/fujs';
 
-import SmartLink from '#base/components/SmartLink';
-import route from '#base/configs/routes';
 import Button from '#components/Button';
-import TextInput from '#components/TextInput';
+import Heading from '#components/Heading';
 import useBooleanState from '#hooks/useBooleanState';
-import useInputState from '#hooks/useInputState';
 
-import OrganisationFormModal from './OrganisationFormModal';
-import OrganisationList from './OrganisationList';
-import TutorialList from './TutorialList';
+import OrganisationList from './OrganizationList';
 
 import styles from './styles.module.css';
 
@@ -33,9 +27,7 @@ function Home(props: Props) {
         setShowOrganisationFormModalFalse,
     ] = useBooleanState(false);
 
-    const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
     const [showOrganisationList, setShowOrganisationList] = useState(false);
-    const [showTutorialList, setShowTutorialList] = useState(false);
 
     return (
         <div className={_cs(styles.home, className)}>
@@ -66,13 +58,14 @@ function Home(props: Props) {
                 </div>
                 <div className={styles.organisationContainer}>
                     <div className={styles.header}>
-                        <h2 className={styles.heading}>
+                        <Heading level={2} className={styles.heading}>
                             Organisations
-                        </h2>
+                        </Heading>
                         <Button
                             className={styles.addButton}
                             name={undefined}
                             onClick={setShowOrganisationFormModalTrue}
+                            disabled
                         >
                             Add New Organisation
                         </Button>
@@ -87,41 +80,6 @@ function Home(props: Props) {
                         variant="action"
                     >
                         {showOrganisationList ? 'Hide Organisations' : 'View Organisations'}
-                    </Button>
-                </div>
-                <div className={styles.tutorialsContainer}>
-                    <div className={styles.header}>
-                        <h2 className={styles.heading}>
-                            Tutorials
-                        </h2>
-                        {showTutorialList && (
-                            <TextInput
-                                icons={<MdSearch />}
-                                name={undefined}
-                                value={searchText}
-                                onChange={setSearchText}
-                                placeholder="Search by title"
-                            />
-                        )}
-                        <SmartLink
-                            route={route.newTutorial}
-                        >
-                            Add New Tutorial
-                        </SmartLink>
-                    </div>
-                    {showTutorialList && (
-                        <TutorialList
-                            className={styles.tutorialList}
-                            searchText={searchText}
-                        />
-                    )}
-                    <Button
-                        name={!showTutorialList}
-                        actions={showTutorialList ? <IoChevronUp /> : <IoChevronDown />}
-                        variant="action"
-                        onClick={setShowTutorialList}
-                    >
-                        {showTutorialList ? 'Hide Tutorials' : 'View Tutorials'}
                     </Button>
                 </div>
             </div>

@@ -1,0 +1,10 @@
+.task-input {
+    display: grid;
+    grid-template-columns: 2rem repeat(4, 1fr);
+    gap: var(--spacing-small);
+    align-items: end;
+
+    .project-specific-input {
+        display: contents;
+    }
+}

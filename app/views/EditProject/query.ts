@@ -32,6 +32,7 @@ export const PROJECT_QUERY = gql`
 query ProjectDetails($id: ID!) {
     project(id: $id) {
         additionalInfoUrl
+        clientId
         description
         groupSize
         id
@@ -42,6 +43,12 @@ query ProjectDetails($id: ID!) {
         processingStatus
         progress
         projectType
+        image {
+            id
+            file {
+                url
+            }
+        }
         projectTypeSpecifics {
             ... on CompareProjectPropertyType {
                 aoiGeometry

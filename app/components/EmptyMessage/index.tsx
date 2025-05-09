@@ -1,9 +1,10 @@
+import { isDefined } from '@togglecorp/fujs';
 import styles from './styles.module.css';
 
 interface Props {
     icon?: React.ReactNode;
     title: React.ReactNode;
-    description: React.ReactNode;
+    description?: React.ReactNode;
 }
 
 function EmptyMessage(props: Props) {
@@ -15,7 +16,7 @@ function EmptyMessage(props: Props) {
 
     return (
         <div className={styles.emptyMessage}>
-            {icon && (
+            {isDefined(icon) && (
                 <div className={styles.icon}>
                     {icon}
                 </div>
@@ -23,9 +24,11 @@ function EmptyMessage(props: Props) {
             <div className={styles.emptyMessageTitle}>
                 {title}
             </div>
-            <div className={styles.emptyMessageDescription}>
-                {description}
-            </div>
+            {isDefined(description) && (
+                <div className={styles.emptyMessageDescription}>
+                    {description}
+                </div>
+            )}
         </div>
     );
 }

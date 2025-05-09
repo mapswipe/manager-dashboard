@@ -86,6 +86,8 @@ function ProjectForm(props: Props) {
             />
         );
     }
+
+    return null;
 }
 
 export default ProjectForm;

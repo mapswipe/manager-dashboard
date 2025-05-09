@@ -7,7 +7,7 @@ export default defineConfig({
     REACT_APP_SENTRY_DSN: Schema.string.optional(),
     REACT_APP_SENTRY_TRACES_SAMPLE_RATE: Schema.string.optional(),
 
-    REACT_APP_GRAPHQL_API_ENDPOINT: Schema.string.optional({ format: 'url', protocol: true, tld: false }),
+    REACT_APP_GRAPHQL_API_ENDPOINT: Schema.string({ format: 'url', protocol: true, tld: false }),
     REACT_APP_GRAPHQL_CODEGEN_ENDPOINT: Schema.string.optional(), // NOTE: this is both url and file path
 
     // REACT_APP_FIREBASE_API_KEY: Schema.string(),

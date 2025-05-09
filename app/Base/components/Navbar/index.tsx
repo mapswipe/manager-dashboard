@@ -66,6 +66,7 @@ function Navbar(props: Props) {
                         className={styles.link}
                         activeClassName={styles.active}
                     />
+                    {/*
                     <SmartNavLink
                         route={route.teams}
                         className={styles.link}
@@ -76,6 +77,7 @@ function Navbar(props: Props) {
                         className={styles.link}
                         activeClassName={styles.active}
                     />
+                    */}
                 </div>
                 {user && (
                     <div className={styles.userDetails}>

@@ -7,7 +7,6 @@ import {
     MdArrowForward,
     MdSave,
 } from 'react-icons/md';
-import { useParams } from 'react-router';
 import {
     gql,
     useMutation,
@@ -24,6 +23,7 @@ import {
     useForm,
     useFormObject,
 } from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Heading from '#components/Heading';
@@ -31,6 +31,7 @@ import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
+import SelectInput from '#components/SelectInput/index.tsx';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -42,8 +43,14 @@ import {
     UpdateProjectMutation,
     UpdateProjectMutationVariables,
 } from '#generated/types/graphql';
+import useOrganizationListQuery from '#hooks/useOrganizationListQuery.ts';
+import {
+    idSelector,
+    nameSelector,
+} from '#utils/common';
 import { transformErrors } from '#utils/error';
 
+import AssetInput from '../AssetInput/index.tsx';
 import CompareProjectSpecifics from '../ProjectSpecifics/Compare';
 import {
     defaultCompareSpecificFormValue,
@@ -76,10 +83,10 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
 }
 `;
 
-const defaultProjectTypeSpecificsValue: PartialProjectTypeSpecificInput = {
-};
-
-const defaultBaseProjectFormValue: PartialProjectUpdateInput = {
+const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
+    [ProjectTypeEnum.Find]: 'find',
+    [ProjectTypeEnum.Compare]: 'compare',
+    [ProjectTypeEnum.Completeness]: 'completeness',
 };
 
 interface Props {
@@ -88,17 +95,38 @@ interface Props {
 }
 
 function UpdateProjectForm(props: Props) {
-    const { id: projectIdFromParams } = useParams<{ id: string }>();
-
     const {
         className,
         projectData,
     } = props;
 
+    const {
+        data: organizationListResponse,
+    } = useOrganizationListQuery({
+        limit: 20,
+        offset: 0,
+    });
+
     const [
         updateProject,
         { loading: updateProjectPending },
     ] = useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UPDATE_PROJECT_MUTATION);
+
+    const defaultProjectTypeSpecificsValue = useMemo<PartialProjectTypeSpecificInput>(() => {
+        if (projectData.project.projectType === ProjectTypeEnum.Find) {
+            return defaultFindSpecificFormValue;
+        }
+
+        if (projectData.project.projectType === ProjectTypeEnum.Compare) {
+            return defaultCompareSpecificFormValue;
+        }
+
+        return {};
+    }, [projectData.project.projectType]);
+
+    const defaultBaseProjectFormValue = useMemo<PartialProjectUpdateInput>(() => ({
+        clientId: ulid(),
+    }), []);
 
     const projectContext = useMemo(() => ({
         projectType: projectData?.project.projectType,
@@ -126,53 +154,49 @@ function UpdateProjectForm(props: Props) {
             projectType,
             requestingOrganization,
             projectTypeSpecifics,
+            image,
             ...other
         } = removeNull(projectData.project);
-
-        const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
-            [ProjectTypeEnum.Find]: 'find',
-            [ProjectTypeEnum.Compare]: 'compare',
-            [ProjectTypeEnum.Completeness]: 'completeness',
-        };
 
         setValue({
             ...other,
             requestingOrganization: requestingOrganization.id,
+            image: image?.id,
             projectTypeSpecifics: {
-                [projectTypeToKeyMap[projectType]]: projectTypeSpecifics,
+                // TODO: replace with the default value
+                [projectTypeToKeyMap[projectType]]: projectTypeSpecifics
+                    ?? defaultProjectTypeSpecificsValue,
             },
         });
-    }, [projectData, setValue]);
+    }, [projectData, setValue, defaultProjectTypeSpecificsValue]);
 
     const error = getErrorObject(formError);
 
     const submitUpdateForm = useCallback(async (
         finalValues: ProjectUpdateInput,
     ) => {
-        if (isDefined(projectIdFromParams)) {
-            const results = await updateProject({
-                variables: {
-                    id: projectIdFromParams,
-                    data: finalValues,
-                },
-            });
+        const results = await updateProject({
+            variables: {
+                id: projectData.project.id,
+                data: finalValues,
+            },
+        });
 
-            if (isDefined(results.data)
-                // eslint-disable-next-line no-underscore-dangle
-                && results.data.updateProject.__typename === 'ProjectTypeMutationResponseType'
-            ) {
-                const {
-                    ok,
-                    errors,
-                    // result,
-                } = results.data.updateProject;
+        if (isDefined(results.data)
+            // eslint-disable-next-line no-underscore-dangle
+            && results.data.updateProject.__typename === 'ProjectTypeMutationResponseType'
+        ) {
+            const {
+                ok,
+                errors,
+                // result,
+            } = results.data.updateProject;
 
-                if (!ok) {
-                    setError(transformErrors(errors));
-                }
+            if (!ok) {
+                setError(transformErrors(errors));
             }
         }
-    }, [projectIdFromParams, updateProject, setError]);
+    }, [projectData.project.id, updateProject, setError]);
 
     const handleUpdateDraft = useCallback(async (
         submittedFormValues: PartialProjectUpdateInput,
@@ -296,12 +320,15 @@ function UpdateProjectForm(props: Props) {
                     error={error?.lookFor}
                     disabled={baseInputsDisabled}
                 />
-                <TextInput
-                    label="Organization"
+                <SelectInput
+                    label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
+                    options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
+                    keySelector={idSelector}
+                    labelSelector={nameSelector}
                     disabled={baseInputsDisabled}
                 />
                 <TextInput
@@ -336,6 +363,16 @@ function UpdateProjectForm(props: Props) {
                     error={error?.maxTasksPerUser}
                     disabled={baseInputsDisabled}
                 />
+                <AssetInput
+                    projectId={projectData.project.id}
+                    label="Project cover image"
+                    name="image"
+                    inputType="image"
+                    value={value.image}
+                    onChange={setFieldValue}
+                    error={error?.image}
+                    disabled={baseInputsDisabled}
+                />
             </div>
             <div className={styles.projectTypeSpecificInputs}>
                 <Heading level={3}>
@@ -344,10 +381,9 @@ function UpdateProjectForm(props: Props) {
                 <NonFieldError
                     error={error?.projectTypeSpecifics}
                 />
-                {projectContext.projectType === ProjectTypeEnum.Find
-                    && isDefined(projectIdFromParams) && (
+                {projectContext.projectType === ProjectTypeEnum.Find && (
                     <FindProjectSpecifics
-                        projectId={projectIdFromParams}
+                        projectId={projectData.project.id}
                         value={value.projectTypeSpecifics?.find}
                         setFieldValue={setFindProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.find}

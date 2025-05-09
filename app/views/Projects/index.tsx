@@ -2,7 +2,10 @@ import {
     useCallback,
     useState,
 } from 'react';
-import { MdSearch, MdSwipeLeft } from 'react-icons/md';
+import {
+    MdSearch,
+    MdSwipeLeft,
+} from 'react-icons/md';
 import {
     gql,
     useQuery,
@@ -10,11 +13,13 @@ import {
 import {
     _cs,
     isDefined,
+    isTruthyString,
 } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
+import EmptyMessage from '#components/EmptyMessage';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
 import PendingMessage from '#components/PendingMessage';
@@ -31,6 +36,7 @@ import {
 import useDebouncedValue from '#hooks/useDebouncedValue';
 import useInputState from '#hooks/useInputState';
 import {
+    defaultPagePerItemOptions,
     keySelector,
     labelSelector,
 } from '#utils/common';
@@ -38,7 +44,6 @@ import {
 import ProjectListItem from './ProjectListItem';
 
 import styles from './styles.module.css';
-import EmptyMessage from '#components/EmptyMessage';
 
 const ENUM_QUERY = gql`
 query ProjectsFilterEnums {
@@ -72,6 +77,12 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
             projectType
             status
             verificationNumber
+            image {
+                id
+                file {
+                    url
+                }
+            }
             projectTypeSpecifics {
                 ... on CompareProjectPropertyType {
                     __typename
@@ -104,15 +115,6 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
 }
 `;
 
-const defaultPagePerItemOptions = [
-    { value: 2, label: '2 items / page' },
-    { value: 5, label: '5 items / page' },
-    { value: 10, label: '10 items / page' },
-    { value: 20, label: '20 items / page' },
-    { value: 50, label: '50 items / page' },
-    { value: 100, label: '100 items / page' },
-];
-
 interface Props {
     className?: string;
 }
@@ -130,7 +132,7 @@ function Projects(props: Props) {
     >(undefined);
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
-    const debouncedSearchText = useDebouncedValue(searchText);
+    const debouncedSearchText = useDebouncedValue(searchText?.trim());
     const [activePage, setActivePage] = useState(1);
     const [pagePerItem, setPagePerItem] = useState(2);
 
@@ -166,6 +168,10 @@ function Projects(props: Props) {
 
     const filteredProjectList = projectsResponse?.projects.results ?? [];
     const totalCount = projectsResponse?.projects.totalCount ?? 0;
+
+    const filtersApplied = isTruthyString(debouncedSearchText)
+        || isDefined(selectedProjectStat)
+        || isDefined(selectedProjectType);
 
     return (
         <PageLayout
@@ -229,20 +235,20 @@ function Projects(props: Props) {
                     className={styles.loading}
                 />
             )}
-            {!pending && totalCount === 0 && (
+            {filtersApplied && !pending && totalCount === 0 && (
                 <EmptyMessage
                     icon={<MdSwipeLeft />}
                     title="No matching projects found!"
                     description="There are currently no projects for the selected filter."
                 />
             )}
-            {/* !pending && totalCount > 0 && filteredProjectList.length === 0 && (
+            {!filtersApplied && !pending && totalCount === 0 && (
                 <EmptyMessage
                     icon={<MdSwipeLeft />}
                     title="No projects found!"
-                    description="There are no projects for selected filter."
+                    description="There are currently no projects in the system!"
                 />
-            ) */}
+            )}
             {!pending
                 && isDefined(projectsResponse)
                 && projectsResponse.projects.totalCount > 0 && (

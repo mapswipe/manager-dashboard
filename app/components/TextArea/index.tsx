@@ -4,7 +4,7 @@ import RawTextArea, { Props as RawTextAreaProps } from '../RawTextArea';
 export type TextInputProps<N> = Omit<InputContainerProps, 'input'>
     & Omit<RawTextAreaProps<N>, 'containerRef' | 'inputSectionRef'>;
 
-function TextInput<const N>(props: TextInputProps<N>) {
+function TextArea<const N>(props: TextInputProps<N>) {
     const {
         actions,
         actionsContainerClassName,
@@ -47,6 +47,7 @@ function TextInput<const N>(props: TextInputProps<N>) {
             readOnly={readOnly}
             input={(
                 <RawTextArea<N>
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...textAreaProps}
                     readOnly={readOnly}
                     disabled={disabled}
@@ -57,4 +58,4 @@ function TextInput<const N>(props: TextInputProps<N>) {
     );
 }
 
-export default TextInput;
+export default TextArea;

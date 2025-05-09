@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { IconType } from 'react-icons';
 import {
     IoAddOutline,
@@ -28,99 +27,15 @@ import {
     IoTriangleOutline,
     IoWarningOutline,
 } from 'react-icons/io5';
-import {
-    isDefined,
-    listToMap,
-} from '@togglecorp/fujs';
+import { listToMap } from '@togglecorp/fujs';
 
+import { TutorialScenarioIconEnum } from '#generated/types/graphql';
 import oneTapIcon from '#resources/icons/1_Tap_Black.png';
 import twoTapIcon from '#resources/icons/2_Tap_Black.png';
 import threeTapIcon from '#resources/icons/3_Tap_Black.png';
 import swipeIcon from '#resources/icons/swipeleft_icon_black.png';
 import angularTapIcon from '#resources/icons/tap_icon_angular.png';
 import check from '#resources/icons/tick_green_on_white.png';
-
-export function valueSelector<T>(item: { value: T }) {
-    return item.value;
-}
-
-export function labelSelector<T>(item: { label: T }) {
-    return item.label;
-}
-
-export function keySelector<T>(item: { key: T }) {
-    return item.key;
-}
-
-export function getNoMoreThanNCharacterCondition(maxCharacters: number) {
-    return (value: string | undefined) => {
-        if (!isDefined(value) || value.length <= maxCharacters) {
-            return undefined;
-        }
-
-        return `Max ${maxCharacters} characters allowed`;
-    };
-}
-
-export type ProjectInputType = 'aoi_file' | 'link' | 'TMId';
-export type ProjectStatus = 'private_active' | 'private_inactive' | 'active' | 'inactive' | 'finished' | 'archived' | 'tutorial';
-export const PROJECT_TYPE_BUILD_AREA = 1;
-export const PROJECT_TYPE_FOOTPRINT = 2;
-export const PROJECT_TYPE_CHANGE_DETECTION = 3;
-export const PROJECT_TYPE_COMPLETENESS = 4;
-export const PROJECT_TYPE_STREET = 7;
-
-export type ProjectType = 1 | 2 | 3 | 4 | 7;
-
-export const projectTypeLabelMap: {
-    [key in ProjectType]: string
-} = {
-    [PROJECT_TYPE_BUILD_AREA]: 'Find',
-    [PROJECT_TYPE_FOOTPRINT]: 'Validate',
-    [PROJECT_TYPE_CHANGE_DETECTION]: 'Compare',
-    [PROJECT_TYPE_COMPLETENESS]: 'Completeness',
-    [PROJECT_TYPE_STREET]: 'Street',
-};
-
-export type IconKey = 'add-outline'
-    | 'alert-outline'
-    | 'ban-outline'
-    | 'check'
-    | 'close-outline'
-    | 'checkmark-outline'
-    | 'egg-outline'
-    | 'ellipse-outline'
-    | 'flag-outline'
-    | 'hand-left-outline'
-    | 'hand-right-outline'
-    | 'happy-outline'
-    | 'heart-outline'
-    | 'help-outline'
-    | 'information-outline'
-    | 'prism-outline'
-    | 'refresh-outline'
-    | 'remove-outline'
-    | 'sad-outline'
-    | 'search-outline'
-    | 'shapes-outline'
-    | 'square-outline'
-    | 'star-outline'
-    | 'thumbs-down-outline'
-    | 'thumbs-up-outline'
-    | 'triangle-outline'
-    | 'warning-outline'
-    | 'general-tap'
-    | 'tap'
-    | 'tap-1'
-    | 'tap-2'
-    | 'tap-3'
-    | 'swipe-left';
-
-export interface IconItem {
-    key: IconKey;
-    label: string;
-    component: IconType;
-}
 
 function getPngIcon(src: string, alt: string) {
     const element = () => (
@@ -138,134 +53,140 @@ function getPngIcon(src: string, alt: string) {
     return element;
 }
 
+export interface IconItem {
+    key: TutorialScenarioIconEnum;
+    label: string;
+    component: IconType;
+}
+
 export const customOptionsOnlyIconList: IconItem[] = [
     {
-        key: 'add-outline',
+        key: TutorialScenarioIconEnum.AddOutline,
         label: 'Add',
         component: IoAddOutline,
     },
     {
-        key: 'alert-outline',
+        key: TutorialScenarioIconEnum.AlertOutline,
         label: 'Alert',
         component: IoAlertOutline,
     },
     {
-        key: 'ban-outline',
+        key: TutorialScenarioIconEnum.BanOutline,
         label: 'Ban',
         component: IoBanOutline,
     },
     {
-        key: 'checkmark-outline',
+        key: TutorialScenarioIconEnum.CheckmarkOutline,
         label: 'Checkmark',
         component: IoCheckmarkOutline,
     },
     {
-        key: 'close-outline',
+        key: TutorialScenarioIconEnum.CloseOutline,
         label: 'Close',
         component: IoCloseOutline,
     },
     {
-        key: 'egg-outline',
+        key: TutorialScenarioIconEnum.EggOutline,
         label: 'Egg',
         component: IoEggOutline,
     },
     {
-        key: 'ellipse-outline',
+        key: TutorialScenarioIconEnum.EllipseOutline,
         label: 'Ellipse',
         component: IoEllipseOutline,
     },
     {
-        key: 'flag-outline',
+        key: TutorialScenarioIconEnum.FlagOutline,
         label: 'Flag',
         component: IoFlagOutline,
     },
     {
-        key: 'hand-left-outline',
+        key: TutorialScenarioIconEnum.HandLeftOutline,
         label: 'Hand Left',
         component: IoHandLeftOutline,
     },
     {
-        key: 'hand-right-outline',
+        key: TutorialScenarioIconEnum.HandRightOutline,
         label: 'Hand Right',
         component: IoHandRightOutline,
     },
     {
-        key: 'happy-outline',
+        key: TutorialScenarioIconEnum.HappyOutline,
         label: 'Happy',
         component: IoHappyOutline,
     },
     {
-        key: 'heart-outline',
+        key: TutorialScenarioIconEnum.HeartOutline,
         label: 'Heart',
         component: IoHeartOutline,
     },
     {
-        key: 'help-outline',
+        key: TutorialScenarioIconEnum.HelpOutline,
         label: 'Help',
         component: IoHelpOutline,
     },
     {
-        key: 'information-outline',
+        key: TutorialScenarioIconEnum.InformationOutline,
         label: 'Information',
         component: IoInformationOutline,
     },
     {
-        key: 'prism-outline',
+        key: TutorialScenarioIconEnum.PrismOutline,
         label: 'Prism',
         component: IoPrismOutline,
     },
     {
-        key: 'refresh-outline',
+        key: TutorialScenarioIconEnum.RefreshOutline,
         label: 'Refresh',
         component: IoRefreshOutline,
     },
     {
-        key: 'remove-outline',
+        key: TutorialScenarioIconEnum.RemoveOutline,
         label: 'Remove',
         component: IoRemoveOutline,
     },
     {
-        key: 'sad-outline',
+        key: TutorialScenarioIconEnum.SadOutline,
         label: 'Sad',
         component: IoSadOutline,
     },
     {
-        key: 'search-outline',
+        key: TutorialScenarioIconEnum.SearchOutline,
         label: 'Search',
         component: IoSearchOutline,
     },
     {
-        key: 'shapes-outline',
+        key: TutorialScenarioIconEnum.ShapesOutline,
         label: 'Shapes',
         component: IoShapesOutline,
     },
     {
-        key: 'square-outline',
+        key: TutorialScenarioIconEnum.SquareOutline,
         label: 'Square',
         component: IoSquareOutline,
     },
     {
-        key: 'star-outline',
+        key: TutorialScenarioIconEnum.StarOutline,
         label: 'Star',
         component: IoStarOutline,
     },
     {
-        key: 'thumbs-down-outline',
+        key: TutorialScenarioIconEnum.ThumbsDownOutline,
         label: 'Thumbs Down',
         component: IoThumbsDownOutline,
     },
     {
-        key: 'thumbs-up-outline',
+        key: TutorialScenarioIconEnum.ThumbsUpOutline,
         label: 'Thumbs Up',
         component: IoThumbsUpOutline,
     },
     {
-        key: 'triangle-outline',
+        key: TutorialScenarioIconEnum.TriangleOutline,
         label: 'Triangle',
         component: IoTriangleOutline,
     },
     {
-        key: 'warning-outline',
+        key: TutorialScenarioIconEnum.WarningOutline,
         label: 'Warning',
         component: IoWarningOutline,
     },
@@ -275,32 +196,32 @@ export const customOptionsOnlyIconList: IconItem[] = [
 // They need to be treated diffrently as they are loaded as pngs
 const scenarioOnlyIconList: IconItem[] = [
     {
-        key: 'tap',
+        key: TutorialScenarioIconEnum.Tap,
         label: 'Tap',
         component: getPngIcon(angularTapIcon, 'tap'),
     },
     {
-        key: 'tap-1',
+        key: TutorialScenarioIconEnum.Tap_1,
         label: '1-Tap',
         component: getPngIcon(oneTapIcon, 'one tap'),
     },
     {
-        key: 'tap-2',
+        key: TutorialScenarioIconEnum.Tap_2,
         label: '2-Tap',
         component: getPngIcon(twoTapIcon, 'two tap'),
     },
     {
-        key: 'tap-3',
+        key: TutorialScenarioIconEnum.Tap_3,
         label: '3-Tap',
         component: getPngIcon(threeTapIcon, 'three tap'),
     },
     {
-        key: 'swipe-left',
+        key: TutorialScenarioIconEnum.SwipeLeft,
         label: 'Swipe Left',
         component: getPngIcon(swipeIcon, 'swipe left'),
     },
     {
-        key: 'check',
+        key: TutorialScenarioIconEnum.Check,
         label: 'Check',
         component: getPngIcon(check, 'check'),
     },
@@ -313,30 +234,3 @@ export const iconMap = listToMap(
     (icon) => icon.key,
     (icon) => icon.component,
 );
-
-// NOTE: We have a similar function in firebase function utils
-// firebase/functions/src/utils/index.ts
-export const formatProjectTopic = (projectTopic: string) => {
-    // Note: this will remove start and end space
-    const projectWithoutStartAndEndSpace = projectTopic.trim();
-
-    // Note: this will change multi space to single space
-    const removeMultiSpaceToSingle = projectWithoutStartAndEndSpace.replace(/\s+/g, ' ');
-    const newProjectTopic = removeMultiSpaceToSingle.toLowerCase();
-
-    return newProjectTopic;
-};
-
-export function ymdToDateString(year: number, month: number, day: number) {
-    const ys = String(year).padStart(4, '0');
-    const ms = String(month + 1).padStart(2, '0');
-    const ds = String(day).padStart(2, '0');
-
-    return `${ys}-${ms}-${ds}`;
-}
-
-export function dateStringToDate(value: string) {
-    return new Date(`${value}T00:00`);
-}
-
-export const typedMemo: (<T>(c: T) => T) = memo;

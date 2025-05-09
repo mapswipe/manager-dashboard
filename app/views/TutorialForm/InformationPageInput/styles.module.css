@@ -1,0 +1,34 @@
+.information-page-input {
+    .content {
+        flex-direction: row;
+        gap: var(--spacing-medium);
+
+        .form-fields {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-medium);
+            flex-grow: 1;
+
+            .meta-inputs {
+                display: grid;
+                gap: var(--spacing-medium);
+                grid-template-columns: 8rem 1fr;
+            }
+        }
+
+        .preview {
+            display: flex;
+            align-items: center;
+            align-self: start;
+            flex-shrink: 0;
+            justify-content: center;
+            background-color: var(--color-background-accent-hint);
+            width: 20rem;
+            height: 30rem;
+        }
+    }
+
+    &:focus-within {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+}

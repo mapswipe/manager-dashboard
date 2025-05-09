@@ -1,0 +1,719 @@
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import { IoAdd } from 'react-icons/io5';
+import { MdDownload } from 'react-icons/md';
+import {
+    generatePath,
+    useNavigate,
+    useParams,
+} from 'react-router';
+import {
+    gql,
+    useMutation,
+    useQuery,
+} from '@apollo/client';
+import {
+    _cs,
+    compareNumber,
+    isDefined,
+    isNotDefined,
+    listToGroupList,
+    listToMap,
+    unique,
+} from '@togglecorp/fujs';
+import {
+    createSubmitHandler,
+    getErrorObject,
+    useForm,
+    useFormArray,
+} from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
+
+import routes from '#base/configs/routes';
+import Button from '#components/Button';
+import Container from '#components/Container';
+import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import NonFieldError from '#components/NonFieldError';
+import PageLayout from '#components/PageLayout';
+import SelectInput from '#components/SelectInput';
+import TextOutput from '#components/TextOutput';
+import {
+    NewTutorialMutation,
+    NewTutorialMutationVariables,
+    ProjectOptionsQuery,
+    ProjectOptionsQueryVariables,
+    ProjectOutputAssetsQuery,
+    ProjectOutputAssetsQueryVariables,
+    ProjectTypeEnum,
+    TileServerNameEnum,
+    TutorialCreateInput,
+    TutorialDetailsQuery,
+    TutorialDetailsQueryVariables,
+    TutorialProjectDetailQuery,
+    TutorialProjectDetailQueryVariables,
+} from '#generated/types/graphql';
+import {
+    getFullAssetUrl,
+    idSelector,
+    nameSelector,
+} from '#utils/common';
+import { transformErrors } from '#utils/error';
+
+import { PartialInformationPageInputFields } from './InformationPageInput/schema';
+import InformationPageInput from './InformationPageInput';
+import ScenarioPageInput from './ScenarioPageInput';
+import tutorialCreateFormSchema, {
+    defaultTutorialCreateFormValue,
+    PartialTutorialCreateInputFields,
+} from './schema';
+
+import styles from './styles.module.css';
+
+const TUTORIAL_QUERY = gql`
+query TutorialDetails($id: ID!) {
+    tutorial(id: $id) {
+        id
+        clientId
+        isDraft
+        informationPages {
+            id
+            clientId
+            pageNumber
+            title
+            tutorialId
+            blocks {
+                id
+                clientId
+                blockNumber
+                blockType
+                pageId
+                text
+                image {
+                    url
+                    size
+                    path
+                    name
+                    height
+                    width
+                }
+            }
+        }
+        projectId
+        scenarios {
+            id
+            clientId
+            hintDescription
+            hintIcon
+            hintTitle
+            instructionsDescription
+            instructionsIcon
+            instructionsTitle
+            scenarioPageNumber
+            successDescription
+            successIcon
+            successTitle
+            tutorialId
+            tasks {
+                id
+                clientId
+                reference
+                scenarioId
+            }
+        }
+    }
+}
+`;
+
+const PROJECT_OPTION_QUERY = gql`
+query ProjectOptions {
+    projects {
+        results {
+            id
+            name
+        }
+    }
+}
+`;
+
+const PROJECT_ASSETS_QUERY = gql`
+query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
+    projectAssets(
+        pagination: $pagination
+        filters: {projectId: {exact: $projectId}, type: {exact: OUTPUT}}
+        ) {
+        results {
+            file {
+                url
+                size
+                name
+            }
+            id
+            projectId
+            type
+        }
+    }
+}
+`;
+
+const PROJECT_DETAIL_QUERY = gql`
+query TutorialProjectDetail($projectId: ID!) {
+    project(id: $projectId) {
+        id
+        lookFor
+        name
+        projectType
+        requestingOrganization {
+            id
+            name
+        }
+        status
+        projectTypeSpecifics {
+            ... on CompareProjectPropertyType {
+                __typename
+                zoomLevel
+                tileServerProperty {
+                    name
+                }
+                tileServerBProperty {
+                    name
+                }
+            }
+            ... on CompletenessProjectPropertyType {
+                __typename
+                zoomLevel
+                tileServerProperty {
+                    name
+                }
+                tileServerBProperty {
+                    name
+                }
+            }
+            ... on FindProjectPropertyType {
+                __typename
+                zoomLevel
+                tileServerProperty {
+                    name
+                }
+            }
+        }
+        groupSize
+        maxTasksPerUser
+    }
+}
+`;
+
+const CREATE_TUTORIAL_MUTATION = gql`
+mutation NewTutorial($data: TutorialCreateInput!) {
+    createTutorial(data: $data) {
+        ... on TutorialTypeMutationResponseType {
+            errors
+            ok
+            result {
+                id
+            }
+        }
+    }
+}
+`;
+
+interface FindTutorialProperties {
+    group_id: number;
+    reference: number;
+    screen: number;
+    task_id: number;
+    tile_x: number;
+    tile_y: number;
+    tile_z: number;
+}
+
+type FindTutorialGeoJson = GeoJSON.FeatureCollection<GeoJSON.Geometry, FindTutorialProperties>;
+
+function validateFindTutorialGeoJson(
+    geoJson: unknown,
+): geoJson is FindTutorialGeoJson {
+    if (typeof geoJson !== 'object' || isNotDefined(geoJson)) {
+        return false;
+    }
+
+    if (!('features' in geoJson) || !Array.isArray(geoJson.features)) {
+        return false;
+    }
+
+    const hasInvalidFeature = geoJson.features.some((feature) => {
+        if (
+            !('type' in feature)
+                || feature.type !== 'Feature'
+                || !('geometry' in feature)
+                || !('properties' in feature)
+                || !Array.isArray(feature.properties)
+        ) {
+            return false;
+        }
+
+        return feature.properties.some((property: unknown) => (
+            typeof property !== 'object'
+                || isNotDefined(property)
+                || !('group_id' in property)
+                || typeof property.group_id !== 'number'
+                || !('reference' in property)
+                || typeof property.reference !== 'number'
+                || !('screen' in property)
+                || typeof property.screen !== 'number'
+                || !('task_id' in property)
+                || typeof property.task_id !== 'number'
+                || !('tile_x' in property)
+                || typeof property.tile_x !== 'number'
+                || !('tile_y' in property)
+                || typeof property.tile_y !== 'number'
+                || !('tile_z' in property)
+                || typeof property.tile_z !== 'number'
+        ));
+    });
+
+    if (hasInvalidFeature) {
+        return false;
+    }
+
+    return true;
+}
+
+interface Props {
+    className?: string;
+}
+
+function NewTutorial(props: Props) {
+    const { className } = props;
+    const { id: tutorialIdFromParams } = useParams<{ id: string }>();
+
+    const navigate = useNavigate();
+
+    const [
+        createNewTutorial,
+        { loading: createNewTutorialPending },
+    ] = useMutation<NewTutorialMutation, NewTutorialMutationVariables>(CREATE_TUTORIAL_MUTATION);
+
+    const {
+        data: projectOptionsResponse,
+    } = useQuery<ProjectOptionsQuery, ProjectOptionsQueryVariables>(PROJECT_OPTION_QUERY);
+
+    const {
+        data: tutorialData,
+        loading: tutorialDataPending,
+    } = useQuery<TutorialDetailsQuery, TutorialDetailsQueryVariables>(
+        TUTORIAL_QUERY,
+        {
+            variables: { id: tutorialIdFromParams ?? '' },
+            skip: isNotDefined(tutorialIdFromParams),
+        },
+    );
+
+    const {
+        value,
+        setFieldValue,
+        setValue,
+        error: formError,
+        validate,
+        setError,
+    } = useForm(tutorialCreateFormSchema, {
+        value: defaultTutorialCreateFormValue,
+    });
+
+    useEffect(() => {
+        if (isNotDefined(tutorialData)) {
+            return;
+        }
+
+        const { tutorial } = tutorialData;
+        const {
+            projectId,
+            ...other
+        } = tutorial;
+
+        // FIXME: need to add clientId and fix the structure
+        setValue({
+            project: projectId,
+            ...other,
+        });
+    }, [tutorialData, setValue]);
+
+    const error = getErrorObject(formError);
+
+    const {
+        setValue: setInformationPageFieldValue,
+        // removeValue: removeInformationPage,
+    } = useFormArray(
+        'informationPages' as const,
+        setFieldValue,
+    );
+
+    const {
+        data: projectAssetsResponse,
+    } = useQuery<ProjectOutputAssetsQuery, ProjectOutputAssetsQueryVariables>(
+        PROJECT_ASSETS_QUERY,
+        {
+            variables: {
+                projectId: value.project ?? '',
+                pagination: {
+                    offset: 0,
+                    limit: 10,
+                },
+            },
+            skip: isNotDefined(value.project),
+        },
+    );
+
+    const {
+        data: projectDetailResponse,
+    } = useQuery<TutorialProjectDetailQuery, TutorialProjectDetailQueryVariables>(
+        PROJECT_DETAIL_QUERY,
+        {
+            variables: {
+                projectId: value.project ?? '',
+            },
+            skip: isNotDefined(value.project),
+        },
+    );
+
+    const removeInformationPage = useCallback(
+        (indexToRemove: number) => {
+            setFieldValue(
+                (oldValue: PartialInformationPageInputFields[] | undefined) => {
+                    if (
+                        isNotDefined(oldValue)
+                            || oldValue.length === 0
+                            || isNotDefined(oldValue[indexToRemove])
+                    ) {
+                        return oldValue;
+                    }
+
+                    const newValue = oldValue.toSpliced(indexToRemove, 1).map(
+                        (item, pageIndex) => ({
+                            ...item,
+                            pageNumber: pageIndex + 1,
+                        }),
+                    );
+
+                    return newValue;
+                },
+                'informationPages',
+            );
+        },
+        [setFieldValue],
+    );
+
+    const informationPageErrors = useMemo(
+        () => getErrorObject(error?.informationPages),
+        [error],
+    );
+
+    const addInformationPage = useCallback(
+        (newValueIndex: number) => {
+            const newInformationPage: PartialInformationPageInputFields = {
+                clientId: ulid(),
+                pageNumber: newValueIndex + 1,
+            };
+
+            setFieldValue(
+                (oldValue: PartialInformationPageInputFields[] | undefined) => (
+                    [...(oldValue ?? []), newInformationPage]
+                ),
+                'informationPages' as const,
+            );
+        },
+        [setFieldValue],
+    );
+
+    const {
+        setValue: setScenarioPageFieldValue,
+        removeValue: removeScenarioPage,
+    } = useFormArray(
+        'scenarios' as const,
+        setFieldValue,
+    );
+
+    const scenarioPageErrors = useMemo(
+        () => getErrorObject(error?.scenarios),
+        [error],
+    );
+
+    /*
+    const addScenarioPage = useCallback(
+        (newScreenId: number) => {
+            const newScenarioPage: PartialScenarioPageInputFields = {
+                clientId: ulid(),
+                scenarioPageNumber: newScreenId,
+            };
+
+            setFieldValue(
+                (oldValue: PartialScenarioPageInputFields[] | undefined) => (
+                    [...(oldValue ?? []), newScenarioPage]
+                ),
+                'scenarios' as const,
+            );
+        },
+        [setFieldValue],
+    );
+    */
+
+    const handleFormSubmission = useCallback(
+        async (submittedValues: PartialTutorialCreateInputFields) => {
+            if (isDefined(tutorialIdFromParams)) {
+                console.info('Edit not implemented yet!', submittedValues);
+                return;
+            }
+
+            const finalValues = submittedValues as TutorialCreateInput;
+            const result = await createNewTutorial({
+                variables: {
+                    data: {
+                        ...finalValues,
+                        isDraft: true,
+                    },
+                },
+            });
+
+            // eslint-disable-next-line no-underscore-dangle
+            if (result.data?.createTutorial.__typename === 'TutorialTypeMutationResponseType') {
+                const {
+                    ok,
+                    errors,
+                    // result,
+                } = result.data.createTutorial;
+
+                if (!ok) {
+                    setError(transformErrors(errors));
+                }
+
+                if (result.data.createTutorial.ok
+                    && result.data.createTutorial.result
+                ) {
+                    navigate(
+                        generatePath(
+                            routes.editTutorial.originalPath,
+                            { id: result.data.createTutorial.result.id },
+                        ),
+                    );
+                }
+            }
+        },
+        [navigate, tutorialIdFromParams, createNewTutorial, setError],
+    );
+
+    const handleSubmitButtonClick = useMemo(
+        () => createSubmitHandler(validate, setError, handleFormSubmission),
+        [validate, setError, handleFormSubmission],
+    );
+
+    const [
+        tutorialTasksGeojson,
+        setTutorialTasksGeojson,
+    ] = useState<FindTutorialGeoJson | undefined>();
+
+    const handleGeoJsonFileChange = useCallback((geoJson: GeoJSON.GeoJSON | undefined) => {
+        if (isNotDefined(geoJson) || !validateFindTutorialGeoJson(geoJson)) {
+            setTutorialTasksGeojson(undefined);
+            return;
+        }
+
+        setTutorialTasksGeojson(geoJson);
+
+        const featuresByScreen = listToGroupList(
+            geoJson.features,
+            (feature) => feature.properties.screen,
+        );
+
+        const scenarioPages = unique(
+            geoJson.features,
+            (feature) => feature.properties.screen,
+        ).toSorted(
+            (a, b) => compareNumber(a.properties.screen, b.properties.screen),
+        ).map(({ properties }) => ({
+            clientId: ulid(),
+            scenarioPageNumber: properties.screen,
+            tasks: featuresByScreen[properties.screen].map((feature) => ({
+                clientId: ulid(),
+                reference: feature.properties.reference,
+                projectTypeSpecifics: {
+                    find: {
+                        tileX: feature.properties.tile_x,
+                        tileY: feature.properties.tile_y,
+                        tileZ: feature.properties.tile_z,
+                    },
+                },
+            })),
+        }));
+
+        setFieldValue(scenarioPages, 'scenarios');
+    }, [setFieldValue]);
+
+    const scenarioGeoJsonByClientId = useMemo(() => {
+        if (isNotDefined(tutorialTasksGeojson)) {
+            return undefined;
+        }
+
+        return listToMap(
+            value.scenarios,
+            (scenario) => scenario.clientId,
+            (scenario) => ({
+                type: 'FeatureCollection' as const,
+                features: tutorialTasksGeojson.features.filter(
+                    (feature) => feature.properties.screen === scenario.scenarioPageNumber,
+                ),
+            }),
+        );
+    }, [value.scenarios, tutorialTasksGeojson]);
+
+    return (
+        <PageLayout
+            className={_cs(styles.newTutorial, className)}
+            heading="Create a New Tutorial"
+            mainContentClassName={styles.mainContent}
+            footerActions={(
+                <Button
+                    name={undefined}
+                    variant="primary"
+                    onClick={handleSubmitButtonClick}
+                    disabled={isDefined(tutorialIdFromParams)}
+                >
+                    Submit
+                </Button>
+            )}
+        >
+            <div className={styles.projectSelection}>
+                <SelectInput
+                    label="Project"
+                    name="project"
+                    options={projectOptionsResponse?.projects.results}
+                    keySelector={idSelector}
+                    labelSelector={nameSelector}
+                    value={value.project}
+                    onChange={setFieldValue}
+                    error={error?.project}
+                />
+                <Container
+                    heading="Project Assets"
+                    headingLevel={5}
+                    withHeaderBorder
+                    spacing="sm"
+                >
+                    {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
+                        <div key={projectAsset.id}>
+                            <a
+                                className={styles.projectAssetDownloadLink}
+                                href={getFullAssetUrl(projectAsset.file.url)}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <MdDownload />
+                                {projectAsset.file.name.replace(/^.*[\\/]/, '')}
+                            </a>
+                        </div>
+                    ))}
+                </Container>
+            </div>
+            {isDefined(projectDetailResponse) && (
+                <Container
+                    heading="Selected project details"
+                    spacing="sm"
+                >
+                    <div>
+                        <TextOutput
+                            label="Look for"
+                            value={projectDetailResponse.project.lookFor}
+                        />
+                        <TextOutput
+                            label="Requesting organization"
+                            value={projectDetailResponse.project.requestingOrganization.name}
+                        />
+                        <TextOutput
+                            label="Zoom level"
+                            value={projectDetailResponse.project.projectTypeSpecifics?.zoomLevel}
+                        />
+                        <TextOutput
+                            label="Tile server"
+                            value={projectDetailResponse.project
+                                .projectTypeSpecifics?.tileServerProperty.name}
+                        />
+                    </div>
+                </Container>
+            )}
+            <Container
+                heading="Information Pages"
+                headingLevel={2}
+                headerDescription={(
+                    <NonFieldError
+                        error={error?.informationPages}
+                    />
+                )}
+                headerActions={(
+                    <Button
+                        className={styles.addPageButton}
+                        name={value.informationPages?.length ?? 0}
+                        onClick={addInformationPage}
+                        icons={<IoAdd />}
+                        variant="action"
+                    >
+                        New page
+                    </Button>
+                )}
+                isEmpty={isNotDefined(value.informationPages)
+                    || value.informationPages.length === 0}
+            >
+                {value.informationPages?.map((informationPage, informationPageIndex) => (
+                    <InformationPageInput
+                        key={informationPage.clientId}
+                        className={styles.informationPage}
+                        index={informationPageIndex}
+                        value={informationPage}
+                        onChange={setInformationPageFieldValue}
+                        onRemove={removeInformationPage}
+                        error={getErrorObject(informationPageErrors?.[informationPage.clientId])}
+                        lookForValue={projectDetailResponse?.project.lookFor}
+                    />
+                ))}
+            </Container>
+            <Container
+                heading="Scenario Pages"
+                headingLevel={2}
+                headerDescription={(
+                    <>
+                        <GeoJsonFileInput
+                            name={undefined}
+                            label="Upload Scenarios as GeoJSON"
+                            value={tutorialTasksGeojson}
+                            onChange={handleGeoJsonFileChange}
+                            hint="It should end with .geojson or .geo.json"
+                        />
+                        <NonFieldError
+                            error={error?.scenarios}
+                        />
+                    </>
+                )}
+                isEmpty={isNotDefined(value.scenarios)
+                    || value.scenarios.length === 0}
+            >
+                {value.scenarios?.map((scenarioPage, scenarioPageIndex) => (
+                    <ScenarioPageInput
+                        key={scenarioPage.clientId}
+                        className={styles.scenarioPage}
+                        index={scenarioPageIndex}
+                        value={scenarioPage}
+                        onChange={setScenarioPageFieldValue}
+                        onRemove={removeScenarioPage}
+                        error={getErrorObject(scenarioPageErrors?.[scenarioPage.clientId])}
+                        scenarioGeoJson={scenarioGeoJsonByClientId?.[scenarioPage.clientId]}
+                        lookForValue={projectDetailResponse?.project.lookFor}
+                        tileServerProperty={projectDetailResponse
+                            ?.project.projectTypeSpecifics?.tileServerProperty}
+                    />
+                ))}
+            </Container>
+        </PageLayout>
+    );
+}
+
+export default NewTutorial;

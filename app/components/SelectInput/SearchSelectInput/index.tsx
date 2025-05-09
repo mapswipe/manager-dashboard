@@ -52,6 +52,7 @@ export type SearchSelectInputProps<
     searchOptions?: O[] | undefined | null;
     keySelector: (option: O) => T;
     labelSelector: (option: O) => string;
+    optionLabelSelector?: (option: O) => React.ReactNode;
     name: K;
     disabled?: boolean;
     readOnly?: boolean;
@@ -100,6 +101,7 @@ function SearchSelectInput<
     const {
         keySelector,
         labelSelector,
+        optionLabelSelector = labelSelector,
         name,
         onChange,
         onOptionsChange,
@@ -223,12 +225,12 @@ function SearchSelectInput<
             const isActive = key === value;
 
             return {
-                children: labelSelector(option),
+                children: optionLabelSelector(option),
                 containerClassName: _cs(styles.option, isActive && styles.active),
                 title: labelSelector(option),
             };
         },
-        [value, labelSelector],
+        [value, optionLabelSelector, labelSelector],
     );
 
     const handleOptionClick = useCallback(
