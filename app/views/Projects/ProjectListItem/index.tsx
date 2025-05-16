@@ -1,5 +1,6 @@
 import { FaEdit } from 'react-icons/fa';
 import { GoOrganization } from 'react-icons/go';
+import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
@@ -12,6 +13,7 @@ import {
 import compareIllustration from '#resources/images/compare-illustration.svg';
 import findIllustration from '#resources/images/find-illustration.svg';
 import validateIllustration from '#resources/images/validate-illustration.svg';
+import { getFullAssetUrl } from '#utils/common';
 
 import styles from './styles.module.css';
 
@@ -56,7 +58,9 @@ function ProjectListItem(props: Props) {
             <img
                 className={styles.image}
                 alt=""
-                src={projectTypeIllustrations[value.projectType]}
+                src={isDefined(value.image)
+                    ? getFullAssetUrl(value.image.file.url)
+                    : projectTypeIllustrations[value.projectType]}
             />
             <div className={styles.details}>
                 <div className={styles.header}>

@@ -65,34 +65,5 @@
                 border-bottom: var(--width-separator-thin) solid var(--color-separator);
             }
         }
-
-        .tutorials-container {
-            display: flex;
-            flex-direction: column;
-            border-radius: var(--radius-card-border);
-            box-shadow: var(--shadow-card);
-            background-color: var(--color-foreground);
-            padding: var(--spacing-large);
-            gap: var(--spacing-medium);
-
-            .header {
-                display: flex;
-                gap: var(--spacing-medium);
-
-                .heading {
-                    flex-grow: 1;
-                }
-
-                .add-button {
-                    flex-shrink: 0;
-                }
-            }
-
-            .tutorial-list {
-                border-top: var(--width-separator-thin) solid var(--color-separator);
-                border-bottom: var(--width-separator-thin) solid var(--color-separator);
-                padding: var(--spacing-medium) 0;
-            }
-        }
     }
 }

@@ -1,27 +1,33 @@
 import {
     ObjectSchema,
     PartialForm,
-    undefinedValue,
 } from '@togglecorp/toggle-form';
 
-import { TutorialTaskCreateInput } from '#generated/types/graphql';
+import {
+    TutorialTaskCreateInput,
+    TutorialTaskProjectTypeSpecificInput,
+} from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
-export type TaskInputFields = DeepNonNullable<TutorialTaskCreateInput> & {
-    clientId: string;
-};
+import findPropertyInputSchema from './FindPropertyInput/schema';
 
+export type TaskInputFields = DeepNonNullable<TutorialTaskCreateInput>;
 export type PartialTaskInputFields = PartialForm<TaskInputFields, 'clientId'>;
-
 type TaskSchema = ObjectSchema<PartialTaskInputFields>;
+
+type ProjectTypeSpecifics = DeepNonNullable<TutorialTaskProjectTypeSpecificInput>;
+export type PartialProjectTypeSpecifics = PartialForm<ProjectTypeSpecifics>;
+type ProjectTypeSpecificsSchema = ObjectSchema<PartialProjectTypeSpecifics>;
 
 const taskSchema: TaskSchema = {
     fields: (): ReturnType<TaskSchema['fields']> => ({
-        clientId: {
-            forceValue: undefinedValue,
-        },
+        clientId: {},
         reference: {},
-        projectTypeSpecifics: {},
+        projectTypeSpecifics: {
+            fields: (): ReturnType<ProjectTypeSpecificsSchema['fields']> => ({
+                find: findPropertyInputSchema,
+            }),
+        },
     }),
 };
 

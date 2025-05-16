@@ -43,7 +43,7 @@ export type PartialCommonTileServerConfigFields = PartialForm<
 type CommonTileServerConfigSchema = ObjectSchema<PartialCommonTileServerConfigFields>;
 
 export const defaultTileServerInputFormValue: PartialTileServerInputFields = {
-    name: TileServerNameEnum.Bing,
+    name: TileServerNameEnum.Custom,
 };
 
 const tileServerFormSchema: ProjectTileFormSchema = {

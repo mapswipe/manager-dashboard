@@ -12,6 +12,7 @@ interface Props {
     className?: string;
     heading?: React.ReactNode;
     headingLevel?: HeadingProps['level'];
+    headingDescription?: React.ReactNode;
     headerDescription?: React.ReactNode;
     headerIcons?: React.ReactNode;
     headerActions?: React.ReactNode;
@@ -19,12 +20,14 @@ interface Props {
     isEmpty?: boolean;
     withHeaderBorder?: boolean;
     contentClassName?: string;
+    spacing?: 'sm' | 'md' | 'lg';
 }
 
 function Container(props: Props) {
     const {
         className,
         heading,
+        headingDescription,
         headingLevel,
         headerIcons,
         headerActions,
@@ -33,20 +36,35 @@ function Container(props: Props) {
         isEmpty,
         withHeaderBorder,
         contentClassName,
+        spacing = 'md',
     } = props;
 
     const shouldShowHeadingRow = isDefined(heading)
+        || isDefined(headingDescription)
         || isDefined(headerIcons)
         || isDefined(headerActions);
     const shouldShowHeader = shouldShowHeadingRow
         || isDefined(headerDescription);
 
     return (
-        <div className={_cs(styles.container, className)}>
+        <div
+            className={_cs(
+                styles.container,
+                spacing === 'sm' && styles.withSmallSpacing,
+                spacing === 'md' && styles.withMediumSpacing,
+                spacing === 'lg' && styles.withLargeSpacing,
+                className,
+            )}
+        >
             {shouldShowHeader && (
                 <div className={styles.header}>
                     {shouldShowHeadingRow && (
-                        <div className={styles.headingRow}>
+                        <div
+                            className={_cs(
+                                styles.headingRow,
+                                isDefined(headingDescription) && styles.withHeadingDescription,
+                            )}
+                        >
                             {headerIcons && (
                                 <div className={styles.icons}>
                                     {headerIcons}
@@ -58,12 +76,17 @@ function Container(props: Props) {
                             >
                                 {heading}
                             </Heading>
+                            {isDefined(headingDescription) && (
+                                <div className={styles.headingDescription}>
+                                    {headingDescription}
+                                </div>
+                            )}
                             <div className={styles.icons}>
                                 {headerActions}
                             </div>
                         </div>
                     )}
-                    {headerDescription && (
+                    {shouldShowHeader && (
                         <div className={styles.description}>
                             {headerDescription}
                         </div>

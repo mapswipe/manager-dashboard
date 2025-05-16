@@ -1,7 +1,6 @@
 import {
     ObjectSchema,
     PartialForm,
-    undefinedValue,
 } from '@togglecorp/toggle-form';
 
 import {
@@ -32,16 +31,14 @@ export type ScenarioPageSchema = ObjectSchema<PartialScenarioPageInputFields>;
 
 const scenarioPageSchema: ScenarioPageSchema = {
     fields: (): ReturnType<ScenarioPageSchema['fields']> => ({
-        clientId: {
-            forceValue: undefinedValue,
-        },
+        clientId: {},
         hintDescription: {},
         hintIcon: {},
         hintTitle: {},
         instructionsDescription: {},
         instructionsIcon: {},
         instructionsTitle: {},
-        scenarioId: {
+        scenarioPageNumber: {
             required: true,
         },
         successDescription: {},

@@ -26,6 +26,7 @@ import {
 import Button from '#components/Button';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
+import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import {
     ProcessedProjectUpdateInput,
@@ -34,6 +35,11 @@ import {
     UpdateProcessedProjectMutation,
     UpdateProcessedProjectMutationVariables,
 } from '#generated/types/graphql';
+import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
+import {
+    idSelector,
+    nameSelector,
+} from '#utils/common';
 import { transformErrors } from '#utils/error';
 
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
@@ -68,6 +74,13 @@ function UpdateProcessedProjectForm(props: Props) {
         className,
         projectData,
     } = props;
+
+    const {
+        data: organizationListResponse,
+    } = useOrganizationListQuery({
+        limit: 20,
+        offset: 0,
+    });
 
     const [
         updateProcessedProject,
@@ -193,6 +206,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     name={undefined}
                     onClick={handleUpdateBasicDetailsButtonClick}
                     disabled={baseInputsDisabled}
+                    variant="tertiary"
                     icons={<MdSave />}
                 >
                     Update basic details
@@ -236,13 +250,15 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.lookFor}
                     disabled={baseInputsDisabled}
                 />
-                <TextInput
-                    label="Organization"
+                <SelectInput
+                    label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
+                    options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    disabled={baseInputsDisabled}
+                    keySelector={idSelector}
+                    labelSelector={nameSelector}
                 />
                 <TextInput
                     label="Additional info URL"

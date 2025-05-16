@@ -1,19 +1,33 @@
 .container {
+    --spacing: 0;
+
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-medium);
+    gap: var(--spacing);
 
     .header {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-medium);
+        gap: var(--spacing);
 
         .heading-row {
             display: flex;
-            gap: var(--spacing-medium);
+            align-items: center;
+            gap: var(--spacing);
 
             .heading {
                 flex-grow: 1;
+            }
+
+            .heading-description {
+                flex-grow: 1;
+            }
+
+            &.with-heading-description {
+                .heading {
+                    flex-grow: unset;
+                    width: fit-content;
+                }
             }
         }
 
@@ -26,13 +40,25 @@
 
     .header-border {
         margin: 0;
-        border-width: var(--width-separator-thin);
-        border-color: var(--color-separator);
+        border: 0;
+        border-top: var(--width-separator-thin) solid var(--color-separator);
     }
 
     .content {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-medium);
+        gap: var(--spacing);
+    }
+
+    &.with-small-spacing {
+        --spacing: var(--spacing-small);
+    }
+
+    &.with-medium-spacing {
+        --spacing: var(--spacing-medium);
+    }
+
+    &.with-large-spacing {
+        --spacing: var(--spacing-large);
     }
 }

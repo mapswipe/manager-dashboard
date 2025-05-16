@@ -69,10 +69,10 @@ function MobilePreview(props: Props) {
                         )}
                     >
                         <div className={styles.details}>
-                            <div className={styles.popupTitle}>
+                            <div className={styles.title}>
                                 {popupTitle}
                             </div>
-                            <div>
+                            <div className={styles.description}>
                                 {popupDescription}
                             </div>
                         </div>

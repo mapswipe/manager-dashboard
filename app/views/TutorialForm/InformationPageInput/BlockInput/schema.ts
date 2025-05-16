@@ -1,7 +1,6 @@
 import {
     ObjectSchema,
     PartialForm,
-    undefinedValue,
 } from '@togglecorp/toggle-form';
 
 import { TutorialInformationPageBlockCreateInput } from '#generated/types/graphql';
@@ -20,9 +19,7 @@ type BlockSchema = ObjectSchema<PartialBlockInputFields>;
 
 const blockFormSchema: BlockSchema = {
     fields: (): ReturnType<BlockSchema['fields']> => ({
-        clientId: {
-            forceValue: undefinedValue,
-        },
+        clientId: {},
         blockNumber: { required: true },
         blockType: { required: true },
         image: {},

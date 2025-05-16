@@ -1,7 +1,6 @@
 import {
     ObjectSchema,
     PartialForm,
-    undefinedValue,
 } from '@togglecorp/toggle-form';
 
 import {
@@ -33,9 +32,7 @@ export type InformationPageFormSchema = ObjectSchema<
 
 const informationPageSchema: InformationPageFormSchema = {
     fields: (): ReturnType<InformationPageFormSchema['fields']> => ({
-        clientId: {
-            forceValue: undefinedValue,
-        },
+        clientId: {},
         title: {
             required: true,
         },

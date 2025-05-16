@@ -1,0 +1,13 @@
+.text-output {
+    display: flex;
+    gap: var(--spacing-small);
+
+    .label {
+        font-size: var(--font-size-small);
+        color: var(--color-text-light);
+
+        &:after {
+            content: ':';
+        }
+    }
+}

@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { IoTrashBin } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 import {
     ObjectError,
@@ -10,7 +11,6 @@ import { ulid } from 'ulid';
 import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Container from '#components/Container';
-import NumberInput from '#components/NumberInput';
 import SegmentInput from '#components/SegmentInput';
 import TextArea from '#components/TextArea';
 import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
@@ -58,42 +58,27 @@ function BlockInput(props: Props) {
     return (
         <Container
             className={_cs(styles.blockInput, className)}
-            heading={`Block - #${index + 1}`}
+            heading={`Block #${value.blockNumber ?? (index + 1)}`}
             headingLevel={5}
             headerActions={(
                 <Button
+                    className={styles.removeButton}
                     name={index}
                     onClick={onRemove}
-                    variant="tertiary"
+                    variant="action"
+                    icons={<IoTrashBin />}
                 >
-                    Remove block
+                    Remove
                 </Button>
             )}
         >
-            <div className={styles.metaInputs}>
-                <NumberInput
-                    label="Block number"
-                    name="blockNumber"
-                    value={value.blockNumber}
-                    onChange={setFieldValue}
-                    error={error?.blockNumber}
-                />
-                <SegmentInput
-                    label="Block type"
-                    name="blockType"
-                    options={blockTypeOptions}
-                    value={value.blockType}
-                    onChange={setFieldValue}
-                    keySelector={keySelector}
-                    labelSelector={labelSelector}
-                />
-            </div>
             {value.blockType === TutorialInformationPageBlockTypeEnum.Text && (
                 <TextArea
-                    label="Text"
+                    placeholder="Enter block text"
                     name="text"
                     value={value.text}
                     onChange={setFieldValue}
+                    error={error?.text}
                 />
             )}
             {value.blockType === TutorialInformationPageBlockTypeEnum.Image && (

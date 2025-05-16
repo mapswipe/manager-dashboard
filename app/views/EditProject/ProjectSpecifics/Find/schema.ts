@@ -8,11 +8,11 @@ import {
 import { FindProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
+import tileServerFormSchema, { defaultTileServerInputFormValue } from '../../TileServerInput/schema';
 import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
-} from '../../schema';
-import tileServerFormSchema from '../../TileServerInput/schema';
+} from '../../UpdateProjectForm/schema';
 
 export type PartialFindSpecificFields = PartialForm<DeepNonNullable<FindProjectPropertyInput>>;
 type FindSpecificFormSchema = ObjectSchema<
@@ -22,6 +22,7 @@ type FindSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultFindSpecificFormValue: PartialFindSpecificFields = {
+    tileServerProperty: defaultTileServerInputFormValue,
 };
 
 const findSpecificFormSchema: FindSpecificFormSchema = {

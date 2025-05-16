@@ -23,6 +23,7 @@ import {
     useForm,
     useFormObject,
 } from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Heading from '#components/Heading';
@@ -30,6 +31,7 @@ import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
+import SelectInput from '#components/SelectInput/index.tsx';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -41,8 +43,14 @@ import {
     UpdateProjectMutation,
     UpdateProjectMutationVariables,
 } from '#generated/types/graphql';
+import useOrganizationListQuery from '#hooks/useOrganizationListQuery.ts';
+import {
+    idSelector,
+    nameSelector,
+} from '#utils/common';
 import { transformErrors } from '#utils/error';
 
+import AssetInput from '../AssetInput/index.tsx';
 import CompareProjectSpecifics from '../ProjectSpecifics/Compare';
 import {
     defaultCompareSpecificFormValue,
@@ -75,10 +83,10 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
 }
 `;
 
-const defaultProjectTypeSpecificsValue: PartialProjectTypeSpecificInput = {
-};
-
-const defaultBaseProjectFormValue: PartialProjectUpdateInput = {
+const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
+    [ProjectTypeEnum.Find]: 'find',
+    [ProjectTypeEnum.Compare]: 'compare',
+    [ProjectTypeEnum.Completeness]: 'completeness',
 };
 
 interface Props {
@@ -92,10 +100,33 @@ function UpdateProjectForm(props: Props) {
         projectData,
     } = props;
 
+    const {
+        data: organizationListResponse,
+    } = useOrganizationListQuery({
+        limit: 20,
+        offset: 0,
+    });
+
     const [
         updateProject,
         { loading: updateProjectPending },
     ] = useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UPDATE_PROJECT_MUTATION);
+
+    const defaultProjectTypeSpecificsValue = useMemo<PartialProjectTypeSpecificInput>(() => {
+        if (projectData.project.projectType === ProjectTypeEnum.Find) {
+            return defaultFindSpecificFormValue;
+        }
+
+        if (projectData.project.projectType === ProjectTypeEnum.Compare) {
+            return defaultCompareSpecificFormValue;
+        }
+
+        return {};
+    }, [projectData.project.projectType]);
+
+    const defaultBaseProjectFormValue = useMemo<PartialProjectUpdateInput>(() => ({
+        clientId: ulid(),
+    }), []);
 
     const projectContext = useMemo(() => ({
         projectType: projectData?.project.projectType,
@@ -123,23 +154,21 @@ function UpdateProjectForm(props: Props) {
             projectType,
             requestingOrganization,
             projectTypeSpecifics,
+            image,
             ...other
         } = removeNull(projectData.project);
-
-        const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
-            [ProjectTypeEnum.Find]: 'find',
-            [ProjectTypeEnum.Compare]: 'compare',
-            [ProjectTypeEnum.Completeness]: 'completeness',
-        };
 
         setValue({
             ...other,
             requestingOrganization: requestingOrganization.id,
+            image: image?.id,
             projectTypeSpecifics: {
-                [projectTypeToKeyMap[projectType]]: projectTypeSpecifics,
+                // TODO: replace with the default value
+                [projectTypeToKeyMap[projectType]]: projectTypeSpecifics
+                    ?? defaultProjectTypeSpecificsValue,
             },
         });
-    }, [projectData, setValue]);
+    }, [projectData, setValue, defaultProjectTypeSpecificsValue]);
 
     const error = getErrorObject(formError);
 
@@ -291,12 +320,15 @@ function UpdateProjectForm(props: Props) {
                     error={error?.lookFor}
                     disabled={baseInputsDisabled}
                 />
-                <TextInput
-                    label="Organization"
+                <SelectInput
+                    label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
+                    options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
+                    keySelector={idSelector}
+                    labelSelector={nameSelector}
                     disabled={baseInputsDisabled}
                 />
                 <TextInput
@@ -329,6 +361,16 @@ function UpdateProjectForm(props: Props) {
                     value={value.maxTasksPerUser}
                     onChange={setFieldValue}
                     error={error?.maxTasksPerUser}
+                    disabled={baseInputsDisabled}
+                />
+                <AssetInput
+                    projectId={projectData.project.id}
+                    label="Project cover image"
+                    name="image"
+                    inputType="image"
+                    value={value.image}
+                    onChange={setFieldValue}
+                    error={error?.image}
                     disabled={baseInputsDisabled}
                 />
             </div>

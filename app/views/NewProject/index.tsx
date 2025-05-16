@@ -24,6 +24,7 @@ import {
     requiredStringCondition,
     useForm,
 } from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
 
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
@@ -31,6 +32,7 @@ import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import SegmentInput from '#components/SegmentInput';
+import SelectInput from '#components/SelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -42,7 +44,12 @@ import {
     ProjectCreateInput,
     ProjectTypeEnum,
 } from '#generated/types/graphql';
-import { keySelector } from '#utils/common';
+import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
+import {
+    idSelector,
+    keySelector,
+    nameSelector,
+} from '#utils/common';
 import { transformErrors } from '#utils/error';
 
 import styles from './styles.module.css';
@@ -77,6 +84,7 @@ type ProjectCreateFormSchema = ObjectSchema<PartialProjectCreateInputFields>;
 
 const projectCreateFormSchema: ProjectCreateFormSchema = {
     fields: (): ReturnType<ProjectCreateFormSchema['fields']> => ({
+        clientId: {},
         projectType: {
             required: true,
         },
@@ -92,15 +100,6 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         description: {},
         additionalInfoUrl: {},
     }),
-};
-
-const defaultBaseProjectFormValue: PartialProjectCreateInputFields = {
-    projectType: ProjectTypeEnum.Find,
-    requestingOrganization: '1',
-    lookFor: 'Bugs',
-    name: 'Test project',
-    description: 'This is just a test project',
-    additionalInfoUrl: 'https://togglecorp.com',
 };
 
 function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
@@ -139,6 +138,17 @@ function NewProject(props: Props) {
     } = useQuery<NewProjectEnumsQuery, NewProjectEnumsQueryVariables>(ENUM_QUERY);
 
     const {
+        data: organizationListResponse,
+    } = useOrganizationListQuery({
+        limit: 20,
+        offset: 0,
+    });
+
+    const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
+        clientId: ulid(),
+    }), []);
+
+    const {
         value,
         error: formError,
         setFieldValue,
@@ -153,6 +163,7 @@ function NewProject(props: Props) {
     const handleFormSubmission = useCallback(
         async (submittedFormValues: PartialProjectCreateInputFields) => {
             const finalValues = submittedFormValues as ProjectCreateInput;
+
             const result = await createNewProject({
                 variables: {
                     data: finalValues,
@@ -248,13 +259,15 @@ function NewProject(props: Props) {
                     error={error?.description}
                     rows={4}
                 />
-                <TextInput
+                <SelectInput
                     label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
+                    options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    disabled
+                    keySelector={idSelector}
+                    labelSelector={nameSelector}
                 />
                 <TextInput
                     label="Look for"

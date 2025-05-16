@@ -3,6 +3,10 @@ import {
     useMemo,
 } from 'react';
 import {
+    IoAdd,
+    IoTrashBin,
+} from 'react-icons/io5';
+import {
     _cs,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -18,11 +22,12 @@ import { ulid } from 'ulid';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import NonFieldError from '#components/NonFieldError';
-import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
+import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
 
 import { PartialBlockInputFields } from './BlockInput/schema';
 import BlockInput from './BlockInput';
+import InformationPagePreview from './InformationPagePreview';
 import { PartialInformationPageInputFields } from './schema';
 
 import styles from './styles.module.css';
@@ -37,6 +42,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialInformationPageInputFields> | undefined;
     onRemove: (index: number) => void;
+    lookForValue: string | undefined,
 }
 
 function InformationPageInput(props: Props) {
@@ -47,6 +53,7 @@ function InformationPageInput(props: Props) {
         onChange,
         error,
         onRemove,
+        lookForValue,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -59,7 +66,7 @@ function InformationPageInput(props: Props) {
 
     const {
         setValue: setBlockFieldValue,
-        removeValue: removeBlock,
+        // removeValue: removeBlock,
     } = useFormArray(
         'blocks' as const,
         setFieldValue,
@@ -70,10 +77,39 @@ function InformationPageInput(props: Props) {
         [error?.blocks],
     );
 
+    const removeBlock = useCallback(
+        (indexToRemove: number) => {
+            setFieldValue(
+                (oldValue: PartialBlockInputFields[] | undefined) => {
+                    if (
+                        isNotDefined(oldValue)
+                            || oldValue.length === 0
+                            || isNotDefined(oldValue[indexToRemove])
+                    ) {
+                        return oldValue;
+                    }
+
+                    const newValue = oldValue.toSpliced(indexToRemove, 1).map(
+                        (item, blockIndex) => ({
+                            ...item,
+                            blockNumber: blockIndex + 1,
+                        }),
+                    );
+
+                    return newValue;
+                },
+                'blocks',
+            );
+        },
+        [setFieldValue],
+    );
+
     const addBlock = useCallback(
-        () => {
+        (newBlockIndex: number) => {
             const newBlock: PartialBlockInputFields = {
                 clientId: ulid(),
+                blockNumber: newBlockIndex + 1,
+                blockType: TutorialInformationPageBlockTypeEnum.Text,
             };
 
             setFieldValue(
@@ -88,47 +124,42 @@ function InformationPageInput(props: Props) {
 
     return (
         <Container
+            headingLevel={3}
             className={_cs(styles.informationPageInput, className)}
-            heading={`Information page - #${index + 1}`}
+            heading={`Page #${value.pageNumber ?? (index + 1)}`}
             headerActions={(
                 <Button
                     name={index}
                     onClick={onRemove}
-                    variant="tertiary"
+                    variant="action"
+                    icons={<IoTrashBin />}
                 >
-                    Remove info page
+                    Remove
                 </Button>
             )}
             contentClassName={styles.content}
         >
             <div className={styles.formFields}>
-                <div className={styles.metaInputs}>
-                    <NumberInput
-                        label="Page number"
-                        name="pageNumber"
-                        value={value.pageNumber}
-                        onChange={setFieldValue}
-                        error={error?.pageNumber}
-                    />
-                    <TextInput
-                        label="Title"
-                        name="title"
-                        value={value.title}
-                        onChange={setFieldValue}
-                        error={error?.title}
-                    />
-                </div>
+                <TextInput
+                    label="Title"
+                    name="title"
+                    value={value.title}
+                    onChange={setFieldValue}
+                    error={error?.title}
+                />
                 <Container
                     className={styles.blocks}
                     heading="Blocks"
                     headingLevel={4}
+                    withHeaderBorder
                     headerActions={(
                         <Button
-                            name={undefined}
+                            name={value.blocks?.length ?? 0}
                             onClick={addBlock}
-                            variant="tertiary"
+                            variant="action"
+                            icons={<IoAdd />}
                         >
-                            Add new block
+                            Add block
                         </Button>
                     )}
                     headerDescription={(
@@ -150,8 +181,11 @@ function InformationPageInput(props: Props) {
                     ))}
                 </Container>
             </div>
-            <div className={styles.preview}>
-                Preview not available!
+            <div className={styles.previewContainer}>
+                <InformationPagePreview
+                    value={value}
+                    lookFor={lookForValue}
+                />
             </div>
         </Container>
     );

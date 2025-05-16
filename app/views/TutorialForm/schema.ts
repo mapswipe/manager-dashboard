@@ -2,6 +2,7 @@ import {
     ObjectSchema,
     PartialForm,
 } from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
 
 import {
     TutorialCreateInput,
@@ -33,10 +34,12 @@ export type PartialTutorialCreateInputFields = PartialForm<
 export type TutorialCreateFormSchema = ObjectSchema<PartialTutorialCreateInputFields>;
 
 export const defaultTutorialCreateFormValue: PartialTutorialCreateInputFields = {
+    clientId: ulid(),
 };
 
 const tutorialCreateFormSchema: TutorialCreateFormSchema = {
     fields: (): ReturnType<TutorialCreateFormSchema['fields']> => ({
+        clientId: {},
         project: {
             required: true,
         },

@@ -1,18 +1,20 @@
 import { _cs } from '@togglecorp/fujs';
 import {
-    getErrorString,
+    getErrorObject,
     ObjectError,
     SetValueArg,
     useFormObject,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
-import Button from '#components/Button';
-import Container from '#components/Container';
 import NumberInput from '#components/NumberInput';
-import TextArea from '#components/TextArea';
 
-import { PartialTaskInputFields } from './schema';
+import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
+import FindPropertyInput from './FindPropertyInput';
+import {
+    PartialProjectTypeSpecifics,
+    PartialTaskInputFields,
+} from './schema';
 
 import styles from './styles.module.css';
 
@@ -25,7 +27,7 @@ interface Props {
         index: number,
     ) => void;
     error: ObjectError<PartialTaskInputFields> | undefined;
-    onRemove: (index: number) => void;
+    disabled?: boolean;
 }
 
 function TaskInput(props: Props) {
@@ -35,7 +37,7 @@ function TaskInput(props: Props) {
         value,
         onChange,
         error,
-        onRemove,
+        disabled,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -46,36 +48,39 @@ function TaskInput(props: Props) {
         }),
     );
 
+    const setProjectSpecificFieldValue = useFormObject<'projectTypeSpecifics', PartialProjectTypeSpecifics>(
+        'projectTypeSpecifics',
+        setFieldValue,
+        {},
+    );
+
+    const setFindProjectSpecificsFieldValue = useFormObject<'find', PartialFindPropertyInputFields>(
+        'find',
+        setProjectSpecificFieldValue,
+        {},
+    );
+
     return (
-        <Container
-            className={_cs(styles.taskInput, className)}
-            heading={`Task - #${index + 1}`}
-            headingLevel={5}
-            headerActions={(
-                <Button
-                    name={index}
-                    onClick={onRemove}
-                    variant="tertiary"
-                >
-                    Remove task
-                </Button>
-            )}
-        >
+        <div className={_cs(styles.taskInput, className)}>
+            <div>
+                {`#${index + 1}`}
+            </div>
             <NumberInput
                 label="Reference"
                 name="reference"
                 value={value.reference}
                 onChange={setFieldValue}
                 error={error?.reference}
+                disabled={disabled}
             />
-            <TextArea
-                label="Project type specifics"
-                name="projectTypeSpecifics"
-                value={value.projectTypeSpecifics}
-                onChange={setFieldValue}
-                error={getErrorString(error?.projectTypeSpecifics)}
+            <FindPropertyInput
+                className={styles.projectSpecificInput}
+                value={value.projectTypeSpecifics?.find}
+                setFieldValue={setFindProjectSpecificsFieldValue}
+                error={getErrorObject(error?.projectTypeSpecifics)?.find}
+                disabled={disabled}
             />
-        </Container>
+        </div>
     );
 }
 

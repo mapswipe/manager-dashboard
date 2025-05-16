@@ -28,9 +28,7 @@
         }
     }
 
-    .blocks {
-        border-radius: var(--radius-card-border);
-        background-color: var(--color-background-accent-hint);
-        padding: var(--spacing-medium);
+    &:focus-within {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
 }

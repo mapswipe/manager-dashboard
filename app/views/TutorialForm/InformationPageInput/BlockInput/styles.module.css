@@ -1,7 +1,14 @@
 .block-input {
-    .meta-inputs {
-        display: grid;
-        gap: var(--spacing-medium);
-        grid-template-columns: 7rem 1fr;
+    border-radius: var(--radius-card-border);
+
+    .remove-button {
+        transition: var(--duration-transition-medium) opacity ease-in-out;
+        opacity: 0;
+    }
+
+    &:hover {
+        .remove-button {
+            opacity: 1;
+        }
     }
 }
