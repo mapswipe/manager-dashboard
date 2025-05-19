@@ -12,7 +12,6 @@ import {
     useParams,
 } from 'react-router';
 import {
-    gql,
     useMutation,
     useQuery,
 } from '@apollo/client';
@@ -28,6 +27,7 @@ import {
 import {
     createSubmitHandler,
     getErrorObject,
+    removeNull,
     useForm,
     useFormArray,
 } from '@togglecorp/toggle-form';
@@ -48,8 +48,6 @@ import {
     ProjectOptionsQueryVariables,
     ProjectOutputAssetsQuery,
     ProjectOutputAssetsQueryVariables,
-    ProjectTypeEnum,
-    TileServerNameEnum,
     TutorialCreateInput,
     TutorialDetailsQuery,
     TutorialDetailsQueryVariables,
@@ -65,221 +63,24 @@ import { transformErrors } from '#utils/error';
 
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
 import InformationPageInput from './InformationPageInput';
+import {
+    CREATE_TUTORIAL_MUTATION,
+    PROJECT_ASSETS_QUERY,
+    PROJECT_DETAIL_QUERY,
+    PROJECT_OPTION_QUERY,
+    TUTORIAL_QUERY,
+} from './query';
 import ScenarioPageInput from './ScenarioPageInput';
 import tutorialCreateFormSchema, {
     defaultTutorialCreateFormValue,
     PartialTutorialCreateInputFields,
 } from './schema';
+import {
+    FindTutorialGeoJson,
+    validateFindTutorialGeoJson,
+} from './utils';
 
 import styles from './styles.module.css';
-
-const TUTORIAL_QUERY = gql`
-query TutorialDetails($id: ID!) {
-    tutorial(id: $id) {
-        id
-        clientId
-        isDraft
-        informationPages {
-            id
-            clientId
-            pageNumber
-            title
-            tutorialId
-            blocks {
-                id
-                clientId
-                blockNumber
-                blockType
-                pageId
-                text
-                image {
-                    url
-                    size
-                    path
-                    name
-                    height
-                    width
-                }
-            }
-        }
-        projectId
-        scenarios {
-            id
-            clientId
-            hintDescription
-            hintIcon
-            hintTitle
-            instructionsDescription
-            instructionsIcon
-            instructionsTitle
-            scenarioPageNumber
-            successDescription
-            successIcon
-            successTitle
-            tutorialId
-            tasks {
-                id
-                clientId
-                reference
-                scenarioId
-            }
-        }
-    }
-}
-`;
-
-const PROJECT_OPTION_QUERY = gql`
-query ProjectOptions {
-    projects {
-        results {
-            id
-            name
-        }
-    }
-}
-`;
-
-const PROJECT_ASSETS_QUERY = gql`
-query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
-    projectAssets(
-        pagination: $pagination
-        filters: {projectId: {exact: $projectId}, type: {exact: OUTPUT}}
-        ) {
-        results {
-            file {
-                url
-                size
-                name
-            }
-            id
-            projectId
-            type
-        }
-    }
-}
-`;
-
-const PROJECT_DETAIL_QUERY = gql`
-query TutorialProjectDetail($projectId: ID!) {
-    project(id: $projectId) {
-        id
-        lookFor
-        name
-        projectType
-        requestingOrganization {
-            id
-            name
-        }
-        status
-        projectTypeSpecifics {
-            ... on CompareProjectPropertyType {
-                __typename
-                zoomLevel
-                tileServerProperty {
-                    name
-                }
-                tileServerBProperty {
-                    name
-                }
-            }
-            ... on CompletenessProjectPropertyType {
-                __typename
-                zoomLevel
-                tileServerProperty {
-                    name
-                }
-                tileServerBProperty {
-                    name
-                }
-            }
-            ... on FindProjectPropertyType {
-                __typename
-                zoomLevel
-                tileServerProperty {
-                    name
-                }
-            }
-        }
-        groupSize
-        maxTasksPerUser
-    }
-}
-`;
-
-const CREATE_TUTORIAL_MUTATION = gql`
-mutation NewTutorial($data: TutorialCreateInput!) {
-    createTutorial(data: $data) {
-        ... on TutorialTypeMutationResponseType {
-            errors
-            ok
-            result {
-                id
-            }
-        }
-    }
-}
-`;
-
-interface FindTutorialProperties {
-    group_id: number;
-    reference: number;
-    screen: number;
-    task_id: number;
-    tile_x: number;
-    tile_y: number;
-    tile_z: number;
-}
-
-type FindTutorialGeoJson = GeoJSON.FeatureCollection<GeoJSON.Geometry, FindTutorialProperties>;
-
-function validateFindTutorialGeoJson(
-    geoJson: unknown,
-): geoJson is FindTutorialGeoJson {
-    if (typeof geoJson !== 'object' || isNotDefined(geoJson)) {
-        return false;
-    }
-
-    if (!('features' in geoJson) || !Array.isArray(geoJson.features)) {
-        return false;
-    }
-
-    const hasInvalidFeature = geoJson.features.some((feature) => {
-        if (
-            !('type' in feature)
-                || feature.type !== 'Feature'
-                || !('geometry' in feature)
-                || !('properties' in feature)
-                || !Array.isArray(feature.properties)
-        ) {
-            return false;
-        }
-
-        return feature.properties.some((property: unknown) => (
-            typeof property !== 'object'
-                || isNotDefined(property)
-                || !('group_id' in property)
-                || typeof property.group_id !== 'number'
-                || !('reference' in property)
-                || typeof property.reference !== 'number'
-                || !('screen' in property)
-                || typeof property.screen !== 'number'
-                || !('task_id' in property)
-                || typeof property.task_id !== 'number'
-                || !('tile_x' in property)
-                || typeof property.tile_x !== 'number'
-                || !('tile_y' in property)
-                || typeof property.tile_y !== 'number'
-                || !('tile_z' in property)
-                || typeof property.tile_z !== 'number'
-        ));
-    });
-
-    if (hasInvalidFeature) {
-        return false;
-    }
-
-    return true;
-}
 
 interface Props {
     className?: string;
@@ -293,7 +94,7 @@ function NewTutorial(props: Props) {
 
     const [
         createNewTutorial,
-        { loading: createNewTutorialPending },
+        // { loading: createNewTutorialPending },
     ] = useMutation<NewTutorialMutation, NewTutorialMutationVariables>(CREATE_TUTORIAL_MUTATION);
 
     const {
@@ -302,7 +103,7 @@ function NewTutorial(props: Props) {
 
     const {
         data: tutorialData,
-        loading: tutorialDataPending,
+        // loading: tutorialDataPending,
     } = useQuery<TutorialDetailsQuery, TutorialDetailsQueryVariables>(
         TUTORIAL_QUERY,
         {
@@ -331,7 +132,7 @@ function NewTutorial(props: Props) {
         const {
             projectId,
             ...other
-        } = tutorial;
+        } = removeNull(tutorial);
 
         // FIXME: need to add clientId and fix the structure
         setValue({
@@ -462,6 +263,7 @@ function NewTutorial(props: Props) {
     const handleFormSubmission = useCallback(
         async (submittedValues: PartialTutorialCreateInputFields) => {
             if (isDefined(tutorialIdFromParams)) {
+                // eslint-disable-next-line no-console
                 console.info('Edit not implemented yet!', submittedValues);
                 return;
             }

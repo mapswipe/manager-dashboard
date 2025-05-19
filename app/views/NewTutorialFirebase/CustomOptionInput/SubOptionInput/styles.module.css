@@ -1,9 +1,0 @@
-.sub-option-content {
-    display: flex;
-    gap: var(--spacing-medium);
-    align-items: flex-end;
-
-    .sub-option-input {
-        flex-grow: 1;
-    }
-}

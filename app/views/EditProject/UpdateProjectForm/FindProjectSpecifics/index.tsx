@@ -9,11 +9,11 @@ import {
 import NumberInput from '#components/NumberInput';
 import AssetInput from '#views/EditProject/AssetInput';
 
-import TileServerInput from '../../TileServerInput';
+import TileServerInput from '../TileServerInput';
 import {
     defaultTileServerInputFormValue,
     PartialTileServerInputFields,
-} from '../../TileServerInput/schema';
+} from '../TileServerInput/schema';
 import { type PartialFindSpecificFields } from './schema';
 
 import styles from './styles.module.css';

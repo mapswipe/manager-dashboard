@@ -16,12 +16,13 @@ import {
     randomString,
 } from '@togglecorp/fujs';
 
-import useBlurEffect from '../../hooks/useBlurEffect';
-import useBooleanState from '../../hooks/useBooleanState';
 import {
     dateStringToDate,
     ymdToDateString,
-} from '../../utils/common.tsx';
+} from '#utils/common';
+
+import useBlurEffect from '../../hooks/useBlurEffect';
+import useBooleanState from '../../hooks/useBooleanState';
 import Button from '../Button';
 import Calendar, { Props as CalendarProps } from '../Calendar';
 import CalendarDate, { Props as CalendarDateProps } from '../Calendar/CalendarDate';

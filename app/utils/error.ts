@@ -1,5 +1,5 @@
-import { listToMap } from "@togglecorp/fujs";
-import { nonFieldError } from "@togglecorp/toggle-form";
+import { listToMap } from '@togglecorp/fujs';
+import { nonFieldError } from '@togglecorp/toggle-form';
 
 interface Error {
     arrayErrors: unknown[] | null,

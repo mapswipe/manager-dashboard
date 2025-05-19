@@ -8,11 +8,11 @@ import {
 
 import NumberInput from '#components/NumberInput';
 
-import TileServerInput from '../../TileServerInput';
+import TileServerInput from '../TileServerInput';
 import {
     defaultTileServerInputFormValue,
     PartialTileServerInputFields,
-} from '../../TileServerInput/schema';
+} from '../TileServerInput/schema';
 import { type PartialCompareSpecificFields } from './schema';
 
 import styles from './styles.module.css';

@@ -8,17 +8,16 @@ import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { TutorialScenarioIconEnum } from '#generated/types/graphql';
 import { iconMap } from '#utils/icon';
-
 import {
-    BuildAreaGeoJSON,
-    BuildAreaProperties,
-} from '../../utils';
+    FindTutorialGeoJson,
+    FindTutorialProperties,
+} from '#views/TutorialForm/utils';
 
 import styles from './styles.module.css';
 
 interface Props {
     className?: string;
-    geoJson: BuildAreaGeoJSON | undefined;
+    geoJson: FindTutorialGeoJson | undefined;
     previewPopUp?: {
         title?: string;
         description?: string;
@@ -28,7 +27,7 @@ interface Props {
     lookFor: string | undefined;
 }
 
-const previewStyles: StyleFunction<BuildAreaProperties> = (feature) => {
+const previewStyles: StyleFunction<FindTutorialProperties> = (feature) => {
     const buildAreaPreviewStylesobject: PathOptions = {
         color: '#ffffff',
         stroke: true,

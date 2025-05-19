@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { IoTrashBin } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 import {
@@ -8,16 +7,10 @@ import {
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
-import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Container from '#components/Container';
-import SegmentInput from '#components/SegmentInput';
 import TextArea from '#components/TextArea';
 import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
-import {
-    keySelector,
-    labelSelector,
-} from '#utils/common';
 
 import { PartialBlockInputFields } from './schema';
 
@@ -44,8 +37,6 @@ function BlockInput(props: Props) {
         error,
         onRemove,
     } = props;
-
-    const { TutorialInformationPageBlockTypeEnum: blockTypeOptions } = useContext(EnumsContext);
 
     const setFieldValue = useFormObject(
         index,
