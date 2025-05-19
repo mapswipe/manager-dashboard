@@ -107,8 +107,8 @@ function TileServerInput(props: Props) {
                 && value.name !== TileServerNameEnum.Custom
                 && (
                     <TextInput
-                        label="Credits"
                         name="credits"
+                        label="Imagery Credits"
                         value={value[fieldName]?.credits}
                         error={getErrorObject(error?.[fieldName])?.credits}
                         onChange={setCommonTileServerFieldValue}
@@ -122,15 +122,17 @@ function TileServerInput(props: Props) {
                     <>
                         <TextInput
                             name="url"
-                            label="URL"
+                            label="Custom Tile Server URL"
+                            hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
                             value={value.custom?.url}
                             error={getErrorObject(error?.custom)?.url}
                             onChange={setCustomTileServerFieldValue}
                             disabled={disabled}
                         />
                         <TextInput
-                            label="Credits"
                             name="credits"
+                            label="Imagery Credits"
+                            hint="Insert appropriate imagery credits"
                             value={value[fieldName]?.credits}
                             error={getErrorObject(error?.[fieldName])?.credits}
                             onChange={setCustomTileServerFieldValue}

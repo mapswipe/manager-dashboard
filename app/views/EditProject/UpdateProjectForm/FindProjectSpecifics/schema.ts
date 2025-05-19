@@ -8,11 +8,11 @@ import {
 import { FindProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
-import tileServerFormSchema, { defaultTileServerInputFormValue } from '../../TileServerInput/schema';
 import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
-} from '../../UpdateProjectForm/schema';
+} from '../schema';
+import tileServerFormSchema, { defaultTileServerInputFormValue } from '../TileServerInput/schema';
 
 export type PartialFindSpecificFields = PartialForm<DeepNonNullable<FindProjectPropertyInput>>;
 type FindSpecificFormSchema = ObjectSchema<

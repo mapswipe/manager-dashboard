@@ -51,16 +51,16 @@ import {
 import { transformErrors } from '#utils/error';
 
 import AssetInput from '../AssetInput/index.tsx';
-import CompareProjectSpecifics from '../ProjectSpecifics/Compare';
 import {
     defaultCompareSpecificFormValue,
     PartialCompareSpecificFields,
-} from '../ProjectSpecifics/Compare/schema';
-import FindProjectSpecifics from '../ProjectSpecifics/Find';
+} from './CompareProjectSpecifics/schema';
 import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
-} from '../ProjectSpecifics/Find/schema';
+} from './FindProjectSpecifics/schema';
+import CompareProjectSpecifics from './CompareProjectSpecifics';
+import FindProjectSpecifics from './FindProjectSpecifics';
 import projectUpdateFormSchema, {
     PartialProjectTypeSpecificInput,
     type PartialProjectUpdateInput,

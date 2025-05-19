@@ -1,13 +1,8 @@
-import React, {
-    memo,
-    useMemo,
-} from 'react';
+import React, { useMemo } from 'react';
 import {
     isNotDefined,
     listToGroupList,
 } from '@togglecorp/fujs';
-
-export const typedMemo: (<T>(c: T) => T) = memo;
 
 type OptionKey = string | number;
 
@@ -171,4 +166,4 @@ function List<D, P, K extends OptionKey, GP extends GroupCommonProps, GK extends
     );
 }
 
-export default typedMemo(List);
+export default List;

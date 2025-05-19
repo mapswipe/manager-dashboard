@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import RawButton, { Props as RawButtonProps } from '#components/RawButton';
-import { ymdToDateString } from '#utils/common.tsx';
+import { ymdToDateString } from '#utils/common';
 
 import styles from './styles.module.css';
 

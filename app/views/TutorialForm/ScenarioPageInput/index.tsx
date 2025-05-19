@@ -31,14 +31,15 @@ import {
 import {
     keySelector,
     labelSelector,
+    tileServerUrls,
 } from '#utils/common';
 import {
     combinedIconList,
     IconItem,
     iconMap,
 } from '#utils/icon';
-import { tileServerUrls } from '#views/NewTutorialFirebase/utils';
 
+import { FindTutorialProperties } from '../utils';
 import BuildAreaGeoJsonPreview from './BuildAreaGeoJsonPreview';
 import { PartialScenarioPageInputFields } from './schema';
 import TasksInput from './TaskInput';
@@ -77,7 +78,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialScenarioPageInputFields> | undefined;
     onRemove: (index: number) => void;
-    scenarioGeoJson?: GeoJSON.FeatureCollection;
+    scenarioGeoJson?: GeoJSON.FeatureCollection<GeoJSON.Geometry, FindTutorialProperties>;
     lookForValue: string | undefined;
     tileServerProperty: TileServerPropertyFieldsFragment | undefined,
 }

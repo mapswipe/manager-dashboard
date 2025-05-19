@@ -12,8 +12,8 @@ import {
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
-import compareSpecificFormSchema from '../ProjectSpecifics/Compare/schema';
-import findSpecificFormSchema from '../ProjectSpecifics/Find/schema';
+import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
+import findSpecificFormSchema from './FindProjectSpecifics/schema';
 
 export type UpdateProjectContext = {
     projectType: ProjectTypeEnum | undefined,

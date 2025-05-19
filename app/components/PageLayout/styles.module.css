@@ -2,18 +2,18 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    background-color: var(--color-background);
     padding: var(--spacing-small) 0;
     overflow: auto;
-    background-color: var(--color-background);
 
     .page-header {
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
+        padding: var(--spacing-medium) var(--spacing-large);
         width: 100%;
         max-width: var(--width-page-content-max);
         gap: var(--spacing-medium);
-        padding: var(--spacing-medium) var(--spacing-large);
 
         .heading-row {
             display: flex;
@@ -44,15 +44,15 @@
 
     .contents {
         display: flex;
+        padding: 0 var(--spacing-small);
         width: 100%;
         max-width: var(--width-page-content-max);
-        padding: 0 var(--spacing-small);
         overflow: auto;
 
         .aside {
             flex-shrink: 0;
-            width: calc(10rem + 10%);
             padding: var(--spacing-medium) var(--spacing-medium);
+            width: calc(10rem + 10%);
         }
 
         .main {

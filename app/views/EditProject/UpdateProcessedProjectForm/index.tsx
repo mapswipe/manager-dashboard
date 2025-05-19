@@ -114,6 +114,7 @@ function UpdateProcessedProjectForm(props: Props) {
             id,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectType,
+            image,
             requestingOrganization,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectTypeSpecifics,
@@ -122,6 +123,7 @@ function UpdateProcessedProjectForm(props: Props) {
 
         setValue({
             ...other,
+            image: image?.id,
             requestingOrganization: requestingOrganization.id,
         });
     }, [projectData, setValue]);

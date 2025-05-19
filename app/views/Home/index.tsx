@@ -8,7 +8,6 @@ import { _cs } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 import Heading from '#components/Heading';
-import useBooleanState from '#hooks/useBooleanState';
 
 import OrganisationList from './OrganizationList';
 
@@ -20,12 +19,6 @@ interface Props {
 
 function Home(props: Props) {
     const { className } = props;
-
-    const [
-        showOrganisationFormModal,
-        setShowOrganisationFormModalTrue,
-        setShowOrganisationFormModalFalse,
-    ] = useBooleanState(false);
 
     const [showOrganisationList, setShowOrganisationList] = useState(false);
 
@@ -61,14 +54,6 @@ function Home(props: Props) {
                         <Heading level={2} className={styles.heading}>
                             Organisations
                         </Heading>
-                        <Button
-                            className={styles.addButton}
-                            name={undefined}
-                            onClick={setShowOrganisationFormModalTrue}
-                            disabled
-                        >
-                            Add New Organisation
-                        </Button>
                     </div>
                     {showOrganisationList && (
                         <OrganisationList className={styles.organisationList} />
@@ -83,11 +68,6 @@ function Home(props: Props) {
                     </Button>
                 </div>
             </div>
-            {showOrganisationFormModal && (
-                <OrganisationFormModal
-                    onCloseButtonClick={setShowOrganisationFormModalFalse}
-                />
-            )}
         </div>
     );
 }

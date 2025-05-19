@@ -12,8 +12,8 @@ import { DeepNonNullable } from '#utils/types';
 import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
-} from '../../schema';
-import tileServerFormSchema from '../../TileServerInput/schema';
+} from '../schema';
+import tileServerFormSchema from '../TileServerInput/schema';
 
 export type PartialCompareSpecificFields = PartialForm<
     DeepNonNullable<CompareProjectPropertyInput>
