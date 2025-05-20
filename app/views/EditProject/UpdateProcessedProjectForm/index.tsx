@@ -8,6 +8,7 @@ import {
     MdSave,
 } from 'react-icons/md';
 import {
+    ApolloError,
     gql,
     useMutation,
 } from '@apollo/client';
@@ -35,6 +36,7 @@ import {
     UpdateProcessedProjectMutation,
     UpdateProcessedProjectMutationVariables,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
 import {
     idSelector,
@@ -75,6 +77,8 @@ function UpdateProcessedProjectForm(props: Props) {
         projectData,
     } = props;
 
+    const alert = useAlert();
+
     const {
         data: organizationListResponse,
     } = useOrganizationListQuery({
@@ -100,9 +104,11 @@ function UpdateProcessedProjectForm(props: Props) {
         validate,
         setError,
         setValue,
-    } = useForm(processedProjectUpdateFormSchema, {
-        value: defaultProcessedProjectFormValue,
-    }, projectContext);
+    } = useForm(
+        processedProjectUpdateFormSchema,
+        { value: defaultProcessedProjectFormValue },
+        projectContext,
+    );
 
     useEffect(() => {
         if (isNotDefined(projectData)) {
@@ -133,28 +139,49 @@ function UpdateProcessedProjectForm(props: Props) {
     const submitUpdateProcessedForm = useCallback(async (
         finalValues: ProcessedProjectUpdateInput,
     ) => {
-        const results = await updateProcessedProject({
-            variables: {
-                id: projectData.project.id,
-                data: finalValues,
-            },
-        });
+        try {
+            const results = await updateProcessedProject({
+                variables: {
+                    id: projectData.project.id,
+                    data: finalValues,
+                },
+            });
 
-        if (isDefined(results.data)
-            // eslint-disable-next-line no-underscore-dangle
-            && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
-        ) {
-            const {
-                ok,
-                errors,
-                // result,
-            } = results.data.updateProcessedProject;
+            if (isDefined(results.data)
+                // eslint-disable-next-line no-underscore-dangle
+                && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
+            ) {
+                const {
+                    ok,
+                    errors,
+                    // result,
+                } = results.data.updateProcessedProject;
 
-            if (!ok) {
-                setError(transformErrors(errors));
+                if (!ok) {
+                    alert.show(
+                        'Failed to update the Project!',
+                        { variant: 'danger' },
+                    );
+                    setError(transformErrors(errors));
+                } else {
+                    alert.show(
+                        'Project updated successfully!',
+                        { variant: 'success' },
+                    );
+                }
+            }
+        } catch (apolloError) {
+            if (apolloError instanceof ApolloError) {
+                alert.show(
+                    'Failed to update the Project!',
+                    {
+                        variant: 'danger',
+                        debugMessage: String(apolloError.message),
+                    },
+                );
             }
         }
-    }, [projectData.project.id, updateProcessedProject, setError]);
+    }, [projectData.project.id, updateProcessedProject, setError, alert]);
 
     const handlePublish = useCallback((submittedValue: PartialProcessedProjectUpdateInput) => {
         const finalValues = { ...submittedValue } as ProcessedProjectUpdateInput;
@@ -197,8 +224,9 @@ function UpdateProcessedProjectForm(props: Props) {
                     name={undefined}
                     onClick={handlePublishButtonClick}
                     disabled={baseInputsDisabled}
-                    variant="primary"
-                    actions={<MdArrowForward />}
+                    colorVariant="accent"
+                    styleVariant="filled"
+                    end={<MdArrowForward />}
                 >
                     Publish
                 </Button>
@@ -208,8 +236,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     name={undefined}
                     onClick={handleUpdateBasicDetailsButtonClick}
                     disabled={baseInputsDisabled}
-                    variant="tertiary"
-                    icons={<MdSave />}
+                    start={<MdSave />}
                 >
                     Update basic details
                 </Button>

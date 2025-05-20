@@ -13,7 +13,7 @@ import {
 } from '@togglecorp/fujs';
 import { ulid } from 'ulid';
 
-import { useButtonFeatures } from '#components/Button';
+import ButtonLayout from '#components/ButtonLayout';
 import RawInput from '#components/RawInput';
 import {
     CreateProjectAssetMutation,
@@ -123,14 +123,6 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         }
     }, [createProjectAsset, projectId, onChange, name]);
 
-    const labelProps = useButtonFeatures({
-        icons: <MdAttachFile />,
-        children: selectFileButtonLabel,
-        variant: 'secondary',
-        className: styles.selectFileButton,
-        disabled,
-    });
-
     return (
         <div className={_cs(styles.assetInput, className)}>
             {label && (
@@ -149,12 +141,14 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 disabled={disabled || createProjectAssetPending}
             />
             <div className={styles.inputSectionContainer}>
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label
-                    htmlFor={inputId}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...labelProps}
-                />
+                <label htmlFor={inputId}>
+                    <ButtonLayout
+                        start={<MdAttachFile />}
+                        colorVariant="accent"
+                    >
+                        {selectFileButtonLabel}
+                    </ButtonLayout>
+                </label>
                 <div className={styles.preview}>
                     {value ? '1 file selected' : 'No file selected'}
                 </div>

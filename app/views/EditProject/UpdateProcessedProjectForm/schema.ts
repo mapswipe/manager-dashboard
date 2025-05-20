@@ -26,6 +26,7 @@ type ProcessedProjectUpdateFormFields = ReturnType<ProcessedProjectUpdateFormSch
 
 const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
     fields: (): ProcessedProjectUpdateFormFields => ({
+        clientId: {},
         name: {
             required: true,
             requiredValidation: requiredStringCondition,

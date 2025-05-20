@@ -34,6 +34,7 @@
     }
 
     .input-label {
+        color: var(--color-text-light);
         font-size: var(--font-size-extra-small);
         font-weight: var(--font-weight-light);
     }
@@ -53,7 +54,6 @@
         display: flex;
         gap: var(--spacing-small);
         align-items: center;
-        font-size: 1.2em;
     }
 
     &:focus-within {

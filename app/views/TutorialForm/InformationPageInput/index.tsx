@@ -131,13 +131,17 @@ function InformationPageInput(props: Props) {
                 <Button
                     name={index}
                     onClick={onRemove}
-                    variant="action"
-                    icons={<IoTrashBin />}
+                    styleVariant="transparent"
+                    colorVariant="danger"
+                    start={<IoTrashBin />}
+                    withoutPadding
                 >
                     Remove
                 </Button>
             )}
-            contentClassName={styles.content}
+            contentLayout="inline"
+            spacing="lg"
+            withPadding
         >
             <div className={styles.formFields}>
                 <TextInput
@@ -156,8 +160,9 @@ function InformationPageInput(props: Props) {
                         <Button
                             name={value.blocks?.length ?? 0}
                             onClick={addBlock}
-                            variant="action"
-                            icons={<IoAdd />}
+                            styleVariant="transparent"
+                            start={<IoAdd />}
+                            withoutPadding
                         >
                             Add block
                         </Button>
@@ -167,7 +172,7 @@ function InformationPageInput(props: Props) {
                             error={error?.blocks}
                         />
                     )}
-                    isEmpty={isNotDefined(value.blocks) || value.blocks.length === 0}
+                    empty={isNotDefined(value.blocks) || value.blocks.length === 0}
                 >
                     {value.blocks?.map((block, blockIndex) => (
                         <BlockInput

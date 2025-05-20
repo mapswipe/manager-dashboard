@@ -51,7 +51,7 @@ function Modal(props: ModalProps) {
                                 <Button
                                     className={styles.closeButton}
                                     onClick={onCloseButtonClick}
-                                    variant="action"
+                                    styleVariant="action"
                                     name="close"
                                 >
                                     <IoMdClose />

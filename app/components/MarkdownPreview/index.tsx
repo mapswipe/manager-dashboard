@@ -1,16 +1,6 @@
 import MarkdownView, { MarkdownViewProps } from 'react-showdown';
 
-export const markdownOptions: MarkdownViewProps['options'] = {
-    simpleLineBreaks: true,
-    headerLevelStart: 3,
-    simplifiedAutoLink: true,
-    openLinksInNewWindow: true,
-    backslashEscapesHTMLTags: true,
-    literalMidWordUnderscores: true,
-    strikethrough: true,
-    tables: true,
-    tasklists: true,
-};
+import { defaultMarkdownPreviewOptions } from '#utils/common';
 
 export default function MarkdownPreview(props: MarkdownViewProps) {
     const {
@@ -19,8 +9,9 @@ export default function MarkdownPreview(props: MarkdownViewProps) {
     } = props;
     return (
         <MarkdownView
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
-            options={markdownOptionsFromProps ?? markdownOptions}
+            options={markdownOptionsFromProps ?? defaultMarkdownPreviewOptions}
         />
     );
 }

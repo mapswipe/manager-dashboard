@@ -331,7 +331,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
                             <Button
                                 onClick={onClear}
                                 disabled={disabled}
-                                variant="action"
+                                styleVariant="action"
                                 name={undefined}
                                 title="Clear"
                             >
@@ -341,7 +341,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
                         {!readOnly && (
                             <Button
                                 onClick={handleToggleDropdown}
-                                variant="action"
+                                styleVariant="action"
                                 name={undefined}
                                 title={dropdownShown ? 'Close' : 'Open'}
                             >

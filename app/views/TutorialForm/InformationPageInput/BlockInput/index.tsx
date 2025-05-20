@@ -56,12 +56,15 @@ function BlockInput(props: Props) {
                     className={styles.removeButton}
                     name={index}
                     onClick={onRemove}
-                    variant="action"
-                    icons={<IoTrashBin />}
+                    styleVariant="transparent"
+                    colorVariant="danger"
+                    start={<IoTrashBin />}
+                    withoutPadding
                 >
                     Remove
                 </Button>
             )}
+            spacing="none"
         >
             {value.blockType === TutorialInformationPageBlockTypeEnum.Text && (
                 <TextArea

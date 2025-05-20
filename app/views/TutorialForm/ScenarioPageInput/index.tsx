@@ -172,13 +172,17 @@ function ScenarioPageInput(props: Props) {
                 <Button
                     name={index}
                     onClick={onRemove}
-                    variant="tertiary"
-                    icons={<IoTrashBin />}
+                    styleVariant="transparent"
+                    colorVariant="danger"
+                    start={<IoTrashBin />}
+                    withoutPadding
                 >
                     Remove
                 </Button>
             )}
-            contentClassName={styles.content}
+            withPadding
+            contentLayout="inline"
+            spacing="lg"
         >
             <div className={styles.formFields}>
                 <div className={styles.metaInputs}>
@@ -273,7 +277,7 @@ function ScenarioPageInput(props: Props) {
                             error={error?.tasks}
                         />
                     )}
-                    isEmpty={isNotDefined(value.tasks) || value.tasks.length === 0}
+                    empty={isNotDefined(value.tasks) || value.tasks.length === 0}
                 >
                     {value.tasks?.map((task, taskIndex) => (
                         <TasksInput

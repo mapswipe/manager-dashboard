@@ -1,24 +1,19 @@
 .scenario-page-input {
-    .content {
-        flex-direction: row;
+    .form-fields {
+        display: flex;
+        flex-direction: column;
         gap: var(--spacing-medium);
+        flex-grow: 1;
 
-        .form-fields {
-            display: flex;
-            flex-direction: column;
+        .meta-inputs {
+            display: grid;
             gap: var(--spacing-medium);
-            flex-grow: 1;
-
-            .meta-inputs {
-                display: grid;
-                gap: var(--spacing-medium);
-                grid-template-columns: 10rem 1fr 2fr;
-            }
+            grid-template-columns: 10rem 1fr 2fr;
         }
+    }
 
-        .preview-container {
-            flex-shrink: 0;
-        }
+    .preview-container {
+        flex-shrink: 0;
     }
 }
 

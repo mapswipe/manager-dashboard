@@ -52,7 +52,7 @@ function ExpandableContainer(props: Props) {
                     <Button
                         name={!isExpanded}
                         onClick={setIsExpanded}
-                        variant="action"
+                        styleVariant="action"
                         title={isExpanded ? 'Collapse' : 'Expand'}
                     >
                         {isExpanded ? (

@@ -8,7 +8,7 @@ import {
     randomString,
 } from '@togglecorp/fujs';
 
-import { useButtonFeatures } from '#components/Button';
+import ButtonLayout from '#components/ButtonLayout';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
 import Preview from '#components/Preview';
 import RawInput from '#components/RawInput';
@@ -50,17 +50,6 @@ function FileInput<Name>(props: Props<Name>) {
     } = props;
 
     const [inputId] = useState(randomString);
-    const labelProps = useButtonFeatures({
-        children: (
-            <>
-                <MdAttachFile />
-                Select file
-            </>
-        ),
-        variant: 'secondary',
-        className: styles.label,
-        childrenClassName: styles.content,
-    });
 
     const status = value?.name ?? 'No file chosen';
 
@@ -102,13 +91,17 @@ function FileInput<Name>(props: Props<Name>) {
             icons={(
                 <>
                     {icons}
-                    { }
                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label
-                        htmlFor={inputId}
-                        // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...labelProps}
-                    />
+                    <label htmlFor={inputId}>
+                        <ButtonLayout
+                            start={<MdAttachFile />}
+                            colorVariant="accent"
+                            spacing="sm"
+                        >
+                            Select file
+                        </ButtonLayout>
+
+                    </label>
                 </>
             )}
             iconsContainerClassName={_cs(styles.labelContainer, iconsContainerClassName)}

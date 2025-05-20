@@ -73,12 +73,12 @@ function ProjectListItem(props: Props) {
                     <div className={styles.actions}>
                         <SmartLink
                             route={routes.editProject}
-                            variant="tertiary"
                             attrs={{
                                 id: value.id,
                             }}
+                            start={<FaEdit />}
+                            spacing="sm"
                         >
-                            <FaEdit />
                             Edit
                         </SmartLink>
                     </div>

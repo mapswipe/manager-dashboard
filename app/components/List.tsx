@@ -75,6 +75,7 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
             <Renderer
                 key={key}
                 className={rendererClassName}
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...extraProps}
             />
         );
@@ -98,6 +99,7 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
             <GroupRenderer
                 key={groupKey}
                 // FIXME: currently typescript is not smart enough to join Omit
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...finalProps as GP}
             />
         );
@@ -146,6 +148,7 @@ function List<D, P, K extends OptionKey, GP extends GroupCommonProps, GK extends
             <Renderer
                 key={key}
                 className={rendererClassName}
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...extraProps}
             />
         );
@@ -161,6 +164,7 @@ function List<D, P, K extends OptionKey, GP extends GroupCommonProps, GK extends
 
     return (
         <GroupedList
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...props}
         />
     );

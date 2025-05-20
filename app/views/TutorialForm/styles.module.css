@@ -9,15 +9,16 @@
             grid-template-columns: 1fr 1fr;
             gap: var(--spacing-large);
 
-            .project-asset-download-link {
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-medium);
-                line-height: 1;
+        }
 
-                &:hover {
-                    text-decoration: underline;
-                }
+        .project-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-large);
+
+            .project-asset-download-link {
+                display: contents;
+                line-height: 1;
             }
         }
 
@@ -25,7 +26,6 @@
         .information-page {
             border-radius: var(--radius-card-border);
             background-color: var(--color-foreground);
-            padding: var(--spacing-medium);
         }
     }
 }

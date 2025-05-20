@@ -1,0 +1,14 @@
+.block-layout {
+    display: flex;
+    flex-direction: column;
+
+    .children {
+        flex-grow: 1;
+    }
+
+    .separator {
+        margin: 0;
+        border: 0;
+        border-top: var(--width-separator-thin) solid var(--color-separator);
+    }
+}
