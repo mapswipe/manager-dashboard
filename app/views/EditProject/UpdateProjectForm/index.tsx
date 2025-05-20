@@ -265,8 +265,9 @@ function UpdateProjectForm(props: Props) {
                     name={undefined}
                     onClick={handleStartProcessingButtonClick}
                     disabled={baseInputsDisabled}
-                    variant="primary"
-                    actions={<MdArrowForward />}
+                    colorVariant="primary"
+                    styleVariant="filled"
+                    end={<MdArrowForward />}
                 >
                     Save and Start processing
                 </Button>
@@ -276,7 +277,7 @@ function UpdateProjectForm(props: Props) {
                     name={undefined}
                     onClick={handleUpdateDraftButtonClick}
                     disabled={baseInputsDisabled}
-                    icons={<MdSave />}
+                    start={<MdSave />}
                 >
                     Update draft
                 </Button>

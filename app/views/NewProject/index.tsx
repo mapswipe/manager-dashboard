@@ -212,8 +212,9 @@ function NewProject(props: Props) {
                     name={undefined}
                     onClick={handleSubmitButtonClick}
                     disabled={createNewProjectPending}
-                    variant="primary"
-                    actions={<MdArrowForward />}
+                    colorVariant="accent"
+                    styleVariant="filled"
+                    end={<MdArrowForward />}
                 >
                     Save and Continue
                 </Button>

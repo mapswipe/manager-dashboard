@@ -1,7 +1,22 @@
+import { MarkdownViewProps } from 'react-showdown';
 import { isDefined } from '@togglecorp/fujs';
 
 import { joinUrlPart } from '#base/utils/routes';
 import { TileServerNameEnum } from '#generated/types/graphql';
+
+export const DURATION_DEFAULT_ALERT_DISMISS = 4500;
+
+export const defaultMarkdownPreviewOptions: MarkdownViewProps['options'] = {
+    simpleLineBreaks: true,
+    headerLevelStart: 3,
+    simplifiedAutoLink: true,
+    openLinksInNewWindow: true,
+    backslashEscapesHTMLTags: true,
+    literalMidWordUnderscores: true,
+    strikethrough: true,
+    tables: true,
+    tasklists: true,
+};
 
 export function valueSelector<T>(item: { value: T }) {
     return item.value;

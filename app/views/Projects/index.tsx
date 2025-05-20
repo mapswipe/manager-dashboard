@@ -181,11 +181,16 @@ function Projects(props: Props) {
                 <>
                     <SmartLink
                         route={routes.newTutorial}
+                        styleVariant="outline"
+                        spacing="md"
                     >
                         New Tutorial
                     </SmartLink>
                     <SmartLink
                         route={routes.newProject}
+                        styleVariant="filled"
+                        colorVariant="accent"
+                        spacing="md"
                     >
                         New Project
                     </SmartLink>

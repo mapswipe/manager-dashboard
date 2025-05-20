@@ -85,8 +85,8 @@ function Navbar(props: Props) {
                             {user.displayName}
                         </div>
                         <Button
-                            variant="action"
-                            className={styles.logoutButton}
+                            styleVariant="transparent"
+                            colorVariant="text-on-dark"
                             name={undefined}
                             onClick={handleLogoutClick}
                             disabled={logoutPending}

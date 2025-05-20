@@ -1,44 +1,5 @@
 .container {
-    --spacing: 0;
-
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing);
-
-    .header {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing);
-
-        .heading-row {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing);
-
-            .heading {
-                flex-grow: 1;
-            }
-
-            .heading-description {
-                flex-grow: 1;
-            }
-
-            &.with-heading-description {
-                .heading {
-                    flex-grow: unset;
-                    width: fit-content;
-                }
-            }
-        }
-
-        .description {
-            &:empty {
-                display: none;
-            }
-        }
-    }
-
-    .header-border {
+    .border {
         margin: 0;
         border: 0;
         border-top: var(--width-separator-thin) solid var(--color-separator);
@@ -46,19 +7,23 @@
 
     .content {
         display: flex;
-        flex-direction: column;
-        gap: var(--spacing);
-    }
 
-    &.with-small-spacing {
-        --spacing: var(--spacing-small);
-    }
+        &.inline-content {
+            flex-direction: row;
+        }
 
-    &.with-medium-spacing {
-        --spacing: var(--spacing-medium);
-    }
+        &.block-content {
+            flex-direction: column;
+        }
 
-    &.with-large-spacing {
-        --spacing: var(--spacing-large);
+        &.pending-overlaid {
+            isolation: isolate;
+            position: relative;
+            min-height: 6rem;
+
+            .message {
+                z-index: 1;
+            }
+        }
     }
 }

@@ -134,6 +134,7 @@ function NumberInput<const N>(props: Props<N>) {
             invalid={isTruthyString(tempValue)}
             input={(
                 <RawInput<N>
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...rawInputProps}
                     readOnly={readOnly}
                     disabled={disabled}

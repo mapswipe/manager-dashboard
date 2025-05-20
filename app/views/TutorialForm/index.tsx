@@ -37,6 +37,7 @@ import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import SelectInput from '#components/SelectInput';
@@ -372,16 +373,17 @@ function NewTutorial(props: Props) {
     return (
         <PageLayout
             className={_cs(styles.newTutorial, className)}
-            heading="Create a New Tutorial"
+            heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
             mainContentClassName={styles.mainContent}
             footerActions={(
                 <Button
                     name={undefined}
-                    variant="primary"
+                    colorVariant="accent"
+                    styleVariant="filled"
                     onClick={handleSubmitButtonClick}
                     disabled={isDefined(tutorialIdFromParams)}
                 >
-                    Submit
+                    Submit tutorial
                 </Button>
             )}
         >
@@ -395,34 +397,15 @@ function NewTutorial(props: Props) {
                     value={value.project}
                     onChange={setFieldValue}
                     error={error?.project}
+                    disabled={isDefined(tutorialIdFromParams)}
                 />
-                <Container
-                    heading="Project Assets"
-                    headingLevel={5}
-                    withHeaderBorder
-                    spacing="sm"
-                >
-                    {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
-                        <div key={projectAsset.id}>
-                            <a
-                                className={styles.projectAssetDownloadLink}
-                                href={getFullAssetUrl(projectAsset.file.url)}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                <MdDownload />
-                                {projectAsset.file.name.replace(/^.*[\\/]/, '')}
-                            </a>
-                        </div>
-                    ))}
-                </Container>
             </div>
             {isDefined(projectDetailResponse) && (
-                <Container
-                    heading="Selected project details"
-                    spacing="sm"
-                >
-                    <div>
+                <div className={styles.projectDetails}>
+                    <Container
+                        heading="Selected project details"
+                        withHeaderBorder
+                    >
                         <TextOutput
                             label="Look for"
                             value={projectDetailResponse.project.lookFor}
@@ -440,8 +423,28 @@ function NewTutorial(props: Props) {
                             value={projectDetailResponse.project
                                 .projectTypeSpecifics?.tileServerProperty.name}
                         />
-                    </div>
-                </Container>
+                    </Container>
+                    <Container
+                        heading="Project Assets"
+                        withHeaderBorder
+                    >
+                        {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
+                            <a
+                                key={projectAsset.id}
+                                className={styles.projectAssetDownloadLink}
+                                href={getFullAssetUrl(projectAsset.file.url)}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <InlineLayout
+                                    start={<MdDownload />}
+                                >
+                                    {projectAsset.file.name.replace(/^.*[\\/]/, '')}
+                                </InlineLayout>
+                            </a>
+                        ))}
+                    </Container>
+                </div>
             )}
             <Container
                 heading="Information Pages"
@@ -451,18 +454,20 @@ function NewTutorial(props: Props) {
                         error={error?.informationPages}
                     />
                 )}
+                withHeaderBorder
                 headerActions={(
                     <Button
                         className={styles.addPageButton}
                         name={value.informationPages?.length ?? 0}
                         onClick={addInformationPage}
-                        icons={<IoAdd />}
-                        variant="action"
+                        start={<IoAdd />}
+                        styleVariant="transparent"
+                        withoutPadding
                     >
                         New page
                     </Button>
                 )}
-                isEmpty={isNotDefined(value.informationPages)
+                empty={isNotDefined(value.informationPages)
                     || value.informationPages.length === 0}
             >
                 {value.informationPages?.map((informationPage, informationPageIndex) => (
@@ -481,22 +486,23 @@ function NewTutorial(props: Props) {
             <Container
                 heading="Scenario Pages"
                 headingLevel={2}
+                withHeaderBorder
                 headerDescription={(
-                    <>
-                        <GeoJsonFileInput
-                            name={undefined}
-                            label="Upload Scenarios as GeoJSON"
-                            value={tutorialTasksGeojson}
-                            onChange={handleGeoJsonFileChange}
-                            hint="It should end with .geojson or .geo.json"
-                        />
-                        <NonFieldError
-                            error={error?.scenarios}
-                        />
-                    </>
+                    <NonFieldError
+                        error={error?.scenarios}
+                    />
                 )}
-                isEmpty={isNotDefined(value.scenarios)
+                empty={isNotDefined(value.scenarios)
                     || value.scenarios.length === 0}
+                emptyMessage={(
+                    <GeoJsonFileInput
+                        name={undefined}
+                        label="Upload Scenarios as GeoJSON"
+                        value={tutorialTasksGeojson}
+                        onChange={handleGeoJsonFileChange}
+                        hint="It should end with .geojson or .geo.json"
+                    />
+                )}
             >
                 {value.scenarios?.map((scenarioPage, scenarioPageIndex) => (
                     <ScenarioPageInput

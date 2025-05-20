@@ -1,0 +1,62 @@
+.button-layout {
+    --variant-color: inherit;
+
+    --outline-color: var(--variant-color);
+    --background-color: var(--variant-color);
+    --text-color: var(--variant-color);
+    border: var(--width-separator-thin) solid var(--outline-color);
+    border-radius: var(--radius-button-border);
+    background-color: var(--background-color);
+    width: fit-content;
+    line-height: 1;
+
+    color: var(--text-color);
+
+    &.color-variant-text {
+        --variant-color: var(--color-text);
+    }
+
+    &.color-variant-text-on-dark {
+        --variant-color: var(--color-text-on-dark);
+    }
+
+    &.color-variant-primary {
+        --variant-color: var(--color-primary);
+    }
+
+    &.color-variant-accent {
+        --variant-color: var(--color-accent);
+    }
+
+    &.color-variant-success {
+        --variant-color: var(--color-success);
+    }
+
+    &.color-variant-danger {
+        --variant-color: var(--color-danger);
+    }
+
+    &.style-variant-outline {
+        --background-color: transparent;
+    }
+
+    &.style-variant-filled {
+        --text-color: var(--color-text-on-dark);
+    }
+
+    &.style-variant-transparent {
+        --outline-color: transparent;
+        --background-color: transparent;
+    }
+
+    &.style-variant-action {
+        --outline-color: transparent;
+        --background-color: transparent;
+        padding: 0;
+        font-size: 1.2em;
+    }
+
+    &.disabled {
+        opacity: var(--opacity-disabled-element);
+    }
+}

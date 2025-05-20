@@ -47,6 +47,7 @@ function TextInput<const N>(props: TextInputProps<N>) {
             readOnly={readOnly}
             input={(
                 <RawInput<N>
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...textInputProps}
                     readOnly={readOnly}
                     disabled={disabled}

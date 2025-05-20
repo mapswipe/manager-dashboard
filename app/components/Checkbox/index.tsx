@@ -70,6 +70,7 @@ function Checkbox<N>(props: Props<N>) {
                 type="checkbox"
                 checked={value ?? false}
                 disabled={disabled || readOnly}
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...otherProps}
             />
             <div

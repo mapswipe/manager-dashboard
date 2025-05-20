@@ -1,0 +1,43 @@
+.alert {
+    border-radius: var(--radius-card-border);
+    box-shadow: 0 3px 7px -2px rgba(0, 0, 0, .5);
+    width: calc(14rem + 16vw);
+    animation: slide-down .3s ease-in forwards;
+    color: var(--color-text-on-dark);
+
+    .title {
+        color: inherit;
+    }
+
+    .icon {
+        font-size: var(--font-size-extra-large);
+    }
+
+    &.info {
+        background-color: var(--color-text);
+    }
+
+    &.success {
+        background-color: var(--color-success);
+    }
+
+    &.danger {
+        background-color: var(--color-danger);
+    }
+
+    &.warning {
+        background-color: var(--color-danger);
+    }
+
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(-0.25rem);
+        opacity: .2;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
