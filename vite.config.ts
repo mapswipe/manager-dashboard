@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => {
 
     return {
         define: {
-            'import.meta.REACT_APP_COMMIT_HASH': JSON.stringify(commitHash),
-            'import.meta.env.REACT_APP_VERSION': JSON.stringify(managerDashboardPackage.version),
-            'import.meta.env.REACT_APP_ID': JSON.stringify('mapswipe-manager-dashboard'),
+            'import.meta.APP_COMMIT_HASH': JSON.stringify(commitHash),
+            'import.meta.env.APP_VERSION': JSON.stringify(managerDashboardPackage.version),
+            'import.meta.env.APP_ID': JSON.stringify('mapswipe-manager-dashboard'),
         },
         plugins: [
             isProd ? checker({
@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
                 localsConvention: 'camelCaseOnly',
             },
         },
-        envPrefix: 'REACT_APP_',
+        envPrefix: 'APP_',
         server: {
             port: 3000,
             strictPort: true,

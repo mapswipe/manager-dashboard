@@ -6,9 +6,10 @@ type ImportMetaEnvAugmented = import('@julr/vite-plugin-validate-env').ImportMet
 
 interface ImportMetaEnv extends ImportMetaEnvAugmented {
     // The custom environment variables that are passed through the vite
-    REACT_APP_COMMIT_HASH: string;
-    REACT_APP_VERSION: string;
-    REACT_APP_ID: string;
+    APP_COMMIT_HASH: string;
+    APP_VERSION: string;
+    APP_ID: string;
+    APP_ENVIRONMENT_LOOSE_VALIDATION: string | undefined;
 }
 
 interface ImportMeta {

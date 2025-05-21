@@ -1,17 +1,18 @@
-version: '3.3'
-
 services:
   react:
-    command: sh -c 'yarn install --frozen-lockfile && yarn start'
+    command: sh -c 'pnpm install && pnpm start'
     build:
-      context: ./
+      context: .
       target: dev
     tty: true
     environment:
-      NODE_OPTIONS: --openssl-legacy-provider
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      APP_CSRF_TOKEN_KEY: ${APP_CSRF_TOKEN_KEY:-MAPSWIPE-DEV-CSRFTOKEN}
+      APP_GRAPHQL_API_ENDPOINT: ${APP_GRAPHQL_API_ENDPOINT:-http://localhost:8000/graphql/}
+      APP_GRAPHQL_CODEGEN_ENDPOINT: ${APP_GRAPHQL_CODEGEN_ENDPOINT:-http://localhost:8000/graphiql/}
     env_file:
       - .env
     volumes:
       - .:/code
     ports:
-      - '3080:3080'
+      - '3000:3000'
