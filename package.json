@@ -9,16 +9,10 @@
         "url": "git+https://github.com/mapswipe/python-mapswipe-workers.git"
     },
     "scripts": {
-        "prestart": "pnpm initialize:type",
-        "prebuild": "pnpm initialize:type",
-        "prelint:js": "pnpm initialize:type",
-        "initialize:type": "mkdir -p generated/types/ && test -f ./generated/types/graphql.ts && true || cp types.stub.ts ./generated/types/graphql.ts",
-        "generate-and-watch:type": "graphql-codegen --require dotenv/config --config codegen.ts --watch",
         "generate:type": "graphql-codegen --require dotenv/config --config codegen.ts",
         "start": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "pretypecheck": "pnpm initialize:type",
         "typecheck": "tsc",
         "test": "vitest",
         "test:coverage": "vitest run --coverage",
