@@ -2,17 +2,16 @@ services:
   react:
     command: sh -c 'pnpm install && pnpm start'
     build:
-      context: .
+      context: ../
       target: dev
-    tty: true
     environment:
       APP_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
       APP_CSRF_TOKEN_KEY: ${APP_CSRF_TOKEN_KEY:-MAPSWIPE-DEV-CSRFTOKEN}
       APP_GRAPHQL_API_ENDPOINT: ${APP_GRAPHQL_API_ENDPOINT:-http://localhost:8000/graphql/}
       APP_GRAPHQL_CODEGEN_ENDPOINT: ${APP_GRAPHQL_CODEGEN_ENDPOINT:-./backend/schema.graphql}
     env_file:
-      - .env
+      - ../.env
     volumes:
-      - .:/code
+      - ../:/code
     ports:
       - '3000:3000'
