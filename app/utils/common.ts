@@ -84,15 +84,15 @@ export const defaultPagePerItemOptions = [
 
 export function getFullAssetUrl(url: string) {
     const gqlPath = '/graphql';
-    const serverUrl = import.meta.env.REACT_APP_GRAPHQL_API_ENDPOINT.replace(gqlPath, '');
+    const serverUrl = import.meta.env.APP_GRAPHQL_API_ENDPOINT.replace(gqlPath, '');
 
     return joinUrlPart(serverUrl, url);
 }
 
-const BING_KEY = import.meta.env.REACT_APP_BING_API_KEY;
-const MAPBOX_KEY = import.meta.env.REACT_APP_MAPBOX_API_KEY;
-const MAXAR_PREMIUM = import.meta.env.REACT_APP_MAXAR_PREMIUM_API_KEY;
-const MAXAR_STANDARD = import.meta.env.REACT_APP_MAXAR_STANDARD_API_KEY;
+const BING_KEY = import.meta.env.APP_BING_API_KEY;
+const MAPBOX_KEY = import.meta.env.APP_MAPBOX_API_KEY;
+const MAXAR_PREMIUM = import.meta.env.APP_MAXAR_PREMIUM_API_KEY;
+const MAXAR_STANDARD = import.meta.env.APP_MAXAR_STANDARD_API_KEY;
 
 export const tileServerUrls: {
     [key in Exclude<TileServerNameEnum, 'CUSTOM'>]: string;
