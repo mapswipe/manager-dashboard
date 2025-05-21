@@ -83,6 +83,7 @@ const appConfigs = compat.config({
         'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
 
         'import/extensions': ['off', 'never'],
+        'import/named': 'warn',
 
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
