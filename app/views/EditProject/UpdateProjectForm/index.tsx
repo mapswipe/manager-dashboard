@@ -10,6 +10,7 @@ import {
 import {
     gql,
     useMutation,
+    useQuery,
 } from '@apollo/client';
 import {
     _cs,
@@ -43,12 +44,17 @@ import {
     UpdateProjectMutation,
     UpdateProjectMutationVariables,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert.ts';
 import useOrganizationListQuery from '#hooks/useOrganizationListQuery.ts';
 import {
     idSelector,
     nameSelector,
 } from '#utils/common';
-import { transformErrors } from '#utils/error';
+import {
+    alertApolloError,
+    checkAndAlertGraphQLResultError,
+    transformErrors,
+} from '#utils/error';
 
 import AssetInput from '../AssetInput/index.tsx';
 import {
@@ -56,10 +62,15 @@ import {
     PartialCompareSpecificFields,
 } from './CompareProjectSpecifics/schema';
 import {
+    defaultCompletenessSpecificFormValue,
+    PartialCompletenessSpecificFields,
+} from './CompletenessProjectSpecifics/schema.ts';
+import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
 } from './FindProjectSpecifics/schema';
 import CompareProjectSpecifics from './CompareProjectSpecifics';
+import CompletenessProjectSpecifics from './CompletenessProjectSpecifics';
 import FindProjectSpecifics from './FindProjectSpecifics';
 import projectUpdateFormSchema, {
     PartialProjectTypeSpecificInput,
@@ -67,6 +78,15 @@ import projectUpdateFormSchema, {
 } from './schema.ts';
 
 import styles from './styles.module.css';
+
+const PROJECT_STATUS_QUERY = gql`
+query ProjectStatus($projectId: ID!) {
+    project(id: $projectId) {
+        id
+        status
+    }
+}
+`;
 
 const UPDATE_PROJECT_MUTATION = gql`
 mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
@@ -100,6 +120,19 @@ function UpdateProjectForm(props: Props) {
         projectData,
     } = props;
 
+    const alert = useAlert();
+
+    useQuery(
+        PROJECT_STATUS_QUERY,
+        {
+            variables: {
+                projectId: projectData.project.id,
+            },
+            skip: projectData.project.status !== ProjectStatusEnum.MarkedAsReady,
+            pollInterval: 3000,
+        },
+    );
+
     const {
         data: organizationListResponse,
     } = useOrganizationListQuery({
@@ -119,6 +152,10 @@ function UpdateProjectForm(props: Props) {
 
         if (projectData.project.projectType === ProjectTypeEnum.Compare) {
             return defaultCompareSpecificFormValue;
+        }
+
+        if (projectData.project.projectType === ProjectTypeEnum.Completeness) {
+            return defaultCompletenessSpecificFormValue;
         }
 
         return {};
@@ -175,28 +212,60 @@ function UpdateProjectForm(props: Props) {
     const submitUpdateForm = useCallback(async (
         finalValues: ProjectUpdateInput,
     ) => {
-        const results = await updateProject({
-            variables: {
-                id: projectData.project.id,
-                data: finalValues,
-            },
-        });
+        try {
+            const result = await updateProject({
+                variables: {
+                    id: projectData.project.id,
+                    data: finalValues,
+                },
+            });
 
-        if (isDefined(results.data)
-            // eslint-disable-next-line no-underscore-dangle
-            && results.data.updateProject.__typename === 'ProjectTypeMutationResponseType'
-        ) {
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            if (isNotDefined(result.data)
+                // eslint-disable-next-line no-underscore-dangle
+                || result.data.updateProject.__typename !== 'ProjectTypeMutationResponseType'
+            ) {
+                alert.show(
+                    'Failed to update the Project!',
+                    {
+                        description: 'Unexpectected response from the server!',
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
             const {
                 ok,
                 errors,
                 // result,
-            } = results.data.updateProject;
+            } = result.data.updateProject;
 
             if (!ok) {
+                alert.show(
+                    'Failed to update the Project!',
+                    {
+                        description: 'Please fix the errors and try again!',
+                        variant: 'danger',
+                    },
+                );
                 setError(transformErrors(errors));
+
+                return;
             }
+
+            alert.show(
+                'Project updated successfully!',
+                { variant: 'success' },
+            );
+        } catch (apolloError) {
+            alertApolloError(apolloError, alert);
         }
-    }, [projectData.project.id, updateProject, setError]);
+    }, [projectData.project.id, updateProject, setError, alert]);
 
     const handleUpdateDraft = useCallback(async (
         submittedFormValues: PartialProjectUpdateInput,
@@ -242,6 +311,12 @@ function UpdateProjectForm(props: Props) {
         defaultCompareSpecificFormValue,
     );
 
+    const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessSpecificFields>(
+        'completeness',
+        setProjectSpecificFieldValue,
+        defaultCompareSpecificFormValue,
+    );
+
     const pending = updateProjectPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
@@ -265,11 +340,11 @@ function UpdateProjectForm(props: Props) {
                     name={undefined}
                     onClick={handleStartProcessingButtonClick}
                     disabled={baseInputsDisabled}
-                    colorVariant="primary"
+                    colorVariant="accent"
                     styleVariant="filled"
                     end={<MdArrowForward />}
                 >
-                    Save and Start processing
+                    Save & Start processing Project
                 </Button>
             )}
             headerActions={(
@@ -279,7 +354,7 @@ function UpdateProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     start={<MdSave />}
                 >
-                    Update draft
+                    Save Project
                 </Button>
             )}
             aside={(
@@ -393,9 +468,19 @@ function UpdateProjectForm(props: Props) {
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Compare && (
                     <CompareProjectSpecifics
+                        projectId={projectData.project.id}
                         value={value.projectTypeSpecifics?.compare}
                         setFieldValue={setCompareProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.compare}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                )}
+                {projectContext.projectType === ProjectTypeEnum.Completeness && (
+                    <CompletenessProjectSpecifics
+                        projectId={projectData.project.id}
+                        value={value.projectTypeSpecifics?.completeness}
+                        setFieldValue={setCompletenessProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}

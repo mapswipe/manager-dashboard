@@ -6,7 +6,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import {
-    CompareProjectPropertyInput,
+    CompletenessProjectPropertyInput,
     TileServerNameEnum,
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
@@ -17,16 +17,16 @@ import {
 } from '../schema';
 import tileServerFormSchema from '../TileServerInput/schema';
 
-export type PartialCompareSpecificFields = PartialForm<
-    DeepNonNullable<CompareProjectPropertyInput>
+export type PartialCompletenessSpecificFields = PartialForm<
+    DeepNonNullable<CompletenessProjectPropertyInput>
 >;
-type CompareSpecificFormSchema = ObjectSchema<
-    PartialCompareSpecificFields,
+type CompletenessSpecificFormSchema = ObjectSchema<
+    PartialCompletenessSpecificFields,
     PartialProjectUpdateInput,
     UpdateProjectContext
 >;
 
-export const defaultCompareSpecificFormValue: PartialCompareSpecificFields = {
+export const defaultCompletenessSpecificFormValue: PartialCompletenessSpecificFields = {
     zoomLevel: 18,
     tileServerProperty: {
         name: TileServerNameEnum.Bing,
@@ -36,8 +36,8 @@ export const defaultCompareSpecificFormValue: PartialCompareSpecificFields = {
     },
 };
 
-const compareSpecificFormSchema: CompareSpecificFormSchema = {
-    fields: (): ReturnType<CompareSpecificFormSchema['fields']> => ({
+const completenessSpecificFormSchema: CompletenessSpecificFormSchema = {
+    fields: (): ReturnType<CompletenessSpecificFormSchema['fields']> => ({
         zoomLevel: {
             required: true,
             validations: [greaterThanCondition(0)],
@@ -51,4 +51,4 @@ const compareSpecificFormSchema: CompareSpecificFormSchema = {
     }),
 };
 
-export default compareSpecificFormSchema;
+export default completenessSpecificFormSchema;

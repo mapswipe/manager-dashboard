@@ -78,6 +78,7 @@ function ProjectListItem(props: Props) {
                             }}
                             start={<FaEdit />}
                             spacing="sm"
+                            withoutPadding
                         >
                             Edit
                         </SmartLink>

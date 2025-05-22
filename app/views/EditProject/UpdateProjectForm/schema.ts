@@ -13,6 +13,7 @@ import {
 import { DeepNonNullable } from '#utils/types';
 
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
+import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
 
 export type UpdateProjectContext = {
@@ -62,6 +63,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                     return {
                         find: findSpecificFormSchema,
                         compare: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
                     };
                 }
 
@@ -69,12 +71,22 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                     return {
                         compare: compareSpecificFormSchema,
                         find: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (context?.projectType === ProjectTypeEnum.Completeness) {
+                    return {
+                        completeness: completenessSpecificFormSchema,
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
                     };
                 }
 
                 return {
                     find: { forceValue: undefinedValue },
                     compare: { forceValue: undefinedValue },
+                    completeness: { forceValue: undefinedValue },
                 };
             },
         },

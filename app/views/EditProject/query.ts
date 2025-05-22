@@ -72,6 +72,7 @@ query ProjectDetails($id: ID!) {
             id
             name
         }
+        tutorialId
         status
         verificationNumber
     }

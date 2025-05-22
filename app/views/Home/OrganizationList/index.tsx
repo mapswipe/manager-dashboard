@@ -5,7 +5,11 @@ import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
 import Pager from '#components/Pager';
 import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
-import { defaultPagePerItemOptions } from '#utils/common';
+import {
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
+    defaultPagePerItemOptions,
+} from '#utils/common';
 
 interface Props {
     className?: string;
@@ -14,8 +18,8 @@ interface Props {
 function OrganizationList(props: Props) {
     const { className } = props;
 
-    const [activePage, setActivePage] = useState(1);
-    const [pagePerItem, setPagePerItem] = useState(2);
+    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
+    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
     const {
         data: organizationListResponse,

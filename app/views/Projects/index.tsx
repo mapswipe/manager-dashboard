@@ -36,6 +36,8 @@ import {
 import useDebouncedValue from '#hooks/useDebouncedValue';
 import useInputState from '#hooks/useInputState';
 import {
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
     keySelector,
     labelSelector,
@@ -133,8 +135,8 @@ function Projects(props: Props) {
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
     const debouncedSearchText = useDebouncedValue(searchText?.trim());
-    const [activePage, setActivePage] = useState(1);
-    const [pagePerItem, setPagePerItem] = useState(2);
+    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
+    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
     const {
         data: projectsResponse,

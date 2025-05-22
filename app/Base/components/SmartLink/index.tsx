@@ -27,6 +27,7 @@ function SmartLink(props: Props) {
         endContainerClassName,
         colorVariant,
         styleVariant = 'transparent',
+        withoutPadding,
         spacing,
         ...otherProps
     } = props;
@@ -52,6 +53,7 @@ function SmartLink(props: Props) {
                 spacing={spacing}
                 colorVariant={colorVariant}
                 styleVariant={styleVariant}
+                withoutPadding={withoutPadding}
             >
                 {children ?? routeData.children}
             </ButtonLayout>
