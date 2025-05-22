@@ -4,7 +4,9 @@ import { isDefined } from '@togglecorp/fujs';
 import { joinUrlPart } from '#base/utils/routes';
 import { TileServerNameEnum } from '#generated/types/graphql';
 
-export const DURATION_DEFAULT_ALERT_DISMISS = 4500;
+export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
+export const DEFAULT_PAGE_SIZE = 5;
+export const DEFAULT_PAGE = 1;
 
 export const defaultMarkdownPreviewOptions: MarkdownViewProps['options'] = {
     simpleLineBreaks: true,

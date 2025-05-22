@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ImSpinner } from 'react-icons/im';
 import {
     MdAdjust,
     MdCheckCircle,
@@ -13,10 +14,12 @@ import { ProjectStatusEnum } from '#generated/types/graphql';
 
 import styles from './styles.module.css';
 
+type Status = 'pending' | 'processing' | 'in-progress' | 'completed';
+
 interface StatusProps {
     label: React.ReactNode;
     description?: React.ReactNode;
-    status: 'pending' | 'in-progress' | 'completed';
+    status: Status;
 }
 function Status(props: StatusProps) {
     const {
@@ -31,12 +34,14 @@ function Status(props: StatusProps) {
                 styles.status,
                 status === 'pending' && styles.pending,
                 status === 'in-progress' && styles.inProgress,
+                status === 'processing' && styles.processing,
                 status === 'completed' && styles.completed,
             )}
         >
             <div className={styles.iconContainer}>
                 {status === 'pending' && <MdAdjust className={styles.icon} />}
                 {status === 'in-progress' && <MdAdjust className={styles.icon} />}
+                {status === 'processing' && <ImSpinner className={styles.icon} />}
                 {status === 'completed' && <MdCheckCircle className={styles.icon} />}
                 <div className={styles.line} />
             </div>
@@ -62,7 +67,7 @@ function ProjectStatusOutput(props: Props) {
     const { value } = props;
     interface ProjectStatusDetail {
         label: string,
-        status: 'pending' | 'in-progress' | 'completed',
+        status: Status,
         description: string,
     }
 
@@ -153,7 +158,7 @@ function ProjectStatusOutput(props: Props) {
 
             applicableStatus.START.status = 'completed';
             applicableStatus.DRAFT.status = 'completed';
-            applicableStatus.MARKED_AS_READY.status = 'in-progress';
+            applicableStatus.MARKED_AS_READY.status = 'processing';
 
             return applicableStatus;
         }
@@ -187,6 +192,24 @@ function ProjectStatusOutput(props: Props) {
             applicableStatus.DRAFT.status = 'completed';
             applicableStatus.MARKED_AS_READY.status = 'completed';
             applicableStatus.FAILED.status = 'in-progress';
+
+            return applicableStatus;
+        }
+
+        if (value === ProjectStatusEnum.Published) {
+            const applicableStatus = {
+                START: baseStatus.START,
+                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
+                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
+                [ProjectStatusEnum.Ready]: baseStatus.READY,
+                [ProjectStatusEnum.Published]: baseStatus.PUBLISHED,
+            };
+
+            applicableStatus.START.status = 'completed';
+            applicableStatus.DRAFT.status = 'completed';
+            applicableStatus.MARKED_AS_READY.status = 'completed';
+            applicableStatus.READY.status = 'completed';
+            applicableStatus.PUBLISHED.status = 'completed';
 
             return applicableStatus;
         }

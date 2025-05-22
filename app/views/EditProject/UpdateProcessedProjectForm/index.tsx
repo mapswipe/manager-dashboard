@@ -10,6 +10,7 @@ import {
 import {
     gql,
     useMutation,
+    useQuery,
 } from '@apollo/client';
 import {
     _cs,
@@ -27,11 +28,14 @@ import Button from '#components/Button';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import SelectInput from '#components/SelectInput';
+import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
     ProcessedProjectUpdateInput,
     ProjectDetailsQuery,
     ProjectStatusEnum,
+    TutorialOptionListQuery,
+    TutorialOptionListQueryVariables,
     UpdateProcessedProjectMutation,
     UpdateProcessedProjectMutationVariables,
 } from '#generated/types/graphql';
@@ -51,6 +55,18 @@ import AssetInput from '../AssetInput';
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
 
 import styles from './styles.module.css';
+
+const TUTORIAL_OPTION_LIST_QUERY = gql`
+query TutorialOptionList{
+    tutorials {
+        results {
+            id
+            projectId
+            clientId
+        }
+    }
+}
+`;
 
 const UPDATE_PROCESSED_PROJECT_MUTATION = gql`
 mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
@@ -97,6 +113,12 @@ function UpdateProcessedProjectForm(props: Props) {
         UPDATE_PROCESSED_PROJECT_MUTATION,
     );
 
+    const {
+        data: tutorialOptionListResponse,
+    } = useQuery<TutorialOptionListQuery, TutorialOptionListQueryVariables>(
+        TUTORIAL_OPTION_LIST_QUERY,
+    );
+
     const projectContext = useMemo(() => ({
         projectType: projectData?.project.projectType,
     }), [projectData]);
@@ -128,12 +150,14 @@ function UpdateProcessedProjectForm(props: Props) {
             requestingOrganization,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectTypeSpecifics,
+            tutorialId,
             ...other
         } = removeNull(projectData.project);
 
         setValue({
             ...other,
             image: image?.id,
+            tutorial: tutorialId,
             requestingOrganization: requestingOrganization.id,
         });
     }, [projectData, setValue]);
@@ -186,12 +210,13 @@ function UpdateProcessedProjectForm(props: Props) {
                 );
                 const formErrors = transformErrors(errors);
                 setError(formErrors);
-            } else {
-                alert.show(
-                    'Project updated successfully!',
-                    { variant: 'success' },
-                );
+                return;
             }
+
+            alert.show(
+                'Project updated successfully!',
+                { variant: 'success' },
+            );
         } catch (apolloError) {
             alertApolloError(apolloError, alert);
         }
@@ -242,7 +267,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     styleVariant="filled"
                     end={<MdArrowForward />}
                 >
-                    Publish
+                    Save & Publish Project
                 </Button>
             )}
             headerActions={(
@@ -252,7 +277,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     start={<MdSave />}
                 >
-                    Update basic details
+                    Save Project
                 </Button>
             )}
             aside={(
@@ -277,13 +302,14 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.name}
                     disabled={baseInputsDisabled}
                 />
-                <TextInput
+                <TextArea
                     label="Project description"
                     name="description"
                     value={value.description}
                     onChange={setFieldValue}
                     error={error?.description}
                     disabled={baseInputsDisabled}
+                    rows={4}
                 />
                 <TextInput
                     label="Look for"
@@ -302,6 +328,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.requestingOrganization}
                     keySelector={idSelector}
                     labelSelector={nameSelector}
+                    disabled={baseInputsDisabled}
                 />
                 <TextInput
                     label="Additional info URL"
@@ -319,6 +346,19 @@ function UpdateProcessedProjectForm(props: Props) {
                     value={value.image}
                     onChange={setFieldValue}
                     error={error?.image}
+                    disabled={baseInputsDisabled}
+                />
+            </div>
+            <div className={styles.publishFields}>
+                <SelectInput
+                    label="Select a tutorial"
+                    name="tutorial"
+                    value={value.tutorial}
+                    options={tutorialOptionListResponse?.tutorials.results}
+                    onChange={setFieldValue}
+                    error={error?.tutorial}
+                    keySelector={idSelector}
+                    labelSelector={(tutorial) => tutorial.clientId}
                     disabled={baseInputsDisabled}
                 />
             </div>

@@ -12,6 +12,7 @@ import {
     TileServerCustomConfigInput,
     TileServerNameEnum,
 } from '#generated/types/graphql';
+import { imageryUrlCondition } from '#utils/common';
 import { DeepNonNullable } from '#utils/types';
 
 export type TileInputKeys = Exclude<keyof ProjectTileServerConfigInput, 'name'>;
@@ -89,7 +90,10 @@ const tileServerFormSchema: ProjectTileFormSchema = {
                         ...defaultTileServerFieldSchema,
                         [key]: {
                             fields: (): ReturnType<CustomTileServerConfigSchema['fields']> => ({
-                                url: { required: true },
+                                url: {
+                                    required: true,
+                                    validations: [imageryUrlCondition],
+                                },
                                 credits: {},
                             }),
                         },

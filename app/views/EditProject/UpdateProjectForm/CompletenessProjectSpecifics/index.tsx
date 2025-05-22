@@ -14,19 +14,19 @@ import {
     defaultTileServerInputFormValue,
     PartialTileServerInputFields,
 } from '../TileServerInput/schema';
-import { type PartialCompareSpecificFields } from './schema';
+import { type PartialCompletenessSpecificFields } from './schema';
 
 import styles from './styles.module.css';
 
 interface Props {
     projectId: string;
-    value: PartialCompareSpecificFields | undefined | null;
-    error: LeafError | ObjectError<PartialCompareSpecificFields>;
-    setFieldValue: (...entries: EntriesAsList<PartialCompareSpecificFields>) => void;
+    value: PartialCompletenessSpecificFields | undefined | null;
+    error: LeafError | ObjectError<PartialCompletenessSpecificFields>;
+    setFieldValue: (...entries: EntriesAsList<PartialCompletenessSpecificFields>) => void;
     disabled?: boolean;
 }
 
-function CompareProjectSpecifics(props: Props) {
+function CompletenessProjectSpecifics(props: Props) {
     const {
         projectId,
         value,
@@ -38,19 +38,19 @@ function CompareProjectSpecifics(props: Props) {
     const error = getErrorObject(formError);
 
     const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
-        'tileServerProperty',
+        'tileServerProperty' as const,
         setFieldValue,
         defaultTileServerInputFormValue,
     );
 
     const setTileServerBInputFieldValue = useFormObject<'tileServerBProperty', PartialTileServerInputFields>(
-        'tileServerBProperty',
+        'tileServerBProperty' as const,
         setFieldValue,
         defaultTileServerInputFormValue,
     );
 
     return (
-        <div className={styles.compare}>
+        <div className={styles.completeness}>
             <NumberInput
                 label="Zoom level"
                 name="zoomLevel"
@@ -66,7 +66,6 @@ function CompareProjectSpecifics(props: Props) {
                 disabled={disabled}
             />
             <TileServerInput
-                label="Tile server B"
                 value={value?.tileServerBProperty}
                 error={error?.tileServerBProperty}
                 setFieldValue={setTileServerBInputFieldValue}
@@ -86,4 +85,4 @@ function CompareProjectSpecifics(props: Props) {
     );
 }
 
-export default CompareProjectSpecifics;
+export default CompletenessProjectSpecifics;

@@ -58,6 +58,13 @@
             }
         }
 
+        &.processing {
+            .icon {
+                animation: rotate 1s linear infinite;
+                color: var(--color-accent);
+            }
+        }
+
         &:last-child {
             .icon-container {
                 .line {
@@ -66,5 +73,9 @@
             }
         }
     }
+}
 
+@keyframes rotate {
+    from { transform: rotate(0deg) }
+    to { transform: rotate(360deg) }
 }
