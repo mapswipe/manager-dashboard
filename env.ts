@@ -5,12 +5,10 @@ const looseValidation = import.meta.env.APP_ENVIRONMENT_LOOSE_VALIDATION;
 // TODO: Integrate .env for CI and remove optional() call on required fields
 export default defineConfig({
     APP_ENVIRONMENT: Schema.string.optional(),
-    APP_CSRF_TOKEN_KEY: Schema.string(),
 
-    APP_GRAPHQL_API_ENDPOINT: looseValidation
+    APP_GRAPHQL_API_DOMAIN: looseValidation
         ? Schema.string()
         : Schema.string({ format: 'url', protocol: true, tld: false }),
-    APP_GRAPHQL_CODEGEN_ENDPOINT: Schema.string.optional(),
 
     APP_BING_API_KEY: Schema.string.optional(),
     APP_MAPBOX_API_KEY: Schema.string.optional(),

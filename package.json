@@ -36,6 +36,7 @@
         "@types/apollo-upload-client": "^18.0.0",
         "apollo-link": "^1.2.14",
         "apollo-link-batch-http": "^1.2.14",
+        "apollo-link-context": "^1.0.20",
         "apollo-link-rest": "^0.8.0-beta.0",
         "apollo-link-retry": "^2.2.16",
         "apollo-upload-client": "^16.0.0",
