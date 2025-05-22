@@ -11,6 +11,7 @@ import {
 import {
     _cs,
     isDefined,
+    isNotDefined,
 } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
@@ -31,6 +32,8 @@ import {
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 
 import styles from './styles.module.css';
+import { alertApolloError, checkAndAlertGraphQLResultError } from '#utils/error';
+import useAlert from '#hooks/useAlert';
 
 const LOGIN_MUTATION = gql`
 mutation Login($username: String!, $password: String!) {
@@ -73,6 +76,7 @@ function Login(props: Props) {
     } = props;
 
     const { setUser } = useContext(UserContext);
+    const alert = useAlert();
 
     const {
         setFieldValue,
@@ -92,8 +96,13 @@ function Login(props: Props) {
     const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
             if (!finalValues || !finalValues.email || !finalValues.password) {
-                // eslint-disable-next-line no-console
-                console.error('Email or password is not defined');
+                alert.show(
+                    'Failed to login!',
+                    {
+                        description: 'Please make sure you\'ve entered both email and password',
+                        variant: 'danger',
+                    },
+                );
                 return;
             }
 
@@ -102,24 +111,47 @@ function Login(props: Props) {
                     variables: { username: finalValues.email, password: finalValues.password },
                 });
 
-                if (isDefined(result) && isDefined(result.data)) {
-                    setUser({
-                        id: result.data.login.id,
-                        displayName: result.data.login.displayName,
-                    });
+                if (checkAndAlertGraphQLResultError(result, alert)) {
+                    return;
                 }
-            } catch (loginError) {
-                if (loginError instanceof ApolloError) {
-                    setError({ [nonFieldError]: loginError.message });
-                } else {
-                    // eslint-disable-next-line no-console
-                    console.error(loginError);
+
+                if (isNotDefined(result.data)
+                    // eslint-disable-next-line no-underscore-dangle
+                    || result.data.login.__typename !== 'UserMeType'
+                ) {
+                    alert.show(
+                        'Failed to login!',
+                        {
+                            description: 'Unexpectected response from the server!',
+                            variant: 'danger',
+                        },
+                    );
+
+                    return;
+                }
+
+                alert.show(
+                    'Login successful!',
+                    {
+                        description: 'Navigating to home page.',
+                        variant: 'success',
+                    },
+                );
+                setUser({
+                    id: result.data.login.id,
+                    displayName: result.data.login.displayName,
+                });
+            } catch (apolloError) {
+                alertApolloError(apolloError, alert);
+
+                if (apolloError instanceof ApolloError) {
+                    setError({ [nonFieldError]: apolloError.message });
                 }
             }
         }
 
         login();
-    }, [loginToGql, setError, setUser]);
+    }, [loginToGql, setError, setUser, alert]);
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),

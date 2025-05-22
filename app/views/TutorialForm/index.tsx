@@ -55,12 +55,17 @@ import {
     TutorialProjectDetailQuery,
     TutorialProjectDetailQueryVariables,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import {
     getFullAssetUrl,
     idSelector,
     nameSelector,
 } from '#utils/common';
-import { transformErrors } from '#utils/error';
+import {
+    alertApolloError,
+    checkAndAlertGraphQLResultError,
+    transformErrors,
+} from '#utils/error';
 
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
 import InformationPageInput from './InformationPageInput';
@@ -92,6 +97,7 @@ function NewTutorial(props: Props) {
     const { id: tutorialIdFromParams } = useParams<{ id: string }>();
 
     const navigate = useNavigate();
+    const alert = useAlert();
 
     const [
         createNewTutorial,
@@ -270,40 +276,72 @@ function NewTutorial(props: Props) {
             }
 
             const finalValues = submittedValues as TutorialCreateInput;
-            const result = await createNewTutorial({
-                variables: {
-                    data: {
-                        ...finalValues,
-                        isDraft: true,
-                    },
-                },
-            });
 
-            // eslint-disable-next-line no-underscore-dangle
-            if (result.data?.createTutorial.__typename === 'TutorialTypeMutationResponseType') {
+            try {
+                const result = await createNewTutorial({
+                    variables: {
+                        data: {
+                            ...finalValues,
+                            isDraft: true,
+                        },
+                    },
+                });
+
+                if (checkAndAlertGraphQLResultError(result, alert)) {
+                    return;
+                }
+
+                if (isNotDefined(result.data)
+                    // eslint-disable-next-line no-underscore-dangle
+                    || result.data.createTutorial.__typename !== 'TutorialTypeMutationResponseType'
+                ) {
+                    alert.show(
+                        'Failed to create the Tutorial!',
+                        {
+                            description: 'Unexpectected response from the server!',
+                            variant: 'danger',
+                        },
+                    );
+
+                    return;
+                }
+
                 const {
                     ok,
                     errors,
-                    // result,
+                    result: createTutorialResult,
                 } = result.data.createTutorial;
 
-                if (!ok) {
+                if (!ok || !createTutorialResult) {
+                    alert.show(
+                        'Failed to create the Tutorial!',
+                        {
+                            description: 'Please fix the errors and try again!',
+                            variant: 'danger',
+                        },
+                    );
                     setError(transformErrors(errors));
+                    return;
                 }
 
-                if (result.data.createTutorial.ok
-                    && result.data.createTutorial.result
-                ) {
-                    navigate(
-                        generatePath(
-                            routes.editTutorial.originalPath,
-                            { id: result.data.createTutorial.result.id },
-                        ),
-                    );
-                }
+                alert.show(
+                    'Tutorial created successfully!',
+                    {
+                        description: 'Navigating to edit page of the created tutorial.',
+                        variant: 'success',
+                    },
+                );
+                navigate(
+                    generatePath(
+                        routes.editTutorial.originalPath,
+                        { id: createTutorialResult.id },
+                    ),
+                );
+            } catch (apolloError) {
+                alertApolloError(apolloError, alert);
             }
         },
-        [navigate, tutorialIdFromParams, createNewTutorial, setError],
+        [navigate, tutorialIdFromParams, createNewTutorial, setError, alert],
     );
 
     const handleSubmitButtonClick = useMemo(

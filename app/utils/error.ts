@@ -91,9 +91,11 @@ export function alertApolloError(
 
     if (apolloError.graphQLErrors.length !== 0) {
         alert.show(
-            'GraphQL error!',
+            'Request failed!',
             {
-                description: 'There\'s an error with the query, please copy the error message and contact the developer!',
+                description: apolloError.graphQLErrors.map((error) => error.message).join(', '),
+                // eslint-disable-next-line max-len
+                // description: 'There\'s an error with the query, please copy the error message and contact the developer!',
                 variant: 'danger',
                 debugMessage: JSON.stringify(apolloError.graphQLErrors, null, 2),
             },

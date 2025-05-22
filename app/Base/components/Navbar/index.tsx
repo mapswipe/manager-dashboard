@@ -12,7 +12,12 @@ import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
 import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
+import useAlert from '#hooks/useAlert';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
+import {
+    alertApolloError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
 
 import styles from './styles.module.css';
 
@@ -32,18 +37,30 @@ function Navbar(props: Props) {
         user,
         setUser,
     } = useContext(UserContext);
+    const alert = useAlert();
 
     const [logout, { loading: logoutPending }] = useMutation(LOGOUT_MUTATION);
 
     const handleLogoutClick = useCallback(async () => {
         try {
-            await logout();
+            const result = await logout();
+
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            alert.show(
+                'Logout successful!',
+                {
+                    description: 'Navigating to login page.',
+                    variant: 'success',
+                },
+            );
             setUser(undefined);
-        } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error(error);
+        } catch (apolloError) {
+            alertApolloError(apolloError, alert);
         }
-    }, [logout, setUser]);
+    }, [logout, setUser, alert]);
 
     return (
         <nav className={_cs(className, styles.navbar)}>
