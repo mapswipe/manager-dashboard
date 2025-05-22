@@ -1,32 +1,39 @@
 import { Cookies } from 'react-cookie';
 import {
     ApolloClientOptions,
+    concat,
     HttpLink,
     HttpOptions,
     InMemoryCache,
     NormalizedCacheObject,
     split,
 } from '@apollo/client';
+import { setContext } from 'apollo-link-context';
 import { createUploadLink } from 'apollo-upload-client';
 
-const GRAPHQL_ENDPOINT = import.meta.env.APP_GRAPHQL_API_ENDPOINT;
-const cookies = new Cookies();
-const headers: NonNullable<HttpOptions['headers']> = {
-    // TODO: auto generate this from APP_ENVIRONMENT
-    'X-CSRFToken': cookies.get(import.meta.env.APP_CSRF_TOKEN_KEY),
-};
+const COOKIE_NAME = `MAPSWIPE-${import.meta.env.APP_ENVIRONMENT}-CSRFTOKEN`;
+const GRAPHQL_ENDPOINT = `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/graphql/`;
+
+const authLink = setContext(async (_, { headers }) => {
+    const cookies = new Cookies();
+    const newHeaders: NonNullable<HttpOptions['headers']> = {
+        ...headers,
+        'X-CSRFToken': cookies.get(COOKIE_NAME),
+    };
+    return {
+        headers: newHeaders,
+    };
+});
 
 const link = split(
     (operation) => operation.getContext().hasUpload,
     createUploadLink({
         uri: GRAPHQL_ENDPOINT,
         credentials: 'include',
-        headers,
     }),
     new HttpLink({
         uri: GRAPHQL_ENDPOINT,
         credentials: 'include',
-        headers,
     }),
 );
 
@@ -53,7 +60,10 @@ const link: ApolloLinkFromClient = ApolloLink.from([
 */
 
 const apolloOptions: ApolloClientOptions<NormalizedCacheObject> = {
-    link,
+    link: concat(
+        authLink,
+        link,
+    ),
     cache: new InMemoryCache(),
     assumeImmutableResults: true,
     defaultOptions: {

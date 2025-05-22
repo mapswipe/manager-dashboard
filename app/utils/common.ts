@@ -83,10 +83,7 @@ export const defaultPagePerItemOptions = [
 ];
 
 export function getFullAssetUrl(url: string) {
-    const gqlPath = '/graphql';
-    const serverUrl = import.meta.env.APP_GRAPHQL_API_ENDPOINT.replace(gqlPath, '');
-
-    return joinUrlPart(serverUrl, url);
+    return joinUrlPart(import.meta.env.APP_GRAPHQL_API_DOMAIN, url);
 }
 
 const BING_KEY = import.meta.env.APP_BING_API_KEY;

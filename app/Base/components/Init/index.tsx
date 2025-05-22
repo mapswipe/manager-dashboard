@@ -65,26 +65,36 @@ function Init(props: Props) {
         children,
     } = props;
 
+    const [csrfReady, setCsrfReady] = React.useState(false);
     const { authenticated, setUser } = React.useContext(UserContext);
     const [ready, setReady] = useState(authenticated);
+
+    useEffect(() => {
+        async function healthCheck() {
+            try {
+                await fetch(
+                    `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/health-check/?format=json`,
+                    { credentials: 'include' },
+                );
+            } catch (ex) {
+                // eslint-disable-next-line no-console
+                console.error('Error getting health check', ex);
+            }
+            setCsrfReady(true);
+        }
+        healthCheck();
+    }, [setCsrfReady]);
 
     const {
         loading: meResponseLoading,
         data: meResponseData,
     } = useQuery<MeQuery, MeQueryVariables>(
         ME_QUERY,
-        { skip: authenticated },
-    );
-
-    const {
-        // loading: allEnumsResponseLoading,
-        data: allEnumsResponse,
-    } = useQuery<AllEnumsQuery, AllEnumsQueryVariables>(
-        ALL_ENUMS_QUERY,
+        { skip: authenticated || !csrfReady },
     );
 
     useEffect(() => {
-        if (authenticated || meResponseLoading) {
+        if (!csrfReady || authenticated || meResponseLoading) {
             return;
         }
 
@@ -100,9 +110,17 @@ function Init(props: Props) {
 
             setReady(true);
         });
-    }, [authenticated, meResponseLoading, meResponseData, setUser]);
+    }, [csrfReady, authenticated, meResponseLoading, meResponseData, setUser]);
 
-    if (!ready) {
+    const {
+        // loading: allEnumsResponseLoading,
+        data: allEnumsResponse,
+    } = useQuery<AllEnumsQuery, AllEnumsQueryVariables>(
+        ALL_ENUMS_QUERY,
+        { skip: !csrfReady },
+    );
+
+    if (!ready || !csrfReady) {
         return (
             <PreloadMessage
                 className={preloadClassName}

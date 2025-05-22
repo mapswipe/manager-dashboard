@@ -42,8 +42,7 @@ jobs:
         run: pnpm build
         env:
           APP_ENVIRONMENT: 'ci'
-          APP_GRAPHQL_API_ENDPOINT: 'https://random-graphql-api-endpoint.com'
-          APP_CSRF_TOKEN_KEY: 'random-csrf-token-key'
+          APP_GRAPHQL_API_DOMAIN: 'https://random-graphql-api-endpoint.com'
           APP_SENTRY_DSN: 'https://random-token@sentry.io'
           APP_SENTRY_TRACES_SAMPLE_RATE: 0.2
           APP_BING_API_KEY: 'random-bing-id'
