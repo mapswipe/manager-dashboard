@@ -15,6 +15,7 @@ import {
 import {
     _cs,
     isDefined,
+    isNotDefined,
 } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
@@ -44,13 +45,18 @@ import {
     ProjectCreateInput,
     ProjectTypeEnum,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
 import {
     idSelector,
     keySelector,
     nameSelector,
 } from '#utils/common';
-import { transformErrors } from '#utils/error';
+import {
+    alertApolloError,
+    checkAndAlertGraphQLResultError,
+    transformErrors,
+} from '#utils/error';
 
 import styles from './styles.module.css';
 
@@ -116,8 +122,9 @@ function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
 const projectTypeDescriptions: Record<ProjectTypeEnum, string> = {
     [ProjectTypeEnum.Find]: 'Swipe through satellite images to identify & select those that contain the requested features such as buildings, roadways, waterways and more.',
     [ProjectTypeEnum.Compare]: 'Review before and after satellite images to detect changes in the environment that help inform damage assessment, climate change, or inaccurate data.',
-    // FIXME this is description for validate
-    [ProjectTypeEnum.Completeness]: 'Assess building footprints for accuracy where buildings have been previously traced by remote mappers or through AI to identify where remapping is needed.',
+    [ProjectTypeEnum.Completeness]: 'Assess how well OSM data represents buildings in satellite imagery, flagging areas where mapping is incomplete. This helps identify areas needing further mapping efforts to enhance OSM\'s accuracy, especially for disaster response and risk assessment.',
+    // eslint-disable-next-line max-len
+    // [ProjectTypeEnum.Validate]: 'Assess building footprints for accuracy where buildings have been previously traced by remote mappers or through AI to identify where remapping is needed.',
 };
 
 interface Props {
@@ -127,6 +134,7 @@ interface Props {
 function NewProject(props: Props) {
     const { className } = props;
     const navigate = useNavigate();
+    const alert = useAlert();
 
     const [
         createNewProject,
@@ -164,37 +172,68 @@ function NewProject(props: Props) {
         async (submittedFormValues: PartialProjectCreateInputFields) => {
             const finalValues = submittedFormValues as ProjectCreateInput;
 
-            const result = await createNewProject({
-                variables: {
-                    data: finalValues,
-                },
-            });
+            try {
+                const result = await createNewProject({
+                    variables: {
+                        data: finalValues,
+                    },
+                });
 
-            // eslint-disable-next-line no-underscore-dangle
-            if (result.data?.createProject.__typename === 'ProjectTypeMutationResponseType') {
+                if (checkAndAlertGraphQLResultError(result, alert)) {
+                    return;
+                }
+
+                if (isNotDefined(result.data)
+                    // eslint-disable-next-line no-underscore-dangle
+                    || result.data.createProject.__typename !== 'ProjectTypeMutationResponseType'
+                ) {
+                    alert.show(
+                        'Failed to create the Project!',
+                        {
+                            description: 'Unexpectected response from the server!',
+                            variant: 'danger',
+                        },
+                    );
+                    return;
+                }
+
                 const {
                     ok,
                     errors,
-                    // result,
+                    result: createProjectResult,
                 } = result.data.createProject;
 
-                if (!ok) {
+                if (!ok || !createProjectResult) {
+                    alert.show(
+                        'Failed to create the Project!',
+                        {
+                            description: 'Please fix the errors and try again!',
+                            variant: 'danger',
+                        },
+                    );
+
                     setError(transformErrors(errors));
+                    return;
                 }
 
-                if (result.data.createProject.ok
-                    && result.data.createProject.result
-                ) {
-                    navigate(
-                        generatePath(
-                            routes.editProject.originalPath,
-                            { id: result.data.createProject.result.id },
-                        ),
-                    );
-                }
+                alert.show(
+                    'Project created successfully!',
+                    {
+                        description: 'Navigating to edit page of the created project.',
+                        variant: 'success',
+                    },
+                );
+                navigate(
+                    generatePath(
+                        routes.editProject.originalPath,
+                        { id: createProjectResult.id },
+                    ),
+                );
+            } catch (apolloError) {
+                alertApolloError(apolloError, alert);
             }
         },
-        [createNewProject, navigate, setError],
+        [createNewProject, navigate, setError, alert],
     );
 
     const handleSubmitButtonClick = useMemo(
