@@ -57,6 +57,7 @@
         height: 28rem;
 
         .details {
+            width: 100%;
             flex-grow: unset;
             border-bottom-left-radius: var(--radius-card-border);
             border-bottom-right-radius: var(--radius-card-border);

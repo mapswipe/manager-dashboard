@@ -8,7 +8,6 @@ import {
     MdSave,
 } from 'react-icons/md';
 import {
-    ApolloError,
     gql,
     useMutation,
 } from '@apollo/client';
@@ -42,8 +41,13 @@ import {
     idSelector,
     nameSelector,
 } from '#utils/common';
-import { transformErrors } from '#utils/error';
+import {
+    alertApolloError,
+    checkAndAlertGraphQLResultError,
+    transformErrors,
+} from '#utils/error';
 
+import AssetInput from '../AssetInput';
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
 
 import styles from './styles.module.css';
@@ -140,46 +144,56 @@ function UpdateProcessedProjectForm(props: Props) {
         finalValues: ProcessedProjectUpdateInput,
     ) => {
         try {
-            const results = await updateProcessedProject({
+            const result = await updateProcessedProject({
                 variables: {
                     id: projectData.project.id,
                     data: finalValues,
                 },
             });
 
-            if (isDefined(results.data)
-                // eslint-disable-next-line no-underscore-dangle
-                && results.data.updateProcessedProject.__typename === 'ProjectTypeMutationResponseType'
-            ) {
-                const {
-                    ok,
-                    errors,
-                    // result,
-                } = results.data.updateProcessedProject;
-
-                if (!ok) {
-                    alert.show(
-                        'Failed to update the Project!',
-                        { variant: 'danger' },
-                    );
-                    setError(transformErrors(errors));
-                } else {
-                    alert.show(
-                        'Project updated successfully!',
-                        { variant: 'success' },
-                    );
-                }
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
             }
-        } catch (apolloError) {
-            if (apolloError instanceof ApolloError) {
+
+            if (isNotDefined(result.data)
+                // eslint-disable-next-line no-underscore-dangle
+                || result.data.updateProcessedProject.__typename !== 'ProjectTypeMutationResponseType'
+            ) {
                 alert.show(
                     'Failed to update the Project!',
                     {
+                        description: 'Unexpectected response from the server!',
                         variant: 'danger',
-                        debugMessage: String(apolloError.message),
                     },
                 );
+
+                return;
             }
+
+            const {
+                ok,
+                errors,
+                // result,
+            } = result.data.updateProcessedProject;
+
+            if (!ok) {
+                alert.show(
+                    'Failed to update the Project!',
+                    {
+                        description: 'Please fix the errors and try again!',
+                        variant: 'danger',
+                    },
+                );
+                const formErrors = transformErrors(errors);
+                setError(formErrors);
+            } else {
+                alert.show(
+                    'Project updated successfully!',
+                    { variant: 'success' },
+                );
+            }
+        } catch (apolloError) {
+            alertApolloError(apolloError, alert);
         }
     }, [projectData.project.id, updateProcessedProject, setError, alert]);
 
@@ -295,6 +309,16 @@ function UpdateProcessedProjectForm(props: Props) {
                     value={value.additionalInfoUrl}
                     onChange={setFieldValue}
                     error={error?.additionalInfoUrl}
+                    disabled={baseInputsDisabled}
+                />
+                <AssetInput
+                    projectId={projectData.project.id}
+                    label="Project cover image"
+                    name="image"
+                    inputType="image"
+                    value={value.image}
+                    onChange={setFieldValue}
+                    error={error?.image}
                     disabled={baseInputsDisabled}
                 />
             </div>
