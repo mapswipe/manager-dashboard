@@ -5,6 +5,7 @@ import routes from '#base/configs/routes';
 import PageLayout from '#components/PageLayout';
 
 import OrganizationList from './OrganizationList';
+import TutorialList from './TutorialList';
 import UserList from './UserList';
 
 import styles from './styles.module.css';
@@ -42,6 +43,7 @@ function Home(props: Props) {
             )}
         >
             <OrganizationList className={styles.organizationList} />
+            <TutorialList className={styles.tutorialList} />
             <UserList className={styles.userList} />
         </PageLayout>
     );
