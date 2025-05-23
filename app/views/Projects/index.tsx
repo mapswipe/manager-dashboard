@@ -139,7 +139,8 @@ function Projects(props: Props) {
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
     const {
-        data: projectsResponse,
+        previousData: previousProjectsResponse,
+        data: projectsResponse = previousProjectsResponse,
         loading: pending,
     } = useQuery<ProjectsListQuery, ProjectsListQueryVariables>(
         PROJECT_LIST_QUERY,

@@ -22,7 +22,7 @@ interface Props {
     className?: string;
 }
 
-function ProjectForm(props: Props) {
+function EditProject(props: Props) {
     const { id: projectIdFromParams } = useParams<{ id: string }>();
     const { className } = props;
 
@@ -90,4 +90,4 @@ function ProjectForm(props: Props) {
     return null;
 }
 
-export default ProjectForm;
+export default EditProject;

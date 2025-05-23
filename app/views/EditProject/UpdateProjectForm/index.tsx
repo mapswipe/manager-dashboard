@@ -32,7 +32,7 @@ import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
-import SelectInput from '#components/SelectInput/index.tsx';
+import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -45,11 +45,7 @@ import {
     UpdateProjectMutationVariables,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert.ts';
-import useOrganizationListQuery from '#hooks/useOrganizationListQuery.ts';
-import {
-    idSelector,
-    nameSelector,
-} from '#utils/common';
+import useOptions from '#hooks/useOptions';
 import {
     alertApolloError,
     checkAndAlertGraphQLResultError,
@@ -88,6 +84,7 @@ query ProjectStatus($projectId: ID!) {
 }
 `;
 
+// FIXME: Check why fragment does not work here
 const UPDATE_PROJECT_MUTATION = gql`
 mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
     updateProject(data: $data, pk: $id) {
@@ -95,8 +92,119 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
             errors
             ok
             result {
+                additionalInfoUrl
+                clientId
+                description
+                groupSize
                 id
+                isFeatured
+                lookFor
+                maxTasksPerUser
+                name
+                processingStatus
+                progress
+                projectType
+                image {
+                    id
+                    file {
+                        url
+                    }
+                }
+                projectTypeSpecifics {
+                    ... on CompareProjectPropertyType {
+                        aoiGeometry
+                        zoomLevel
+                        tileServerProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                        tileServerBProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                    }
+                    ... on FindProjectPropertyType {
+                        aoiGeometry
+                        tileServerProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                        zoomLevel
+                    }
+                }
+                requestingOrganization {
+                    id
+                    name
+                }
+                tutorial {
+                    id
+                    name
+                }
                 status
+                verificationNumber
             }
         }
     }
@@ -121,6 +229,8 @@ function UpdateProjectForm(props: Props) {
     } = props;
 
     const alert = useAlert();
+    const [, setOrganizationOptions] = useOptions('organization');
+    const [, setTutorialOptions] = useOptions('tutorial');
 
     useQuery(
         PROJECT_STATUS_QUERY,
@@ -132,13 +242,6 @@ function UpdateProjectForm(props: Props) {
             pollInterval: 3000,
         },
     );
-
-    const {
-        data: organizationListResponse,
-    } = useOrganizationListQuery({
-        limit: 20,
-        offset: 0,
-    });
 
     const [
         updateProject,
@@ -192,20 +295,33 @@ function UpdateProjectForm(props: Props) {
             requestingOrganization,
             projectTypeSpecifics,
             image,
+            tutorial,
             ...other
         } = removeNull(projectData.project);
+
+        if (isDefined(tutorial)) {
+            setTutorialOptions([tutorial]);
+        }
+        setOrganizationOptions([requestingOrganization]);
 
         setValue({
             ...other,
             requestingOrganization: requestingOrganization.id,
             image: image?.id,
+            tutorial: tutorial?.id,
             projectTypeSpecifics: {
                 // TODO: replace with the default value
                 [projectTypeToKeyMap[projectType]]: projectTypeSpecifics
                     ?? defaultProjectTypeSpecificsValue,
             },
         });
-    }, [projectData, setValue, defaultProjectTypeSpecificsValue]);
+    }, [
+        projectData,
+        setValue,
+        setTutorialOptions,
+        setOrganizationOptions,
+        defaultProjectTypeSpecificsValue,
+    ]);
 
     const error = getErrorObject(formError);
 
@@ -224,7 +340,8 @@ function UpdateProjectForm(props: Props) {
                 return;
             }
 
-            if (isNotDefined(result.data)
+            if (
+                isNotDefined(result.data)
                 // eslint-disable-next-line no-underscore-dangle
                 || result.data.updateProject.__typename !== 'ProjectTypeMutationResponseType'
             ) {
@@ -398,15 +515,12 @@ function UpdateProjectForm(props: Props) {
                             error={error?.lookFor}
                             disabled={baseInputsDisabled}
                         />
-                        <SelectInput
+                        <OrganizationSelectInput
                             label="Requesting organization"
                             name="requestingOrganization"
                             value={value.requestingOrganization}
-                            options={organizationListResponse?.organizations.results}
                             onChange={setFieldValue}
                             error={error?.requestingOrganization}
-                            keySelector={idSelector}
-                            labelSelector={nameSelector}
                             disabled={baseInputsDisabled}
                         />
                         <TextInput

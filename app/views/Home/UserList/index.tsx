@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { CgOrganisation } from 'react-icons/cg';
+import { CgUser } from 'react-icons/cg';
 
 import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
 import Pager from '#components/Pager';
-import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
+import useUserListQuery from '#hooks/useUserListQuery';
 import {
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
@@ -15,31 +15,31 @@ interface Props {
     className?: string;
 }
 
-function OrganizationList(props: Props) {
+function UserList(props: Props) {
     const { className } = props;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
     const {
-        previousData: previousOrganizationListResponse,
-        data: organizationListResponse = previousOrganizationListResponse,
-        loading: organizationListPending,
-    } = useOrganizationListQuery({
+        previousData: previousUserListResponse,
+        data: userListResponse = previousUserListResponse,
+        loading: userListPending,
+    } = useUserListQuery({
         offset: (activePage - 1) * pagePerItem,
         limit: pagePerItem,
     });
 
-    const organizationList = organizationListResponse?.organizations.results ?? [];
-    const totalItems = organizationListResponse?.organizations.totalCount ?? 0;
+    const userList = userListResponse?.users.results ?? [];
+    const totalItems = userListResponse?.users.totalCount ?? 0;
 
     return (
         <Container
             className={className}
-            heading="Organizations"
+            heading="Users"
             headingLevel={2}
-            pending={organizationListPending}
-            empty={organizationList.length === 0}
+            pending={userListPending}
+            empty={userList.length === 0}
             withHeaderBorder
             withFooterBorder
             withPadding
@@ -55,16 +55,16 @@ function OrganizationList(props: Props) {
                 />
             )}
         >
-            {organizationList.map((organization) => (
+            {userList.map((user) => (
                 <InlineLayout
-                    key={organization.id}
-                    start={<CgOrganisation />}
+                    key={user.id}
+                    start={<CgUser />}
                 >
-                    {organization.name}
+                    {user.displayName}
                 </InlineLayout>
             ))}
         </Container>
     );
 }
 
-export default OrganizationList;
+export default UserList;

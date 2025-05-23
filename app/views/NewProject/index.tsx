@@ -33,7 +33,7 @@ import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import SegmentInput from '#components/SegmentInput';
-import SelectInput from '#components/SelectInput';
+import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -46,12 +46,7 @@ import {
     ProjectTypeEnum,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
-import {
-    idSelector,
-    keySelector,
-    nameSelector,
-} from '#utils/common';
+import { keySelector } from '#utils/common';
 import {
     alertApolloError,
     checkAndAlertGraphQLResultError,
@@ -144,13 +139,6 @@ function NewProject(props: Props) {
     const {
         data: newProjectEnumsResponse,
     } = useQuery<NewProjectEnumsQuery, NewProjectEnumsQueryVariables>(ENUM_QUERY);
-
-    const {
-        data: organizationListResponse,
-    } = useOrganizationListQuery({
-        limit: 20,
-        offset: 0,
-    });
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),
@@ -299,15 +287,15 @@ function NewProject(props: Props) {
                     error={error?.description}
                     rows={4}
                 />
-                <SelectInput
+                <OrganizationSelectInput
                     label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
-                    options={organizationListResponse?.organizations.results}
+                    // options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    keySelector={idSelector}
-                    labelSelector={nameSelector}
+                    // keySelector={idSelector}
+                    // labelSelector={nameSelector}
                 />
                 <TextInput
                     label="Look for"

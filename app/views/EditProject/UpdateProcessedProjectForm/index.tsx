@@ -10,7 +10,6 @@ import {
 import {
     gql,
     useMutation,
-    useQuery,
 } from '@apollo/client';
 import {
     _cs,
@@ -27,24 +26,19 @@ import {
 import Button from '#components/Button';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
-import SelectInput from '#components/SelectInput';
+import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
+import TutorialSelectInput from '#components/selections/TutorialSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
     ProcessedProjectUpdateInput,
     ProjectDetailsQuery,
     ProjectStatusEnum,
-    TutorialOptionListQuery,
-    TutorialOptionListQueryVariables,
     UpdateProcessedProjectMutation,
     UpdateProcessedProjectMutationVariables,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
-import {
-    idSelector,
-    nameSelector,
-} from '#utils/common';
+import useOptions from '#hooks/useOptions';
 import {
     alertApolloError,
     checkAndAlertGraphQLResultError,
@@ -56,18 +50,6 @@ import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInp
 
 import styles from './styles.module.css';
 
-const TUTORIAL_OPTION_LIST_QUERY = gql`
-query TutorialOptionList{
-    tutorials {
-        results {
-            id
-            projectId
-            clientId
-        }
-    }
-}
-`;
-
 const UPDATE_PROCESSED_PROJECT_MUTATION = gql`
 mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
     updateProcessedProject(data: $data, pk: $id) {
@@ -75,8 +57,119 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
             errors
             ok
             result {
+                additionalInfoUrl
+                clientId
+                description
+                groupSize
                 id
+                isFeatured
+                lookFor
+                maxTasksPerUser
+                name
+                processingStatus
+                progress
+                projectType
+                image {
+                    id
+                    file {
+                        url
+                    }
+                }
+                projectTypeSpecifics {
+                    ... on CompareProjectPropertyType {
+                        aoiGeometry
+                        zoomLevel
+                        tileServerProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                        tileServerBProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                    }
+                    ... on FindProjectPropertyType {
+                        aoiGeometry
+                        tileServerProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                        zoomLevel
+                    }
+                }
+                requestingOrganization {
+                    id
+                    name
+                }
+                tutorial {
+                    id
+                    name
+                }
                 status
+                verificationNumber
             }
         }
     }
@@ -98,25 +191,14 @@ function UpdateProcessedProjectForm(props: Props) {
     } = props;
 
     const alert = useAlert();
-
-    const {
-        data: organizationListResponse,
-    } = useOrganizationListQuery({
-        limit: 20,
-        offset: 0,
-    });
+    const [, setOrganizationOptions] = useOptions('organization');
+    const [, setTutorialOptions] = useOptions('tutorial');
 
     const [
         updateProcessedProject,
         { loading: updateProcessedProjectPending },
     ] = useMutation<UpdateProcessedProjectMutation, UpdateProcessedProjectMutationVariables>(
         UPDATE_PROCESSED_PROJECT_MUTATION,
-    );
-
-    const {
-        data: tutorialOptionListResponse,
-    } = useQuery<TutorialOptionListQuery, TutorialOptionListQueryVariables>(
-        TUTORIAL_OPTION_LIST_QUERY,
     );
 
     const projectContext = useMemo(() => ({
@@ -150,17 +232,22 @@ function UpdateProcessedProjectForm(props: Props) {
             requestingOrganization,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectTypeSpecifics,
-            tutorialId,
+            tutorial,
             ...other
         } = removeNull(projectData.project);
+
+        if (isDefined(tutorial)) {
+            setTutorialOptions([tutorial]);
+        }
+        setOrganizationOptions([requestingOrganization]);
 
         setValue({
             ...other,
             image: image?.id,
-            tutorial: tutorialId,
+            tutorial: tutorial?.id,
             requestingOrganization: requestingOrganization.id,
         });
-    }, [projectData, setValue]);
+    }, [projectData, setTutorialOptions, setOrganizationOptions, setValue]);
 
     const error = getErrorObject(formError);
 
@@ -319,15 +406,12 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.lookFor}
                     disabled={baseInputsDisabled}
                 />
-                <SelectInput
+                <OrganizationSelectInput
                     label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
-                    options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    keySelector={idSelector}
-                    labelSelector={nameSelector}
                     disabled={baseInputsDisabled}
                 />
                 <TextInput
@@ -350,15 +434,12 @@ function UpdateProcessedProjectForm(props: Props) {
                 />
             </div>
             <div className={styles.publishFields}>
-                <SelectInput
-                    label="Select a tutorial"
+                <TutorialSelectInput
+                    label="Tutorial"
                     name="tutorial"
                     value={value.tutorial}
-                    options={tutorialOptionListResponse?.tutorials.results}
                     onChange={setFieldValue}
                     error={error?.tutorial}
-                    keySelector={idSelector}
-                    labelSelector={(tutorial) => tutorial.clientId}
                     disabled={baseInputsDisabled}
                 />
             </div>

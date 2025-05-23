@@ -10,7 +10,6 @@ import {
 } from '@apollo/client';
 import {
     _cs,
-    isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
@@ -29,11 +28,14 @@ import {
     LoginMutation,
     LoginMutationVariables,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
+import {
+    alertApolloError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
 
 import styles from './styles.module.css';
-import { alertApolloError, checkAndAlertGraphQLResultError } from '#utils/error';
-import useAlert from '#hooks/useAlert';
 
 const LOGIN_MUTATION = gql`
 mutation Login($username: String!, $password: String!) {

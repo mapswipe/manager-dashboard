@@ -5,6 +5,7 @@ import routes from '#base/configs/routes';
 import PageLayout from '#components/PageLayout';
 
 import OrganizationList from './OrganizationList';
+import UserList from './UserList';
 
 import styles from './styles.module.css';
 
@@ -18,6 +19,7 @@ function Home(props: Props) {
     return (
         <PageLayout
             className={_cs(styles.home, className)}
+            mainContentClassName={styles.mainContent}
             heading="MapSwipe Manager Dashboard"
             headerDescription={(
                 <>
@@ -40,6 +42,7 @@ function Home(props: Props) {
             )}
         >
             <OrganizationList className={styles.organizationList} />
+            <UserList className={styles.userList} />
         </PageLayout>
     );
 }

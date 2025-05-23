@@ -41,6 +41,7 @@ import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import SelectInput from '#components/SelectInput';
+import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
     NewTutorialMutation,
@@ -163,13 +164,13 @@ function NewTutorial(props: Props) {
     } = useQuery<ProjectOutputAssetsQuery, ProjectOutputAssetsQueryVariables>(
         PROJECT_ASSETS_QUERY,
         {
-            variables: {
-                projectId: value.project ?? '',
+            variables: isDefined(value.project) ? {
+                projectId: value.project,
                 pagination: {
                     offset: 0,
                     limit: 10,
                 },
-            },
+            } : undefined,
             skip: isNotDefined(value.project),
         },
     );
@@ -179,9 +180,9 @@ function NewTutorial(props: Props) {
     } = useQuery<TutorialProjectDetailQuery, TutorialProjectDetailQueryVariables>(
         PROJECT_DETAIL_QUERY,
         {
-            variables: {
-                projectId: value.project ?? '',
-            },
+            variables: isDefined(value.project) ? {
+                projectId: value.project,
+            } : undefined,
             skip: isNotDefined(value.project),
         },
     );
@@ -280,10 +281,7 @@ function NewTutorial(props: Props) {
             try {
                 const result = await createNewTutorial({
                     variables: {
-                        data: {
-                            ...finalValues,
-                            isDraft: true,
-                        },
+                        data: finalValues,
                     },
                 });
 
@@ -426,6 +424,13 @@ function NewTutorial(props: Props) {
             )}
         >
             <div className={styles.projectSelection}>
+                <TextInput
+                    label="Title"
+                    name="name"
+                    value={value.name}
+                    onChange={setFieldValue}
+                    error={error?.name}
+                />
                 <SelectInput
                     label="Project"
                     name="project"
@@ -441,7 +446,7 @@ function NewTutorial(props: Props) {
             {isDefined(projectDetailResponse) && (
                 <div className={styles.projectDetails}>
                     <Container
-                        heading="Selected project details"
+                        heading="Project details"
                         withHeaderBorder
                     >
                         <TextOutput
