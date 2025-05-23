@@ -4,7 +4,6 @@
     flex-direction: column;
     background-color: var(--color-background);
     padding: var(--spacing-small) 0;
-    overflow: auto;
 
     .page-header {
         display: flex;
@@ -47,18 +46,21 @@
         padding: 0 var(--spacing-small);
         width: 100%;
         max-width: var(--width-page-content-max);
-        overflow: auto;
 
         .aside {
             flex-shrink: 0;
             padding: var(--spacing-medium) var(--spacing-medium);
             width: calc(10rem + 10%);
+
+            .aside-content {
+                position: sticky;
+                top: 0;
+            }
         }
 
         .main {
             flex-grow: 1;
             padding: var(--spacing-medium) var(--spacing-medium);
-            overflow: auto;
         }
 
         @media screen and (max-width: 40rem) {
@@ -67,14 +69,12 @@
             .aside {
                 width: 100%;
             }
-
-            .main {
-                overflow: unset;
-            }
         }
     }
 
     .footer-actions {
+        width: 100%;
+        max-width: var(--width-page-content-max);
         display: flex;
         align-items: center;
         flex-shrink: 0;

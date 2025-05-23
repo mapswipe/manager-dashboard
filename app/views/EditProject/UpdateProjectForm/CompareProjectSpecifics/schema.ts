@@ -9,6 +9,7 @@ import {
     CompareProjectPropertyInput,
     TileServerNameEnum,
 } from '#generated/types/graphql';
+import { tileServerDefaultCredits } from '#utils/common';
 import { DeepNonNullable } from '#utils/types';
 
 import {
@@ -30,9 +31,15 @@ export const defaultCompareSpecificFormValue: PartialCompareSpecificFields = {
     zoomLevel: 18,
     tileServerProperty: {
         name: TileServerNameEnum.Bing,
+        bing: {
+            credits: tileServerDefaultCredits[TileServerNameEnum.Bing],
+        },
     },
     tileServerBProperty: {
         name: TileServerNameEnum.Mapbox,
+        mapbox: {
+            credits: tileServerDefaultCredits[TileServerNameEnum.Mapbox],
+        },
     },
 };
 

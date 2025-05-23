@@ -59,7 +59,9 @@ function PageLayout(props: Props) {
             <div className={styles.contents}>
                 {aside && (
                     <aside className={styles.aside}>
-                        {aside}
+                        <div className={styles.asideContent}>
+                            {aside}
+                        </div>
                     </aside>
                 )}
                 <main className={_cs(styles.main, mainContentClassName)}>

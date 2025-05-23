@@ -14,27 +14,38 @@
 
     .input-section-container {
         display: flex;
-        align-items: center;
-        gap: var(--spacing-small);
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: var(--spacing-medium);
+        padding: var(--spacing-small);
+        background-color: var(--color-background-input);
 
-        .select-file-button {
-            cursor: pointer;
-        }
-
-        .preview {
-            padding: 0 var(--spacing-small);
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-small);
         }
     }
 
     .label {
-        color: var(--color-text-light);
-        font-size: var(--font-size-small);
-        font-weight: var(--font-weight-bold);
+        color: var(--color-text);
+        font-size: var(--font-size-extra-small);
+        font-weight: var(--font-weight-light);
     }
 
     .hint {
         color: var(--color-text-light);
         font-size: var(--font-size-small);
+    }
+
+    &.without-preview {
+        .input-section-container {
+            .input-section {
+                align-items: center;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
     }
 
     &:focus-within {

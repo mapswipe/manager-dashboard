@@ -112,8 +112,8 @@ p {
     --width-separator-thick: 5pt;
     --width-separator-mobile-preview: 8pt;
     --width-scrollbar: 0.75rem;
-    --width-page-content-max: 76rem;
-    --width-navbar-content-max: 76rem;
+    --width-page-content-max: 80rem;
+    --width-navbar-content-max: 80rem;
 
     --width-mobile-preview: 22rem;
     --height-mobile-preview: 40rem;

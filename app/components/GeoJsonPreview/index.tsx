@@ -55,6 +55,7 @@ interface Props {
     url?: string | undefined;
     previewStyle?: StyleFunction;
     padding?: PointExpression;
+    attribution?: string;
 }
 
 function GeoJsonPreview(props: Props) {
@@ -64,6 +65,7 @@ function GeoJsonPreview(props: Props) {
         url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         previewStyle,
         padding,
+        attribution,
     } = props;
 
     const mapRef = useRef<Map>();
@@ -97,6 +99,7 @@ function GeoJsonPreview(props: Props) {
                     {
                         // NOTE: we have a limit of 22
                         maxZoom: 22,
+                        attribution,
                     },
                 );
 

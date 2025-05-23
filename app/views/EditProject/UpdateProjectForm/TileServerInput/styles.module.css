@@ -1,5 +1,13 @@
 .tile-server-input {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-large);
+    .content {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--spacing-medium);
+
+        .inputs {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-small);
+        }
+    }
 }

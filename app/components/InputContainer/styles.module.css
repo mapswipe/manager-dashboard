@@ -34,19 +34,21 @@
     }
 
     .input-label {
-        color: var(--color-text-light);
+        color: var(--color-text);
         font-size: var(--font-size-extra-small);
         font-weight: var(--font-weight-light);
     }
 
     .hint {
         color: var(--color-text-light);
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-extra-small);
+        font-weight: var(--font-weight-light);
     }
 
     .error {
         color: var(--color-danger);
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-extra-small);
+        font-weight: var(--font-weight-light);
     }
 
     .icons,

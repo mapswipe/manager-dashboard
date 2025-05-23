@@ -51,26 +51,6 @@ function CompletenessProjectSpecifics(props: Props) {
 
     return (
         <div className={styles.completeness}>
-            <NumberInput
-                label="Zoom level"
-                name="zoomLevel"
-                value={value?.zoomLevel}
-                onChange={setFieldValue}
-                error={error?.zoomLevel}
-                disabled={disabled}
-            />
-            <TileServerInput
-                value={value?.tileServerProperty}
-                error={error?.tileServerProperty}
-                setFieldValue={setTileServerInputFieldValue}
-                disabled={disabled}
-            />
-            <TileServerInput
-                value={value?.tileServerBProperty}
-                error={error?.tileServerBProperty}
-                setFieldValue={setTileServerBInputFieldValue}
-                disabled={disabled}
-            />
             <AssetInput
                 label="AOI geometry"
                 projectId={projectId}
@@ -79,6 +59,29 @@ function CompletenessProjectSpecifics(props: Props) {
                 value={value?.aoiGeometry}
                 error={error?.aoiGeometry}
                 hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
+                disabled={disabled}
+                withoutPreview
+            />
+            <TileServerInput
+                value={value?.tileServerProperty}
+                error={error?.tileServerProperty}
+                setFieldValue={setTileServerInputFieldValue}
+                disabled={disabled}
+                aoiGeoJsonAssetId={value?.aoiGeometry}
+            />
+            <TileServerInput
+                value={value?.tileServerBProperty}
+                error={error?.tileServerBProperty}
+                setFieldValue={setTileServerBInputFieldValue}
+                disabled={disabled}
+                aoiGeoJsonAssetId={value?.aoiGeometry}
+            />
+            <NumberInput
+                label="Zoom level"
+                name="zoomLevel"
+                value={value?.zoomLevel}
+                onChange={setFieldValue}
+                error={error?.zoomLevel}
                 disabled={disabled}
             />
         </div>
