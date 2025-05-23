@@ -378,7 +378,6 @@ function NewTutorial(props: Props) {
                 reference: feature.properties.reference,
                 projectTypeSpecifics: {
                     find: {
-                        tileX: feature.properties.tile_x,
                         tileY: feature.properties.tile_y,
                         tileZ: feature.properties.tile_z,
                     },
@@ -424,16 +423,10 @@ function NewTutorial(props: Props) {
             )}
         >
             <div className={styles.projectSelection}>
-                <TextInput
-                    label="Title"
-                    name="name"
-                    value={value.name}
-                    onChange={setFieldValue}
-                    error={error?.name}
-                />
                 <SelectInput
                     label="Project"
                     name="project"
+                    hint="Select a project to get started. Some informations like zoom level, tile server, etc will be inherited from the project"
                     options={projectOptionsResponse?.projects.results}
                     keySelector={idSelector}
                     labelSelector={nameSelector}
@@ -504,6 +497,13 @@ function NewTutorial(props: Props) {
                     </Container>
                 </div>
             )}
+            <TextInput
+                label="Tutorail title"
+                name="name"
+                value={value.name}
+                onChange={setFieldValue}
+                error={error?.name}
+            />
             <Container
                 heading="Information Pages"
                 headingLevel={2}

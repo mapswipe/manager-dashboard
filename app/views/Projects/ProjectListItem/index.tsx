@@ -6,6 +6,7 @@ import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import Heading from '#components/Heading';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
+import TextOutput from '#components/TextOutput';
 import {
     ProjectsListQuery,
     ProjectTypeEnum,
@@ -42,6 +43,15 @@ function Meta(props: MetaProps) {
         </div>
     );
 }
+
+const dateFormatter = new Intl.DateTimeFormat(
+    undefined,
+    {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit',
+    },
+)
 
 interface Props {
     value: ProjectsListQuery['projects']['results'][number];
@@ -83,10 +93,10 @@ function ProjectListItem(props: Props) {
                         </SmartLink>
                     </div>
                 </div>
-                <div className={styles.description}>
-                    {value.description}
-                </div>
                 <div className={styles.metaList}>
+                    <Meta
+                        label={value.status}
+                    />
                     <Meta
                         icon={<ProjectTypeIcon type={value.projectType} />}
                         label={value.projectType}
@@ -95,9 +105,26 @@ function ProjectListItem(props: Props) {
                         icon={<GoOrganization />}
                         label={value.requestingOrganization.name}
                     />
-                    <Meta
-                        label={value.status}
+                </div>
+                <div className={styles.info}>
+                    <TextOutput
+                        label="Created on"
+                        value={dateFormatter.format(new Date(value.createdAt))}
+                        description={(
+                            <TextOutput
+                                label="by"
+                                value={value.createdBy.displayName}
+                                withoutLabelColon
+                            />
+                        )}
                     />
+                    <TextOutput
+                        label="Look for"
+                        value={value.lookFor}
+                    />
+                </div>
+                <div className={styles.description}>
+                    {value.description}
                 </div>
             </div>
         </section>

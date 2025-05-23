@@ -7,10 +7,11 @@
         transition: var(--duration-transition-medium) ease-in-out;
         border-top-left-radius: var(--radius-card-border);
         border-bottom-left-radius: var(--radius-card-border);
-        width: 10rem;
-        height: 100%;
+        width: 12rem;
+        height: 12rem;
         object-fit: cover;
         object-position: bottom center;
+        padding: var(--spacing-medium);
     }
 
     .details {
@@ -39,7 +40,7 @@
             overflow: hidden;
             color: var(--color-text-light);
             font-size: var(--font-size-small);
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
         }
 

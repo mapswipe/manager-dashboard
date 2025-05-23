@@ -7,6 +7,7 @@ import { ulid } from 'ulid';
 
 import {
     TutorialCreateInput,
+    TutorialInformationPageBlockTypeEnum,
     TutorialInformationPageCreateInput,
     TutorialScenarioPageCreateInput,
 } from '#generated/types/graphql';
@@ -37,6 +38,19 @@ export type TutorialCreateFormSchema = ObjectSchema<PartialTutorialCreateInputFi
 // FIXME: This should be inside render so that we have new client id everytime
 export const defaultTutorialCreateFormValue: PartialTutorialCreateInputFields = {
     clientId: ulid(),
+    informationPages: [
+        {
+            clientId: ulid(),
+            pageNumber: 1,
+            blocks: [
+                {
+                    clientId: ulid(),
+                    blockNumber: 1,
+                    blockType: TutorialInformationPageBlockTypeEnum.Text,
+                },
+            ],
+        },
+    ],
 };
 
 const tutorialCreateFormSchema: TutorialCreateFormSchema = {

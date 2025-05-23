@@ -1,12 +1,13 @@
 .text-output {
     display: flex;
+    align-items: baseline;
     gap: var(--spacing-small);
 
     .label {
         color: var(--color-text-light);
         font-size: var(--font-size-small);
 
-        &:after {
+        &.with-colon:after {
             content: ':';
         }
     }
