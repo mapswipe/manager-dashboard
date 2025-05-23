@@ -58,7 +58,6 @@ import {
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
-    getFullAssetUrl,
     idSelector,
     nameSelector,
 } from '#utils/common';
@@ -475,7 +474,7 @@ function NewTutorial(props: Props) {
                             <a
                                 key={projectAsset.id}
                                 className={styles.projectAssetDownloadLink}
-                                href={getFullAssetUrl(projectAsset.file.url)}
+                                href={projectAsset.file.url}
                                 target="_blank"
                                 rel="noreferrer"
                             >

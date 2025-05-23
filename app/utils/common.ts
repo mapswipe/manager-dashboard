@@ -1,7 +1,6 @@
 import { MarkdownViewProps } from 'react-showdown';
 import { isDefined } from '@togglecorp/fujs';
 
-import { joinUrlPart } from '#base/utils/routes';
 import { TileServerNameEnum } from '#generated/types/graphql';
 
 export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
@@ -83,10 +82,6 @@ export const defaultPagePerItemOptions = [
     { value: 50, label: '50 items / page' },
     { value: 100, label: '100 items / page' },
 ];
-
-export function getFullAssetUrl(url: string) {
-    return joinUrlPart(import.meta.env.APP_GRAPHQL_API_DOMAIN, url);
-}
 
 const BING_KEY = import.meta.env.APP_BING_API_KEY;
 const MAPBOX_KEY = import.meta.env.APP_MAPBOX_API_KEY;

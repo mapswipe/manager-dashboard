@@ -13,7 +13,6 @@ import {
 import compareIllustration from '#resources/images/compare-illustration.svg';
 import findIllustration from '#resources/images/find-illustration.svg';
 import validateIllustration from '#resources/images/validate-illustration.svg';
-import { getFullAssetUrl } from '#utils/common';
 
 import styles from './styles.module.css';
 
@@ -59,7 +58,7 @@ function ProjectListItem(props: Props) {
                 className={styles.image}
                 alt=""
                 src={isDefined(value.image)
-                    ? getFullAssetUrl(value.image.file.url)
+                    ? value.image.file.url
                     : projectTypeIllustrations[value.projectType]}
             />
             <div className={styles.details}>
