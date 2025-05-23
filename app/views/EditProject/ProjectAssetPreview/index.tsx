@@ -81,7 +81,7 @@ function ProjectAssetPreview(props: Props) {
             }
 
             const geoJsonResponse = await fetch(
-                getFullAssetUrl(previewResponse.projectAsset.file.url),
+                previewResponse.projectAsset.file.url,
             );
 
             const rawGeoJson = await geoJsonResponse.json();
@@ -121,7 +121,7 @@ function ProjectAssetPreview(props: Props) {
             <div className={className}>
                 <img
                     className={styles.image}
-                    src={getFullAssetUrl(url)}
+                    src={url}
                     alt={name}
                 />
             </div>

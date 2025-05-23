@@ -59,7 +59,7 @@ function ProjectListItem(props: Props) {
                 className={styles.image}
                 alt=""
                 src={isDefined(value.image)
-                    ? getFullAssetUrl(value.image.file.url)
+                    ? value.image.file.url
                     : projectTypeIllustrations[value.projectType]}
             />
             <div className={styles.details}>
