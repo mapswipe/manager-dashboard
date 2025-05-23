@@ -29,6 +29,7 @@ fragment TileServerPropertyFields on ProjectTileServerConfig {
 `;
 
 export const PROJECT_QUERY = gql`
+${TILE_SERVER_PROPERTY_FRAGMENT}
 query ProjectDetails($id: ID!) {
     project(id: $id) {
         additionalInfoUrl
@@ -72,11 +73,12 @@ query ProjectDetails($id: ID!) {
             id
             name
         }
-        tutorialId
+        tutorial {
+            id
+            name
+        }
         status
         verificationNumber
     }
 }
-
-${TILE_SERVER_PROPERTY_FRAGMENT}
 `;

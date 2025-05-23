@@ -29,6 +29,7 @@ import PreloadMessage from '#base/components/PreloadMessage';
 import apolloConfig from '#base/configs/apollo';
 import sentryConfig from '#base/configs/sentry';
 import NavbarContext, { type NavbarContextInterface } from '#base/context/NavbarContext';
+import OptionContext, { Options } from '#base/context/OptionContext';
 import UserContext, { type UserContextInterface } from '#base/context/UserContext';
 import { sync } from '#base/hooks/useAuthSync';
 import { User } from '#base/types/user';
@@ -47,6 +48,7 @@ const apolloClient = new ApolloClient(apolloConfig);
 
 function Base() {
     const [user, setUser] = useState<User | undefined>();
+    const [options, setOptions] = useState<Options>({});
     const [navbarVisibility, setNavbarVisibility] = useState(false);
 
     const authenticated = !!user;
@@ -82,6 +84,14 @@ function Base() {
             }
         },
         [setUser],
+    );
+
+    const optionContextValue: OptionContext = useMemo(
+        () => ({
+            options,
+            setOptions,
+        }),
+        [options, setOptions],
     );
 
     const userContext: UserContextInterface = useMemo(
@@ -123,27 +133,29 @@ function Base() {
                 )}
             >
                 <ApolloProvider client={apolloClient}>
-                    <UserContext.Provider value={userContext}>
-                        <AlertContext.Provider value={alertContextValue}>
-                            <NavbarContext.Provider value={navbarContext}>
-                                <AlertContainer />
-                                <AuthPopup />
-                                <BrowserRouter>
-                                    <Init preloadClassName={styles.init}>
-                                        <Navbar
-                                            className={_cs(
-                                                styles.navbar,
-                                                !navbarVisibility && styles.hidden,
-                                            )}
-                                        />
-                                        <AppRoutes
-                                            routeClassName={styles.view}
-                                        />
-                                    </Init>
-                                </BrowserRouter>
-                            </NavbarContext.Provider>
-                        </AlertContext.Provider>
-                    </UserContext.Provider>
+                    <OptionContext.Provider value={optionContextValue}>
+                        <UserContext.Provider value={userContext}>
+                            <AlertContext.Provider value={alertContextValue}>
+                                <NavbarContext.Provider value={navbarContext}>
+                                    <AlertContainer />
+                                    <AuthPopup />
+                                    <BrowserRouter>
+                                        <Init preloadClassName={styles.init}>
+                                            <Navbar
+                                                className={_cs(
+                                                    styles.navbar,
+                                                    !navbarVisibility && styles.hidden,
+                                                )}
+                                            />
+                                            <AppRoutes
+                                                routeClassName={styles.view}
+                                            />
+                                        </Init>
+                                    </BrowserRouter>
+                                </NavbarContext.Provider>
+                            </AlertContext.Provider>
+                        </UserContext.Provider>
+                    </OptionContext.Provider>
                 </ApolloProvider>
             </ErrorBoundary>
         </div>

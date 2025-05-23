@@ -1,6 +1,7 @@
 import {
     ObjectSchema,
     PartialForm,
+    requiredStringCondition,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
@@ -33,6 +34,7 @@ export type PartialTutorialCreateInputFields = PartialForm<
 >;
 export type TutorialCreateFormSchema = ObjectSchema<PartialTutorialCreateInputFields>;
 
+// FIXME: This should be inside render so that we have new client id everytime
 export const defaultTutorialCreateFormValue: PartialTutorialCreateInputFields = {
     clientId: ulid(),
 };
@@ -40,10 +42,13 @@ export const defaultTutorialCreateFormValue: PartialTutorialCreateInputFields = 
 const tutorialCreateFormSchema: TutorialCreateFormSchema = {
     fields: (): ReturnType<TutorialCreateFormSchema['fields']> => ({
         clientId: {},
+        name: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
         project: {
             required: true,
         },
-        isDraft: {},
         informationPages: {
             keySelector: (value) => value.clientId,
             member: () => informationPageSchema,

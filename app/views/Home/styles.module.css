@@ -1,7 +1,19 @@
 .home {
-    .organization-list {
-        border-radius: var(--radius-card-border);
-        box-shadow: var(--shadow-card);
-        background-color: var(--color-foreground);
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xl);
+
+        .organization-list {
+            border-radius: var(--radius-card-border);
+            box-shadow: var(--shadow-card);
+            background-color: var(--color-foreground);
+        }
+
+        .user-list {
+            border-radius: var(--radius-card-border);
+            box-shadow: var(--shadow-card);
+            background-color: var(--color-foreground);
+        }
     }
 }

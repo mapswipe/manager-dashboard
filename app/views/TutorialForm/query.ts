@@ -4,8 +4,9 @@ export const TUTORIAL_QUERY = gql`
 query TutorialDetails($id: ID!) {
     tutorial(id: $id) {
         id
+        name
         clientId
-        isDraft
+        status
         informationPages {
             id
             clientId

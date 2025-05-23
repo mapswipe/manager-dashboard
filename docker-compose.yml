@@ -1,5 +1,6 @@
 services:
   react:
+    # FIXME(tnagorra): Add type generation here
     command: sh -c 'pnpm install && pnpm start'
     build:
       context: ../

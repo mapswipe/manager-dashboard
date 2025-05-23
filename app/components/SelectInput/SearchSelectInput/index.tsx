@@ -63,6 +63,7 @@ export type SearchSelectInputProps<
 }, OMISSION> & (
     SelectInputContainerProps<T, K, O, P,
         'name'
+        | 'options'
         | 'nonClearable'
         | 'onClear'
         | 'onOptionClick'

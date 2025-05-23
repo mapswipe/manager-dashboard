@@ -114,7 +114,7 @@ function GeoJsonPreview(props: Props) {
                 }
             };
         },
-        [url],
+        [url, attribution],
     );
 
     useEffect(

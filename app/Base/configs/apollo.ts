@@ -1,6 +1,7 @@
 import { Cookies } from 'react-cookie';
 import {
     ApolloClientOptions,
+    ApolloLink,
     concat,
     HttpLink,
     HttpOptions,
@@ -14,7 +15,8 @@ import { createUploadLink } from 'apollo-upload-client';
 const COOKIE_NAME = `MAPSWIPE-${import.meta.env.APP_ENVIRONMENT}-CSRFTOKEN`;
 const GRAPHQL_ENDPOINT = `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/graphql/`;
 
-const authLink = setContext(async (_, { headers }) => {
+const authLink = setContext(async (_, prevContext) => {
+    const { headers } = prevContext;
     const cookies = new Cookies();
     const newHeaders: NonNullable<HttpOptions['headers']> = {
         ...headers,
@@ -61,7 +63,7 @@ const link: ApolloLinkFromClient = ApolloLink.from([
 
 const apolloOptions: ApolloClientOptions<NormalizedCacheObject> = {
     link: concat(
-        authLink,
+        authLink as unknown as ApolloLink,
         link,
     ),
     cache: new InMemoryCache(),

@@ -73,12 +73,12 @@
     }
 
     .footer-actions {
-        width: 100%;
-        max-width: var(--width-page-content-max);
         display: flex;
         align-items: center;
         flex-shrink: 0;
         justify-content: center;
         padding: var(--spacing-medium) var(--spacing-large);
+        width: 100%;
+        max-width: var(--width-page-content-max);
     }
 }
