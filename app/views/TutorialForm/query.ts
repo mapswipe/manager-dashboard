@@ -71,7 +71,7 @@ export const PROJECT_ASSETS_QUERY = gql`
 query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
     projectAssets(
         pagination: $pagination
-        filters: {projectId: {exact: $projectId}, type: {exact: OUTPUT}}
+        filters: {projectId: {exact: $projectId}}
         ) {
         results {
             file {

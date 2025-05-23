@@ -4,28 +4,17 @@
         flex-direction: column;
         gap: var(--spacing-extra-large);
 
-        .base-inputs {
-            display: flex;
-            flex-direction: column;
+        .row {
+            display: grid;
+            /* FIXME: dont use 20rem */
+            grid-template-columns: 1fr 20rem;
             gap: var(--spacing-medium);
 
-            .row {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
+            .column {
+                display: flex;
+                flex-direction: column;
                 gap: var(--spacing-medium);
-
-                .column {
-                    display: flex;
-                    flex-direction: column;
-                    gap: var(--spacing-medium);
-                }
             }
-        }
-
-        .project-type-specific-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-medium);
         }
     }
 }

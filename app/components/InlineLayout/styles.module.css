@@ -5,4 +5,12 @@
     .children {
         flex-grow: 1;
     }
+
+    .star-content {
+        display: flex;
+    }
+
+    .end-content {
+        display: flex;
+    }
 }

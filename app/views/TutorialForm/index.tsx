@@ -47,6 +47,7 @@ import TextOutput from '#components/TextOutput';
 import {
     NewTutorialMutation,
     NewTutorialMutationVariables,
+    ProjectAssetMimetypeEnum,
     ProjectOptionsQuery,
     ProjectOptionsQueryVariables,
     ProjectOutputAssetsQuery,
@@ -378,6 +379,7 @@ function NewTutorial(props: Props) {
                 reference: feature.properties.reference,
                 projectTypeSpecifics: {
                     find: {
+                        tileX: feature.properties.tile_x,
                         tileY: feature.properties.tile_y,
                         tileZ: feature.properties.tile_z,
                     },
@@ -422,11 +424,30 @@ function NewTutorial(props: Props) {
                 </Button>
             )}
         >
-            <div className={styles.projectSelection}>
+            <Container
+                heading="General"
+                withHeaderBorder
+                withContentBackgroundAndPadding
+                spacing="lg"
+            >
+                <TextInput
+                    label="Tutorial title"
+                    name="name"
+                    value={value.name}
+                    onChange={setFieldValue}
+                    error={error?.name}
+                />
+            </Container>
+            <Container
+                heading="Reference Project"
+                withHeaderBorder
+                withContentBackgroundAndPadding
+                spacing="lg"
+            >
                 <SelectInput
-                    label="Project"
+                    label="Select a project"
                     name="project"
-                    hint="Select a project to get started. Some informations like zoom level, tile server, etc will be inherited from the project"
+                    hint="Informations like zoom level, tile server, etc will be inherited from the reference project"
                     options={projectOptionsResponse?.projects.results}
                     keySelector={idSelector}
                     labelSelector={nameSelector}
@@ -435,78 +456,78 @@ function NewTutorial(props: Props) {
                     error={error?.project}
                     disabled={isDefined(tutorialIdFromParams)}
                 />
-            </div>
-            {isDefined(projectDetailResponse) && (
-                <div className={styles.projectDetails}>
-                    <Container
-                        heading="Project details"
-                        withHeaderBorder
-                    >
-                        <TextOutput
-                            label="Look for"
-                            value={projectDetailResponse.project.lookFor}
-                        />
-                        <TextOutput
-                            label="Requesting organization"
-                            value={projectDetailResponse.project.requestingOrganization.name}
-                        />
-                        <TextOutput
-                            label="Zoom level"
-                            value={projectDetailResponse.project.projectTypeSpecifics?.zoomLevel}
-                        />
-                        <TextOutput
-                            label="Tile server"
-                            value={projectDetailResponse.project
-                                .projectTypeSpecifics?.tileServerProperty.name}
-                        />
-                    </Container>
-                    <Container
-                        heading="Project Assets"
-                        withHeaderBorder
-                    >
-                        {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
-                            <InlineLayout
-                                start={(
-                                    <a
-                                        key={projectAsset.id}
-                                        className={styles.projectAssetDownloadLink}
-                                        href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        title="Preview in geojson.io"
-                                    >
-                                        <CgArrowTopRightR />
-                                    </a>
-                                )}
-                                end={(
-                                    <a
-                                        key={projectAsset.id}
-                                        className={styles.projectAssetDownloadLink}
-                                        href={projectAsset.file.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        title="Download"
-                                    >
-                                        <MdDownload />
-                                    </a>
-                                )}
-                            >
-                                {projectAsset.file.name.replace(/^.*[\\/]/, '')}
-                            </InlineLayout>
-                        ))}
-                    </Container>
-                </div>
-            )}
-            <TextInput
-                label="Tutorail title"
-                name="name"
-                value={value.name}
-                onChange={setFieldValue}
-                error={error?.name}
-            />
+                {isDefined(projectDetailResponse) && (
+                    <>
+                        <Container
+                            spacing="sm"
+                        >
+                            <TextOutput
+                                label="Look for"
+                                value={projectDetailResponse.project.lookFor}
+                            />
+                            <TextOutput
+                                label="Requesting organization"
+                                value={projectDetailResponse.project.requestingOrganization.name}
+                            />
+                            <TextOutput
+                                label="Zoom level"
+                                value={projectDetailResponse
+                                    .project.projectTypeSpecifics?.zoomLevel}
+                            />
+                            <TextOutput
+                                label="Tile server"
+                                value={projectDetailResponse.project
+                                    .projectTypeSpecifics?.tileServerProperty.name}
+                            />
+                        </Container>
+                        <Container
+                            heading="Project Assets"
+                            headingLevel={4}
+                            contentLayout="inline"
+                        >
+                            {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
+                                <InlineLayout
+                                    className={styles.assetCard}
+                                    withPadding
+                                    end={(
+                                        <>
+                                            {/* eslint-disable-next-line max-len */}
+                                            {projectAsset.mimetype === ProjectAssetMimetypeEnum.Geojson && (
+                                                <a
+                                                    key={projectAsset.id}
+                                                    className={styles.projectAssetDownloadLink}
+                                                    href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Preview in geojson.io"
+                                                >
+                                                    <CgArrowTopRightR />
+                                                </a>
+                                            )}
+                                            <a
+                                                key={projectAsset.id}
+                                                className={styles.projectAssetDownloadLink}
+                                                href={projectAsset.file.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                title="Download"
+                                                download
+                                            >
+                                                <MdDownload />
+                                            </a>
+                                        </>
+                                    )}
+                                >
+                                    {projectAsset.file.name.replace(/^.*[\\/]/, '')}
+                                </InlineLayout>
+                            ))}
+                        </Container>
+                    </>
+                )}
+            </Container>
             <Container
+                withContentBackgroundAndPadding={value.informationPages?.length === 0}
                 heading="Information Pages"
-                headingLevel={2}
                 headerDescription={(
                     <NonFieldError
                         error={error?.informationPages}
@@ -527,6 +548,7 @@ function NewTutorial(props: Props) {
                 )}
                 empty={isNotDefined(value.informationPages)
                     || value.informationPages.length === 0}
+                spacing="lg"
             >
                 {value.informationPages?.map((informationPage, informationPageIndex) => (
                     <InformationPageInput
@@ -542,8 +564,8 @@ function NewTutorial(props: Props) {
                 ))}
             </Container>
             <Container
+                withContentBackgroundAndPadding={!value.scenarios?.length}
                 heading="Scenario Pages"
-                headingLevel={2}
                 withHeaderBorder
                 headerDescription={(
                     <NonFieldError
@@ -561,6 +583,7 @@ function NewTutorial(props: Props) {
                         hint="It should end with .geojson or .geo.json"
                     />
                 )}
+                spacing="lg"
             >
                 {value.scenarios?.map((scenarioPage, scenarioPageIndex) => (
                     <ScenarioPageInput

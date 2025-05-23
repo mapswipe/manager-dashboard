@@ -29,6 +29,7 @@ import { ulid } from 'ulid';
 
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
+import Container from '#components/Container';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
@@ -243,7 +244,7 @@ function NewProject(props: Props) {
                     styleVariant="filled"
                     end={<MdArrowForward />}
                 >
-                    Save and Continue
+                    Save Draft
                 </Button>
             )}
             aside={(
@@ -253,12 +254,17 @@ function NewProject(props: Props) {
             )}
             mainContentClassName={styles.mainContent}
         >
-            <div className={styles.projectTypeSelection}>
+            <Container
+                withContentBackgroundAndPadding
+                withHeaderBorder
+                spacing="lg"
+                className={styles.projectTypeSelection}
+                heading="Project Type"
+            >
                 <SegmentInput
                     name="projectType"
                     onChange={setFieldValue}
                     value={value.projectType}
-                    label="Project Type"
                     hint="Select the type of your project. Please note that you won't be able to change it later"
                     options={newProjectEnumsResponse?.enums.ProjectTypeEnum ?? []}
                     keySelector={keySelector}
@@ -270,8 +276,13 @@ function NewProject(props: Props) {
                         {projectTypeDescriptions[value.projectType]}
                     </div>
                 )}
-            </div>
-            <div className={styles.form}>
+            </Container>
+            <Container
+                heading="General"
+                withContentBackgroundAndPadding
+                withHeaderBorder
+                spacing="lg"
+            >
                 <TextInput
                     label="Project title"
                     name="name"
@@ -311,7 +322,7 @@ function NewProject(props: Props) {
                     onChange={setFieldValue}
                     error={error?.additionalInfoUrl}
                 />
-            </div>
+            </Container>
         </PageLayout>
     );
 }

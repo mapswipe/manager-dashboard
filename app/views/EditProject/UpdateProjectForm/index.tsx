@@ -27,7 +27,7 @@ import {
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
-import Heading from '#components/Heading';
+import Container from '#components/Container/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import PageLayout from '#components/PageLayout';
@@ -453,26 +453,26 @@ function UpdateProjectForm(props: Props) {
             heading="Update project"
             className={_cs(styles.updateProjectForm, className)}
             footerActions={(
-                <Button
-                    name={undefined}
-                    onClick={handleStartProcessingButtonClick}
-                    disabled={baseInputsDisabled}
-                    colorVariant="accent"
-                    styleVariant="filled"
-                    end={<MdArrowForward />}
-                >
-                    Save & Start processing Project
-                </Button>
-            )}
-            headerActions={(
-                <Button
-                    name={undefined}
-                    onClick={handleUpdateDraftButtonClick}
-                    disabled={baseInputsDisabled}
-                    start={<MdSave />}
-                >
-                    Save Project
-                </Button>
+                <>
+                    <Button
+                        name={undefined}
+                        onClick={handleUpdateDraftButtonClick}
+                        disabled={baseInputsDisabled}
+                        start={<MdSave />}
+                    >
+                        Save Project
+                    </Button>
+                    <Button
+                        name={undefined}
+                        onClick={handleStartProcessingButtonClick}
+                        disabled={baseInputsDisabled}
+                        colorVariant="accent"
+                        styleVariant="filled"
+                        end={<MdArrowForward />}
+                    >
+                        Save & Process Project
+                    </Button>
+                </>
             )}
             aside={(
                 <ProjectStatusOutput
@@ -487,7 +487,12 @@ function UpdateProjectForm(props: Props) {
                     Please make the necessary changes before proceeding!
                 </div>
             )}
-            <div className={styles.baseInputs}>
+            <Container
+                heading="General"
+                withContentBackgroundAndPadding
+                withHeaderBorder
+                spacing="lg"
+            >
                 <TextInput
                     label="Project title"
                     name="name"
@@ -568,14 +573,19 @@ function UpdateProjectForm(props: Props) {
                         disabled={baseInputsDisabled}
                     />
                 </div>
-            </div>
-            <div className={styles.projectTypeSpecificInputs}>
-                <Heading level={3}>
-                    {`Project type: ${projectContext.projectType}`}
-                </Heading>
-                <NonFieldError
-                    error={error?.projectTypeSpecifics}
-                />
+            </Container>
+            <Container
+                className={styles.projectTypeSpecificInputs}
+                withContentBackgroundAndPadding
+                withHeaderBorder
+                spacing="lg"
+                heading={projectContext.projectType}
+                headerDescription={(
+                    <NonFieldError
+                        error={error?.projectTypeSpecifics}
+                    />
+                )}
+            >
                 {projectContext.projectType === ProjectTypeEnum.Find && (
                     <FindProjectSpecifics
                         projectId={projectData.project.id}
@@ -603,7 +613,7 @@ function UpdateProjectForm(props: Props) {
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
-            </div>
+            </Container>
         </PageLayout>
     );
 }

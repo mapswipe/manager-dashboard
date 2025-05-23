@@ -24,6 +24,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import Button from '#components/Button';
+import Container from '#components/Container';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
@@ -346,26 +347,26 @@ function UpdateProcessedProjectForm(props: Props) {
             heading="Update project"
             className={_cs(styles.updateProcessedProjectForm, className)}
             footerActions={(
-                <Button
-                    name={undefined}
-                    onClick={handlePublishButtonClick}
-                    disabled={baseInputsDisabled}
-                    colorVariant="accent"
-                    styleVariant="filled"
-                    end={<MdArrowForward />}
-                >
-                    Save & Publish Project
-                </Button>
-            )}
-            headerActions={(
-                <Button
-                    name={undefined}
-                    onClick={handleUpdateBasicDetailsButtonClick}
-                    disabled={baseInputsDisabled}
-                    start={<MdSave />}
-                >
-                    Save Project
-                </Button>
+                <>
+                    <Button
+                        name={undefined}
+                        onClick={handleUpdateBasicDetailsButtonClick}
+                        disabled={baseInputsDisabled}
+                        start={<MdSave />}
+                    >
+                        Save Project
+                    </Button>
+                    <Button
+                        name={undefined}
+                        onClick={handlePublishButtonClick}
+                        disabled={baseInputsDisabled}
+                        colorVariant="accent"
+                        styleVariant="filled"
+                        end={<MdArrowForward />}
+                    >
+                        Save & Publish Project
+                    </Button>
+                </>
             )}
             aside={(
                 <ProjectStatusOutput
@@ -380,7 +381,10 @@ function UpdateProcessedProjectForm(props: Props) {
                     Please make the necessary changes before proceeding!
                 </div>
             )}
-            <div className={styles.baseInputs}>
+            <Container
+                heading="General"
+                className={styles.baseInputs}
+            >
                 <TextInput
                     label="Project title"
                     name="name"
@@ -398,51 +402,58 @@ function UpdateProcessedProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     rows={4}
                 />
-                <TextInput
-                    label="Look for"
-                    name="lookFor"
-                    value={value.lookFor}
-                    onChange={setFieldValue}
-                    error={error?.lookFor}
-                    disabled={baseInputsDisabled}
-                />
-                <OrganizationSelectInput
-                    label="Requesting organization"
-                    name="requestingOrganization"
-                    value={value.requestingOrganization}
-                    onChange={setFieldValue}
-                    error={error?.requestingOrganization}
-                    disabled={baseInputsDisabled}
-                />
-                <TextInput
-                    label="Additional info URL"
-                    name="additionalInfoUrl"
-                    value={value.additionalInfoUrl}
-                    onChange={setFieldValue}
-                    error={error?.additionalInfoUrl}
-                    disabled={baseInputsDisabled}
-                />
-                <AssetInput
-                    projectId={projectData.project.id}
-                    label="Project cover image"
-                    name="image"
-                    inputType="image"
-                    value={value.image}
-                    onChange={setFieldValue}
-                    error={error?.image}
-                    disabled={baseInputsDisabled}
-                />
-            </div>
-            <div className={styles.publishFields}>
+                <div className={styles.row}>
+                    <div className={styles.column}>
+                        <TextInput
+                            label="Look for"
+                            name="lookFor"
+                            value={value.lookFor}
+                            onChange={setFieldValue}
+                            error={error?.lookFor}
+                            disabled={baseInputsDisabled}
+                        />
+                        <OrganizationSelectInput
+                            label="Requesting organization"
+                            name="requestingOrganization"
+                            value={value.requestingOrganization}
+                            onChange={setFieldValue}
+                            error={error?.requestingOrganization}
+                            disabled={baseInputsDisabled}
+                        />
+                        <TextInput
+                            label="Additional info URL"
+                            name="additionalInfoUrl"
+                            value={value.additionalInfoUrl}
+                            onChange={setFieldValue}
+                            error={error?.additionalInfoUrl}
+                            disabled={baseInputsDisabled}
+                        />
+                    </div>
+                    <AssetInput
+                        projectId={projectData.project.id}
+                        label="Project cover image"
+                        name="image"
+                        inputType="image"
+                        value={value.image}
+                        onChange={setFieldValue}
+                        error={error?.image}
+                        disabled={baseInputsDisabled}
+                    />
+                </div>
+            </Container>
+            <Container
+                heading="Tutorial"
+                className={styles.publishFields}
+            >
                 <TutorialSelectInput
-                    label="Tutorial"
+                    label="Select a tutorial for this project"
                     name="tutorial"
                     value={value.tutorial}
                     onChange={setFieldValue}
                     error={error?.tutorial}
                     disabled={baseInputsDisabled}
                 />
-            </div>
+            </Container>
         </PageLayout>
     );
 }

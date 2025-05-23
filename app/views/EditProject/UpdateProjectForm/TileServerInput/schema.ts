@@ -12,7 +12,10 @@ import {
     TileServerCustomConfigInput,
     TileServerNameEnum,
 } from '#generated/types/graphql';
-import { imageryUrlCondition } from '#utils/common';
+import {
+    imageryUrlCondition,
+    tileServerDefaultCredits,
+} from '#utils/common';
 import { DeepNonNullable } from '#utils/types';
 
 export type TileInputKeys = Exclude<keyof ProjectTileServerConfigInput, 'name'>;
@@ -44,7 +47,10 @@ export type PartialCommonTileServerConfigFields = PartialForm<
 type CommonTileServerConfigSchema = ObjectSchema<PartialCommonTileServerConfigFields>;
 
 export const defaultTileServerInputFormValue: PartialTileServerInputFields = {
-    name: TileServerNameEnum.Custom,
+    name: TileServerNameEnum.Bing,
+    bing: {
+        credits: tileServerDefaultCredits[TileServerNameEnum.Bing],
+    },
 };
 
 const tileServerFormSchema: ProjectTileFormSchema = {

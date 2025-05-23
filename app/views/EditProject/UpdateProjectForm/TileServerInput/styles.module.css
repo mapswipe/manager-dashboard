@@ -1,7 +1,8 @@
 .tile-server-input {
     .content {
         display: grid;
-        grid-template-columns: 1fr auto;
+        /* FIXME: don't use 20rem */
+        grid-template-columns: 1fr 20rem;
         gap: var(--spacing-medium);
 
         .inputs {

@@ -15,12 +15,5 @@
                 gap: var(--spacing-small);
             }
         }
-
-        .form {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            gap: var(--spacing-medium);
-        }
     }
 }

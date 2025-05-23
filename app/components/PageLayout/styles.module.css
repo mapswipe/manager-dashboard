@@ -3,13 +3,13 @@
     align-items: center;
     flex-direction: column;
     background-color: var(--color-background);
-    padding: var(--spacing-small) 0;
+    padding: var(--spacing-extra-small) 0;
 
     .page-header {
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
-        padding: var(--spacing-medium) var(--spacing-large);
+        padding: var(--spacing-medium);
         width: 100%;
         max-width: var(--width-page-content-max);
         gap: var(--spacing-medium);
@@ -49,18 +49,18 @@
 
         .aside {
             flex-shrink: 0;
-            padding: var(--spacing-medium) var(--spacing-medium);
+            padding: var(--spacing-medium);
             width: calc(10rem + 10%);
 
             .aside-content {
                 position: sticky;
-                top: 0;
+                top: var(--spacing-medium);
             }
         }
 
         .main {
             flex-grow: 1;
-            padding: var(--spacing-medium) var(--spacing-medium);
+            padding: var(--spacing-medium);
         }
 
         @media screen and (max-width: 40rem) {
@@ -74,10 +74,11 @@
 
     .footer-actions {
         display: flex;
+        gap: var(--spacing-medium);
         align-items: center;
         flex-shrink: 0;
-        justify-content: center;
-        padding: var(--spacing-medium) var(--spacing-large);
+        justify-content: flex-end;
+        padding: var(--spacing-large);
         width: 100%;
         max-width: var(--width-page-content-max);
     }

@@ -8,7 +8,6 @@
         align-items: center;
         border-bottom: var(--width-separator-thin) solid transparent;
         border-radius: var(--radius-input-border);
-        background-color: var(--color-background-input);
         padding: var(--spacing-extra-small) var(--spacing-small);
         gap: var(--spacing-medium);
 
@@ -16,6 +15,12 @@
             flex-grow: 1;
         }
 
+    }
+
+    &.with-input-section-background {
+        .input-section {
+            background-color: var(--color-background-input);
+        }
     }
 
     &.with-input-section-border {
