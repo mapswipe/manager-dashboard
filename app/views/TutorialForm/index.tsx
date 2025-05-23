@@ -4,6 +4,7 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { CgArrowTopRightR } from 'react-icons/cg';
 import { IoAdd } from 'react-icons/io5';
 import { MdDownload } from 'react-icons/md';
 import {
@@ -471,19 +472,34 @@ function NewTutorial(props: Props) {
                         withHeaderBorder
                     >
                         {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
-                            <a
-                                key={projectAsset.id}
-                                className={styles.projectAssetDownloadLink}
-                                href={projectAsset.file.url}
-                                target="_blank"
-                                rel="noreferrer"
+                            <InlineLayout
+                                start={(
+                                    <a
+                                        key={projectAsset.id}
+                                        className={styles.projectAssetDownloadLink}
+                                        href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        title="Preview in geojson.io"
+                                    >
+                                        <CgArrowTopRightR />
+                                    </a>
+                                )}
+                                end={(
+                                    <a
+                                        key={projectAsset.id}
+                                        className={styles.projectAssetDownloadLink}
+                                        href={projectAsset.file.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        title="Download"
+                                    >
+                                        <MdDownload />
+                                    </a>
+                                )}
                             >
-                                <InlineLayout
-                                    start={<MdDownload />}
-                                >
-                                    {projectAsset.file.name.replace(/^.*[\\/]/, '')}
-                                </InlineLayout>
-                            </a>
+                                {projectAsset.file.name.replace(/^.*[\\/]/, '')}
+                            </InlineLayout>
                         ))}
                     </Container>
                 </div>
