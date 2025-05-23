@@ -8,6 +8,7 @@ interface Props {
     label: React.ReactNode;
     value: React.ReactNode;
     description?: React.ReactNode;
+    withoutLabelColon?: boolean;
 }
 
 function TextOutput(props: Props) {
@@ -17,16 +18,27 @@ function TextOutput(props: Props) {
         label,
         value,
         description,
+        withoutLabelColon,
     } = props;
 
     return (
-        <div className={_cs(styles.textOutput, className)}>
+        <div
+            className={_cs(
+                styles.textOutput,
+                className,
+            )}
+        >
             {icon && (
                 <div>
                     {icon}
                 </div>
             )}
-            <div className={styles.label}>
+            <div
+                className={_cs(
+                    styles.label,
+                    !withoutLabelColon && styles.withColon,
+                )}
+            >
                 {label}
             </div>
             <div className={styles.value}>

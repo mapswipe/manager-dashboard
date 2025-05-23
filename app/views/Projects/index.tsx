@@ -68,6 +68,11 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
         results {
             id
             additionalInfoUrl
+            createdBy {
+                displayName
+                id
+            }
+            createdAt
             description
             groupSize
             isFeatured
