@@ -66,6 +66,7 @@ function SegmentInput<
             labelContainerClassName={labelContainerClassName}
             readOnly={readOnly}
             withoutInputSectionBorder
+            withoutInputSectionBackground
             input={options.map((option, i) => {
                 const key = keySelector(option, i, options);
                 const optionLabel = labelSelector(option, i, options);

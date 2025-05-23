@@ -9,9 +9,17 @@
         }
 
         .base-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-medium);
+            .row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: var(--spacing-medium);
+
+                .column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--spacing-medium);
+                }
+            }
         }
     }
 }

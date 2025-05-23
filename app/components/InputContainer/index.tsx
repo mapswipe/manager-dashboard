@@ -80,6 +80,7 @@ export interface Props {
     containerRef?: React.RefObject<HTMLDivElement>;
 
     withoutInputSectionBorder?: boolean;
+    withoutInputSectionBackground?: boolean;
     description?: React.ReactNode;
     descriptionContainerClassName?: string;
 }
@@ -109,6 +110,7 @@ function InputContainer(props: Props) {
         inputSectionRef,
         invalid,
         withoutInputSectionBorder,
+        withoutInputSectionBackground,
         description,
         descriptionContainerClassName,
     } = props;
@@ -125,6 +127,7 @@ function InputContainer(props: Props) {
                 readOnly && styles.readOnly,
                 (invalid || !!error) && styles.errored,
                 !withoutInputSectionBorder && styles.withInputSectionBorder,
+                !withoutInputSectionBackground && styles.withInputSectionBackground,
             )}
         >
             {label && (

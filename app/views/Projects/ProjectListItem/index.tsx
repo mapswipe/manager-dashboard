@@ -51,7 +51,7 @@ const dateFormatter = new Intl.DateTimeFormat(
         month: 'long',
         day: '2-digit',
     },
-)
+);
 
 interface Props {
     value: ProjectsListQuery['projects']['results'][number];

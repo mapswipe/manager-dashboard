@@ -1,6 +1,7 @@
 .project-asset-preview {
-    background-color: rgba(0, 0, 0, .2);
-    padding: var(--spacing-medium);
+    border-radius: var(--radius-card-border);
+    background-color: var(--color-background-input);
+    padding: var(--spacing-small);
     width: 20rem;
     height: 16rem;
 

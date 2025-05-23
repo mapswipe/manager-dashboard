@@ -10,6 +10,7 @@
 
         &.inline-content {
             flex-direction: row;
+            flex-wrap: wrap;
         }
 
         &.block-content {
@@ -24,6 +25,11 @@
             .message {
                 z-index: 1;
             }
+        }
+
+        &.with-background {
+            border-radius: var(--radius-card-border);
+            background-color: var(--color-foreground);
         }
     }
 }

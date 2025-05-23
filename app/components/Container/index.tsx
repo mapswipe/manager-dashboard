@@ -15,6 +15,7 @@ import useSpacingToken, {
 import styles from './styles.module.css';
 
 const gapSpacings: SpacingMode[] = ['row-gap', 'column-gap'];
+const fullSpacings: SpacingMode[] = ['padding-block', 'padding-inline', 'row-gap', 'column-gap'];
 
 interface Props {
     className?: string;
@@ -47,7 +48,8 @@ interface Props {
     withoutMessageIcon?: boolean;
 
     spacing?: SpacingType;
-    withPadding?: boolean
+    withPadding?: boolean;
+    withContentBackgroundAndPadding?: boolean;
 }
 
 function Container(props: Props) {
@@ -83,6 +85,7 @@ function Container(props: Props) {
 
         spacing,
         withPadding,
+        withContentBackgroundAndPadding,
     } = props;
 
     const shouldShowHeadingRow = isDefined(heading)
@@ -97,7 +100,9 @@ function Container(props: Props) {
 
     const contentSpacingClassName = useSpacingToken({
         spacing,
-        modes: gapSpacings,
+        modes: withContentBackgroundAndPadding
+            ? fullSpacings
+            : gapSpacings,
     });
 
     return (
@@ -154,6 +159,7 @@ function Container(props: Props) {
                         contentLayout === 'inline' && styles.inlineContent,
                         contentLayout === 'block' && styles.blockContent,
                         overlayPending && styles.pendingOverlaid,
+                        withContentBackgroundAndPadding && styles.withBackground,
                         contentClassName,
                     )}
                 >

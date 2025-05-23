@@ -14,15 +14,14 @@
 
     .input-section-container {
         display: flex;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        background-color: var(--color-background-input);
+        flex-direction: column;
         padding: var(--spacing-small);
         gap: var(--spacing-medium);
 
         .input-section {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            flex-wrap: wrap;
             gap: var(--spacing-small);
         }
     }
@@ -36,16 +35,6 @@
     .hint {
         color: var(--color-text-light);
         font-size: var(--font-size-small);
-    }
-
-    &.without-preview {
-        .input-section-container {
-            .input-section {
-                align-items: center;
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
     }
 
     &:focus-within {
