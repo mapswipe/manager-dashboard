@@ -17,7 +17,6 @@ import {
     ProjectAssetPreviewQuery,
     ProjectAssetPreviewQueryVariables,
 } from '#generated/types/graphql';
-import { getFullAssetUrl } from '#utils/common';
 
 import styles from './styles.module.css';
 
@@ -50,7 +49,7 @@ function ProjectAssetPreview(props: Props) {
         geoJsonImageryCredits,
     } = props;
 
-    const [geoJson, setGeoJson] = useState<string | undefined>();
+    const [geoJson, setGeoJson] = useState<object | undefined>();
 
     const {
         data: previewResponse,
@@ -133,7 +132,8 @@ function ProjectAssetPreview(props: Props) {
             <div className={className}>
                 <GeoJsonPreview
                     className={styles.geoJson}
-                    geoJson={geoJson}
+                    // FIXME: We need to also add a validation
+                    geoJson={geoJson as unknown as GeoJSON.GeoJSON}
                     url={geoJsonImageryServerUrl}
                     attribution={geoJsonImageryCredits}
                 />

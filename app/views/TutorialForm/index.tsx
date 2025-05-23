@@ -58,7 +58,6 @@ import {
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
-    getFullAssetUrl,
     idSelector,
     nameSelector,
 } from '#utils/common';
