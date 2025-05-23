@@ -9,6 +9,7 @@ import {
 } from '@apollo/client';
 import {
     _cs,
+    isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import { ulid } from 'ulid';
@@ -20,6 +21,8 @@ import {
     CreateProjectAssetMutationVariables,
     ProjectAssetMimetypeEnum,
 } from '#generated/types/graphql';
+
+import ProjectAssetPreview from '../ProjectAssetPreview';
 
 import styles from './styles.module.css';
 
@@ -49,6 +52,7 @@ interface Props<NAME> {
     className?: string;
     disabled?: boolean;
     inputType?: 'geojson' | 'image';
+    withoutPreview?: boolean;
 }
 
 function AssetInput<const NAME>(props: Props<NAME>) {
@@ -64,6 +68,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         error,
         hint,
         inputType = 'geojson',
+        withoutPreview,
     } = props;
 
     const inputId = useId();
@@ -124,7 +129,13 @@ function AssetInput<const NAME>(props: Props<NAME>) {
     }, [createProjectAsset, projectId, onChange, name]);
 
     return (
-        <div className={_cs(styles.assetInput, className)}>
+        <div
+            className={_cs(
+                styles.assetInput,
+                withoutPreview && styles.withoutPreview,
+                className,
+            )}
+        >
             {label && (
                 <div className={styles.label}>
                     {label}
@@ -141,17 +152,22 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 disabled={disabled || createProjectAssetPending}
             />
             <div className={styles.inputSectionContainer}>
-                <label htmlFor={inputId}>
-                    <ButtonLayout
-                        start={<MdAttachFile />}
-                        colorVariant="accent"
-                    >
-                        {selectFileButtonLabel}
-                    </ButtonLayout>
-                </label>
-                <div className={styles.preview}>
-                    {value ? '1 file selected' : 'No file selected'}
+                <div className={styles.inputSection}>
+                    <label htmlFor={inputId}>
+                        <ButtonLayout
+                            start={<MdAttachFile />}
+                            colorVariant="accent"
+                        >
+                            {selectFileButtonLabel}
+                        </ButtonLayout>
+                    </label>
+                    {isDefined(value) ? '1 file selected' : 'No file selected'}
                 </div>
+                {!withoutPreview && isDefined(value) && (
+                    <ProjectAssetPreview
+                        assetId={value}
+                    />
+                )}
             </div>
             {error && (
                 <div className={styles.error}>

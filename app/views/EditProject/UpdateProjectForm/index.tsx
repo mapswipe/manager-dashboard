@@ -388,71 +388,76 @@ function UpdateProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     rows={4}
                 />
-                <TextInput
-                    label="Look for"
-                    name="lookFor"
-                    value={value.lookFor}
-                    onChange={setFieldValue}
-                    error={error?.lookFor}
-                    disabled={baseInputsDisabled}
-                />
-                <SelectInput
-                    label="Requesting organization"
-                    name="requestingOrganization"
-                    value={value.requestingOrganization}
-                    options={organizationListResponse?.organizations.results}
-                    onChange={setFieldValue}
-                    error={error?.requestingOrganization}
-                    keySelector={idSelector}
-                    labelSelector={nameSelector}
-                    disabled={baseInputsDisabled}
-                />
-                <TextInput
-                    label="Additional info URL"
-                    name="additionalInfoUrl"
-                    value={value.additionalInfoUrl}
-                    onChange={setFieldValue}
-                    error={error?.additionalInfoUrl}
-                    disabled={baseInputsDisabled}
-                />
-                <NumberInput
-                    label="Verification number"
-                    name="verificationNumber"
-                    value={value.verificationNumber}
-                    onChange={setFieldValue}
-                    error={error?.verificationNumber}
-                    disabled={baseInputsDisabled}
-                />
-                <NumberInput
-                    label="Group size"
-                    name="groupSize"
-                    value={value.groupSize}
-                    onChange={setFieldValue}
-                    error={error?.groupSize}
-                    disabled={baseInputsDisabled}
-                />
-                <NumberInput
-                    label="Max tasks per user"
-                    name="maxTasksPerUser"
-                    value={value.maxTasksPerUser}
-                    onChange={setFieldValue}
-                    error={error?.maxTasksPerUser}
-                    disabled={baseInputsDisabled}
-                />
-                <AssetInput
-                    projectId={projectData.project.id}
-                    label="Project cover image"
-                    name="image"
-                    inputType="image"
-                    value={value.image}
-                    onChange={setFieldValue}
-                    error={error?.image}
-                    disabled={baseInputsDisabled}
-                />
+                <div className={styles.row}>
+                    <div className={styles.column}>
+                        <TextInput
+                            label="Look for"
+                            name="lookFor"
+                            value={value.lookFor}
+                            onChange={setFieldValue}
+                            error={error?.lookFor}
+                            disabled={baseInputsDisabled}
+                        />
+                        <SelectInput
+                            label="Requesting organization"
+                            name="requestingOrganization"
+                            value={value.requestingOrganization}
+                            options={organizationListResponse?.organizations.results}
+                            onChange={setFieldValue}
+                            error={error?.requestingOrganization}
+                            keySelector={idSelector}
+                            labelSelector={nameSelector}
+                            disabled={baseInputsDisabled}
+                        />
+                        <TextInput
+                            label="Additional info URL"
+                            name="additionalInfoUrl"
+                            value={value.additionalInfoUrl}
+                            onChange={setFieldValue}
+                            error={error?.additionalInfoUrl}
+                            disabled={baseInputsDisabled}
+                        />
+                        <NumberInput
+                            label="Verification number"
+                            name="verificationNumber"
+                            value={value.verificationNumber}
+                            onChange={setFieldValue}
+                            error={error?.verificationNumber}
+                            disabled={baseInputsDisabled}
+                        />
+                        <NumberInput
+                            label="Group size"
+                            name="groupSize"
+                            value={value.groupSize}
+                            onChange={setFieldValue}
+                            error={error?.groupSize}
+                            disabled={baseInputsDisabled}
+                        />
+                        <NumberInput
+                            label="Max tasks per user"
+                            name="maxTasksPerUser"
+                            value={value.maxTasksPerUser}
+                            onChange={setFieldValue}
+                            error={error?.maxTasksPerUser}
+                            disabled={baseInputsDisabled}
+                        />
+                    </div>
+                    <AssetInput
+                        className={styles.preview}
+                        projectId={projectData.project.id}
+                        label="Project cover image"
+                        name="image"
+                        inputType="image"
+                        value={value.image}
+                        onChange={setFieldValue}
+                        error={error?.image}
+                        disabled={baseInputsDisabled}
+                    />
+                </div>
             </div>
             <div className={styles.projectTypeSpecificInputs}>
                 <Heading level={3}>
-                    {`ProjectType: ${projectContext.projectType}`}
+                    {`Project type: ${projectContext.projectType}`}
                 </Heading>
                 <NonFieldError
                     error={error?.projectTypeSpecifics}
