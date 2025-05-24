@@ -60,7 +60,7 @@ function SegmentInput<
             hintContainerClassName={hintContainerClassName}
             icons={icons}
             iconsContainerClassName={iconsContainerClassName}
-            inputSectionClassName={inputSectionClassName}
+            inputSectionClassName={_cs(styles.inputSection, inputSectionClassName)}
             inputContainerClassName={styles.segmentContainer}
             label={label}
             labelContainerClassName={labelContainerClassName}

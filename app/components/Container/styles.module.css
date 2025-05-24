@@ -1,10 +1,4 @@
 .container {
-    .border {
-        margin: 0;
-        border: 0;
-        border-top: var(--width-separator-thin) solid var(--color-separator);
-    }
-
     .content {
         display: flex;
 
@@ -31,5 +25,14 @@
             border-radius: var(--radius-card-border);
             background-color: var(--color-foreground);
         }
+    }
+
+    &.with-background {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-foreground);
+    }
+
+    &.with-shadow {
+        box-shadow: var(--shadow-card);
     }
 }

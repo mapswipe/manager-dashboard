@@ -1,74 +1,64 @@
 import { IoMdClose } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
-import BodyBackdrop from '../BodyBackdrop';
-import Button from '../Button';
+import BodyBackdrop from '#components/BodyBackdrop';
+import Button from '#components/Button';
+import Container, { Props as ContainerProps } from '#components/Container';
 
 import styles from './styles.module.css';
 
-export interface ModalProps {
-    children?: React.ReactNode;
-    heading?: React.ReactNode;
-    footer?: React.ReactNode;
-    className?: string;
-    bodyClassName?: string;
-    headingClassName?: string;
-    footerClassName?: string;
-    onCloseButtonClick?: () => void;
-    closeButtonHidden?: boolean;
+interface Props extends Omit<ContainerProps, 'withBackground' | 'withPadding' | 'withContentBackgroundAndPadding' | 'withShadow'> {
+    onClose?: () => void;
+    // closeOnBlur?: boolean;
+    // closeOnEscape?: boolean;
+    withoutCloseButton?: boolean;
+    size?: 'sm' | 'md' | 'lg';
+    withAutoHeight?: boolean;
 }
 
-function Modal(props: ModalProps) {
+function Modal(props: Props) {
     const {
-        heading,
-        children,
-        footer,
-
         className,
-        headingClassName,
-        bodyClassName,
-        footerClassName,
-
-        onCloseButtonClick,
-        closeButtonHidden,
+        onClose,
+        headerActions,
+        withoutCloseButton,
+        withAutoHeight,
+        size = 'md',
+        ...otherProps
     } = props;
 
     return (
         <BodyBackdrop>
-            <div
+            <Container
                 className={_cs(
-                    className,
                     styles.modal,
+                    size === 'sm' && styles.smSize,
+                    size === 'md' && styles.mdSize,
+                    size === 'lg' && styles.lgSize,
+                    withAutoHeight && styles.withAutoHeight,
+                    className,
                 )}
-            >
-                {heading !== null && (
-                    <div className={_cs(styles.modalHeader, headingClassName)}>
-                        <h3 className={styles.heading}>
-                            {heading}
-                        </h3>
-                        {!closeButtonHidden && (
-                            <div className={styles.actions}>
-                                <Button
-                                    className={styles.closeButton}
-                                    onClick={onCloseButtonClick}
-                                    styleVariant="action"
-                                    name="close"
-                                >
-                                    <IoMdClose />
-                                </Button>
-                            </div>
+                withBackground
+                withShadow
+                withPadding
+                headerActions={(
+                    <>
+                        {headerActions}
+                        {!withoutCloseButton && (
+                            <Button
+                                className={styles.closeButton}
+                                onClick={onClose}
+                                styleVariant="action"
+                                name={undefined}
+                            >
+                                <IoMdClose />
+                            </Button>
                         )}
-                    </div>
+                    </>
                 )}
-                <div className={_cs(styles.modalBody, bodyClassName)}>
-                    {children}
-                </div>
-                {footer && (
-                    <div className={_cs(styles.modalFooter, footerClassName)}>
-                        {footer}
-                    </div>
-                )}
-            </div>
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...otherProps}
+            />
         </BodyBackdrop>
     );
 }

@@ -2,8 +2,6 @@ import useAuthSync from '#base/hooks/useAuthSync';
 import Button from '#components/Button';
 import Modal from '#components/Modal';
 
-import styles from './styles.module.css';
-
 function AuthPopup() {
     const {
         modalShown,
@@ -18,23 +16,21 @@ function AuthPopup() {
 
     return (
         <Modal
-            className={styles.authPopup}
             heading="Invalid Session"
-            onCloseButtonClick={onCancel}
-            footerClassName={styles.actionButtonsRow}
-            footer={(
+            onClose={onCancel}
+            size="sm"
+            withAutoHeight
+            footerActions={(
                 <>
                     <Button
                         name={undefined}
                         onClick={onCancel}
-                        className={styles.actionButton}
                     >
                         Ignore
                     </Button>
                     <Button
                         name={undefined}
                         onClick={onConfirm}
-                        className={styles.actionButton}
                         styleVariant="filled"
                         colorVariant="accent"
                         autoFocus

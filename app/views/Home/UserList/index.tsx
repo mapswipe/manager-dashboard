@@ -43,6 +43,8 @@ function UserList(props: Props) {
             withHeaderBorder
             withFooterBorder
             withPadding
+            withBackground
+            withShadow
             spacing="lg"
             footerActions={(
                 <Pager
