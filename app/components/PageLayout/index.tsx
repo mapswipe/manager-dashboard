@@ -1,12 +1,16 @@
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 
 import Heading from '#components/Heading';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 
 import styles from './styles.module.css';
 
 interface Props {
     className?: string;
-    mainContentClassName?: string;
     heading: React.ReactNode;
     headerIcons?: React.ReactNode;
     headerActions?: React.ReactNode;
@@ -26,52 +30,61 @@ function PageLayout(props: Props) {
         aside,
         children,
         footerActions,
-        mainContentClassName,
     } = props;
 
     return (
         <div className={_cs(styles.pageLayout, className)}>
-            <div className={styles.pageHeader}>
-                <div className={styles.headingRow}>
-                    {headerIcons && (
-                        <div className={styles.headerIcons}>
-                            {headerIcons}
-                        </div>
-                    )}
+            <ListLayout
+                layout="block"
+                className={styles.pageHeader}
+            >
+                <InlineLayout
+                    start={headerIcons}
+                    end={headerActions}
+                >
                     <Heading
                         level={1}
                         className={styles.heading}
                     >
                         {heading}
                     </Heading>
-                    {headerActions && (
-                        <div className={styles.headerActions}>
-                            {headerActions}
-                        </div>
-                    )}
-                </div>
+                </InlineLayout>
                 {headerDescription && (
                     <div className={styles.headerDescription}>
                         {headerDescription}
                     </div>
                 )}
-            </div>
-            <div className={styles.contents}>
+            </ListLayout>
+            <div
+                className={_cs(
+                    styles.contents,
+                    isDefined(aside) && styles.withAside,
+                )}
+            >
                 {aside && (
                     <aside className={styles.aside}>
-                        <div className={styles.asideContent}>
+                        <ListLayout
+                            layout="block"
+                            spacing="lg"
+                            className={styles.asideContent}
+                        >
                             {aside}
-                        </div>
+                        </ListLayout>
                     </aside>
                 )}
-                <main className={_cs(styles.main, mainContentClassName)}>
-                    {children}
+                <main className={styles.main}>
+                    <ListLayout
+                        layout="block"
+                        spacing="xl"
+                    >
+                        {children}
+                    </ListLayout>
                 </main>
             </div>
             {footerActions && (
-                <div className={styles.footerActions}>
+                <ListLayout className={styles.footerActions}>
                     {footerActions}
-                </div>
+                </ListLayout>
             )}
         </div>
     );

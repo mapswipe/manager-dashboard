@@ -2,20 +2,18 @@ import {
     useCallback,
     useId,
 } from 'react';
-import { MdAttachFile } from 'react-icons/md';
 import {
     gql,
     useMutation,
 } from '@apollo/client';
 import {
-    _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import { ulid } from 'ulid';
 
-import ButtonLayout from '#components/ButtonLayout';
-import RawInput from '#components/RawInput';
+import FileInput from '#components/FileInput';
+import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
     CreateProjectAssetMutation,
     CreateProjectAssetMutationVariables,
@@ -23,8 +21,6 @@ import {
 } from '#generated/types/graphql';
 
 import ProjectAssetPreview from '../ProjectAssetPreview';
-
-import styles from './styles.module.css';
 
 const CREATE_PROJECT_ASSET_MUTATION = gql`
 mutation CreateProjectAsset($data: ProjectAssetCreateInput!) {
@@ -40,15 +36,12 @@ mutation CreateProjectAsset($data: ProjectAssetCreateInput!) {
 }
 `;
 
-interface Props<NAME> {
+interface Props<NAME> extends Omit<InputContainerLayoutProps, 'children' | 'inputId'> {
     name: NAME,
     projectId: string;
     value: string | undefined | null;
     onChange: (newValue: string | undefined, name: NAME) => void;
-    label?: React.ReactNode;
     selectFileButtonLabel?: React.ReactNode;
-    error?: React.ReactNode;
-    hint?: React.ReactNode;
     className?: string;
     disabled?: boolean;
     inputType?: 'geojson' | 'image';
@@ -57,18 +50,18 @@ interface Props<NAME> {
 
 function AssetInput<const NAME>(props: Props<NAME>) {
     const {
+        className,
         name,
         projectId,
         value,
         onChange,
-        className,
         disabled,
-        label,
-        selectFileButtonLabel = 'Select file',
-        error,
-        hint,
         inputType = 'geojson',
+        selectFileButtonLabel = inputType === 'image'
+            ? 'Select an image'
+            : 'Select geojson',
         withoutPreview,
+        ...inputLayoutContainerProps
     } = props;
 
     const inputId = useId();
@@ -80,106 +73,70 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         { context: { hasUpload: true } },
     );
 
-    const handleFileInputChange = useCallback(async (
-        _: string | undefined,
-        __: undefined,
-        e?: React.FormEvent<HTMLInputElement>,
-    ) => {
-        if (e) {
-            // React.FormEvent<HTMLInputElement> does not have target.files
-            const { files } = (e as React.ChangeEvent<HTMLInputElement>).target;
-            if (files && files.length > 0) {
-                const { type } = files[0];
-                const mimetypeEnumMap: Record<string, ProjectAssetMimetypeEnum> = {
-                    'image/jpeg': ProjectAssetMimetypeEnum.ImageJpeg,
-                    'image/png': ProjectAssetMimetypeEnum.ImagePng,
-                    'image/gif': ProjectAssetMimetypeEnum.ImageGif,
-                    'application/geo+json': ProjectAssetMimetypeEnum.Geojson,
-                };
+    const handleFileInputChange = useCallback(async (file: File | undefined) => {
+        if (file) {
+            const { type } = file;
+            const mimetypeEnumMap: Record<string, ProjectAssetMimetypeEnum> = {
+                'image/jpeg': ProjectAssetMimetypeEnum.ImageJpeg,
+                'image/png': ProjectAssetMimetypeEnum.ImagePng,
+                'image/gif': ProjectAssetMimetypeEnum.ImageGif,
+                'application/geo+json': ProjectAssetMimetypeEnum.Geojson,
+            };
 
-                const selectedEnum = mimetypeEnumMap[type];
+            const selectedEnum = mimetypeEnumMap[type];
 
-                if (isNotDefined(selectedEnum)) {
-                    // eslint-disable-next-line no-console
-                    console.error('Invalid file selected!');
-                    return;
-                }
+            if (isNotDefined(selectedEnum)) {
+                // eslint-disable-next-line no-console
+                console.error('Invalid file selected!');
+                return;
+            }
 
-                const result = await createProjectAsset({
-                    variables: {
-                        data: {
-                            clientId: ulid(),
-                            file: files[0],
-                            mimetype: selectedEnum,
-                            project: projectId,
-                        },
+            const result = await createProjectAsset({
+                variables: {
+                    data: {
+                        clientId: ulid(),
+                        file,
+                        mimetype: selectedEnum,
+                        project: projectId,
                     },
-                });
+                },
+            });
 
-                if (
-                    // eslint-disable-next-line no-underscore-dangle
-                    result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
-                    && result.data.createProjectAsset.ok
-                    && result.data.createProjectAsset.result
-                ) {
-                    onChange(result.data.createProjectAsset.result.id, name);
-                }
+            if (
+                // eslint-disable-next-line no-underscore-dangle
+                result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
+                && result.data.createProjectAsset.ok
+                && result.data.createProjectAsset.result
+            ) {
+                onChange(result.data.createProjectAsset.result.id, name);
             }
         }
     }, [createProjectAsset, projectId, onChange, name]);
 
     return (
-        <div
-            className={_cs(
-                styles.assetInput,
-                withoutPreview && styles.withoutPreview,
-                className,
-            )}
+        <InputContainerLayout
+            inputId={inputId}
+            className={className}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...inputLayoutContainerProps}
         >
-            {label && (
-                <div className={styles.label}>
-                    {label}
-                </div>
-            )}
-            <RawInput
-                className={styles.input}
+            <FileInput
                 name={undefined}
-                id={inputId}
+                inputId={inputId}
                 type="file"
                 value={undefined}
                 onChange={handleFileInputChange}
                 accept={inputType === 'geojson' ? '.geojson' : 'image/png, image/gif, image/jpeg'}
                 disabled={disabled || createProjectAssetPending}
-            />
-            <div className={styles.inputSectionContainer}>
-                <div className={styles.inputSection}>
-                    <label htmlFor={inputId}>
-                        <ButtonLayout
-                            start={<MdAttachFile />}
-                            colorVariant="accent"
-                        >
-                            {selectFileButtonLabel}
-                        </ButtonLayout>
-                    </label>
-                    {isDefined(value) ? '1 file selected' : 'No file selected'}
-                </div>
+                selectButtonLabel={selectFileButtonLabel}
+            >
                 {!withoutPreview && isDefined(value) && (
                     <ProjectAssetPreview
                         assetId={value}
                     />
                 )}
-            </div>
-            {error && (
-                <div className={styles.error}>
-                    {error}
-                </div>
-            )}
-            {hint && (
-                <div className={styles.hint}>
-                    {hint}
-                </div>
-            )}
-        </div>
+            </FileInput>
+        </InputContainerLayout>
     );
 }
 

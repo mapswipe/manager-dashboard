@@ -3,13 +3,16 @@ import {
     useState,
 } from 'react';
 import {
-    bound,
     isNotDefined,
     randomString,
 } from '@togglecorp/fujs';
 
-export type SpacingType = 'none' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-export type SpacingMode = 'row-gap' | 'column-gap' | 'padding-inline' | 'padding-block';
+import {
+    getOpticallyCorrectedSpacingValue,
+    getSpacingValue,
+    SpacingMode,
+    SpacingType,
+} from '#utils/styles';
 
 interface Props {
     spacing?: SpacingType;
@@ -32,41 +35,7 @@ function useSpacingToken(props: Props) {
                 return undefined;
             }
 
-            const spacingTokens = [
-                '0',
-                'var(--spacing-2xs)',
-                'var(--spacing-xs)',
-                'var(--spacing-sm)',
-                'var(--spacing-md)',
-                'var(--spacing-lg)',
-                'var(--spacing-xl)',
-                'var(--spacing-2xl)',
-            ] as const;
-
-            const spacingTypeToStartIndexMap: Record<SpacingType, number> = {
-                none: 0,
-                '2xs': 1,
-                xs: 2,
-                sm: 3,
-                md: 4,
-                lg: 5,
-                xl: 6,
-                '2xl': 7,
-            };
-
-            const startIndex = bound(
-                spacingTypeToStartIndexMap[spacing] + offset,
-                0,
-                spacingTokens.length - 1,
-            );
-
-            const spacingValue = spacingTokens[
-                bound(
-                    startIndex,
-                    0,
-                    spacingTokens.length - 1,
-                )
-            ];
+            const spacingValue = getSpacingValue(spacing, offset);
 
             const style = document.createElement('style');
             document.head.appendChild(style);
@@ -76,7 +45,7 @@ function useSpacingToken(props: Props) {
             }
 
             const rules = modes.map((mode) => (
-                `${mode}: ${spacingValue}`
+                `${mode}: ${getOpticallyCorrectedSpacingValue(spacingValue, mode)}`
             )).join('; ');
 
             style.sheet.insertRule(`.${className} { ${rules} }`);

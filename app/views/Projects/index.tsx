@@ -2,16 +2,12 @@ import {
     useCallback,
     useState,
 } from 'react';
-import {
-    MdSearch,
-    MdSwipeLeft,
-} from 'react-icons/md';
+import { FaSearch } from 'react-icons/fa';
 import {
     gql,
     useQuery,
 } from '@apollo/client';
 import {
-    _cs,
     isDefined,
     isTruthyString,
 } from '@togglecorp/fujs';
@@ -19,10 +15,9 @@ import {
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
-import EmptyMessage from '#components/EmptyMessage';
+import Container from '#components/Container';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
-import PendingMessage from '#components/PendingMessage';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import {
@@ -44,8 +39,6 @@ import {
 } from '#utils/common';
 
 import ProjectListItem from './ProjectListItem';
-
-import styles from './styles.module.css';
 
 const ENUM_QUERY = gql`
 query ProjectsFilterEnums {
@@ -184,7 +177,7 @@ function Projects(props: Props) {
     return (
         <PageLayout
             heading="Projects"
-            className={_cs(styles.projects, className)}
+            className={className}
             headerActions={(
                 <>
                     <SmartLink
@@ -205,9 +198,9 @@ function Projects(props: Props) {
                 </>
             )}
             aside={(
-                <div className={styles.filters}>
+                <>
                     <TextInput
-                        icons={<MdSearch />}
+                        icons={<FaSearch />}
                         name={undefined}
                         value={searchText}
                         onChange={setSearchText}
@@ -221,7 +214,7 @@ function Projects(props: Props) {
                         onChange={setSelectedProjectType}
                         keySelector={keySelector}
                         labelSelector={labelSelector}
-                        layout="block"
+                        radioListLayout="block"
                     />
                     <RadioInput
                         label="Project status"
@@ -231,7 +224,7 @@ function Projects(props: Props) {
                         onChange={setSelectedProjectStat}
                         keySelector={keySelector}
                         labelSelector={labelSelector}
-                        layout="block"
+                        radioListLayout="block"
                     />
                     <Button
                         name={undefined}
@@ -239,36 +232,18 @@ function Projects(props: Props) {
                     >
                         Clear filters
                     </Button>
-                </div>
+                </>
             )}
-            mainContentClassName={styles.projectList}
         >
-            {pending && (
-                <PendingMessage
-                    className={styles.loading}
-                />
-            )}
-            {filtersApplied && !pending && totalCount === 0 && (
-                <EmptyMessage
-                    icon={<MdSwipeLeft />}
-                    title="No matching projects found!"
-                    description="There are currently no projects for the selected filter."
-                />
-            )}
-            {!filtersApplied && !pending && totalCount === 0 && (
-                <EmptyMessage
-                    icon={<MdSwipeLeft />}
-                    title="No projects found!"
-                    description="There are currently no projects in the system!"
-                />
-            )}
-            {!pending
-                && isDefined(projectsResponse)
-                && projectsResponse.projects.totalCount > 0 && (
-                <div className={styles.pageStatus}>
-                    <div className={styles.projectCount}>
-                        {`Showing ${totalItems} of ${projectsResponse.projects.totalCount} projects`}
-                    </div>
+            <Container
+                heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount} projects`}
+                pending={pending}
+                filtered={filtersApplied}
+                empty={totalCount === 0}
+                emptyMessage="No projects found!"
+                filteredEmptyMessage="No matching projects found!"
+                spacing="lg"
+                footerActions={(
                     <Pager
                         pagePerItem={pagePerItem}
                         onPagePerItemChange={setPagePerItem}
@@ -277,14 +252,15 @@ function Projects(props: Props) {
                         totalItems={projectsResponse?.projects.totalCount ?? 0}
                         pagePerItemOptions={defaultPagePerItemOptions}
                     />
-                </div>
-            )}
-            {!pending && filteredProjectList.map((project) => (
-                <ProjectListItem
-                    key={project.id}
-                    value={project}
-                />
-            ))}
+                )}
+            >
+                {!pending && filteredProjectList.map((project) => (
+                    <ProjectListItem
+                        key={project.id}
+                        value={project}
+                    />
+                ))}
+            </Container>
         </PageLayout>
     );
 }

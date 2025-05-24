@@ -4,7 +4,9 @@ import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
-import Heading from '#components/Heading';
+import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import TextOutput from '#components/TextOutput';
 import {
@@ -35,12 +37,14 @@ function Meta(props: MetaProps) {
     } = props;
 
     return (
-        <div className={styles.meta}>
-            {icon}
-            <div className={styles.label}>
-                {label}
-            </div>
-        </div>
+        <InlineLayout
+            className={styles.meta}
+            start={icon}
+            withPadding
+            spacing="xs"
+        >
+            {label}
+        </InlineLayout>
     );
 }
 
@@ -63,37 +67,38 @@ function ProjectListItem(props: Props) {
     } = props;
 
     return (
-        <section className={styles.projectListItem}>
-            <img
-                className={styles.image}
-                alt=""
-                src={isDefined(value.image)
-                    ? value.image.file.url
-                    : projectTypeIllustrations[value.projectType]}
-            />
-            <div className={styles.details}>
-                <div className={styles.header}>
-                    <Heading
-                        className={styles.heading}
-                        level={3}
+        <InlineLayout
+            className={styles.projectListItem}
+            start={(
+                <img
+                    className={styles.image}
+                    alt=""
+                    src={isDefined(value.image)
+                        ? value.image.file.url
+                        : projectTypeIllustrations[value.projectType]}
+                />
+            )}
+            withPadding
+        >
+            <Container
+                className={styles.details}
+                heading={value.name}
+                headingLevel={4}
+                headerActions={(
+                    <SmartLink
+                        route={routes.editProject}
+                        attrs={{
+                            id: value.id,
+                        }}
+                        start={<FaEdit />}
+                        spacing="sm"
+                        withoutPadding
                     >
-                        {value.name}
-                    </Heading>
-                    <div className={styles.actions}>
-                        <SmartLink
-                            route={routes.editProject}
-                            attrs={{
-                                id: value.id,
-                            }}
-                            start={<FaEdit />}
-                            spacing="sm"
-                            withoutPadding
-                        >
-                            Edit
-                        </SmartLink>
-                    </div>
-                </div>
-                <div className={styles.metaList}>
+                        Edit
+                    </SmartLink>
+                )}
+            >
+                <ListLayout>
                     <Meta
                         label={value.status}
                     />
@@ -105,8 +110,8 @@ function ProjectListItem(props: Props) {
                         icon={<GoOrganization />}
                         label={value.requestingOrganization.name}
                     />
-                </div>
-                <div className={styles.info}>
+                </ListLayout>
+                <div>
                     <TextOutput
                         label="Created on"
                         value={dateFormatter.format(new Date(value.createdAt))}
@@ -126,8 +131,8 @@ function ProjectListItem(props: Props) {
                 <div className={styles.description}>
                     {value.description}
                 </div>
-            </div>
-        </section>
+            </Container>
+        </InlineLayout>
     );
 }
 

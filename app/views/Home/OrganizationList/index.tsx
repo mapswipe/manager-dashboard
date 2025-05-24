@@ -72,8 +72,8 @@ function OrganizationList(props: Props) {
                         styleVariant="transparent"
                         colorVariant="accent"
                         start={<IoAdd />}
-                        spacing="sm"
                         onClick={setShowAddModalTrue}
+                        withoutPadding
                     >
                         Add
                     </Button>

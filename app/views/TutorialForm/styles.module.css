@@ -1,20 +1,14 @@
 .new-tutorial {
-    .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-large);
+    .asset-card {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-background-accent-hint);
+        width: fit-content;
+        text-transform: uppercase;
+    }
 
-        .asset-card {
-            border-radius: var(--radius-card-border);
-            background-color: var(--color-background-accent-hint);
-            width: fit-content;
-            text-transform: uppercase;
-        }
-
-        .scenario-page,
-        .information-page {
-            border-radius: var(--radius-card-border);
-            background-color: var(--color-foreground);
-        }
+    .scenario-page,
+    .information-page {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-foreground);
     }
 }

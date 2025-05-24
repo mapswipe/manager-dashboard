@@ -1,39 +1,27 @@
-import { useCallback } from 'react';
+import {
+    useCallback,
+    useContext,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
+
+import InputInteractivityContext from '#base/context/InputInteractivityContext';
 
 import styles from './styles.module.css';
 
-export interface Props<N> extends Omit<React.HTMLProps<HTMLTextAreaElement>, 'ref' | 'onChange' | 'value' | 'name'> {
-    /**
-    * Style for the input
-    */
+export interface Props<NAME> extends Omit<React.HTMLProps<HTMLTextAreaElement>, 'ref' | 'onChange' | 'value' | 'name'> {
     className?: string;
-    /**
-    * input name
-    */
-    name: N;
-    /**
-    * input value
-    */
+    name: NAME;
     value: string | undefined | null;
-    /**
-    * Gets called when the content of input changes
-    */
     onChange?: (
         value: string | undefined,
-        name: N,
+        name: NAME,
         e: React.FormEvent<HTMLTextAreaElement> | undefined,
     ) => void;
-    /**
-     * ref to the element
-     */
     elementRef?: React.Ref<HTMLTextAreaElement>;
 }
-/**
- * The most basic input component (without styles)
- */
-function RawInput<const N>(
-    {
+
+function RawTextArea<const NAME>(props: Props<NAME>) {
+    const {
         className,
         onChange,
         elementRef,
@@ -42,8 +30,18 @@ function RawInput<const N>(
         disabled,
         readOnly,
         ...otherProps
-    }: Props<N>,
-) {
+    } = props;
+
+    const { setFocused } = useContext(InputInteractivityContext);
+
+    const handleFocus = useCallback(() => {
+        setFocused(true);
+    }, [setFocused]);
+
+    const handleBlur = useCallback(() => {
+        setFocused(false);
+    }, [setFocused]);
+
     const handleChange = useCallback(
         (e: React.FormEvent<HTMLTextAreaElement>) => {
             const {
@@ -65,6 +63,8 @@ function RawInput<const N>(
 
     return (
         <textarea
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...otherProps}
             ref={elementRef}
             className={_cs(className, styles.rawTextArea)}
             onChange={handleChange}
@@ -72,10 +72,10 @@ function RawInput<const N>(
             value={value ?? ''}
             disabled={disabled || readOnly}
             readOnly={readOnly}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...otherProps}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
         />
     );
 }
 
-export default RawInput;
+export default RawTextArea;

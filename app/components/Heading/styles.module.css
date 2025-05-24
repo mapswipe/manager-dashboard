@@ -5,13 +5,15 @@
     line-height: 1;
     color: var(--color-primary);
     font-size: var(--font-size);
-    font-weight: var(--font-weight-light);
+    font-weight: var(--font-weight-medium);
 
     &.level1 {
+        font-weight: var(--font-weight-light);
         --font-size: var(--font-size-super-large);
     }
 
     &.level2 {
+        font-weight: var(--font-weight-light);
         --font-size: var(--font-size-extra-large);
     }
 

@@ -1,5 +1,6 @@
 import React, {
     useCallback,
+    useId,
     useLayoutEffect,
     useState,
 } from 'react';
@@ -7,7 +8,6 @@ import {
     bound,
     isDefined,
     isFalsyString,
-    isTruthyString,
 } from '@togglecorp/fujs';
 
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
@@ -20,7 +20,7 @@ function isValidDecimalTrailingZeroString(val: string) {
     return /^[+-]?\d+\.\d*0$/.test(val);
 }
 
-export type Props<N> = Omit<InputContainerProps, 'input'>
+export type Props<N> = Omit<InputContainerProps, 'input' | 'inputId'>
     & Omit<RawInputProps<N>, 'onChange' | 'value' | 'containerRef' | 'inputSectionRef'>
     & {
         value: number | undefined | null;
@@ -34,18 +34,12 @@ export type Props<N> = Omit<InputContainerProps, 'input'>
 function NumberInput<const N>(props: Props<N>) {
     const {
         actions,
-        actionsContainerClassName,
         className,
         disabled,
         error,
-        errorContainerClassName,
         hint,
-        hintContainerClassName,
         icons,
-        iconsContainerClassName,
-        inputSectionClassName,
         label,
-        labelContainerClassName,
         readOnly,
         onChange,
         name,
@@ -53,6 +47,7 @@ function NumberInput<const N>(props: Props<N>) {
         ...rawInputProps
     } = props;
 
+    const inputId = useId();
     const [tempValue, setTempValue] = useState<string | undefined>();
 
     useLayoutEffect(
@@ -117,21 +112,16 @@ function NumberInput<const N>(props: Props<N>) {
 
     return (
         <InputContainer
+            inputId={inputId}
             actions={actions}
-            actionsContainerClassName={actionsContainerClassName}
             className={className}
             disabled={disabled}
             error={error}
-            errorContainerClassName={errorContainerClassName}
             hint={hint}
-            hintContainerClassName={hintContainerClassName}
             icons={icons}
-            iconsContainerClassName={iconsContainerClassName}
-            inputSectionClassName={inputSectionClassName}
             label={label}
-            labelContainerClassName={labelContainerClassName}
             readOnly={readOnly}
-            invalid={isTruthyString(tempValue)}
+            // invalid={isTruthyString(tempValue)}
             input={(
                 <RawInput<N>
                     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -142,6 +132,7 @@ function NumberInput<const N>(props: Props<N>) {
                     onBlur={handleFocusOut}
                     name={name}
                     value={finalValue}
+                    id={inputId}
                 />
             )}
         />

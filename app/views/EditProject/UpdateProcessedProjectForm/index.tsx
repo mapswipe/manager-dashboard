@@ -12,7 +12,6 @@ import {
     useMutation,
 } from '@apollo/client';
 import {
-    _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -25,6 +24,8 @@ import {
 
 import Button from '#components/Button';
 import Container from '#components/Container';
+import InputError from '#components/InputError';
+import ListLayout from '#components/ListLayout';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
@@ -48,8 +49,6 @@ import {
 
 import AssetInput from '../AssetInput';
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
-
-import styles from './styles.module.css';
 
 const UPDATE_PROCESSED_PROJECT_MUTATION = gql`
 mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
@@ -345,7 +344,7 @@ function UpdateProcessedProjectForm(props: Props) {
     return (
         <PageLayout
             heading="Update project"
-            className={_cs(styles.updateProcessedProjectForm, className)}
+            className={className}
             footerActions={(
                 <>
                     <Button
@@ -373,17 +372,16 @@ function UpdateProcessedProjectForm(props: Props) {
                     value={projectData?.project.status}
                 />
             )}
-            mainContentClassName={styles.mainContent}
         >
             {projectData?.project.status === ProjectStatusEnum.Failed && (
-                <div className={styles.processingsFailedMessage}>
+                <InputError>
                     There was an error while processing the project.
                     Please make the necessary changes before proceeding!
-                </div>
+                </InputError>
             )}
             <Container
                 heading="General"
-                className={styles.baseInputs}
+                spacing="lg"
             >
                 <TextInput
                     label="Project title"
@@ -402,8 +400,8 @@ function UpdateProcessedProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     rows={4}
                 />
-                <div className={styles.row}>
-                    <div className={styles.column}>
+                <ListLayout layout="grid">
+                    <ListLayout layout="block">
                         <TextInput
                             label="Look for"
                             name="lookFor"
@@ -428,7 +426,7 @@ function UpdateProcessedProjectForm(props: Props) {
                             error={error?.additionalInfoUrl}
                             disabled={baseInputsDisabled}
                         />
-                    </div>
+                    </ListLayout>
                     <AssetInput
                         projectId={projectData.project.id}
                         label="Project cover image"
@@ -439,11 +437,10 @@ function UpdateProcessedProjectForm(props: Props) {
                         error={error?.image}
                         disabled={baseInputsDisabled}
                     />
-                </div>
+                </ListLayout>
             </Container>
             <Container
                 heading="Tutorial"
-                className={styles.publishFields}
             >
                 <TutorialSelectInput
                     label="Select a tutorial for this project"

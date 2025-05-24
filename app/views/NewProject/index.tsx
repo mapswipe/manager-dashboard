@@ -13,7 +13,6 @@ import {
     useQuery,
 } from '@apollo/client';
 import {
-    _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -30,6 +29,7 @@ import { ulid } from 'ulid';
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
@@ -53,8 +53,6 @@ import {
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
-
-import styles from './styles.module.css';
 
 const ENUM_QUERY = gql`
 query NewProjectEnums {
@@ -106,12 +104,12 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
 
 function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
     return (
-        <div className={styles.projectTypeLabel}>
-            <ProjectTypeIcon type={value.key} />
-            <span>
-                {value.label}
-            </span>
-        </div>
+        <InlineLayout
+            spacing="sm"
+            start={<ProjectTypeIcon type={value.key} />}
+        >
+            {value.label}
+        </InlineLayout>
     );
 }
 
@@ -232,7 +230,7 @@ function NewProject(props: Props) {
 
     return (
         <PageLayout
-            className={_cs(styles.newProject, className)}
+            className={className}
             heading="Create a New Project"
             headerDescription="Let's get started with adding basic information for the project. You can later add more project type specific details."
             footerActions={(
@@ -252,27 +250,25 @@ function NewProject(props: Props) {
                     value={undefined}
                 />
             )}
-            mainContentClassName={styles.mainContent}
         >
             <Container
                 withContentBackgroundAndPadding
                 withHeaderBorder
                 spacing="lg"
-                className={styles.projectTypeSelection}
                 heading="Project Type"
             >
                 <SegmentInput
                     name="projectType"
                     onChange={setFieldValue}
                     value={value.projectType}
-                    hint="Select the type of your project. Please note that you won't be able to change it later."
+                    hint="Please note that you won't be able to change it later."
                     options={newProjectEnumsResponse?.enums.ProjectTypeEnum ?? []}
                     keySelector={keySelector}
                     labelSelector={projectTypeLabelSelector}
                     error={error?.projectType}
                 />
                 {isDefined(value.projectType) && (
-                    <div className={styles.projectTypeDescription}>
+                    <div>
                         {projectTypeDescriptions[value.projectType]}
                     </div>
                 )}
@@ -302,11 +298,8 @@ function NewProject(props: Props) {
                     label="Requesting organization"
                     name="requestingOrganization"
                     value={value.requestingOrganization}
-                    // options={organizationListResponse?.organizations.results}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    // keySelector={idSelector}
-                    // labelSelector={nameSelector}
                 />
                 <TextInput
                     label="Look for"

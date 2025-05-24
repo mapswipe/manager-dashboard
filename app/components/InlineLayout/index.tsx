@@ -1,14 +1,18 @@
 import { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import useSpacingToken, {
+import useSpacingToken from '#hooks/useSpacingToken';
+import {
+    fullSpacings,
+    gapSpacings,
     SpacingMode,
-    type SpacingType,
-} from '#hooks/useSpacingToken';
+    SpacingType,
+} from '#utils/styles';
 
 import styles from './styles.module.css';
 
 export interface Props {
+    elementRef?: React.RefObject<HTMLDivElement>;
     className?: string;
     start?: React.ReactNode;
     children?: React.ReactNode;
@@ -20,12 +24,10 @@ export interface Props {
     withPadding?: boolean;
 }
 
-const gapSpacings: SpacingMode[] = ['row-gap', 'column-gap'];
-const paddingSpacings: SpacingMode[] = ['padding-block', 'padding-inline'];
-
 function InlineLayout(props: Props) {
     const {
         className,
+        elementRef,
         start,
         children,
         end,
@@ -41,10 +43,7 @@ function InlineLayout(props: Props) {
             return gapSpacings;
         }
 
-        return [
-            ...gapSpacings,
-            ...paddingSpacings,
-        ];
+        return fullSpacings;
     }, [withPadding]);
 
     const spacingClassName = useSpacingToken({
@@ -59,6 +58,7 @@ function InlineLayout(props: Props) {
 
     return (
         <div
+            ref={elementRef}
             className={_cs(
                 styles.inlineLayout,
                 spacingClassName,

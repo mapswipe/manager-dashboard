@@ -16,7 +16,7 @@ import useBlurEffect from '#hooks/useBlurEffect';
 
 import styles from './styles.module.css';
 
-export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label'> {
+export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label' | 'elementRef'> {
     popupClassName?: string;
     popupContentClassName?: string;
     label: React.ReactNode;
