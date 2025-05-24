@@ -16,6 +16,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
+import ListLayout from '#components/ListLayout';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import {
@@ -38,8 +39,6 @@ import {
     TileInputKeys,
     tileServerNameToTileInputKey,
 } from './schema';
-
-import styles from './styles.module.css';
 
 const TILE_SERVER_ENUM_QUERY = gql`
 query TileServerEnums {
@@ -139,71 +138,72 @@ function TileServerInput(props: Props) {
 
     return (
         <Container
-            className={styles.tileServerInput}
             heading={label}
             headingLevel={4}
-            spacing="sm"
-            contentClassName={styles.content}
         >
-            <div className={styles.inputs}>
-                <RadioInput
-                    label="Imagery Server"
-                    name="name"
-                    options={tileServerEnumResponse?.enums.TileServerNameEnum ?? []}
-                    value={value?.name}
-                    onChange={handleImageryServerChange}
-                    keySelector={keySelector}
-                    labelSelector={labelSelector}
-                    error={error?.name}
-                    disabled={disabled}
-                    layout="block"
-                />
-                {isDefined(value)
-                    && isDefined(value.name)
-                    && value.name !== TileServerNameEnum.Custom
-                    && (
-                        <TextInput
-                            name="credits"
-                            label="Imagery Credits"
-                            value={value[fieldName]?.credits}
-                            error={getErrorObject(error?.[fieldName])?.credits}
-                            onChange={setCommonTileServerFieldValue}
-                            disabled={disabled}
-                        />
-                    )}
-                {isDefined(value)
-                    && isDefined(value.name)
-                    && value.name === TileServerNameEnum.Custom
-                    && (
-                        <>
-                            <TextInput
-                                name="url"
-                                label="Custom Imagery Server URL"
-                                hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
-                                value={value.custom?.url}
-                                error={getErrorObject(error?.custom)?.url}
-                                onChange={setCustomTileServerFieldValue}
-                                disabled={disabled}
-                            />
+            <ListLayout
+                layout="grid"
+            >
+                <ListLayout layout="block">
+                    <RadioInput
+                        label="Imagery Server"
+                        name="name"
+                        options={tileServerEnumResponse?.enums.TileServerNameEnum ?? []}
+                        value={value?.name}
+                        onChange={handleImageryServerChange}
+                        keySelector={keySelector}
+                        labelSelector={labelSelector}
+                        error={error?.name}
+                        disabled={disabled}
+                        radioListLayout="block"
+                    />
+                    {isDefined(value)
+                        && isDefined(value.name)
+                        && value.name !== TileServerNameEnum.Custom
+                        && (
                             <TextInput
                                 name="credits"
                                 label="Imagery Credits"
-                                hint="Insert appropriate imagery credits"
                                 value={value[fieldName]?.credits}
                                 error={getErrorObject(error?.[fieldName])?.credits}
-                                onChange={setCustomTileServerFieldValue}
+                                onChange={setCommonTileServerFieldValue}
                                 disabled={disabled}
                             />
-                        </>
-                    )}
-            </div>
-            {isDefined(aoiGeoJsonAssetId) && (
-                <ProjectAssetPreview
-                    assetId={aoiGeoJsonAssetId}
-                    geoJsonImageryServerUrl={tileServerValue?.url}
-                    geoJsonImageryCredits={tileServerValue?.credits}
-                />
-            )}
+                        )}
+                    {isDefined(value)
+                        && isDefined(value.name)
+                        && value.name === TileServerNameEnum.Custom
+                        && (
+                            <>
+                                <TextInput
+                                    name="url"
+                                    label="Custom Imagery Server URL"
+                                    hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
+                                    value={value.custom?.url}
+                                    error={getErrorObject(error?.custom)?.url}
+                                    onChange={setCustomTileServerFieldValue}
+                                    disabled={disabled}
+                                />
+                                <TextInput
+                                    name="credits"
+                                    label="Imagery Credits"
+                                    hint="Insert appropriate imagery credits"
+                                    value={value[fieldName]?.credits}
+                                    error={getErrorObject(error?.[fieldName])?.credits}
+                                    onChange={setCustomTileServerFieldValue}
+                                    disabled={disabled}
+                                />
+                            </>
+                        )}
+                </ListLayout>
+                {isDefined(aoiGeoJsonAssetId) && (
+                    <ProjectAssetPreview
+                        assetId={aoiGeoJsonAssetId}
+                        geoJsonImageryServerUrl={tileServerValue?.url}
+                        geoJsonImageryCredits={tileServerValue?.credits}
+                    />
+                )}
+            </ListLayout>
         </Container>
     );
 }

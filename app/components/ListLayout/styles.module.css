@@ -1,0 +1,28 @@
+.list-layout {
+    &.grid-layout {
+        container-type: inline-size;
+
+        .grid-content {
+            display: grid;
+            /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
+            grid-template-columns: repeat(auto-fill, minmax(max(8rem, calc((100cqi - var(--reserved-space)) / var(--num-preferred-grid-columns))), 1fr));
+        }
+    }
+
+    &.inline-layout {
+        display: flex;
+        flex-direction: row;
+    }
+
+    &.block-layout {
+        display: flex;
+        flex-direction: column;
+    }
+
+    @container (max-width: 20rem) {
+        .grid-content {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+

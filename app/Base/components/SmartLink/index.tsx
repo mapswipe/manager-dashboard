@@ -25,7 +25,7 @@ function SmartLink(props: Props) {
         startContainerClassName,
         childrenContainerClassName,
         endContainerClassName,
-        colorVariant,
+        colorVariant = 'accent',
         styleVariant = 'transparent',
         withoutPadding,
         spacing,

@@ -13,7 +13,6 @@ import {
     useQuery,
 } from '@apollo/client';
 import {
-    _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -28,6 +27,8 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
+import InputError from '#components/InputError/index.tsx';
+import ListLayout from '#components/ListLayout/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import PageLayout from '#components/PageLayout';
@@ -72,8 +73,6 @@ import projectUpdateFormSchema, {
     PartialProjectTypeSpecificInput,
     type PartialProjectUpdateInput,
 } from './schema.ts';
-
-import styles from './styles.module.css';
 
 const PROJECT_STATUS_QUERY = gql`
 query ProjectStatus($projectId: ID!) {
@@ -451,7 +450,7 @@ function UpdateProjectForm(props: Props) {
     return (
         <PageLayout
             heading="Update project"
-            className={_cs(styles.updateProjectForm, className)}
+            className={className}
             footerActions={(
                 <>
                     <Button
@@ -481,10 +480,10 @@ function UpdateProjectForm(props: Props) {
             )}
         >
             {projectData?.project.status === ProjectStatusEnum.Failed && (
-                <div className={styles.processingsFailedMessage}>
+                <InputError>
                     There was an error while processing the project.
                     Please make the necessary changes before proceeding!
-                </div>
+                </InputError>
             )}
             <Container
                 heading="General"
@@ -509,8 +508,10 @@ function UpdateProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     rows={4}
                 />
-                <div className={styles.row}>
-                    <div className={styles.column}>
+                <ListLayout layout="grid">
+                    <ListLayout
+                        layout="block"
+                    >
                         <TextInput
                             label="Look for"
                             name="lookFor"
@@ -559,9 +560,8 @@ function UpdateProjectForm(props: Props) {
                             error={error?.maxTasksPerUser}
                             disabled={baseInputsDisabled}
                         />
-                    </div>
+                    </ListLayout>
                     <AssetInput
-                        className={styles.preview}
                         projectId={projectData.project.id}
                         label="Project cover image"
                         name="image"
@@ -571,10 +571,9 @@ function UpdateProjectForm(props: Props) {
                         error={error?.image}
                         disabled={baseInputsDisabled}
                     />
-                </div>
+                </ListLayout>
             </Container>
             <Container
-                className={styles.projectTypeSpecificInputs}
                 withContentBackgroundAndPadding
                 withHeaderBorder
                 spacing="lg"

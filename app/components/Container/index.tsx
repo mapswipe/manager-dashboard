@@ -6,16 +6,16 @@ import {
 import BlockLayout from '#components/BlockLayout';
 import Heading, { type Props as HeadingProps } from '#components/Heading';
 import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import Message from '#components/Message';
-import useSpacingToken, {
-    SpacingMode,
+import useSpacingToken from '#hooks/useSpacingToken';
+import {
+    fullSpacings,
+    gapSpacings,
     SpacingType,
-} from '#hooks/useSpacingToken';
+} from '#utils/styles';
 
 import styles from './styles.module.css';
-
-const gapSpacings: SpacingMode[] = ['row-gap', 'column-gap'];
-const fullSpacings: SpacingMode[] = ['padding-block', 'padding-inline', 'row-gap', 'column-gap'];
 
 export interface Props {
     className?: string;
@@ -120,10 +120,7 @@ function Container(props: Props) {
             spacing={spacing}
             withPadding={withPadding}
             start={shouldShowHeader && (
-                <BlockLayout
-                    className={styles.header}
-                    spacing={spacing}
-                >
+                <ListLayout spacing={spacing}>
                     {shouldShowHeadingRow && (
                         <InlineLayout
                             spacing={spacing}
@@ -143,7 +140,7 @@ function Container(props: Props) {
                             {headerDescription}
                         </div>
                     )}
-                </BlockLayout>
+                </ListLayout>
             )}
             end={shouldShowFooter && (
                 <InlineLayout

@@ -411,7 +411,6 @@ function NewTutorial(props: Props) {
         <PageLayout
             className={_cs(styles.newTutorial, className)}
             heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
-            mainContentClassName={styles.mainContent}
             footerActions={(
                 <Button
                     name={undefined}
@@ -489,6 +488,7 @@ function NewTutorial(props: Props) {
                                 <InlineLayout
                                     className={styles.assetCard}
                                     withPadding
+                                    spacing="sm"
                                     end={(
                                         <>
                                             {/* eslint-disable-next-line max-len */}
@@ -578,7 +578,7 @@ function NewTutorial(props: Props) {
                     <GeoJsonFileInput
                         name={undefined}
                         label="Upload Scenarios as GeoJSON"
-                        value={tutorialTasksGeojson}
+                        // value={tutorialTasksGeojson}
                         onChange={handleGeoJsonFileChange}
                         hint="It should end with .geojson or .geo.json"
                     />

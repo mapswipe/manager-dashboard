@@ -19,6 +19,8 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import SegmentInput from '#components/SegmentInput';
 import SelectInput from '#components/SelectInput';
@@ -61,10 +63,11 @@ const previewOptions: PreviewOption[] = [
 function iconOptionLabelSelector(iconOption: IconItem) {
     const Icon = iconOption.component;
     return (
-        <div className={styles.iconOptionLabel}>
-            <Icon />
+        <InlineLayout
+            start={<Icon />}
+        >
             {iconOption.label}
-        </div>
+        </InlineLayout>
     );
 }
 
@@ -181,11 +184,11 @@ function ScenarioPageInput(props: Props) {
                 </Button>
             )}
             withPadding
-            contentLayout="inline"
             spacing="lg"
+            contentClassName={styles.content}
         >
-            <div className={styles.formFields}>
-                <div className={styles.metaInputs}>
+            <ListLayout layout="block">
+                <div className={styles.scenarioInputs}>
                     <SelectInput
                         label="Instruction icon"
                         name="instructionsIcon"
@@ -206,7 +209,6 @@ function ScenarioPageInput(props: Props) {
                         error={error?.instructionsTitle}
                     />
                     <TextArea
-                        className={styles.description}
                         name="instructionsDescription"
                         label="Instruction description"
                         value={value.instructionsDescription}
@@ -233,7 +235,6 @@ function ScenarioPageInput(props: Props) {
                         error={error?.hintTitle}
                     />
                     <TextArea
-                        className={styles.description}
                         name="hintDescription"
                         label="Hint description"
                         value={value.hintDescription}
@@ -260,7 +261,6 @@ function ScenarioPageInput(props: Props) {
                         error={error?.successTitle}
                     />
                     <TextArea
-                        className={styles.description}
                         name="successDescription"
                         label="Success description"
                         value={value.successDescription}
@@ -290,7 +290,7 @@ function ScenarioPageInput(props: Props) {
                         />
                     ))}
                 </Container>
-            </div>
+            </ListLayout>
             <div className={styles.previewContainer}>
                 <BuildAreaGeoJsonPreview
                     className={styles.preview}

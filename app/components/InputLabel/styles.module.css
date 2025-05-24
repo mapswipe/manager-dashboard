@@ -1,0 +1,8 @@
+.input-label {
+    color: var(--color-text);
+    font-size: var(--font-size-extra-small);
+
+    &.focused {
+        color: var(--color-accent);
+    }
+}

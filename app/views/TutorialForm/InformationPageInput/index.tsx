@@ -21,6 +21,7 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextInput from '#components/TextInput';
 import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
@@ -139,11 +140,11 @@ function InformationPageInput(props: Props) {
                     Remove
                 </Button>
             )}
-            contentLayout="inline"
             spacing="lg"
             withPadding
+            contentClassName={styles.content}
         >
-            <div className={styles.formFields}>
+            <ListLayout layout="block">
                 <TextInput
                     label="Title"
                     name="title"
@@ -152,7 +153,6 @@ function InformationPageInput(props: Props) {
                     error={error?.title}
                 />
                 <Container
-                    className={styles.blocks}
                     heading="Blocks"
                     headingLevel={4}
                     withHeaderBorder
@@ -185,7 +185,7 @@ function InformationPageInput(props: Props) {
                         />
                     ))}
                 </Container>
-            </div>
+            </ListLayout>
             <div className={styles.previewContainer}>
                 <InformationPagePreview
                     value={value}

@@ -1,4 +1,7 @@
-import React, { useCallback } from 'react';
+import React, {
+    useCallback,
+    useId,
+} from 'react';
 import Markdown from 'react-mde';
 
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
@@ -23,20 +26,16 @@ function MarkdownEditor<NAME extends string>(props: Props<NAME>) {
         value,
         onChange,
         actions,
-        actionsContainerClassName,
         className,
         disabled,
         error,
-        errorContainerClassName,
         hint,
-        hintContainerClassName,
         icons,
-        iconsContainerClassName,
-        inputSectionClassName,
         label,
-        labelContainerClassName,
         readOnly,
     } = props;
+
+    const inputId = useId();
 
     const [selectedTab, setSelectedTab] = React.useState<'write' | 'preview'>('write');
     const handleValueChange = useCallback(
@@ -58,19 +57,13 @@ function MarkdownEditor<NAME extends string>(props: Props<NAME>) {
 
     return (
         <InputContainer
-            actionsContainerClassName={actionsContainerClassName}
+            inputId={inputId}
             className={className}
             disabled={disabled}
             error={error}
-            errorContainerClassName={errorContainerClassName}
             hint={hint}
-            hintContainerClassName={hintContainerClassName}
             icons={icons}
-            iconsContainerClassName={iconsContainerClassName}
-            inputSectionClassName={inputSectionClassName}
-            // inputContainerClassName={styles.input}
             label={label}
-            labelContainerClassName={labelContainerClassName}
             readOnly={readOnly}
             actions={actions}
             input={!readOnly ? (

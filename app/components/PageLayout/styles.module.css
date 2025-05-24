@@ -1,73 +1,50 @@
 .page-layout {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    --main-spacing: var(--spacing-lg);
+
+    display: grid;
+    grid-template-columns:
+        1fr
+        [page-content-start]
+            min(
+                100% - 2 * var(--main-spacing),
+                var(--width-page-content-max) - 2 * var(--main-spacing)
+            )
+        [page-content-end]
+        1fr;
+    grid-template-rows: auto 1fr auto;
     background-color: var(--color-background);
-    padding: var(--spacing-extra-small) 0;
+    padding: var(--spacing-xl) 0;
+    gap: var(--spacing-xl) var(--main-spacing);
 
     .page-header {
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        padding: var(--spacing-medium);
-        width: 100%;
-        max-width: var(--width-page-content-max);
-        gap: var(--spacing-medium);
-
-        .heading-row {
-            display: flex;
-            align-items: baseline;
-            gap: var(--spacing-medium);
-
-            .heading {
-                flex-grow: 1;
-            }
-
-            .header-icons,
-            .header-actions {
-                display: flex;
-                flex-shrink: 0;
-                gap: var(--spacing-medium);
-            }
-
-            @media screen and (max-width: 40rem) {
-                flex-wrap: wrap;
-
-                .header-actions {
-                    flex-shrink: unset;
-                    width: 100%;
-                }
-            }
-        }
+        grid-column: page-content;
     }
 
     .contents {
-        display: flex;
-        padding: 0 var(--spacing-small);
-        width: 100%;
-        max-width: var(--width-page-content-max);
+        grid-column: page-content;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+
+        &.with-aside {
+            grid-template-columns: minmax(10rem, 20%) 1fr;
+        }
 
         .aside {
-            flex-shrink: 0;
-            padding: var(--spacing-medium);
-            width: calc(10rem + 10%);
-
             .aside-content {
                 position: sticky;
-                top: var(--spacing-medium);
+                top: 0;
             }
         }
 
         .main {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-            flex-grow: 1;
-            padding: var(--spacing-medium);
+            display: contents;
         }
 
         @media screen and (max-width: 40rem) {
-            flex-direction: column;
+            &.with-aside {
+                grid-template-columns: 1fr;
+            }
 
             .aside {
                 width: 100%;
@@ -76,13 +53,7 @@
     }
 
     .footer-actions {
-        display: flex;
-        gap: var(--spacing-medium);
-        align-items: center;
-        flex-shrink: 0;
-        justify-content: flex-end;
-        padding: var(--spacing-large);
-        width: 100%;
-        max-width: var(--width-page-content-max);
+        grid-column: page-content;
+        justify-self: end;
     }
 }

@@ -3,7 +3,7 @@ import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.module.css';
 
-export type Props<NAME> = ButtonLayoutProps & Omit<RawButtonProps<NAME>, 'children' | 'start'>;
+export type Props<NAME> = Omit<ButtonLayoutProps, 'elementRef'> & Omit<RawButtonProps<NAME>, 'children' | 'start'>;
 
 function Button<NAME>(props: Props<NAME>) {
     const {

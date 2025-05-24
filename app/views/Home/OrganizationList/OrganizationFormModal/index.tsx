@@ -23,9 +23,9 @@ import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
-    CreateOrganizationMutation,
-    CreateOrganizationMutationVariables,
-    OrganizationCreateInput,
+    type CreateOrganizationMutation,
+    type CreateOrganizationMutationVariables,
+    type OrganizationCreateInput,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {

@@ -4,10 +4,13 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
-import useSpacingToken, {
+import useSpacingToken from '#hooks/useSpacingToken';
+import {
+    fullSpacings,
+    gapSpacings,
     SpacingMode,
-    type SpacingType,
-} from '#hooks/useSpacingToken';
+    SpacingType,
+} from '#utils/styles';
 
 import styles from './styles.module.css';
 
@@ -24,9 +27,6 @@ export interface Props {
     withStartSeparator?: boolean;
     withEndSeparator?: boolean;
 }
-
-const gapSpacings: SpacingMode[] = ['row-gap', 'column-gap'];
-const paddingSpacings: SpacingMode[] = ['padding-block', 'padding-inline'];
 
 function BlockLayout(props: Props) {
     const {
@@ -48,10 +48,7 @@ function BlockLayout(props: Props) {
             return gapSpacings;
         }
 
-        return [
-            ...gapSpacings,
-            ...paddingSpacings,
-        ];
+        return fullSpacings;
     }, [withPadding]);
 
     const spacingClassName = useSpacingToken({

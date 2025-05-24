@@ -22,11 +22,11 @@ export interface AlertContextProps {
 const AlertContext = createContext<AlertContextProps>({
     alerts: [],
     // eslint-disable-next-line no-console
-    addAlert: () => { console.warn('AlertContext::addAlert called before it was initialized'); },
+    addAlert: () => { console.warn('AlertContext::addAlert called without a provider'); },
     // eslint-disable-next-line no-console
-    removeAlert: () => { console.warn('AlertContext::removeAlert called before it was initialized'); },
+    removeAlert: () => { console.warn('AlertContext::removeAlert called without a provider'); },
     // eslint-disable-next-line no-console
-    updateAlert: () => { console.warn('AlertContext::updateAlert called before it was initialized'); },
+    updateAlert: () => { console.warn('AlertContext::updateAlert called without a provider'); },
 });
 
 export default AlertContext;
