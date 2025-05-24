@@ -17,7 +17,7 @@ import styles from './styles.module.css';
 const gapSpacings: SpacingMode[] = ['row-gap', 'column-gap'];
 const fullSpacings: SpacingMode[] = ['padding-block', 'padding-inline', 'row-gap', 'column-gap'];
 
-interface Props {
+export interface Props {
     className?: string;
 
     heading?: React.ReactNode;
@@ -50,6 +50,8 @@ interface Props {
     spacing?: SpacingType;
     withPadding?: boolean;
     withContentBackgroundAndPadding?: boolean;
+    withBackground?: boolean;
+    withShadow?: boolean;
 }
 
 function Container(props: Props) {
@@ -85,6 +87,8 @@ function Container(props: Props) {
 
         spacing,
         withPadding,
+        withBackground,
+        withShadow,
         withContentBackgroundAndPadding,
     } = props;
 
@@ -109,6 +113,8 @@ function Container(props: Props) {
         <BlockLayout
             className={_cs(
                 styles.container,
+                withBackground && styles.withBackground,
+                withShadow && styles.withShadow,
                 className,
             )}
             spacing={spacing}

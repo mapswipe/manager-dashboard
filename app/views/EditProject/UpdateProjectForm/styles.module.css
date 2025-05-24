@@ -1,20 +1,13 @@
 .update-project-form {
-    .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-extra-large);
+    .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+        gap: var(--spacing-md);
 
-        .row {
-            display: grid;
-            /* FIXME: dont use 20rem */
-            grid-template-columns: 1fr 20rem;
-            gap: var(--spacing-medium);
-
-            .column {
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-medium);
-            }
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
         }
     }
 }

@@ -479,7 +479,6 @@ function UpdateProjectForm(props: Props) {
                     value={projectData?.project.status}
                 />
             )}
-            mainContentClassName={styles.mainContent}
         >
             {projectData?.project.status === ProjectStatusEnum.Failed && (
                 <div className={styles.processingsFailedMessage}>

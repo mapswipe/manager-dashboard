@@ -1,5 +1,3 @@
-import { _cs } from '@togglecorp/fujs';
-
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import PageLayout from '#components/PageLayout';
@@ -7,8 +5,6 @@ import PageLayout from '#components/PageLayout';
 import OrganizationList from './OrganizationList';
 import TutorialList from './TutorialList';
 import UserList from './UserList';
-
-import styles from './styles.module.css';
 
 interface Props {
     className?: string;
@@ -19,8 +15,7 @@ function Home(props: Props) {
 
     return (
         <PageLayout
-            className={_cs(styles.home, className)}
-            mainContentClassName={styles.mainContent}
+            className={className}
             heading="MapSwipe Manager Dashboard"
             headerDescription={(
                 <>
@@ -42,9 +37,9 @@ function Home(props: Props) {
                 </>
             )}
         >
-            <OrganizationList className={styles.organizationList} />
-            <TutorialList className={styles.tutorialList} />
-            <UserList className={styles.userList} />
+            <OrganizationList />
+            <TutorialList />
+            <UserList />
         </PageLayout>
     );
 }

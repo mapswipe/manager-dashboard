@@ -59,6 +59,9 @@
         }
 
         .main {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
             flex-grow: 1;
             padding: var(--spacing-medium);
         }

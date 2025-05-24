@@ -1,9 +1,8 @@
 .heading {
     --font-size: var(--font-size-extra-large);
-    --line-height: var(--line-height-tight);
     display: flex;
     margin: 0;
-    line-height: var(--line-height);
+    line-height: 1;
     color: var(--color-primary);
     font-size: var(--font-size);
     font-weight: var(--font-weight-light);

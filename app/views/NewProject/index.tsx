@@ -234,7 +234,7 @@ function NewProject(props: Props) {
         <PageLayout
             className={_cs(styles.newProject, className)}
             heading="Create a New Project"
-            headerDescription="Let's get started with adding basic information for the project. You can later add more project type specific details"
+            headerDescription="Let's get started with adding basic information for the project. You can later add more project type specific details."
             footerActions={(
                 <Button
                     name={undefined}
@@ -265,7 +265,7 @@ function NewProject(props: Props) {
                     name="projectType"
                     onChange={setFieldValue}
                     value={value.projectType}
-                    hint="Select the type of your project. Please note that you won't be able to change it later"
+                    hint="Select the type of your project. Please note that you won't be able to change it later."
                     options={newProjectEnumsResponse?.enums.ProjectTypeEnum ?? []}
                     keySelector={keySelector}
                     labelSelector={projectTypeLabelSelector}

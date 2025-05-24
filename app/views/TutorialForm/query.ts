@@ -72,7 +72,7 @@ query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) 
     projectAssets(
         pagination: $pagination
         filters: {projectId: {exact: $projectId}}
-        ) {
+    ) {
         results {
             file {
                 url
@@ -82,6 +82,7 @@ query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) 
             id
             projectId
             type
+            mimetype
         }
     }
 }
