@@ -15,6 +15,7 @@ import { DeepNonNullable } from '#utils/types';
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
 import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
+import validateSpecificFormSchema from './ValidateProjectSpecifics/schema';
 
 export type UpdateProjectContext = {
     projectType: ProjectTypeEnum | undefined,
@@ -64,6 +65,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         find: findSpecificFormSchema,
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
                     };
                 }
 
@@ -72,12 +74,23 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         compare: compareSpecificFormSchema,
                         find: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
                     };
                 }
 
                 if (context?.projectType === ProjectTypeEnum.Completeness) {
                     return {
                         completeness: completenessSpecificFormSchema,
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (context?.projectType === ProjectTypeEnum.Validate) {
+                    return {
+                        validate: validateSpecificFormSchema,
+                        completeness: { forceValue: undefinedValue },
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                     };

@@ -19,6 +19,7 @@ export interface Props<NAME> extends Omit<RawInputProps<NAME>, 'value' | 'onChan
     showPreview?: boolean;
     value: File | undefined;
     children?: React.ReactNode;
+    status?: React.ReactNode;
 }
 
 function FileInput<NAME>(props: Props<NAME>) {
@@ -33,10 +34,9 @@ function FileInput<NAME>(props: Props<NAME>) {
         showPreview,
         value,
         children,
+        status = value?.name ?? 'No file selected',
         ...otherInputProps
     } = props;
-
-    const status = value?.name ?? 'No file selected';
 
     const handleFiles = useCallback(
         (files: FileList | null) => {
@@ -81,7 +81,10 @@ function FileInput<NAME>(props: Props<NAME>) {
                 accept={accept}
                 disabled={disabled}
             />
-            <ListLayout spacing="sm">
+            <ListLayout
+                spacing="sm"
+                withWrap
+            >
                 <label htmlFor={inputId}>
                     <ButtonLayout
                         start={<MdAttachFile />}

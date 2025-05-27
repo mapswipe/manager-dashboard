@@ -71,7 +71,7 @@ export const PROJECT_ASSETS_QUERY = gql`
 query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
     projectAssets(
         pagination: $pagination
-        filters: {projectId: {exact: $projectId}}
+        filters: {projectId: {exact: $projectId}, type: {exact: OUTPUT}}
     ) {
         results {
             file {
@@ -124,6 +124,12 @@ query TutorialProjectDetail($projectId: ID!) {
             ... on FindProjectPropertyType {
                 __typename
                 zoomLevel
+                tileServerProperty {
+                    name
+                }
+            }
+            ... on ValidateProjectPropertyType {
+                __typename
                 tileServerProperty {
                     name
                 }

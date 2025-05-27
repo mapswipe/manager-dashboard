@@ -68,6 +68,96 @@ query ProjectDetails($id: ID!) {
                 }
                 zoomLevel
             }
+            ... on CompletenessProjectPropertyType {
+                __typename
+                aoiGeometry
+                tileServerBProperty {
+                    bing {
+                        credits
+                    }
+                    custom {
+                        credits
+                        url
+                    }
+                    esri {
+                        credits
+                    }
+                    esriBeta {
+                        credits
+                    }
+                    mapbox {
+                        credits
+                    }
+                    maxarPremium {
+                        credits
+                    }
+                    maxarStandard {
+                        credits
+                    }
+                    name
+                }
+                tileServerProperty {
+                    bing {
+                        credits
+                    }
+                    custom {
+                        credits
+                        url
+                    }
+                    esri {
+                        credits
+                    }
+                    esriBeta {
+                        credits
+                    }
+                    mapbox {
+                        credits
+                    }
+                    maxarPremium {
+                        credits
+                    }
+                    maxarStandard {
+                        credits
+                    }
+                    name
+                }
+                zoomLevel
+            }
+            ... on ValidateProjectPropertyType {
+                __typename
+                objectSource {
+                    aoiGeometry
+                    objectGeojsonUrl
+                    ohsomeFilter
+                    sourceType
+                    taskingManagerProjectId
+                }
+                tileServerProperty {
+                    bing {
+                        credits
+                    }
+                    custom {
+                        credits
+                        url
+                    }
+                    esri {
+                        credits
+                    }
+                    esriBeta {
+                        credits
+                    }
+                    mapbox {
+                        credits
+                    }
+                    maxarPremium {
+                        credits
+                    }
+                    maxarStandard {
+                        credits
+                    }
+                    name
+                }
+            }
         }
         requestingOrganization {
             id

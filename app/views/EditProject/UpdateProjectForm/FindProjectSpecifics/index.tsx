@@ -16,8 +16,6 @@ import {
 } from '../TileServerInput/schema';
 import { type PartialFindSpecificFields } from './schema';
 
-import styles from './styles.module.css';
-
 interface Props {
     projectId: string;
     value: PartialFindSpecificFields | undefined | null;
@@ -44,7 +42,7 @@ function FindProjectSpecifics(props: Props) {
     );
 
     return (
-        <div className={styles.find}>
+        <>
             <AssetInput
                 label="AOI geometry"
                 projectId={projectId}
@@ -71,7 +69,7 @@ function FindProjectSpecifics(props: Props) {
                 error={error?.zoomLevel}
                 disabled={disabled}
             />
-        </div>
+        </>
     );
 }
 

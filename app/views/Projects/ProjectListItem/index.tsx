@@ -22,7 +22,8 @@ import styles from './styles.module.css';
 const projectTypeIllustrations: Record<ProjectTypeEnum, string> = {
     [ProjectTypeEnum.Find]: findIllustration,
     [ProjectTypeEnum.Compare]: compareIllustration,
-    [ProjectTypeEnum.Completeness]: validateIllustration,
+    [ProjectTypeEnum.Validate]: validateIllustration,
+    [ProjectTypeEnum.Completeness]: findIllustration,
 };
 
 interface MetaProps {

@@ -1,8 +1,7 @@
-import { useCallback } from 'react';
 import {
-    gql,
-    useQuery,
-} from '@apollo/client';
+    useCallback,
+    useContext,
+} from 'react';
 import {
     isDefined,
     isNotDefined,
@@ -15,15 +14,12 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
+import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
-import {
-    TileServerEnumsQuery,
-    TileServerEnumsQueryVariables,
-    TileServerNameEnum,
-} from '#generated/types/graphql';
+import { TileServerNameEnum } from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
@@ -39,17 +35,6 @@ import {
     TileInputKeys,
     tileServerNameToTileInputKey,
 } from './schema';
-
-const TILE_SERVER_ENUM_QUERY = gql`
-query TileServerEnums {
-    enums {
-        TileServerNameEnum {
-            key
-            label
-        }
-    }
-}
-`;
 
 function getUrlAndCredits(tileServerProperty: PartialTileServerInputFields | undefined) {
     if (isNotDefined(tileServerProperty)) {
@@ -95,9 +80,7 @@ function TileServerInput(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const {
-        data: tileServerEnumResponse,
-    } = useQuery<TileServerEnumsQuery, TileServerEnumsQueryVariables>(TILE_SERVER_ENUM_QUERY);
+    const { TileServerNameEnum: tileServerNameOptions } = useContext(EnumsContext);
 
     const fieldName = (isDefined(value)
         && isDefined(value.name)
@@ -148,7 +131,7 @@ function TileServerInput(props: Props) {
                     <RadioInput
                         label="Imagery Server"
                         name="name"
-                        options={tileServerEnumResponse?.enums.TileServerNameEnum ?? []}
+                        options={tileServerNameOptions ?? []}
                         value={value?.name}
                         onChange={handleImageryServerChange}
                         keySelector={keySelector}

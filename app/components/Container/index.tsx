@@ -120,7 +120,10 @@ function Container(props: Props) {
             spacing={spacing}
             withPadding={withPadding}
             start={shouldShowHeader && (
-                <ListLayout spacing={spacing}>
+                <ListLayout
+                    spacing={spacing}
+                    layout="block"
+                >
                     {shouldShowHeadingRow && (
                         <InlineLayout
                             spacing={spacing}
