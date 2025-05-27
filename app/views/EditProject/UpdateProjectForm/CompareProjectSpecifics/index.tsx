@@ -16,8 +16,6 @@ import {
 } from '../TileServerInput/schema';
 import { type PartialCompareSpecificFields } from './schema';
 
-import styles from './styles.module.css';
-
 interface Props {
     projectId: string;
     value: PartialCompareSpecificFields | undefined | null;
@@ -50,7 +48,7 @@ function CompareProjectSpecifics(props: Props) {
     );
 
     return (
-        <div className={styles.compare}>
+        <>
             <AssetInput
                 label="AOI geometry"
                 projectId={projectId}
@@ -85,7 +83,7 @@ function CompareProjectSpecifics(props: Props) {
                 error={error?.zoomLevel}
                 disabled={disabled}
             />
-        </div>
+        </>
     );
 }
 

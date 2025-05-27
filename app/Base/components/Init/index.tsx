@@ -51,6 +51,10 @@ query AllEnums {
             key
             label
         }
+        ValidateObjectSourceTypeEnum {
+            key
+            label
+        }
     }
 }
 `;

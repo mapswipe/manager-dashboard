@@ -19,6 +19,10 @@
         flex-direction: column;
     }
 
+    &.with-wrap {
+        flex-wrap: wrap;
+    }
+
     @container (max-width: 20rem) {
         .grid-content {
             grid-template-columns: 1fr;

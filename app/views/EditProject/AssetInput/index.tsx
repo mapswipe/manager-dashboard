@@ -129,6 +129,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 accept={inputType === 'geojson' ? '.geojson' : 'image/png, image/gif, image/jpeg'}
                 disabled={disabled || createProjectAssetPending}
                 selectButtonLabel={selectFileButtonLabel}
+                status={isDefined(value) ? '1 file selected' : 'No file selected'}
             >
                 {!withoutPreview && isDefined(value) && (
                     <ProjectAssetPreview

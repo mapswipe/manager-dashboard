@@ -66,6 +66,11 @@ import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
 } from './FindProjectSpecifics/schema';
+import ValidateProjectSpecifics from './ValidateProjectSpecifics/index.tsx';
+import {
+    defaultValidateSpecificFormValue,
+    PartialValidateSpecificFields,
+} from './ValidateProjectSpecifics/schema.ts';
 import CompareProjectSpecifics from './CompareProjectSpecifics';
 import CompletenessProjectSpecifics from './CompletenessProjectSpecifics';
 import FindProjectSpecifics from './FindProjectSpecifics';
@@ -193,6 +198,96 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
                         }
                         zoomLevel
                     }
+                    ... on CompletenessProjectPropertyType {
+                        __typename
+                        aoiGeometry
+                        tileServerBProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                        tileServerProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                        zoomLevel
+                    }
+                    ... on ValidateProjectPropertyType {
+                        __typename
+                        objectSource {
+                            aoiGeometry
+                            objectGeojsonUrl
+                            ohsomeFilter
+                            sourceType
+                            taskingManagerProjectId
+                        }
+                        tileServerProperty {
+                            bing {
+                                credits
+                            }
+                            custom {
+                                credits
+                                url
+                            }
+                            esri {
+                                credits
+                            }
+                            esriBeta {
+                                credits
+                            }
+                            mapbox {
+                                credits
+                            }
+                            maxarPremium {
+                                credits
+                            }
+                            maxarStandard {
+                                credits
+                            }
+                            name
+                        }
+                    }
                 }
                 requestingOrganization {
                     id
@@ -214,6 +309,7 @@ const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInpu
     [ProjectTypeEnum.Find]: 'find',
     [ProjectTypeEnum.Compare]: 'compare',
     [ProjectTypeEnum.Completeness]: 'completeness',
+    [ProjectTypeEnum.Validate]: 'validate',
 };
 
 interface Props {
@@ -258,6 +354,10 @@ function UpdateProjectForm(props: Props) {
 
         if (projectData.project.projectType === ProjectTypeEnum.Completeness) {
             return defaultCompletenessSpecificFormValue;
+        }
+
+        if (projectData.project.projectType === ProjectTypeEnum.Validate) {
+            return defaultValidateSpecificFormValue;
         }
 
         return {};
@@ -425,6 +525,12 @@ function UpdateProjectForm(props: Props) {
         'compare',
         setProjectSpecificFieldValue,
         defaultCompareSpecificFormValue,
+    );
+
+    const setValidateProjectSpecificsFieldValue = useFormObject<'validate', PartialValidateSpecificFields>(
+        'validate',
+        setProjectSpecificFieldValue,
+        defaultValidateSpecificFormValue,
     );
 
     const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessSpecificFields>(
@@ -599,6 +705,15 @@ function UpdateProjectForm(props: Props) {
                         value={value.projectTypeSpecifics?.compare}
                         setFieldValue={setCompareProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.compare}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                )}
+                {projectContext.projectType === ProjectTypeEnum.Validate && (
+                    <ValidateProjectSpecifics
+                        projectId={projectData.project.id}
+                        value={value.projectTypeSpecifics?.validate}
+                        setFieldValue={setValidateProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validate}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}

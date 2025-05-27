@@ -20,6 +20,7 @@ interface Props {
     spacing?: SpacingType;
     children: React.ReactNode;
     withPadding?: boolean;
+    withWrap?: boolean;
     numPreferredGridColumns?: 2 | 3 | 4 | 5;
 }
 
@@ -29,6 +30,7 @@ function ListLayout(props: Props) {
         layout = 'inline',
         spacing,
         withPadding,
+        withWrap,
         children,
         numPreferredGridColumns = 2,
     } = props;
@@ -66,6 +68,7 @@ function ListLayout(props: Props) {
                 layout === 'block' && styles.blockLayout,
                 layout === 'grid' && styles.gridLayout,
                 layout !== 'grid' && spacingClassName,
+                withWrap && styles.withWrap,
                 className,
             )}
         >

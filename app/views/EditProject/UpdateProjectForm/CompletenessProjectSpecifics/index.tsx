@@ -16,8 +16,6 @@ import {
 } from '../TileServerInput/schema';
 import { type PartialCompletenessSpecificFields } from './schema';
 
-import styles from './styles.module.css';
-
 interface Props {
     projectId: string;
     value: PartialCompletenessSpecificFields | undefined | null;
@@ -50,7 +48,7 @@ function CompletenessProjectSpecifics(props: Props) {
     );
 
     return (
-        <div className={styles.completeness}>
+        <>
             <AssetInput
                 label="AOI geometry"
                 projectId={projectId}
@@ -84,7 +82,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 error={error?.zoomLevel}
                 disabled={disabled}
             />
-        </div>
+        </>
     );
 }
 
