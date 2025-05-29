@@ -3,24 +3,14 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
-import {
-    TutorialScenarioPageCreateInput,
-    TutorialTaskCreateInput,
-} from '#generated/types/graphql';
-import {
-    DeepNonNullable,
-    DeepReplace,
-} from '#utils/types';
+import { TutorialScenarioPageCreateInput } from '#generated/types/graphql';
+import { DeepNonNullable } from '#utils/types';
 
-import taskSchema, { TaskInputFields } from './TaskInput/schema';
+import taskSchema from './TaskInput/schema';
 
 export type ScenarioPageInputFields = DeepNonNullable<
-    DeepReplace<
-        TutorialScenarioPageCreateInput & { clientId: string },
-        TutorialTaskCreateInput,
-        TaskInputFields
-    >
->;
+    TutorialScenarioPageCreateInput
+>
 
 export type PartialScenarioPageInputFields = PartialForm<
     ScenarioPageInputFields,

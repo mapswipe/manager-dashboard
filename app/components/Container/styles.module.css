@@ -27,6 +27,10 @@
         }
     }
 
+    .description:empty {
+        display: none;
+    }
+
     &.with-background {
         border-radius: var(--radius-card-border);
         background-color: var(--color-foreground);

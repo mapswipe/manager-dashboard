@@ -50,6 +50,14 @@ query TutorialDetails($id: ID!) {
                 clientId
                 reference
                 scenarioId
+                projectTypeSpecifics {
+                    ... on FindTutorialTaskPropertyType {
+                        __typename
+                        tileX
+                        tileY
+                        tileZ
+                    }
+                }
             }
         }
     }

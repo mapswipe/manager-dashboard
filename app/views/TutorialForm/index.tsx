@@ -2,7 +2,6 @@ import {
     useCallback,
     useEffect,
     useMemo,
-    useState,
 } from 'react';
 import { CgArrowTopRightR } from 'react-icons/cg';
 import { IoAdd } from 'react-icons/io5';
@@ -22,7 +21,6 @@ import {
     isDefined,
     isNotDefined,
     listToGroupList,
-    listToMap,
     unique,
 } from '@togglecorp/fujs';
 import {
@@ -83,10 +81,7 @@ import tutorialCreateFormSchema, {
     defaultTutorialCreateFormValue,
     PartialTutorialCreateInputFields,
 } from './schema';
-import {
-    FindTutorialGeoJson,
-    validateFindTutorialGeoJson,
-} from './utils';
+import { validateFindTutorialGeoJson } from './utils';
 
 import styles from './styles.module.css';
 
@@ -140,12 +135,22 @@ function NewTutorial(props: Props) {
         const { tutorial } = tutorialData;
         const {
             projectId,
+            scenarios,
             ...other
         } = removeNull(tutorial);
 
         // FIXME: need to add clientId and fix the structure
         setValue({
             project: projectId,
+            scenarios: scenarios.map((scenario) => ({
+                ...scenario,
+                tasks: scenario.tasks.map((task) => ({
+                    ...task,
+                    projectTypeSpecifics: {
+                        find: task.projectTypeSpecifics,
+                    },
+                })),
+            })),
             ...other,
         });
     }, [tutorialData, setValue]);
@@ -250,25 +255,6 @@ function NewTutorial(props: Props) {
         [error],
     );
 
-    /*
-    const addScenarioPage = useCallback(
-        (newScreenId: number) => {
-            const newScenarioPage: PartialScenarioPageInputFields = {
-                clientId: ulid(),
-                scenarioPageNumber: newScreenId,
-            };
-
-            setFieldValue(
-                (oldValue: PartialScenarioPageInputFields[] | undefined) => (
-                    [...(oldValue ?? []), newScenarioPage]
-                ),
-                'scenarios' as const,
-            );
-        },
-        [setFieldValue],
-    );
-    */
-
     const handleFormSubmission = useCallback(
         async (submittedValues: PartialTutorialCreateInputFields) => {
             if (isDefined(tutorialIdFromParams)) {
@@ -348,18 +334,10 @@ function NewTutorial(props: Props) {
         [validate, setError, handleFormSubmission],
     );
 
-    const [
-        tutorialTasksGeojson,
-        setTutorialTasksGeojson,
-    ] = useState<FindTutorialGeoJson | undefined>();
-
     const handleGeoJsonFileChange = useCallback((geoJson: GeoJSON.GeoJSON | undefined) => {
         if (isNotDefined(geoJson) || !validateFindTutorialGeoJson(geoJson)) {
-            setTutorialTasksGeojson(undefined);
             return;
         }
-
-        setTutorialTasksGeojson(geoJson);
 
         const featuresByScreen = listToGroupList(
             geoJson.features,
@@ -389,23 +367,6 @@ function NewTutorial(props: Props) {
 
         setFieldValue(scenarioPages, 'scenarios');
     }, [setFieldValue]);
-
-    const scenarioGeoJsonByClientId = useMemo(() => {
-        if (isNotDefined(tutorialTasksGeojson)) {
-            return undefined;
-        }
-
-        return listToMap(
-            value.scenarios,
-            (scenario) => scenario.clientId,
-            (scenario) => ({
-                type: 'FeatureCollection' as const,
-                features: tutorialTasksGeojson.features.filter(
-                    (feature) => feature.properties.screen === scenario.scenarioPageNumber,
-                ),
-            }),
-        );
-    }, [value.scenarios, tutorialTasksGeojson]);
 
     return (
         <PageLayout
@@ -468,11 +429,19 @@ function NewTutorial(props: Props) {
                                 label="Requesting organization"
                                 value={projectDetailResponse.project.requestingOrganization.name}
                             />
-                            <TextOutput
-                                label="Zoom level"
-                                value={projectDetailResponse
-                                    .project.projectTypeSpecifics?.zoomLevel}
-                            />
+                            {/* eslint-disable-next-line no-underscore-dangle */}
+                            {(projectDetailResponse.project.projectTypeSpecifics?.__typename === 'FindProjectPropertyType'
+                                // eslint-disable-next-line no-underscore-dangle
+                                || projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType'
+                                // eslint-disable-next-line no-underscore-dangle
+                                || projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType'
+                            ) && (
+                                <TextOutput
+                                    label="Zoom level"
+                                    value={projectDetailResponse
+                                        .project.projectTypeSpecifics?.zoomLevel}
+                                />
+                            )}
                             <TextOutput
                                 label="Tile server"
                                 value={projectDetailResponse.project
@@ -486,6 +455,7 @@ function NewTutorial(props: Props) {
                         >
                             {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
                                 <InlineLayout
+                                    key={projectAsset.id}
                                     className={styles.assetCard}
                                     withPadding
                                     spacing="sm"
@@ -494,7 +464,6 @@ function NewTutorial(props: Props) {
                                             {/* eslint-disable-next-line max-len */}
                                             {projectAsset.mimetype === ProjectAssetMimetypeEnum.Geojson && (
                                                 <a
-                                                    key={projectAsset.id}
                                                     className={styles.projectAssetDownloadLink}
                                                     href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
                                                     target="_blank"
@@ -505,7 +474,6 @@ function NewTutorial(props: Props) {
                                                 </a>
                                             )}
                                             <a
-                                                key={projectAsset.id}
                                                 className={styles.projectAssetDownloadLink}
                                                 href={projectAsset.file.url}
                                                 target="_blank"
@@ -594,7 +562,6 @@ function NewTutorial(props: Props) {
                         onChange={setScenarioPageFieldValue}
                         onRemove={removeScenarioPage}
                         error={getErrorObject(scenarioPageErrors?.[scenarioPage.clientId])}
-                        scenarioGeoJson={scenarioGeoJsonByClientId?.[scenarioPage.clientId]}
                         lookForValue={projectDetailResponse?.project.lookFor}
                         tileServerProperty={projectDetailResponse
                             ?.project.projectTypeSpecifics?.tileServerProperty}

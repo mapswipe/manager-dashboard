@@ -1,7 +1,4 @@
-import {
-    useMemo,
-    useState,
-} from 'react';
+import { useMemo } from 'react';
 import { IoTrashBin } from 'react-icons/io5';
 import {
     _cs,
@@ -22,7 +19,6 @@ import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
-import SegmentInput from '#components/SegmentInput';
 import SelectInput from '#components/SelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
@@ -41,24 +37,11 @@ import {
     iconMap,
 } from '#utils/icon';
 
-import { FindTutorialProperties } from '../utils';
-import BuildAreaGeoJsonPreview from './BuildAreaGeoJsonPreview';
+import FindScenarioPreview from './FindScenarioPreview';
 import { PartialScenarioPageInputFields } from './schema';
 import TasksInput from './TaskInput';
 
 import styles from './styles.module.css';
-
-type PreviewKey = 'instructions' | 'hint' | 'success';
-
-interface PreviewOption {
-    key: PreviewKey;
-    label: string;
-}
-const previewOptions: PreviewOption[] = [
-    { key: 'instructions', label: 'Instruction' },
-    { key: 'hint', label: 'Hint' },
-    { key: 'success', label: 'Success' },
-];
 
 function iconOptionLabelSelector(iconOption: IconItem) {
     const Icon = iconOption.component;
@@ -81,7 +64,6 @@ interface Props {
     ) => void;
     error: ObjectError<PartialScenarioPageInputFields> | undefined;
     onRemove: (index: number) => void;
-    scenarioGeoJson?: GeoJSON.FeatureCollection<GeoJSON.Geometry, FindTutorialProperties>;
     lookForValue: string | undefined;
     tileServerProperty: TileServerPropertyFieldsFragment | undefined,
 }
@@ -94,12 +76,9 @@ function ScenarioPageInput(props: Props) {
         onChange,
         error,
         onRemove,
-        scenarioGeoJson,
         lookForValue,
         tileServerProperty,
     } = props;
-
-    const [currentPreview, setCurrentPreview] = useState<PreviewKey>('instructions');
 
     const setFieldValue = useFormObject(
         index,
@@ -126,34 +105,6 @@ function ScenarioPageInput(props: Props) {
         : null;
     const HintIcon = isDefined(value.hintIcon) ? iconMap[value.hintIcon] : null;
     const SuccessIcon = isDefined(value.successIcon) ? iconMap[value.successIcon] : null;
-
-    const previewPopupValue = useMemo(() => {
-        if (currentPreview === 'instructions') {
-            return {
-                icon: value.instructionsIcon,
-                title: value.instructionsTitle,
-                description: value.instructionsDescription,
-            };
-        }
-
-        if (currentPreview === 'hint') {
-            return {
-                icon: value.hintIcon,
-                title: value.hintTitle,
-                description: value.hintDescription,
-            };
-        }
-
-        if (currentPreview === 'success') {
-            return {
-                icon: value.successIcon,
-                title: value.successTitle,
-                description: value.successDescription,
-            };
-        }
-
-        return undefined;
-    }, [value, currentPreview]);
 
     const tileServerUrl = useMemo(() => {
         if (isNotDefined(tileServerProperty)) {
@@ -291,23 +242,11 @@ function ScenarioPageInput(props: Props) {
                     ))}
                 </Container>
             </ListLayout>
-            <div className={styles.previewContainer}>
-                <BuildAreaGeoJsonPreview
-                    className={styles.preview}
-                    previewPopUp={previewPopupValue}
-                    geoJson={scenarioGeoJson}
-                    url={tileServerUrl}
-                    lookFor={lookForValue}
-                />
-                <SegmentInput
-                    name={undefined}
-                    value={currentPreview}
-                    onChange={setCurrentPreview}
-                    options={previewOptions}
-                    keySelector={keySelector}
-                    labelSelector={labelSelector}
-                />
-            </div>
+            <FindScenarioPreview
+                scenario={value}
+                url={tileServerUrl}
+                lookFor={lookForValue}
+            />
         </Container>
     );
 }

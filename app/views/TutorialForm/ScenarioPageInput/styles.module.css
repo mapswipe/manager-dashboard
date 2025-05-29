@@ -9,8 +9,4 @@
         grid-template-columns: 10rem 1fr 1fr;
         gap: var(--spacing-md);
     }
-
-    .preview-container {
-        flex-shrink: 0;
-    }
 }
