@@ -157,15 +157,26 @@ function InformationPageInput(props: Props) {
                     headingLevel={4}
                     withHeaderBorder
                     headerActions={(
-                        <Button
-                            name={value.blocks?.length ?? 0}
-                            onClick={addBlock}
-                            styleVariant="transparent"
-                            start={<IoAdd />}
-                            withoutPadding
-                        >
-                            Add block
-                        </Button>
+                        <>
+                            <Button
+                                name={value.blocks?.length ?? 0}
+                                styleVariant="transparent"
+                                start={<IoAdd />}
+                                withoutPadding
+                                disabled
+                            >
+                                Add image block
+                            </Button>
+                            <Button
+                                name={value.blocks?.length ?? 0}
+                                onClick={addBlock}
+                                styleVariant="transparent"
+                                start={<IoAdd />}
+                                withoutPadding
+                            >
+                                Add text block
+                            </Button>
+                        </>
                     )}
                     headerDescription={(
                         <NonFieldError
