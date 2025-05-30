@@ -5,20 +5,19 @@ import {
     ObjectError,
 } from '@togglecorp/toggle-form';
 
-import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 
-import { PartialFindPropertyInputFields } from './schema';
+import { PartialCompletenessPropertyInputFields } from './schema';
 
 interface Props {
     className?: string;
-    value: PartialFindPropertyInputFields | undefined;
-    setFieldValue: (...entries: EntriesAsList<PartialFindPropertyInputFields>) => void;
-    error: LeafError | ObjectError<PartialFindPropertyInputFields>;
+    value: PartialCompletenessPropertyInputFields | undefined;
+    setFieldValue: (...entries: EntriesAsList<PartialCompletenessPropertyInputFields>) => void;
+    error: LeafError | ObjectError<PartialCompletenessPropertyInputFields>;
     disabled?: boolean;
 }
 
-function FindPropertyInput(props: Props) {
+function CompletenessPropertyInput(props: Props) {
     const {
         className,
         value,
@@ -30,11 +29,7 @@ function FindPropertyInput(props: Props) {
     const error = getErrorObject(formError);
 
     return (
-        <ListLayout
-            className={className}
-            layout="grid"
-            numPreferredGridColumns={3}
-        >
+        <div className={className}>
             <NumberInput
                 name="tileX"
                 label="tileX"
@@ -59,8 +54,8 @@ function FindPropertyInput(props: Props) {
                 error={error?.tileZ}
                 disabled={disabled}
             />
-        </ListLayout>
+        </div>
     );
 }
 
-export default FindPropertyInput;
+export default CompletenessPropertyInput;

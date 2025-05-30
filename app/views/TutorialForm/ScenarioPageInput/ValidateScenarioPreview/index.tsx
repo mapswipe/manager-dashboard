@@ -2,7 +2,11 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 import {
     PathOptions,
@@ -12,7 +16,6 @@ import {
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectTileServerConfig } from '#generated/types/graphql';
-import { createGeoJsonFromTiles } from '#utils/geo';
 import { iconMap } from '#utils/icon';
 import { getTileServerUrlAndCredits } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
@@ -21,31 +24,21 @@ import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
-interface FindTutorialProperties {
+interface ValidateTutorialProperties {
     reference: number;
 }
 
-const previewStyles: StyleFunction<FindTutorialProperties> = (feature) => {
-    const findPreviewStylesObject: PathOptions = {
+const previewStyles: StyleFunction<ValidateTutorialProperties> = () => {
+    const validatePreviewStylesObject: PathOptions = {
         color: '#ffffff',
         stroke: true,
-        weight: 0.5,
-        fillOpacity: 0.2,
+        weight: 2,
+        dashArray: '3',
+        fill: false,
+        opacity: 0.8,
     };
-    if (!feature) {
-        return findPreviewStylesObject;
-    }
-    const referenceColorMap: Record<number, string> = {
-        0: 'transparent',
-        1: 'green',
-        2: 'yellow',
-        3: 'red',
-    };
-    const ref = feature.properties.reference;
-    return {
-        ...findPreviewStylesObject,
-        fillColor: referenceColorMap[ref] || 'transparent',
-    };
+
+    return validatePreviewStylesObject;
 };
 
 interface Props {
@@ -55,33 +48,43 @@ interface Props {
     scenario: PartialScenarioPageInputFields | undefined;
 }
 
-function FindScenarioPreview(props: Props) {
+function ValidateScenarioPreview(props: Props) {
     const {
         className,
         scenario,
-        lookFor,
         tileServerProperty,
+        lookFor,
     } = props;
+
+    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const tileServerConfig = getTileServerUrlAndCredits(removeNull(tileServerProperty));
 
-    const generatedGeojson = useMemo(() => {
-        const tiles = scenario?.tasks?.map((task) => ({
-            tileX: task.projectTypeSpecifics?.find?.tileX,
-            tileY: task.projectTypeSpecifics?.find?.tileY,
-            tileZ: task.projectTypeSpecifics?.find?.tileZ,
-            reference: task.reference,
-        }));
+    const generatedGeojson = useMemo<GeoJSON.GeoJSON>(() => {
+        const features: Array<GeoJSON.Feature> = scenario?.tasks?.map((task) => {
+            if (isNotDefined(task.projectTypeSpecifics?.validate?.objectGeometry)) {
+                return undefined;
+            }
 
-        return createGeoJsonFromTiles(tiles);
+            return {
+                type: 'Feature' as const,
+                geometry: JSON.parse(task.projectTypeSpecifics?.validate?.objectGeometry),
+                properties: {
+                    reference: task.reference,
+                },
+            };
+        }).filter(isDefined) ?? [];
+
+        return {
+            type: 'FeatureCollection' as const,
+            features,
+        };
     }, [scenario]);
-
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const Icon = preview?.icon ? iconMap[preview.icon] : undefined;
 
     return (
-        <div className={_cs(styles.findScenarioPreview, className)}>
+        <div className={_cs(styles.validateScenarioPreview, className)}>
             <MobilePreview
                 heading={lookFor || '{look for}'}
                 headerDescription="You are looking for:"
@@ -95,6 +98,7 @@ function FindScenarioPreview(props: Props) {
                     url={tileServerConfig?.url}
                     attribution={tileServerConfig?.credits}
                     previewStyle={previewStyles}
+                    padding={[130, 130]}
                 />
             </MobilePreview>
             <PreviewSegmentInput
@@ -105,4 +109,4 @@ function FindScenarioPreview(props: Props) {
     );
 }
 
-export default FindScenarioPreview;
+export default ValidateScenarioPreview;

@@ -144,7 +144,10 @@ function InformationPageInput(props: Props) {
             withPadding
             contentClassName={styles.content}
         >
-            <ListLayout layout="block">
+            <ListLayout
+                layout="block"
+                spacing="lg"
+            >
                 <TextInput
                     label="Title"
                     name="title"

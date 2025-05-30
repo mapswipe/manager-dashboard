@@ -50,6 +50,7 @@ import {
     ProjectOptionsQueryVariables,
     ProjectOutputAssetsQuery,
     ProjectOutputAssetsQueryVariables,
+    ProjectTypeEnum,
     TutorialCreateInput,
     TutorialDetailsQuery,
     TutorialDetailsQueryVariables,
@@ -60,6 +61,7 @@ import useAlert from '#hooks/useAlert';
 import {
     idSelector,
     nameSelector,
+    projectTypeToKeyMap,
 } from '#utils/common';
 import {
     alertApolloError,
@@ -335,7 +337,34 @@ function NewTutorial(props: Props) {
     );
 
     const handleGeoJsonFileChange = useCallback((geoJson: GeoJSON.GeoJSON | undefined) => {
-        if (isNotDefined(geoJson) || !validateFindTutorialGeoJson(geoJson)) {
+        if (
+            isNotDefined(projectDetailResponse)
+                || isNotDefined(geoJson)
+                || !validateFindTutorialGeoJson(geoJson)
+        ) {
+            return;
+        }
+
+        if (projectDetailResponse.project.projectType === ProjectTypeEnum.Validate) {
+            const scenarioPages = geoJson.features.map((feature, i) => ({
+                clientId: ulid(),
+                scenarioPageNumber: isDefined(feature.properties.screen)
+                    ? feature.properties.screen
+                    : i + 1,
+                tasks: [
+                    {
+                        clientId: ulid(),
+                        reference: feature.properties.reference,
+                        projectTypeSpecifics: {
+                            validate: {
+                                objectGeometry: JSON.stringify(feature.geometry, null, 4),
+                            },
+                        },
+                    },
+                ],
+            }));
+
+            setFieldValue(scenarioPages, 'scenarios');
             return;
         }
 
@@ -343,6 +372,8 @@ function NewTutorial(props: Props) {
             geoJson.features,
             (feature) => feature.properties.screen,
         );
+
+        const projectTypeKey = projectTypeToKeyMap[projectDetailResponse.project.projectType];
 
         const scenarioPages = unique(
             geoJson.features,
@@ -356,17 +387,18 @@ function NewTutorial(props: Props) {
                 clientId: ulid(),
                 reference: feature.properties.reference,
                 projectTypeSpecifics: {
-                    find: {
+                    [projectTypeKey]: {
                         tileX: feature.properties.tile_x,
                         tileY: feature.properties.tile_y,
                         tileZ: feature.properties.tile_z,
+                        objectGeometry: JSON.stringify(feature.geometry),
                     },
                 },
             })),
         }));
 
         setFieldValue(scenarioPages, 'scenarios');
-    }, [setFieldValue]);
+    }, [setFieldValue, projectDetailResponse]);
 
     return (
         <PageLayout
@@ -447,6 +479,17 @@ function NewTutorial(props: Props) {
                                 value={projectDetailResponse.project
                                     .projectTypeSpecifics?.tileServerProperty.name}
                             />
+                            {/* eslint-disable-next-line no-underscore-dangle */}
+                            {(projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType'
+                                // eslint-disable-next-line no-underscore-dangle
+                                || projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType'
+                            ) && (
+                                <TextOutput
+                                    label="Tile server B"
+                                    value={projectDetailResponse
+                                        .project.projectTypeSpecifics?.tileServerBProperty.name}
+                                />
+                            )}
                         </Container>
                         <Container
                             heading="Project Assets"
@@ -536,9 +579,16 @@ function NewTutorial(props: Props) {
                 heading="Scenario Pages"
                 withHeaderBorder
                 headerDescription={(
-                    <NonFieldError
-                        error={error?.scenarios}
-                    />
+                    <>
+                        {isNotDefined(projectDetailResponse?.project.projectType) && (
+                            <div>
+                                Please select a project first!
+                            </div>
+                        )}
+                        <NonFieldError
+                            error={error?.scenarios}
+                        />
+                    </>
                 )}
                 empty={isNotDefined(value.scenarios)
                     || value.scenarios.length === 0}
@@ -546,9 +596,9 @@ function NewTutorial(props: Props) {
                     <GeoJsonFileInput
                         name={undefined}
                         label="Upload Scenarios as GeoJSON"
-                        // value={tutorialTasksGeojson}
                         onChange={handleGeoJsonFileChange}
                         hint="It should end with .geojson or .geo.json"
+                        disabled={isNotDefined(projectDetailResponse?.project.projectType)}
                     />
                 )}
                 spacing="lg"
@@ -562,9 +612,7 @@ function NewTutorial(props: Props) {
                         onChange={setScenarioPageFieldValue}
                         onRemove={removeScenarioPage}
                         error={getErrorObject(scenarioPageErrors?.[scenarioPage.clientId])}
-                        lookForValue={projectDetailResponse?.project.lookFor}
-                        tileServerProperty={projectDetailResponse
-                            ?.project.projectTypeSpecifics?.tileServerProperty}
+                        projectData={projectDetailResponse?.project}
                     />
                 ))}
             </Container>

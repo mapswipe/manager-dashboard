@@ -6,6 +6,7 @@ import {
 import { ulid } from 'ulid';
 
 import {
+    ProjectTypeEnum,
     TutorialCreateInput,
     TutorialInformationPageBlockTypeEnum,
     TutorialInformationPageCreateInput,
@@ -18,6 +19,10 @@ import {
 
 import informationPageSchema, { type InformationPagesInputFields } from './InformationPageInput/schema';
 import scenarioPageSchema, { ScenarioPageInputFields } from './ScenarioPageInput/schema';
+
+export type TutorialFormContext = {
+    projectType: ProjectTypeEnum | undefined,
+};
 
 export type PartialTutorialCreateInputFields = PartialForm<
     DeepNonNullable<
@@ -33,7 +38,11 @@ export type PartialTutorialCreateInputFields = PartialForm<
     >,
     'clientId'
 >;
-export type TutorialCreateFormSchema = ObjectSchema<PartialTutorialCreateInputFields>;
+export type TutorialCreateFormSchema = ObjectSchema<
+    PartialTutorialCreateInputFields,
+    PartialTutorialCreateInputFields,
+    TutorialFormContext
+>;
 
 // FIXME: This should be inside render so that we have new client id everytime
 export const defaultTutorialCreateFormValue: PartialTutorialCreateInputFields = {
