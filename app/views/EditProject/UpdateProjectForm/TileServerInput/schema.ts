@@ -15,6 +15,7 @@ import {
 import {
     imageryUrlCondition,
     tileServerDefaultCredits,
+    tileServerUrls,
 } from '#utils/common';
 import { DeepNonNullable } from '#utils/types';
 
@@ -52,6 +53,31 @@ export const defaultTileServerInputFormValue: PartialTileServerInputFields = {
         credits: tileServerDefaultCredits[TileServerNameEnum.Bing],
     },
 };
+
+export function getTileServerUrlAndCredits(
+    tileServerProperty: PartialTileServerInputFields | undefined,
+) {
+    if (isNotDefined(tileServerProperty)) {
+        return undefined;
+    }
+
+    const { name } = tileServerProperty;
+    if (isNotDefined(name)) {
+        return undefined;
+    }
+
+    if (name === TileServerNameEnum.Custom) {
+        return {
+            url: tileServerProperty.custom?.url,
+            credits: tileServerProperty.custom?.credits,
+        };
+    }
+
+    return {
+        url: tileServerUrls[name],
+        credits: tileServerProperty[tileServerNameToTileInputKey[name]]?.credits,
+    };
+}
 
 const tileServerFormSchema: ProjectTileFormSchema = {
     fields: (value): TileServerFormFields => {

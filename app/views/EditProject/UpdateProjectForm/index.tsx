@@ -40,13 +40,13 @@ import {
     ProjectDetailsQuery,
     ProjectStatusEnum,
     ProjectTypeEnum,
-    ProjectTypeSpecificInput,
     ProjectUpdateInput,
     UpdateProjectMutation,
     UpdateProjectMutationVariables,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert.ts';
 import useOptions from '#hooks/useOptions';
+import { projectTypeToKeyMap } from '#utils/common.ts';
 import {
     alertApolloError,
     checkAndAlertGraphQLResultError,
@@ -304,13 +304,6 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
     }
 }
 `;
-
-const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
-    [ProjectTypeEnum.Find]: 'find',
-    [ProjectTypeEnum.Compare]: 'compare',
-    [ProjectTypeEnum.Completeness]: 'completeness',
-    [ProjectTypeEnum.Validate]: 'validate',
-};
 
 interface Props {
     className?: string;

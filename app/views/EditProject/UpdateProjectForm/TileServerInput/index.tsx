@@ -2,10 +2,7 @@ import {
     useCallback,
     useContext,
 } from 'react';
-import {
-    isDefined,
-    isNotDefined,
-} from '@togglecorp/fujs';
+import { isDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -24,40 +21,17 @@ import {
     keySelector,
     labelSelector,
     tileServerDefaultCredits,
-    tileServerUrls,
 } from '#utils/common';
 import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
 
 import {
+    getTileServerUrlAndCredits,
     PartialCommonTileServerConfigFields,
     PartialCustomTileServerConfigFields,
     type PartialTileServerInputFields,
     TileInputKeys,
     tileServerNameToTileInputKey,
 } from './schema';
-
-function getUrlAndCredits(tileServerProperty: PartialTileServerInputFields | undefined) {
-    if (isNotDefined(tileServerProperty)) {
-        return undefined;
-    }
-
-    const { name } = tileServerProperty;
-    if (isNotDefined(name)) {
-        return undefined;
-    }
-
-    if (name === TileServerNameEnum.Custom) {
-        return {
-            url: tileServerProperty.custom?.url,
-            credits: tileServerProperty.custom?.credits,
-        };
-    }
-
-    return {
-        url: tileServerUrls[name],
-        credits: tileServerProperty[tileServerNameToTileInputKey[name]]?.credits,
-    };
-}
 
 interface Props {
     label?: string;
@@ -117,7 +91,7 @@ function TileServerInput(props: Props) {
         }
     }, [setFieldValue]);
 
-    const tileServerValue = getUrlAndCredits(value);
+    const tileServerValue = getTileServerUrlAndCredits(value);
 
     return (
         <Container

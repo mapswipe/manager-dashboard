@@ -8,13 +8,17 @@ import {
 import { ulid } from 'ulid';
 
 import NumberInput from '#components/NumberInput';
+import { ProjectTypeEnum } from '#generated/types/graphql';
 
-import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
+import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
+import ComparePropertyInput from './ComparePropertyInput';
+import CompletenessPropertyInput from './CompletenessPropertyInput';
 import FindPropertyInput from './FindPropertyInput';
 import {
     PartialProjectTypeSpecifics,
     PartialTaskInputFields,
 } from './schema';
+import ValidatePropertyInput from './ValidatePropertyInput';
 
 import styles from './styles.module.css';
 
@@ -28,6 +32,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialTaskInputFields> | undefined;
     disabled?: boolean;
+    projectType: ProjectTypeEnum;
 }
 
 function TaskInput(props: Props) {
@@ -38,6 +43,7 @@ function TaskInput(props: Props) {
         onChange,
         error,
         disabled,
+        projectType,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -54,8 +60,26 @@ function TaskInput(props: Props) {
         {},
     );
 
-    const setFindProjectSpecificsFieldValue = useFormObject<'find', PartialFindPropertyInputFields>(
+    const setFindProjectSpecificsFieldValue = useFormObject(
         'find',
+        setProjectSpecificFieldValue,
+        {},
+    );
+
+    const setCompareProjectSpecificsFieldValue = useFormObject(
+        'compare',
+        setProjectSpecificFieldValue,
+        {},
+    );
+
+    const setCompletenessProjectSpecificsFieldValue = useFormObject(
+        'completeness',
+        setProjectSpecificFieldValue,
+        {},
+    );
+
+    const setValidateProjectSpecificsFieldValue = useFormObject<'validate', PartialValidatePropertyInputFields>(
+        'validate',
         setProjectSpecificFieldValue,
         {},
     );
@@ -73,13 +97,38 @@ function TaskInput(props: Props) {
                 error={error?.reference}
                 disabled={disabled}
             />
-            <FindPropertyInput
-                className={styles.projectSpecificInput}
-                value={value.projectTypeSpecifics?.find}
-                setFieldValue={setFindProjectSpecificsFieldValue}
-                error={getErrorObject(error?.projectTypeSpecifics)?.find}
-                disabled={disabled}
-            />
+            {projectType === ProjectTypeEnum.Find && (
+                <FindPropertyInput
+                    value={value.projectTypeSpecifics?.find}
+                    setFieldValue={setFindProjectSpecificsFieldValue}
+                    error={getErrorObject(error?.projectTypeSpecifics)?.find}
+                    disabled
+                />
+            )}
+            {projectType === ProjectTypeEnum.Compare && (
+                <ComparePropertyInput
+                    value={value.projectTypeSpecifics?.compare}
+                    setFieldValue={setCompareProjectSpecificsFieldValue}
+                    error={getErrorObject(error?.projectTypeSpecifics)?.compare}
+                    disabled
+                />
+            )}
+            {projectType === ProjectTypeEnum.Completeness && (
+                <CompletenessPropertyInput
+                    value={value.projectTypeSpecifics?.completeness}
+                    setFieldValue={setCompletenessProjectSpecificsFieldValue}
+                    error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
+                    disabled
+                />
+            )}
+            {projectType === ProjectTypeEnum.Validate && (
+                <ValidatePropertyInput
+                    value={value.projectTypeSpecifics?.validate}
+                    setFieldValue={setValidateProjectSpecificsFieldValue}
+                    error={getErrorObject(error?.projectTypeSpecifics)?.validate}
+                    disabled
+                />
+            )}
         </div>
     );
 }

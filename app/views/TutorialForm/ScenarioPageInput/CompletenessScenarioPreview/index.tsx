@@ -21,19 +21,19 @@ import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
-interface FindTutorialProperties {
+interface CompletenessTutorialProperties {
     reference: number;
 }
 
-const previewStyles: StyleFunction<FindTutorialProperties> = (feature) => {
-    const findPreviewStylesObject: PathOptions = {
+const previewStyles: StyleFunction<CompletenessTutorialProperties> = (feature) => {
+    const completenessPreviewStylesObject: PathOptions = {
         color: '#ffffff',
         stroke: true,
         weight: 0.5,
         fillOpacity: 0.2,
     };
     if (!feature) {
-        return findPreviewStylesObject;
+        return completenessPreviewStylesObject;
     }
     const referenceColorMap: Record<number, string> = {
         0: 'transparent',
@@ -43,7 +43,7 @@ const previewStyles: StyleFunction<FindTutorialProperties> = (feature) => {
     };
     const ref = feature.properties.reference;
     return {
-        ...findPreviewStylesObject,
+        ...completenessPreviewStylesObject,
         fillColor: referenceColorMap[ref] || 'transparent',
     };
 };
@@ -51,49 +51,60 @@ const previewStyles: StyleFunction<FindTutorialProperties> = (feature) => {
 interface Props {
     className?: string;
     tileServerProperty: ProjectTileServerConfig | undefined;
+    tileServerBProperty: ProjectTileServerConfig | undefined;
     lookFor: string | undefined;
     scenario: PartialScenarioPageInputFields | undefined;
 }
 
-function FindScenarioPreview(props: Props) {
+function CompletenessScenarioPreview(props: Props) {
     const {
         className,
         scenario,
         lookFor,
         tileServerProperty,
+        tileServerBProperty,
     } = props;
 
+    const [preview, setPreview] = useState<PreviewItem | undefined>();
+
     const tileServerConfig = getTileServerUrlAndCredits(removeNull(tileServerProperty));
+    const tileServerBConfig = getTileServerUrlAndCredits(removeNull(tileServerBProperty));
 
     const generatedGeojson = useMemo(() => {
         const tiles = scenario?.tasks?.map((task) => ({
-            tileX: task.projectTypeSpecifics?.find?.tileX,
-            tileY: task.projectTypeSpecifics?.find?.tileY,
-            tileZ: task.projectTypeSpecifics?.find?.tileZ,
+            tileX: task.projectTypeSpecifics?.completeness?.tileX,
+            tileY: task.projectTypeSpecifics?.completeness?.tileY,
+            tileZ: task.projectTypeSpecifics?.completeness?.tileZ,
             reference: task.reference,
         }));
 
         return createGeoJsonFromTiles(tiles);
     }, [scenario]);
 
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
-
     const Icon = preview?.icon ? iconMap[preview.icon] : undefined;
 
     return (
-        <div className={_cs(styles.findScenarioPreview, className)}>
+        <div className={_cs(styles.completenessScenarioPreview, className)}>
             <MobilePreview
                 heading={lookFor || '{look for}'}
                 headerDescription="You are looking for:"
                 popupIcons={Icon && <Icon />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
+                contentClassName={styles.content}
             >
                 <GeoJsonPreview
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     url={tileServerConfig?.url}
                     attribution={tileServerConfig?.credits}
+                    previewStyle={previewStyles}
+                />
+                <GeoJsonPreview
+                    className={_cs(styles.mapContainer, styles.overlay)}
+                    geoJson={generatedGeojson}
+                    url={tileServerBConfig?.url}
+                    attribution={tileServerBConfig?.credits}
                     previewStyle={previewStyles}
                 />
             </MobilePreview>
@@ -105,4 +116,4 @@ function FindScenarioPreview(props: Props) {
     );
 }
 
-export default FindScenarioPreview;
+export default CompletenessScenarioPreview;

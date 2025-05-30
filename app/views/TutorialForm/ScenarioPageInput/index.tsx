@@ -22,14 +22,10 @@ import NonFieldError from '#components/NonFieldError';
 import SelectInput from '#components/SelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
-import {
-    TileServerNameEnum,
-    TileServerPropertyFieldsFragment,
-} from '#generated/types/graphql';
+import { TutorialProjectDetailQuery } from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
-    tileServerUrls,
 } from '#utils/common';
 import {
     combinedIconList,
@@ -37,9 +33,12 @@ import {
     iconMap,
 } from '#utils/icon';
 
+import CompareScenarioPreview from './CompareScenarioPreview';
+import CompletenessScenarioPreview from './CompletenessScenarioPreview';
 import FindScenarioPreview from './FindScenarioPreview';
 import { PartialScenarioPageInputFields } from './schema';
-import TasksInput from './TaskInput';
+import TaskInput from './TaskInput';
+import ValidateScenarioPreview from './ValidateScenarioPreview';
 
 import styles from './styles.module.css';
 
@@ -64,8 +63,8 @@ interface Props {
     ) => void;
     error: ObjectError<PartialScenarioPageInputFields> | undefined;
     onRemove: (index: number) => void;
-    lookForValue: string | undefined;
-    tileServerProperty: TileServerPropertyFieldsFragment | undefined,
+    projectData: TutorialProjectDetailQuery['project'] | undefined;
+    disabled?: boolean;
 }
 
 function ScenarioPageInput(props: Props) {
@@ -76,8 +75,8 @@ function ScenarioPageInput(props: Props) {
         onChange,
         error,
         onRemove,
-        lookForValue,
-        tileServerProperty,
+        projectData,
+        disabled,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -105,18 +104,6 @@ function ScenarioPageInput(props: Props) {
         : null;
     const HintIcon = isDefined(value.hintIcon) ? iconMap[value.hintIcon] : null;
     const SuccessIcon = isDefined(value.successIcon) ? iconMap[value.successIcon] : null;
-
-    const tileServerUrl = useMemo(() => {
-        if (isNotDefined(tileServerProperty)) {
-            return undefined;
-        }
-
-        if (tileServerProperty.name !== TileServerNameEnum.Custom) {
-            return tileServerUrls[tileServerProperty?.name];
-        }
-
-        return tileServerProperty.custom?.url;
-    }, [tileServerProperty]);
 
     return (
         <Container
@@ -151,6 +138,7 @@ function ScenarioPageInput(props: Props) {
                         optionLabelSelector={iconOptionLabelSelector}
                         error={error?.instructionsIcon}
                         icons={InstructionsIcon && <InstructionsIcon />}
+                        disabled={disabled}
                     />
                     <TextInput
                         label="Instruction title"
@@ -158,6 +146,7 @@ function ScenarioPageInput(props: Props) {
                         value={value.instructionsTitle}
                         onChange={setFieldValue}
                         error={error?.instructionsTitle}
+                        disabled={disabled}
                     />
                     <TextArea
                         name="instructionsDescription"
@@ -165,6 +154,7 @@ function ScenarioPageInput(props: Props) {
                         value={value.instructionsDescription}
                         onChange={setFieldValue}
                         error={error?.instructionsDescription}
+                        disabled={disabled}
                     />
                     <SelectInput
                         icons={HintIcon && <HintIcon />}
@@ -177,6 +167,7 @@ function ScenarioPageInput(props: Props) {
                         labelSelector={labelSelector}
                         optionLabelSelector={iconOptionLabelSelector}
                         error={error?.hintIcon}
+                        disabled={disabled}
                     />
                     <TextInput
                         label="Hint title"
@@ -184,6 +175,7 @@ function ScenarioPageInput(props: Props) {
                         value={value.hintTitle}
                         onChange={setFieldValue}
                         error={error?.hintTitle}
+                        disabled={disabled}
                     />
                     <TextArea
                         name="hintDescription"
@@ -191,6 +183,7 @@ function ScenarioPageInput(props: Props) {
                         value={value.hintDescription}
                         onChange={setFieldValue}
                         error={error?.hintDescription}
+                        disabled={disabled}
                     />
                     <SelectInput
                         label="Success icon"
@@ -203,6 +196,7 @@ function ScenarioPageInput(props: Props) {
                         optionLabelSelector={iconOptionLabelSelector}
                         error={error?.successIcon}
                         icons={SuccessIcon && <SuccessIcon />}
+                        disabled={disabled}
                     />
                     <TextInput
                         label="Success title"
@@ -210,6 +204,7 @@ function ScenarioPageInput(props: Props) {
                         value={value.successTitle}
                         onChange={setFieldValue}
                         error={error?.successTitle}
+                        disabled={disabled}
                     />
                     <TextArea
                         name="successDescription"
@@ -217,36 +212,69 @@ function ScenarioPageInput(props: Props) {
                         value={value.successDescription}
                         onChange={setFieldValue}
                         error={error?.successDescription}
+                        disabled={disabled}
                     />
                 </div>
-                <Container
-                    heading="Tasks"
-                    headingLevel={4}
-                    withHeaderBorder
-                    headerDescription={(
-                        <NonFieldError
-                            error={error?.tasks}
-                        />
-                    )}
-                    empty={isNotDefined(value.tasks) || value.tasks.length === 0}
-                >
-                    {value.tasks?.map((task, taskIndex) => (
-                        <TasksInput
-                            key={task.clientId}
-                            index={taskIndex}
-                            value={task}
-                            onChange={setTasksFieldValue}
-                            error={getErrorObject(taskErrors?.[task.clientId])}
-                            disabled
-                        />
-                    ))}
-                </Container>
+                {isDefined(projectData) && (
+                    <Container
+                        heading="Tasks"
+                        headingLevel={4}
+                        withHeaderBorder
+                        headerDescription={(
+                            <NonFieldError
+                                error={error?.tasks}
+                            />
+                        )}
+                        empty={isNotDefined(value.tasks) || value.tasks.length === 0}
+                    >
+                        {value.tasks?.map((task, taskIndex) => (
+                            <TaskInput
+                                key={task.clientId}
+                                index={taskIndex}
+                                value={task}
+                                onChange={setTasksFieldValue}
+                                error={getErrorObject(taskErrors?.[task.clientId])}
+                                disabled={disabled}
+                                projectType={projectData?.projectType}
+                            />
+                        ))}
+                    </Container>
+                )}
             </ListLayout>
-            <FindScenarioPreview
-                scenario={value}
-                url={tileServerUrl}
-                lookFor={lookForValue}
-            />
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (
+                <FindScenarioPreview
+                    scenario={value}
+                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                    lookFor={projectData.lookFor}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType' && (
+                <CompareScenarioPreview
+                    scenario={value}
+                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                    tileServerBProperty={projectData.projectTypeSpecifics?.tileServerBProperty}
+                    lookFor={projectData.lookFor}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType' && (
+                <CompletenessScenarioPreview
+                    scenario={value}
+                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                    tileServerBProperty={projectData.projectTypeSpecifics?.tileServerBProperty}
+                    lookFor={projectData.lookFor}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType' && (
+                <ValidateScenarioPreview
+                    scenario={value}
+                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                    lookFor={projectData.lookFor}
+                />
+            )}
         </Container>
     );
 }

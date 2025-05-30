@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import { AllEnumsQuery } from '#generated/types/graphql';
 
 export const defaultAllEnumsValue: AllEnumsQuery['enums'] = {
-    ValildateObjectSourceTypeEnum: [],
+    ValidateObjectSourceTypeEnum: [],
     ProjectStatusEnum: [],
     ProjectTypeEnum: [],
     TileServerNameEnum: [],

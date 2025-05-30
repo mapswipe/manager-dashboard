@@ -1,7 +1,11 @@
 import { MarkdownViewProps } from 'react-showdown';
 import { isDefined } from '@togglecorp/fujs';
 
-import { TileServerNameEnum } from '#generated/types/graphql';
+import {
+    ProjectTypeEnum,
+    ProjectTypeSpecificInput,
+    TileServerNameEnum,
+} from '#generated/types/graphql';
 
 export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
 export const DEFAULT_PAGE_SIZE = 5;
@@ -126,3 +130,10 @@ export function imageryUrlCondition(value: string | null | undefined) {
     }
     return 'Imagery url must contain {x}, {y} (or {-y}) & {z} placeholders or {quad_key} placeholder.';
 }
+
+export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
+    [ProjectTypeEnum.Find]: 'find',
+    [ProjectTypeEnum.Compare]: 'compare',
+    [ProjectTypeEnum.Completeness]: 'completeness',
+    [ProjectTypeEnum.Validate]: 'validate',
+};

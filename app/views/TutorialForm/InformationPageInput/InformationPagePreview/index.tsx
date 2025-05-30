@@ -22,7 +22,7 @@ export default function InformationPagePreview(props: Props) {
         <MobilePreview
             className={styles.informationPreview}
             heading={lookFor || '{look for}'}
-            headingLabel="You are looking for:"
+            headerDescription="You are looking for:"
             contentClassName={styles.content}
         >
             {value?.title || `{page title ${value.pageNumber}}`}
