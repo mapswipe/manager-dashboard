@@ -91,6 +91,7 @@ function ValidateScenarioPreview(props: Props) {
                 popupIcons={Icon && <Icon />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
+                contentClassName={styles.content}
             >
                 <GeoJsonPreview
                     className={styles.mapContainer}

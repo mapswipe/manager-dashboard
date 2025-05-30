@@ -37,7 +37,7 @@ function FindPropertyInput(props: Props) {
         >
             <NumberInput
                 name="tileX"
-                label="tileX"
+                label="X"
                 value={value?.tileX}
                 onChange={setFieldValue}
                 error={error?.tileX}
@@ -45,7 +45,7 @@ function FindPropertyInput(props: Props) {
             />
             <NumberInput
                 name="tileY"
-                label="tileY"
+                label="Y"
                 value={value?.tileY}
                 onChange={setFieldValue}
                 error={error?.tileY}
@@ -53,7 +53,7 @@ function FindPropertyInput(props: Props) {
             />
             <NumberInput
                 name="tileZ"
-                label="tileZ"
+                label="Z"
                 value={value?.tileZ}
                 onChange={setFieldValue}
                 error={error?.tileZ}
