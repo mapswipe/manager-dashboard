@@ -8,7 +8,6 @@ import {
     MdSave,
 } from 'react-icons/md';
 import {
-    gql,
     useMutation,
     useQuery,
 } from '@apollo/client';
@@ -74,236 +73,14 @@ import {
 import CompareProjectSpecifics from './CompareProjectSpecifics';
 import CompletenessProjectSpecifics from './CompletenessProjectSpecifics';
 import FindProjectSpecifics from './FindProjectSpecifics';
+import {
+    PROJECT_STATUS_QUERY,
+    UPDATE_PROJECT_MUTATION,
+} from './query.ts';
 import projectUpdateFormSchema, {
     PartialProjectTypeSpecificInput,
     type PartialProjectUpdateInput,
 } from './schema.ts';
-
-const PROJECT_STATUS_QUERY = gql`
-query ProjectStatus($projectId: ID!) {
-    project(id: $projectId) {
-        id
-        status
-    }
-}
-`;
-
-// FIXME: Check why fragment does not work here
-const UPDATE_PROJECT_MUTATION = gql`
-mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
-    updateProject(data: $data, pk: $id) {
-        ... on ProjectTypeMutationResponseType {
-            errors
-            ok
-            result {
-                additionalInfoUrl
-                clientId
-                description
-                groupSize
-                id
-                isFeatured
-                lookFor
-                maxTasksPerUser
-                name
-                processingStatus
-                progress
-                projectType
-                image {
-                    id
-                    file {
-                        url
-                    }
-                }
-                projectTypeSpecifics {
-                    ... on CompareProjectPropertyType {
-                        aoiGeometry
-                        zoomLevel
-                        tileServerProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                        tileServerBProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                    }
-                    ... on FindProjectPropertyType {
-                        aoiGeometry
-                        tileServerProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                        zoomLevel
-                    }
-                    ... on CompletenessProjectPropertyType {
-                        __typename
-                        aoiGeometry
-                        tileServerBProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                        tileServerProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                        zoomLevel
-                    }
-                    ... on ValidateProjectPropertyType {
-                        __typename
-                        objectSource {
-                            aoiGeometry
-                            objectGeojsonUrl
-                            ohsomeFilter
-                            sourceType
-                            taskingManagerProjectId
-                        }
-                        tileServerProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                    }
-                }
-                requestingOrganization {
-                    id
-                    name
-                }
-                tutorial {
-                    id
-                    name
-                }
-                status
-                verificationNumber
-            }
-        }
-    }
-}
-`;
 
 interface Props {
     className?: string;
@@ -529,7 +306,7 @@ function UpdateProjectForm(props: Props) {
     const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessSpecificFields>(
         'completeness',
         setProjectSpecificFieldValue,
-        defaultCompareSpecificFormValue,
+        defaultCompletenessSpecificFormValue,
     );
 
     const pending = updateProjectPending;

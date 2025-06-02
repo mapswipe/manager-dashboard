@@ -1,4 +1,8 @@
-import { FaEdit } from 'react-icons/fa';
+import {
+    FaCalendarAlt,
+    FaEdit,
+    FaUser,
+} from 'react-icons/fa';
 import { GoOrganization } from 'react-icons/go';
 import { isDefined } from '@togglecorp/fujs';
 
@@ -7,6 +11,7 @@ import routes from '#base/configs/routes';
 import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import TextOutput from '#components/TextOutput';
 import {
@@ -113,17 +118,18 @@ function ProjectListItem(props: Props) {
                     />
                 </ListLayout>
                 <div>
-                    <TextOutput
-                        label="Created on"
-                        value={dateFormatter.format(new Date(value.createdAt))}
-                        description={(
-                            <TextOutput
-                                label="by"
-                                value={value.createdBy.displayName}
-                                withoutLabelColon
-                            />
-                        )}
-                    />
+                    <InlineLayout
+                        start={<FaCalendarAlt />}
+                        spacing="sm"
+                    >
+                        {dateFormatter.format(new Date(value.createdAt))}
+                    </InlineLayout>
+                    <InlineLayout
+                        start={<FaUser />}
+                        spacing="sm"
+                    >
+                        {value.createdBy.displayName}
+                    </InlineLayout>
                     <TextOutput
                         label="Look for"
                         value={value.lookFor}
@@ -132,6 +138,9 @@ function ProjectListItem(props: Props) {
                 <div className={styles.description}>
                     {value.description}
                 </div>
+                <ProjectSpecificDetails
+                    projectId={value.id}
+                />
             </Container>
         </InlineLayout>
     );

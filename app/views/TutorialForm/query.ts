@@ -1,5 +1,7 @@
 import { gql } from '@apollo/client';
 
+import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
+
 export const TUTORIAL_QUERY = gql`
 query TutorialDetails($id: ID!) {
     tutorial(id: $id) {
@@ -97,6 +99,7 @@ query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) 
 `;
 
 export const PROJECT_DETAIL_QUERY = gql`
+${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 query TutorialProjectDetail($projectId: ID!) {
     project(id: $projectId) {
         id
@@ -109,39 +112,7 @@ query TutorialProjectDetail($projectId: ID!) {
         }
         status
         projectTypeSpecifics {
-            ... on CompareProjectPropertyType {
-                __typename
-                zoomLevel
-                tileServerProperty {
-                    name
-                }
-                tileServerBProperty {
-                    name
-                }
-            }
-            ... on CompletenessProjectPropertyType {
-                __typename
-                zoomLevel
-                tileServerProperty {
-                    name
-                }
-                tileServerBProperty {
-                    name
-                }
-            }
-            ... on FindProjectPropertyType {
-                __typename
-                zoomLevel
-                tileServerProperty {
-                    name
-                }
-            }
-            ... on ValidateProjectPropertyType {
-                __typename
-                tileServerProperty {
-                    name
-                }
-            }
+            ...ProjectTypeSpecificFields
         }
         groupSize
         maxTasksPerUser

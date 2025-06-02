@@ -14,6 +14,9 @@ const config: CodegenConfig = {
                 // FIXME: Enable this later
                 // enumsAsTypes: true,
             },
+            presetConfig: {
+                fragmentMasking: false,
+            },
         }
     }
 }

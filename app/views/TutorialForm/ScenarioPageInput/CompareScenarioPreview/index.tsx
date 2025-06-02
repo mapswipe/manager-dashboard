@@ -4,48 +4,36 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
-import {
-    PathOptions,
-    StyleFunction,
-} from 'leaflet';
+import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectTileServerConfig } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
 import { iconMap } from '#utils/icon';
-import { getTileServerUrlAndCredits } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
-interface CompareTutorialProperties {
-    reference: number;
-}
-
-const previewStyles: StyleFunction<CompareTutorialProperties> = (feature) => {
-    const comparePreviewStylesObject: PathOptions = {
-        color: '#ffffff',
-        stroke: true,
-        weight: 0.5,
-        fillOpacity: 0.2,
-    };
-    if (!feature) {
-        return comparePreviewStylesObject;
-    }
-    const referenceColorMap: Record<number, string> = {
-        0: 'transparent',
-        1: 'green',
-        2: 'yellow',
-        3: 'red',
-    };
-    const ref = feature.properties.reference;
-    return {
-        ...comparePreviewStylesObject,
-        fillColor: referenceColorMap[ref] || 'transparent',
-    };
+const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
+    type: 'fill',
+    paint: {
+        'fill-color': [
+            'match',
+            ['get', 'reference'],
+            1,
+            'green',
+            2,
+            'yellow',
+            3,
+            'red',
+            'transparent',
+        ],
+        'fill-outline-color': '#ffffff',
+        'fill-opacity': 0.2,
+    },
 };
 
 interface Props {
@@ -66,9 +54,6 @@ function CompareScenarioPreview(props: Props) {
     } = props;
 
     const [preview, setPreview] = useState<PreviewItem | undefined>();
-
-    const tileServerConfig = getTileServerUrlAndCredits(removeNull(tileServerProperty));
-    const tileServerBConfig = getTileServerUrlAndCredits(removeNull(tileServerBProperty));
 
     const generatedGeojson = useMemo(() => {
         const tiles = scenario?.tasks?.map((task) => ({
@@ -92,20 +77,21 @@ function CompareScenarioPreview(props: Props) {
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
                 popupVerticalPosition="center"
+                contentClassName={styles.previewContent}
             >
                 <GeoJsonPreview
                     className={styles.mapContainer}
-                    geoJson={generatedGeojson}
-                    url={tileServerConfig?.url}
-                    attribution={tileServerConfig?.credits}
-                    previewStyle={previewStyles}
+                    geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                    baseTileServer={removeNull(tileServerProperty)}
+                    geoJsonLayerOptions={layerOptions}
+                    padding={0}
                 />
                 <GeoJsonPreview
                     className={styles.mapContainer}
-                    geoJson={generatedGeojson}
-                    url={tileServerBConfig?.url}
-                    attribution={tileServerBConfig?.credits}
-                    previewStyle={previewStyles}
+                    geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                    baseTileServer={removeNull(tileServerBProperty)}
+                    geoJsonLayerOptions={layerOptions}
+                    padding={0}
                 />
             </MobilePreview>
             <PreviewSegmentInput

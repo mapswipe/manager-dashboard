@@ -12,11 +12,7 @@ import {
     TileServerCustomConfigInput,
     TileServerNameEnum,
 } from '#generated/types/graphql';
-import {
-    imageryUrlCondition,
-    tileServerDefaultCredits,
-    tileServerUrls,
-} from '#utils/common';
+import { imageryUrlCondition } from '#utils/common';
 import { DeepNonNullable } from '#utils/types';
 
 export type TileInputKeys = Exclude<keyof ProjectTileServerConfigInput, 'name'>;
@@ -33,9 +29,9 @@ export const tileServerNameToTileInputKey: Record<TileServerNameEnum, TileInputK
 export type PartialTileServerInputFields = PartialForm<
     DeepNonNullable<ProjectTileServerConfigInput>
 >;
-type ProjectTileFormSchema = ObjectSchema<PartialTileServerInputFields>;
+type TileServerFormSchema = ObjectSchema<PartialTileServerInputFields>;
 
-type TileServerFormFields = ReturnType<ProjectTileFormSchema['fields']>;
+type TileServerFormFields = ReturnType<TileServerFormSchema['fields']>;
 
 export type PartialCustomTileServerConfigFields = PartialForm<
     DeepNonNullable<TileServerCustomConfigInput>
@@ -47,39 +43,13 @@ export type PartialCommonTileServerConfigFields = PartialForm<
 >;
 type CommonTileServerConfigSchema = ObjectSchema<PartialCommonTileServerConfigFields>;
 
-export const defaultTileServerInputFormValue: PartialTileServerInputFields = {
-    name: TileServerNameEnum.Bing,
-    bing: {
-        credits: tileServerDefaultCredits[TileServerNameEnum.Bing],
+export const defaultTileServerInputValue: PartialTileServerInputFields = {
+    name: TileServerNameEnum.Custom,
+    custom: {
     },
 };
 
-export function getTileServerUrlAndCredits(
-    tileServerProperty: PartialTileServerInputFields | undefined,
-) {
-    if (isNotDefined(tileServerProperty)) {
-        return undefined;
-    }
-
-    const { name } = tileServerProperty;
-    if (isNotDefined(name)) {
-        return undefined;
-    }
-
-    if (name === TileServerNameEnum.Custom) {
-        return {
-            url: tileServerProperty.custom?.url,
-            credits: tileServerProperty.custom?.credits,
-        };
-    }
-
-    return {
-        url: tileServerUrls[name],
-        credits: tileServerProperty[tileServerNameToTileInputKey[name]]?.credits,
-    };
-}
-
-const tileServerFormSchema: ProjectTileFormSchema = {
+const tileServerFormSchema: TileServerFormSchema = {
     fields: (value): TileServerFormFields => {
         const defaultTileServerFieldSchema: TileServerFormFields = {
             custom: { forceValue: undefinedValue },

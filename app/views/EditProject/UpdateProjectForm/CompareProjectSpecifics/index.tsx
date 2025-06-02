@@ -11,7 +11,7 @@ import AssetInput from '#views/EditProject/AssetInput';
 
 import TileServerInput from '../TileServerInput';
 import {
-    defaultTileServerInputFormValue,
+    defaultTileServerInputValue,
     PartialTileServerInputFields,
 } from '../TileServerInput/schema';
 import { type PartialCompareSpecificFields } from './schema';
@@ -38,13 +38,13 @@ function CompareProjectSpecifics(props: Props) {
     const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
         'tileServerProperty',
         setFieldValue,
-        defaultTileServerInputFormValue,
+        defaultTileServerInputValue,
     );
 
     const setTileServerBInputFieldValue = useFormObject<'tileServerBProperty', PartialTileServerInputFields>(
         'tileServerBProperty',
         setFieldValue,
-        defaultTileServerInputFormValue,
+        defaultTileServerInputValue,
     );
 
     return (

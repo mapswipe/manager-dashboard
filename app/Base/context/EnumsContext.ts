@@ -7,8 +7,10 @@ export const defaultAllEnumsValue: AllEnumsQuery['enums'] = {
     ProjectStatusEnum: [],
     ProjectTypeEnum: [],
     TileServerNameEnum: [],
+    VectorTileServerNameEnum: [],
     TutorialInformationPageBlockTypeEnum: [],
     TutorialScenarioIconEnum: [],
+    OverlayLayerTypeEnum: [],
 };
 
 const EnumsContext = createContext<AllEnumsQuery['enums']>(defaultAllEnumsValue);

@@ -62,6 +62,7 @@ const link: ApolloLinkFromClient = ApolloLink.from([
 */
 
 const apolloOptions: ApolloClientOptions<NormalizedCacheObject> = {
+    dataMasking: false,
     link: concat(
         authLink as unknown as ApolloLink,
         link,

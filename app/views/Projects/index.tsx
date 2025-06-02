@@ -83,25 +83,6 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
                     url
                 }
             }
-            projectTypeSpecifics {
-                ... on CompareProjectPropertyType {
-                    __typename
-                    zoomLevel
-                    tileServerProperty {
-                        name
-                    }
-                    tileServerBProperty {
-                        name
-                    }
-                }
-                ... on FindProjectPropertyType {
-                    __typename
-                    zoomLevel
-                    tileServerProperty {
-                        name
-                    }
-                }
-            }
             requestingOrganization {
                 name
                 id

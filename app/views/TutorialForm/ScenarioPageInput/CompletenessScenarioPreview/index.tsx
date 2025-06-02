@@ -4,54 +4,45 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
-import {
-    PathOptions,
-    StyleFunction,
-} from 'leaflet';
+import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
-import { ProjectTileServerConfig } from '#generated/types/graphql';
+import {
+    ProjectOverlayTileServerConfig,
+    ProjectTileServerConfig,
+} from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
 import { iconMap } from '#utils/icon';
-import { getTileServerUrlAndCredits } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
-interface CompletenessTutorialProperties {
-    reference: number;
-}
-
-const previewStyles: StyleFunction<CompletenessTutorialProperties> = (feature) => {
-    const completenessPreviewStylesObject: PathOptions = {
-        color: '#ffffff',
-        stroke: true,
-        weight: 0.5,
-        fillOpacity: 0.2,
-    };
-    if (!feature) {
-        return completenessPreviewStylesObject;
-    }
-    const referenceColorMap: Record<number, string> = {
-        0: 'transparent',
-        1: 'green',
-        2: 'yellow',
-        3: 'red',
-    };
-    const ref = feature.properties.reference;
-    return {
-        ...completenessPreviewStylesObject,
-        fillColor: referenceColorMap[ref] || 'transparent',
-    };
+const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
+    type: 'fill',
+    paint: {
+        'fill-color': [
+            'match',
+            ['get', 'reference'],
+            1,
+            'green',
+            2,
+            'yellow',
+            3,
+            'red',
+            'transparent',
+        ],
+        'fill-outline-color': '#ffffff',
+        'fill-opacity': 0.2,
+    },
 };
 
 interface Props {
     className?: string;
     tileServerProperty: ProjectTileServerConfig | undefined;
-    tileServerBProperty: ProjectTileServerConfig | undefined;
+    overlayTileServerProperty: ProjectOverlayTileServerConfig | undefined;
     lookFor: string | undefined;
     scenario: PartialScenarioPageInputFields | undefined;
 }
@@ -62,13 +53,10 @@ function CompletenessScenarioPreview(props: Props) {
         scenario,
         lookFor,
         tileServerProperty,
-        tileServerBProperty,
+        overlayTileServerProperty,
     } = props;
 
     const [preview, setPreview] = useState<PreviewItem | undefined>();
-
-    const tileServerConfig = getTileServerUrlAndCredits(removeNull(tileServerProperty));
-    const tileServerBConfig = getTileServerUrlAndCredits(removeNull(tileServerBProperty));
 
     const generatedGeojson = useMemo(() => {
         const tiles = scenario?.tasks?.map((task) => ({
@@ -95,17 +83,17 @@ function CompletenessScenarioPreview(props: Props) {
             >
                 <GeoJsonPreview
                     className={styles.mapContainer}
-                    geoJson={generatedGeojson}
-                    url={tileServerConfig?.url}
-                    attribution={tileServerConfig?.credits}
-                    previewStyle={previewStyles}
+                    geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                    baseTileServer={removeNull(tileServerProperty)}
+                    geoJsonLayerOptions={layerOptions}
+                    padding={0}
                 />
                 <GeoJsonPreview
                     className={_cs(styles.mapContainer, styles.overlay)}
-                    geoJson={generatedGeojson}
-                    url={tileServerBConfig?.url}
-                    attribution={tileServerBConfig?.credits}
-                    previewStyle={previewStyles}
+                    geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                    baseTileServer={removeNull(overlayTileServerProperty)}
+                    geoJsonLayerOptions={layerOptions}
+                    padding={0}
                 />
             </MobilePreview>
             <PreviewSegmentInput

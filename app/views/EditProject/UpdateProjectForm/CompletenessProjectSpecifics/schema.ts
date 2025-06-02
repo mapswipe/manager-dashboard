@@ -5,17 +5,15 @@ import {
     requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
-import {
-    CompletenessProjectPropertyInput,
-    TileServerNameEnum,
-} from '#generated/types/graphql';
+import { CompletenessProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
 import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import tileServerFormSchema from '../TileServerInput/schema';
+import tileServerFormSchema, { defaultTileServerInputValue } from '../TileServerInput/schema';
+import overlayTileServerPropertySchema, { defaultOverlayTileServerPropertyInputValue } from './OverlayTileServerPropertyInput/schema';
 
 export type PartialCompletenessSpecificFields = PartialForm<
     DeepNonNullable<CompletenessProjectPropertyInput>
@@ -27,13 +25,9 @@ type CompletenessSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultCompletenessSpecificFormValue: PartialCompletenessSpecificFields = {
-    zoomLevel: 18,
-    tileServerProperty: {
-        name: TileServerNameEnum.Bing,
-    },
-    tileServerBProperty: {
-        name: TileServerNameEnum.Mapbox,
-    },
+    zoomLevel: 16,
+    tileServerProperty: defaultTileServerInputValue,
+    overlayTileServerProperty: defaultOverlayTileServerPropertyInputValue,
 };
 
 const completenessSpecificFormSchema: CompletenessSpecificFormSchema = {
@@ -43,7 +37,7 @@ const completenessSpecificFormSchema: CompletenessSpecificFormSchema = {
             validations: [greaterThanCondition(0)],
         },
         tileServerProperty: tileServerFormSchema,
-        tileServerBProperty: tileServerFormSchema,
+        overlayTileServerProperty: overlayTileServerPropertySchema,
         aoiGeometry: {
             required: true,
             requiredValidation: requiredStringCondition,

@@ -45,7 +45,3 @@ jobs:
           APP_GRAPHQL_API_DOMAIN: 'https://random-graphql-api-endpoint.com'
           APP_SENTRY_DSN: 'https://random-token@sentry.io'
           APP_SENTRY_TRACES_SAMPLE_RATE: 0.2
-          APP_BING_API_KEY: 'random-bing-id'
-          APP_MAPBOX_API_KEY: 'random-mapbox-key'
-          APP_MAXAR_PREMIUM_API_KEY: 'random-maxar-premium-api-key'
-          APP_MAXAR_STANDARD_API_KEY: 'random-maxar-standard-api-key'

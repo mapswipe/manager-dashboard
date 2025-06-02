@@ -8,7 +8,7 @@ import {
 
 import TileServerInput from '../TileServerInput';
 import {
-    defaultTileServerInputFormValue,
+    defaultTileServerInputValue,
     PartialTileServerInputFields,
 } from '../TileServerInput/schema';
 import {
@@ -40,7 +40,7 @@ function ValidateProjectSpecifics(props: Props) {
     const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
         'tileServerProperty' as const,
         setFieldValue,
-        defaultTileServerInputFormValue,
+        defaultTileServerInputValue,
     );
 
     const setObjectSourceInputFieldValue = useFormObject<'objectSource', PartialValidateObjectSourceInputFields>(

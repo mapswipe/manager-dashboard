@@ -10,7 +10,7 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import tileServerFormSchema, { defaultTileServerInputFormValue } from '../TileServerInput/schema';
+import tileServerFormSchema, { defaultTileServerInputValue } from '../TileServerInput/schema';
 import objectSourceFormSchema, { defaultObjectSourceInputFormValue } from './ObjectSourceInput/schema';
 
 export type PartialValidateSpecificFields = PartialForm<
@@ -24,7 +24,7 @@ type ValidateSpecificFormSchema = ObjectSchema<
 
 export const defaultValidateSpecificFormValue: PartialValidateSpecificFields = {
     objectSource: defaultObjectSourceInputFormValue,
-    tileServerProperty: defaultTileServerInputFormValue,
+    tileServerProperty: defaultTileServerInputValue,
 };
 
 const validateSpecificFormSchema: ValidateSpecificFormSchema = {

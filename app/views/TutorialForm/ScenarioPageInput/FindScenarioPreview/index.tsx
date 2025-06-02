@@ -4,48 +4,36 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
-import {
-    PathOptions,
-    StyleFunction,
-} from 'leaflet';
+import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectTileServerConfig } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
 import { iconMap } from '#utils/icon';
-import { getTileServerUrlAndCredits } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
-interface FindTutorialProperties {
-    reference: number;
-}
-
-const previewStyles: StyleFunction<FindTutorialProperties> = (feature) => {
-    const findPreviewStylesObject: PathOptions = {
-        color: '#ffffff',
-        stroke: true,
-        weight: 0.5,
-        fillOpacity: 0.2,
-    };
-    if (!feature) {
-        return findPreviewStylesObject;
-    }
-    const referenceColorMap: Record<number, string> = {
-        0: 'transparent',
-        1: 'green',
-        2: 'yellow',
-        3: 'red',
-    };
-    const ref = feature.properties.reference;
-    return {
-        ...findPreviewStylesObject,
-        fillColor: referenceColorMap[ref] || 'transparent',
-    };
+const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
+    type: 'fill',
+    paint: {
+        'fill-color': [
+            'match',
+            ['get', 'reference'],
+            1,
+            'green',
+            2,
+            'yellow',
+            3,
+            'red',
+            'transparent',
+        ],
+        'fill-outline-color': '#ffffff',
+        'fill-opacity': 0.2,
+    },
 };
 
 interface Props {
@@ -62,8 +50,6 @@ function FindScenarioPreview(props: Props) {
         lookFor,
         tileServerProperty,
     } = props;
-
-    const tileServerConfig = getTileServerUrlAndCredits(removeNull(tileServerProperty));
 
     const generatedGeojson = useMemo(() => {
         const tiles = scenario?.tasks?.map((task) => ({
@@ -92,9 +78,9 @@ function FindScenarioPreview(props: Props) {
                 <GeoJsonPreview
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
-                    url={tileServerConfig?.url}
-                    attribution={tileServerConfig?.credits}
-                    previewStyle={previewStyles}
+                    baseTileServer={removeNull(tileServerProperty)}
+                    geoJsonLayerOptions={layerOptions}
+                    padding={0}
                 />
             </MobilePreview>
             <PreviewSegmentInput

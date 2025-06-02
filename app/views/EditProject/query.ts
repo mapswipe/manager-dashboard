@@ -1,35 +1,14 @@
 import { gql } from '@apollo/client';
 
-export const TILE_SERVER_PROPERTY_FRAGMENT = gql`
-fragment TileServerPropertyFields on ProjectTileServerConfig {
-    bing {
-        credits
-    }
-    custom {
-        credits
-        url
-    }
-    esri {
-        credits
-    }
-    esriBeta {
-        credits
-    }
-    mapbox {
-        credits
-    }
-    maxarPremium {
-        credits
-    }
-    maxarStandard {
-        credits
-    }
-    name
-}
-`;
+import {
+    TILE_SERVER_PROPERTY_FRAGMENT,
+    VECTOR_TILE_SERVER_PROPERTY_FRAGMENT,
+} from '#utils/query';
 
+// eslint-disable-next-line import/prefer-default-export
 export const PROJECT_QUERY = gql`
 ${TILE_SERVER_PROPERTY_FRAGMENT}
+${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
 query ProjectDetails($id: ID!) {
     project(id: $id) {
         additionalInfoUrl
@@ -69,62 +48,36 @@ query ProjectDetails($id: ID!) {
                 zoomLevel
             }
             ... on CompletenessProjectPropertyType {
-                __typename
                 aoiGeometry
-                tileServerBProperty {
-                    bing {
-                        credits
+                overlayTileServerProperty {
+                    type
+                    vector {
+                        circleColor
+                        circleOpacity
+                        circleRadius
+                        fillColor
+                        fillOpacity
+                        lineColor
+                        lineDasharray
+                        lineOpacity
+                        lineWidth
+                        tileServer {
+                            ...VectorTileServerPropertyFields
+                        }
                     }
-                    custom {
-                        credits
-                        url
+                    raster {
+                        opacity,
+                        tileServer {
+                            ...TileServerPropertyFields
+                        }
                     }
-                    esri {
-                        credits
-                    }
-                    esriBeta {
-                        credits
-                    }
-                    mapbox {
-                        credits
-                    }
-                    maxarPremium {
-                        credits
-                    }
-                    maxarStandard {
-                        credits
-                    }
-                    name
                 }
                 tileServerProperty {
-                    bing {
-                        credits
-                    }
-                    custom {
-                        credits
-                        url
-                    }
-                    esri {
-                        credits
-                    }
-                    esriBeta {
-                        credits
-                    }
-                    mapbox {
-                        credits
-                    }
-                    maxarPremium {
-                        credits
-                    }
-                    maxarStandard {
-                        credits
-                    }
-                    name
+                    ...TileServerPropertyFields
                 }
                 zoomLevel
             }
             ... on ValidateProjectPropertyType {
-                __typename
                 objectSource {
                     aoiGeometry
                     objectGeojsonUrl
@@ -133,29 +86,7 @@ query ProjectDetails($id: ID!) {
                     taskingManagerProjectId
                 }
                 tileServerProperty {
-                    bing {
-                        credits
-                    }
-                    custom {
-                        credits
-                        url
-                    }
-                    esri {
-                        credits
-                    }
-                    esriBeta {
-                        credits
-                    }
-                    mapbox {
-                        credits
-                    }
-                    maxarPremium {
-                        credits
-                    }
-                    maxarStandard {
-                        credits
-                    }
-                    name
+                    ...TileServerPropertyFields
                 }
             }
         }
