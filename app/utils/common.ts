@@ -4,7 +4,6 @@ import { isDefined } from '@togglecorp/fujs';
 import {
     ProjectTypeEnum,
     ProjectTypeSpecificInput,
-    TileServerNameEnum,
 } from '#generated/types/graphql';
 
 export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
@@ -87,37 +86,12 @@ export const defaultPagePerItemOptions = [
     { value: 100, label: '100 items / page' },
 ];
 
-const BING_KEY = import.meta.env.APP_BING_API_KEY;
-const MAPBOX_KEY = import.meta.env.APP_MAPBOX_API_KEY;
-const MAXAR_PREMIUM = import.meta.env.APP_MAXAR_PREMIUM_API_KEY;
-const MAXAR_STANDARD = import.meta.env.APP_MAXAR_STANDARD_API_KEY;
-
-export const tileServerUrls: {
-    [key in Exclude<TileServerNameEnum, 'CUSTOM'>]: string;
-} = {
-    [TileServerNameEnum.Bing]: `https://ecn.t0.tiles.virtualearth.net/tiles/a{quad_key}.jpeg?g=7505&token=${BING_KEY}`,
-    [TileServerNameEnum.Mapbox]: `https://d.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.jpg?access_token=${MAPBOX_KEY}`,
-    [TileServerNameEnum.MaxarPremium]: `https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe%3AImageryTileService@EPSG%3A3857@jpg/{z}/{x}/{y}.jpg?connectId=${MAXAR_PREMIUM}`,
-    [TileServerNameEnum.MaxarStandard]: `https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe%3AImageryTileService@EPSG%3A3857@jpg/{z}/{x}/{y}.jpg?connectId=${MAXAR_STANDARD}`,
-    [TileServerNameEnum.Esri]: 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    [TileServerNameEnum.EsriBeta]: 'https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-};
-
-export const tileServerDefaultCredits: Record<Exclude<TileServerNameEnum, 'CUSTOM'>, string> = {
-    [TileServerNameEnum.Bing]: '© 2019 Microsoft Corporation, Earthstar Geographics SIO',
-    [TileServerNameEnum.MaxarPremium]: '© 2019 Maxar',
-    [TileServerNameEnum.MaxarStandard]: '© 2019 Maxar',
-    [TileServerNameEnum.Esri]: '© 2019 ESRI',
-    [TileServerNameEnum.EsriBeta]: '© 2019 ESRI',
-    [TileServerNameEnum.Mapbox]: '© 2019 MapBox',
-};
-
 export function imageryUrlCondition(value: string | null | undefined) {
     if (!value) {
         return undefined;
     }
 
-    if (value.includes('{quad_key}')) {
+    if (value.includes('{quadkey}')) {
         return undefined;
     }
 
@@ -128,7 +102,7 @@ export function imageryUrlCondition(value: string | null | undefined) {
     ) {
         return undefined;
     }
-    return 'Imagery url must contain {x}, {y} (or {-y}) & {z} placeholders or {quad_key} placeholder.';
+    return 'Imagery url must contain {x}, {y} (or {-y}) & {z} placeholders or {quadkey} placeholder.';
 }
 
 export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
@@ -137,3 +111,66 @@ export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpeci
     [ProjectTypeEnum.Completeness]: 'completeness',
     [ProjectTypeEnum.Validate]: 'validate',
 };
+
+interface NumericValueOption {
+    value: number;
+    label: string;
+}
+
+interface StringValueOption {
+    value: string;
+    label: string;
+}
+
+export const colorOptions: StringValueOption[] = [
+    {
+        value: '#ffffff',
+        label: 'White',
+    },
+    {
+        value: '#000000',
+        label: 'Black',
+    },
+    {
+        value: '#ff0000',
+        label: 'Red',
+    },
+    {
+        value: '#00ff00',
+        label: 'Green',
+    },
+    {
+        value: '#0000ff',
+        label: 'Blue',
+    },
+];
+
+export const opacityOptions: NumericValueOption[] = [
+    {
+        value: 0.25,
+        label: '25%',
+    },
+    {
+        value: 0.5,
+        label: '50%',
+    },
+    {
+        value: 0.75,
+        label: '75%',
+    },
+    {
+        value: 1,
+        label: '100%',
+    },
+];
+
+export const lineWidthOptions: NumericValueOption[] = [
+    {
+        value: 1,
+        label: '1',
+    },
+    {
+        value: 2,
+        label: '2',
+    },
+];

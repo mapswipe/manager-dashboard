@@ -3,8 +3,7 @@
     background-color: var(--color-background-input);
     padding: var(--spacing-sm);
     width: 100%;
-    max-width: 20rem;
-    height: 16rem;
+    height: 20rem;
 
     .no-preview {
         display: flex;

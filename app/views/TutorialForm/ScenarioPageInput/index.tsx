@@ -263,7 +263,8 @@ function ScenarioPageInput(props: Props) {
                 <CompletenessScenarioPreview
                     scenario={value}
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    tileServerBProperty={projectData.projectTypeSpecifics?.tileServerBProperty}
+                    overlayTileServerProperty={projectData
+                        .projectTypeSpecifics?.overlayTileServerProperty}
                     lookFor={projectData.lookFor}
                 />
             )}

@@ -11,13 +11,39 @@ import { isDefined } from '@togglecorp/fujs';
 
 import PreloadMessage from '#base/components/PreloadMessage';
 import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';
+import TileServerContext, { defaultTileServersValue } from '#base/context/TileServerContext';
 import UserContext from '#base/context/UserContext';
 import {
     AllEnumsQuery,
     AllEnumsQueryVariables,
     MeQuery,
     MeQueryVariables,
+    TileServersQuery,
+    TileServersQueryVariables,
 } from '#generated/types/graphql';
+
+const TILE_SERVERS_QUERY = gql`
+query TileServers {
+    tileServers {
+        raster {
+            url
+            type
+            label
+            credits
+        }
+        vector {
+            label
+            layers
+            maxZoom
+            minZoom
+            type
+            url
+            credits
+        }
+    }
+}
+
+`;
 
 const ME_QUERY = gql`
 query Me {
@@ -43,6 +69,10 @@ query AllEnums {
             key
             label
         }
+        VectorTileServerNameEnum {
+            key
+            label
+        }
         TutorialInformationPageBlockTypeEnum {
             key
             label
@@ -52,6 +82,10 @@ query AllEnums {
             label
         }
         ValidateObjectSourceTypeEnum {
+            key
+            label
+        }
+        OverlayLayerTypeEnum {
             key
             label
         }
@@ -124,7 +158,15 @@ function Init(props: Props) {
         { skip: !csrfReady },
     );
 
-    if (!ready || !csrfReady) {
+    const {
+        loading: tileServersLoading,
+        data: tileServersResponse,
+    } = useQuery<TileServersQuery, TileServersQueryVariables>(
+        TILE_SERVERS_QUERY,
+        { skip: !csrfReady },
+    );
+
+    if (!ready || !csrfReady || tileServersLoading) {
         return (
             <PreloadMessage
                 className={preloadClassName}
@@ -134,11 +176,15 @@ function Init(props: Props) {
     }
 
     return (
-        <EnumsContext.Provider
-            value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+        <TileServerContext.Provider
+            value={tileServersResponse?.tileServers ?? defaultTileServersValue}
         >
-            {children}
-        </EnumsContext.Provider>
+            <EnumsContext.Provider
+                value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+            >
+                {children}
+            </EnumsContext.Provider>
+        </TileServerContext.Provider>
     );
 }
 export default Init;

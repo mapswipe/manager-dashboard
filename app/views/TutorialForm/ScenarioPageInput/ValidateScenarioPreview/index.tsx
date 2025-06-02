@@ -8,37 +8,26 @@ import {
     isNotDefined,
 } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
-import {
-    PathOptions,
-    StyleFunction,
-} from 'leaflet';
+import { LineLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectTileServerConfig } from '#generated/types/graphql';
 import { iconMap } from '#utils/icon';
-import { getTileServerUrlAndCredits } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
 
-interface ValidateTutorialProperties {
-    reference: number;
-}
-
-const previewStyles: StyleFunction<ValidateTutorialProperties> = () => {
-    const validatePreviewStylesObject: PathOptions = {
-        color: '#ffffff',
-        stroke: true,
-        weight: 2,
-        dashArray: '3',
-        fill: false,
-        opacity: 0.8,
-    };
-
-    return validatePreviewStylesObject;
+const layerOptions: Omit<LineLayerSpecification, 'id' | 'source'> = {
+    type: 'line',
+    paint: {
+        'line-color': '#ffffff',
+        'line-width': 2,
+        'line-dasharray': [3, 3],
+        'line-opacity': 0.8,
+    },
 };
 
 interface Props {
@@ -58,9 +47,7 @@ function ValidateScenarioPreview(props: Props) {
 
     const [preview, setPreview] = useState<PreviewItem | undefined>();
 
-    const tileServerConfig = getTileServerUrlAndCredits(removeNull(tileServerProperty));
-
-    const generatedGeojson = useMemo<GeoJSON.GeoJSON>(() => {
+    const generatedGeojson = useMemo<GeoJSON.FeatureCollection>(() => {
         const features: Array<GeoJSON.Feature> = scenario?.tasks?.map((task) => {
             if (isNotDefined(task.projectTypeSpecifics?.validate?.objectGeometry)) {
                 return undefined;
@@ -96,10 +83,8 @@ function ValidateScenarioPreview(props: Props) {
                 <GeoJsonPreview
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
-                    url={tileServerConfig?.url}
-                    attribution={tileServerConfig?.credits}
-                    previewStyle={previewStyles}
-                    padding={[130, 130]}
+                    baseTileServer={removeNull(tileServerProperty)}
+                    geoJsonLayerOptions={layerOptions}
                 />
             </MobilePreview>
             <PreviewSegmentInput

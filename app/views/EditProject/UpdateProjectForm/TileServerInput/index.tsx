@@ -1,8 +1,12 @@
 import {
     useCallback,
     useContext,
+    useMemo,
 } from 'react';
-import { isDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    listToMap,
+} from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -12,6 +16,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import EnumsContext from '#base/context/EnumsContext';
+import TileServerContext from '#base/context/TileServerContext';
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import RadioInput from '#components/RadioInput';
@@ -20,12 +25,10 @@ import { TileServerNameEnum } from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
-    tileServerDefaultCredits,
 } from '#utils/common';
 import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
 
 import {
-    getTileServerUrlAndCredits,
     PartialCommonTileServerConfigFields,
     PartialCustomTileServerConfigFields,
     type PartialTileServerInputFields,
@@ -34,7 +37,7 @@ import {
 } from './schema';
 
 interface Props {
-    label?: string;
+    label?: React.ReactNode;
     value: PartialTileServerInputFields | undefined,
     error: LeafError | ObjectError<PartialTileServerInputFields>,
     setFieldValue: (...entries: EntriesAsList<PartialTileServerInputFields>) => void;
@@ -44,7 +47,7 @@ interface Props {
 
 function TileServerInput(props: Props) {
     const {
-        label = 'Tile server',
+        label = 'Tile Server',
         value,
         error: formError,
         setFieldValue,
@@ -78,20 +81,23 @@ function TileServerInput(props: Props) {
         {},
     );
 
+    const { raster: rasterTileServers } = useContext(TileServerContext);
+    const tileServerMapping = useMemo(() => (
+        listToMap(rasterTileServers, ({ type }) => type)
+    ), [rasterTileServers]);
+
     const handleImageryServerChange = useCallback((newValue: TileServerNameEnum) => {
         setFieldValue(newValue, 'name');
 
         if (newValue !== TileServerNameEnum.Custom) {
             setFieldValue(
                 {
-                    credits: tileServerDefaultCredits[newValue],
+                    credits: tileServerMapping[newValue]?.credits,
                 },
                 tileServerNameToTileInputKey[newValue],
             );
         }
-    }, [setFieldValue]);
-
-    const tileServerValue = getTileServerUrlAndCredits(value);
+    }, [setFieldValue, tileServerMapping]);
 
     return (
         <Container
@@ -135,7 +141,7 @@ function TileServerInput(props: Props) {
                                 <TextInput
                                     name="url"
                                     label="Custom Imagery Server URL"
-                                    hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
+                                    hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quadkey} as placeholders and that already includes the api key."
                                     value={value.custom?.url}
                                     error={getErrorObject(error?.custom)?.url}
                                     onChange={setCustomTileServerFieldValue}
@@ -153,13 +159,10 @@ function TileServerInput(props: Props) {
                             </>
                         )}
                 </ListLayout>
-                {isDefined(aoiGeoJsonAssetId) && (
-                    <ProjectAssetPreview
-                        assetId={aoiGeoJsonAssetId}
-                        geoJsonImageryServerUrl={tileServerValue?.url}
-                        geoJsonImageryCredits={tileServerValue?.credits}
-                    />
-                )}
+                <ProjectAssetPreview
+                    assetId={aoiGeoJsonAssetId}
+                    geoJsonTileServer={value}
+                />
             </ListLayout>
         </Container>
     );

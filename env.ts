@@ -10,11 +10,6 @@ export default defineConfig({
         ? Schema.string()
         : Schema.string({ format: 'url', protocol: true, tld: false }),
 
-    APP_BING_API_KEY: Schema.string.optional(),
-    APP_MAPBOX_API_KEY: Schema.string.optional(),
-    APP_MAXAR_PREMIUM_API_KEY: Schema.string.optional(),
-    APP_MAXAR_STANDARD_API_KEY: Schema.string.optional(),
-
     APP_SENTRY_DSN: Schema.string.optional(),
     APP_SENTRY_TRACES_SAMPLE_RATE: Schema.string.optional(),
 

@@ -1,166 +1,82 @@
+import { ComponentProps } from 'react';
 import {
-    useEffect,
-    useRef,
-} from 'react';
-import { _cs } from '@togglecorp/fujs';
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 import {
-    Coords,
-    geoJSON,
-    Map,
-    map as createMap,
-    PointExpression,
-    StyleFunction,
-    TileLayer,
-} from 'leaflet';
+    MapBounds,
+    MapContainer,
+    MapLayer,
+    MapSource,
+} from '@togglecorp/re-map';
+import getBbox from '@turf/bbox';
+
+import BaseMap from '#components/BaseMap';
+import { type PartialTileServerInputFields } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import styles from './styles.module.css';
 
-const toQuadKey = (x: number, y: number, z: number) => {
-    let index = '';
-    for (let i = z; i > 0; i -= 1) {
-        let b = 0;
-        // eslint-disable-next-line no-bitwise
-        const mask = 1 << (i - 1);
-        // eslint-disable-next-line no-bitwise
-        if ((x & mask) !== 0) {
-            b += 1;
-        }
-        // eslint-disable-next-line no-bitwise
-        if ((y & mask) !== 0) {
-            b += 2;
-        }
-        index += b.toString();
-    }
-    return index;
+const DEFAULT_MAP_PADDING = 10;
+
+const geoJsonSourceOptions: Omit<maplibregl.GeoJSONSourceSpecification, 'data'> = {
+    type: 'geojson',
 };
 
-const BingTileLayer = TileLayer.extend({
-    getTileUrl(coords: Coords) {
-        const quadkey = toQuadKey(coords.x, coords.y, coords.z);
-        const { subdomains } = this.options;
-
-        // eslint-disable-next-line no-underscore-dangle
-        const url = this._url
-            .replace('{subdomain}', subdomains[(coords.x + coords.y) % subdomains.length])
-            .replace('{quad_key}', quadkey);
-
-        return url;
+const defaultGeoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'] = {
+    type: 'line',
+    paint: {
+        'line-color': '#ffffff',
+        'line-width': 1,
     },
-    toQuadKey,
-});
+};
 
 interface Props {
     className?: string;
-    geoJson: GeoJSON.GeoJSON | undefined;
-    url?: string | undefined;
-    previewStyle?: StyleFunction;
-    padding?: PointExpression;
-    attribution?: string;
+    baseTileServer: PartialTileServerInputFields | undefined;
+    geoJson: GeoJSON.Feature<GeoJSON.Geometry>
+        | GeoJSON.FeatureCollection<GeoJSON.Geometry>
+        | undefined;
+    geoJsonLayerOptions?: ComponentProps<typeof MapLayer>['layerOptions'];
+    padding?: number;
 }
 
 function GeoJsonPreview(props: Props) {
     const {
         className,
+        baseTileServer,
         geoJson,
-        url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        previewStyle,
-        padding,
-        attribution,
+        geoJsonLayerOptions = defaultGeoJsonLayerOptions,
+        padding = DEFAULT_MAP_PADDING,
     } = props;
 
-    const mapRef = useRef<Map>();
-    const mapContainerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(
-        () => {
-            if (mapContainerRef.current && !mapRef.current) {
-                mapRef.current = createMap(mapContainerRef.current, {
-                    zoom: 18,
-                    zoomSnap: 0,
-                    scrollWheelZoom: false,
-                    zoomControl: false,
-                    doubleClickZoom: false,
-                });
-            }
-
-            if (mapRef.current) {
-                // NOTE: show whole world by default
-                mapRef.current.setView(
-                    [0.0, 0.0],
-                    1,
-                );
-
-                const finalUrl = url;
-                const quadKeyUrl = finalUrl.indexOf('{quad_key}') !== -1;
-                const Layer = quadKeyUrl
-                    ? BingTileLayer
-                    : TileLayer;
-
-                const layer = new Layer(
-                    finalUrl,
-                    {
-                        // NOTE: we have a limit of 22
-                        maxZoom: 22,
-                        attribution,
-                    },
-                );
-
-                layer.addTo(mapRef.current);
-                mapRef.current.invalidateSize();
-            }
-
-            return () => {
-                if (mapRef.current) {
-                    mapRef.current.remove();
-                    mapRef.current = undefined;
-                }
-            };
-        },
-        [url, attribution],
-    );
-
-    useEffect(
-        () => {
-            if (!geoJson) {
-                return undefined;
-            }
-
-            const map = mapRef.current;
-            if (!map) {
-                return undefined;
-            }
-
-            const newGeoJson = geoJSON(geoJson, {
-                style: previewStyle,
-            });
-            newGeoJson.addTo(map);
-            const bounds = newGeoJson.getBounds();
-
-            if (bounds.isValid()) {
-                map.fitBounds(bounds, { padding });
-            }
-
-            return () => {
-                newGeoJson.removeFrom(map);
-                newGeoJson.remove();
-            };
-        },
-        // NOTE: adding url as dependency as url will re-create the map
-        [
-            geoJson,
-            url,
-            previewStyle,
-            padding,
-        ],
-    );
+    const bounds = isDefined(geoJson) ? getBbox(geoJson) : undefined;
 
     return (
-        <div className={_cs(styles.geoJsonPreview, className)}>
-            <div
-                ref={mapContainerRef}
-                className={styles.mapContainer}
-            />
-        </div>
+        <BaseMap
+            baseTileServer={baseTileServer}
+        >
+            {isDefined(geoJson) && (
+                <MapSource
+                    sourceKey="geojson-source"
+                    sourceOptions={geoJsonSourceOptions}
+                    geoJson={geoJson}
+                >
+                    <MapLayer
+                        layerKey="geojson-layer"
+                        layerOptions={geoJsonLayerOptions}
+                    />
+                </MapSource>
+            )}
+            <MapContainer className={_cs(styles.geoJsonPreview, className)} />
+            {isDefined(bounds) && (
+                <MapBounds
+                    bounds={bounds as [number, number, number, number]}
+                    padding={padding}
+                    // FIXME: use constants
+                    duration={1000}
+                />
+            )}
+        </BaseMap>
     );
 }
 

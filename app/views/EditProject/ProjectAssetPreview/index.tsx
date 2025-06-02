@@ -8,6 +8,7 @@ import {
 } from '@apollo/client';
 import {
     _cs,
+    isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 
@@ -17,6 +18,8 @@ import {
     ProjectAssetPreviewQuery,
     ProjectAssetPreviewQueryVariables,
 } from '#generated/types/graphql';
+
+import { PartialTileServerInputFields } from '../UpdateProjectForm/TileServerInput/schema';
 
 import styles from './styles.module.css';
 
@@ -36,17 +39,15 @@ query ProjectAssetPreview($assetId: ID!) {
 
 interface Props {
     className?: string;
-    assetId: string;
-    geoJsonImageryServerUrl?: string;
-    geoJsonImageryCredits?: string;
+    assetId: string | undefined;
+    geoJsonTileServer?: PartialTileServerInputFields;
 }
 
 function ProjectAssetPreview(props: Props) {
     const {
         className: classNameFromProps,
         assetId,
-        geoJsonImageryServerUrl,
-        geoJsonImageryCredits,
+        geoJsonTileServer,
     } = props;
 
     const [geoJson, setGeoJson] = useState<object | undefined>();
@@ -57,7 +58,7 @@ function ProjectAssetPreview(props: Props) {
         PROJECT_ASSET_PREVIEW,
         {
             variables: {
-                assetId,
+                assetId: assetId ?? '',
             },
             skip: isNotDefined(assetId),
         },
@@ -92,30 +93,24 @@ function ProjectAssetPreview(props: Props) {
         fetchGeoJson();
     }, [previewResponse, Geojson]);
 
-    if (isNotDefined(previewResponse)) {
-        return (
-            <div className={className}>
-                <div className={styles.noPreview}>
-                    Preview not available!
-                </div>
-            </div>
-        );
-    }
+    const projectAsset = previewResponse?.projectAsset;
+    const mimetype = projectAsset?.mimetype;
 
-    const {
-        projectAsset: {
+    if (
+        isDefined(projectAsset)
+            && (
+                mimetype === ImageGif
+                    || mimetype === ImagePng
+                    || mimetype === ImageJpeg
+            )
+    ) {
+        const {
             file: {
                 url,
                 name,
             },
-            mimetype,
-        },
-    } = previewResponse;
+        } = projectAsset;
 
-    if (mimetype === ImageGif
-        || mimetype === ImagePng
-        || mimetype === ImageJpeg
-    ) {
         return (
             <div className={className}>
                 <img
@@ -127,15 +122,14 @@ function ProjectAssetPreview(props: Props) {
         );
     }
 
-    if (mimetype === Geojson) {
+    if (mimetype === Geojson || isDefined(geoJsonTileServer)) {
         return (
             <div className={className}>
                 <GeoJsonPreview
                     className={styles.geoJson}
                     // FIXME: We need to also add a validation
-                    geoJson={geoJson as unknown as GeoJSON.GeoJSON}
-                    url={geoJsonImageryServerUrl}
-                    attribution={geoJsonImageryCredits}
+                    geoJson={geoJson as unknown as GeoJSON.FeatureCollection}
+                    baseTileServer={geoJsonTileServer}
                 />
             </div>
         );

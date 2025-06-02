@@ -11,7 +11,7 @@ import AssetInput from '#views/EditProject/AssetInput';
 
 import TileServerInput from '../TileServerInput';
 import {
-    defaultTileServerInputFormValue,
+    defaultTileServerInputValue,
     PartialTileServerInputFields,
 } from '../TileServerInput/schema';
 import { type PartialFindSpecificFields } from './schema';
@@ -38,7 +38,7 @@ function FindProjectSpecifics(props: Props) {
     const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
         'tileServerProperty' as const,
         setFieldValue,
-        defaultTileServerInputFormValue,
+        defaultTileServerInputValue,
     );
 
     return (

@@ -11,9 +11,11 @@ import AssetInput from '#views/EditProject/AssetInput';
 
 import TileServerInput from '../TileServerInput';
 import {
-    defaultTileServerInputFormValue,
+    defaultTileServerInputValue,
     PartialTileServerInputFields,
 } from '../TileServerInput/schema';
+import { PartialOverlayTileServerPropertyInputFields } from './OverlayTileServerPropertyInput/schema';
+import OverlayTileServerPropertyInput from './OverlayTileServerPropertyInput';
 import { type PartialCompletenessSpecificFields } from './schema';
 
 interface Props {
@@ -38,13 +40,13 @@ function CompletenessProjectSpecifics(props: Props) {
     const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
         'tileServerProperty' as const,
         setFieldValue,
-        defaultTileServerInputFormValue,
+        defaultTileServerInputValue,
     );
 
-    const setTileServerBInputFieldValue = useFormObject<'tileServerBProperty', PartialTileServerInputFields>(
-        'tileServerBProperty' as const,
+    const setOverlayTileServerInputFieldValue = useFormObject<'overlayTileServerProperty', PartialOverlayTileServerPropertyInputFields>(
+        'overlayTileServerProperty' as const,
         setFieldValue,
-        defaultTileServerInputFormValue,
+        {},
     );
 
     return (
@@ -60,20 +62,6 @@ function CompletenessProjectSpecifics(props: Props) {
                 disabled={disabled}
                 withoutPreview
             />
-            <TileServerInput
-                value={value?.tileServerProperty}
-                error={error?.tileServerProperty}
-                setFieldValue={setTileServerInputFieldValue}
-                disabled={disabled}
-                aoiGeoJsonAssetId={value?.aoiGeometry}
-            />
-            <TileServerInput
-                value={value?.tileServerBProperty}
-                error={error?.tileServerBProperty}
-                setFieldValue={setTileServerBInputFieldValue}
-                disabled={disabled}
-                aoiGeoJsonAssetId={value?.aoiGeometry}
-            />
             <NumberInput
                 label="Zoom level"
                 name="zoomLevel"
@@ -81,6 +69,22 @@ function CompletenessProjectSpecifics(props: Props) {
                 onChange={setFieldValue}
                 error={error?.zoomLevel}
                 disabled={disabled}
+            />
+            <TileServerInput
+                value={value?.tileServerProperty}
+                error={error?.tileServerProperty}
+                setFieldValue={setTileServerInputFieldValue}
+                disabled={disabled}
+                aoiGeoJsonAssetId={value?.aoiGeometry}
+            />
+            <OverlayTileServerPropertyInput
+                value={value?.overlayTileServerProperty}
+                error={error?.overlayTileServerProperty}
+                setFieldValue={setOverlayTileServerInputFieldValue}
+                disabled={disabled}
+                aoiGeoJsonAssetId={value?.aoiGeometry}
+                baseTileServer={value?.tileServerProperty}
+                zoomLevel={value?.zoomLevel}
             />
         </>
     );

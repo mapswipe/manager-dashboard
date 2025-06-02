@@ -12,7 +12,7 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import tileServerFormSchema, { defaultTileServerInputFormValue } from '../TileServerInput/schema';
+import tileServerFormSchema, { defaultTileServerInputValue } from '../TileServerInput/schema';
 
 export type PartialFindSpecificFields = PartialForm<DeepNonNullable<FindProjectPropertyInput>>;
 type FindSpecificFormSchema = ObjectSchema<
@@ -22,7 +22,7 @@ type FindSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultFindSpecificFormValue: PartialFindSpecificFields = {
-    tileServerProperty: defaultTileServerInputFormValue,
+    tileServerProperty: defaultTileServerInputValue,
 };
 
 const findSpecificFormSchema: FindSpecificFormSchema = {

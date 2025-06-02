@@ -480,14 +480,21 @@ function NewTutorial(props: Props) {
                                     .projectTypeSpecifics?.tileServerProperty.name}
                             />
                             {/* eslint-disable-next-line no-underscore-dangle */}
-                            {(projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType'
-                                // eslint-disable-next-line no-underscore-dangle
-                                || projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType'
-                            ) && (
+                            {(projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType') && (
                                 <TextOutput
                                     label="Tile server B"
                                     value={projectDetailResponse
                                         .project.projectTypeSpecifics?.tileServerBProperty.name}
+                                />
+                            )}
+
+                            {/* eslint-disable-next-line no-underscore-dangle */}
+                            {projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType' && (
+                                <TextOutput
+                                    label="Overlay Tile"
+                                    value={projectDetailResponse
+                                        .project.projectTypeSpecifics
+                                        ?.overlayTileServerProperty.type}
                                 />
                             )}
                         </Container>
