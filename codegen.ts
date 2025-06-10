@@ -8,15 +8,27 @@ const config: CodegenConfig = {
     ],
     ignoreNoDocuments: true, // for better experience with the watcher
     generates: {
-        './generated/types/': {
-            preset: 'client',
+        './generated/types/graphql.ts': {
+            plugins: [
+                'typescript',
+                'typescript-operations',
+                'typescript-urql',
+            ],
             config: {
+                withComponent: false,
+                withHooks: true,
+                purgeMagicComment: true,
+                gqlImport: 'urql#gql',
+                dedupeFragments: true,
+
                 // FIXME: Enable this later
                 // enumsAsTypes: true,
             },
-            presetConfig: {
-                fragmentMasking: false,
-            },
+        },
+        './generated/schema.json': {
+            plugins: [
+                'introspection'
+            ],
         }
     }
 }

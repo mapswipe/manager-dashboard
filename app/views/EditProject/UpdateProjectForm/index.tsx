@@ -8,10 +8,6 @@ import {
     MdSave,
 } from 'react-icons/md';
 import {
-    useMutation,
-    useQuery,
-} from '@apollo/client';
-import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -40,8 +36,8 @@ import {
     ProjectStatusEnum,
     ProjectTypeEnum,
     ProjectUpdateInput,
-    UpdateProjectMutation,
-    UpdateProjectMutationVariables,
+    useProjectStatusQuery,
+    useUpdateProjectMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert.ts';
 import useOptions from '#hooks/useOptions';
@@ -73,10 +69,6 @@ import {
 import CompareProjectSpecifics from './CompareProjectSpecifics';
 import CompletenessProjectSpecifics from './CompletenessProjectSpecifics';
 import FindProjectSpecifics from './FindProjectSpecifics';
-import {
-    PROJECT_STATUS_QUERY,
-    UPDATE_PROJECT_MUTATION,
-} from './query.ts';
 import projectUpdateFormSchema, {
     PartialProjectTypeSpecificInput,
     type PartialProjectUpdateInput,
@@ -97,21 +89,34 @@ function UpdateProjectForm(props: Props) {
     const [, setOrganizationOptions] = useOptions('organization');
     const [, setTutorialOptions] = useOptions('tutorial');
 
-    useQuery(
-        PROJECT_STATUS_QUERY,
-        {
-            variables: {
-                projectId: projectData.project.id,
-            },
-            skip: projectData.project.status !== ProjectStatusEnum.MarkedAsReady,
-            pollInterval: 3000,
+    const [, execProjectStatusQuery] = useProjectStatusQuery({
+        variables: {
+            projectId: projectData.project.id,
         },
-    );
+        pause: true,
+    });
+
+    useEffect(() => {
+        if (projectData.project.status !== ProjectStatusEnum.MarkedAsReady) {
+            return undefined;
+        }
+
+        const intervalId = setInterval(() => {
+            execProjectStatusQuery({ requestPolicy: 'cache-and-network' });
+        }, 3000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [
+        projectData.project.status,
+        execProjectStatusQuery,
+    ]);
 
     const [
+        { fetching: updateProjectPending },
         updateProject,
-        { loading: updateProjectPending },
-    ] = useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UPDATE_PROJECT_MUTATION);
+    ] = useUpdateProjectMutation();
 
     const defaultProjectTypeSpecificsValue = useMemo<PartialProjectTypeSpecificInput>(() => {
         if (projectData.project.projectType === ProjectTypeEnum.Find) {
@@ -199,10 +204,8 @@ function UpdateProjectForm(props: Props) {
     ) => {
         try {
             const result = await updateProject({
-                variables: {
-                    id: projectData.project.id,
-                    data: finalValues,
-                },
+                id: projectData.project.id,
+                data: finalValues,
             });
 
             if (checkAndAlertGraphQLResultError(result, alert)) {

@@ -11,7 +11,6 @@ query ProjectStatus($projectId: ID!) {
 }
 `;
 
-// FIXME: Check why fragment does not work here
 export const UPDATE_PROJECT_MUTATION = gql`
 ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {

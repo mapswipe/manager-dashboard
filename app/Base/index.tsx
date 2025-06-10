@@ -6,6 +6,7 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { Cookies } from 'react-cookie';
 import { BrowserRouter } from 'react-router';
 import {
     ApolloClient,
@@ -21,6 +22,12 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
+import { cacheExchange } from '@urql/exchange-graphcache';
+import {
+    Client as UrqlClient,
+    fetchExchange,
+    Provider as UrqlProvider,
+} from 'urql';
 
 import AppRoutes from '#base/components/AppRoutes';
 import AuthPopup from '#base/components/AuthPopup';
@@ -45,7 +52,25 @@ if (sentryConfig) {
     init(sentryConfig);
 }
 
+const COOKIE_NAME = `MAPSWIPE-${import.meta.env.APP_ENVIRONMENT}-CSRFTOKEN`;
+const GRAPHQL_ENDPOINT = `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/graphql/`;
+
+const cookies = new Cookies();
 const apolloClient = new ApolloClient(apolloConfig);
+const gqlClient = new UrqlClient({
+    url: GRAPHQL_ENDPOINT,
+    exchanges: [
+        cacheExchange(),
+        fetchExchange,
+    ],
+    fetchOptions: () => ({
+        headers: {
+            'X-CSRFToken': cookies.get(COOKIE_NAME),
+        },
+        credentials: 'include',
+    }),
+    // requestPolicy: 'network-only',
+});
 
 function Base() {
     const [user, setUser] = useState<User | undefined>();
@@ -133,31 +158,33 @@ function Base() {
                     />
                 )}
             >
-                <ApolloProvider client={apolloClient}>
-                    <OptionContext.Provider value={optionContextValue}>
-                        <UserContext.Provider value={userContext}>
-                            <AlertContext.Provider value={alertContextValue}>
-                                <NavbarContext.Provider value={navbarContext}>
-                                    <AlertContainer />
-                                    <AuthPopup />
-                                    <BrowserRouter>
-                                        <Init preloadClassName={styles.init}>
-                                            <Navbar
-                                                className={_cs(
-                                                    styles.navbar,
-                                                    !navbarVisibility && styles.hidden,
-                                                )}
-                                            />
-                                            <AppRoutes
-                                                routeClassName={styles.view}
-                                            />
-                                        </Init>
-                                    </BrowserRouter>
-                                </NavbarContext.Provider>
-                            </AlertContext.Provider>
-                        </UserContext.Provider>
-                    </OptionContext.Provider>
-                </ApolloProvider>
+                <UrqlProvider value={gqlClient}>
+                    <ApolloProvider client={apolloClient}>
+                        <OptionContext.Provider value={optionContextValue}>
+                            <UserContext.Provider value={userContext}>
+                                <AlertContext.Provider value={alertContextValue}>
+                                    <NavbarContext.Provider value={navbarContext}>
+                                        <AlertContainer />
+                                        <AuthPopup />
+                                        <BrowserRouter>
+                                            <Init preloadClassName={styles.init}>
+                                                <Navbar
+                                                    className={_cs(
+                                                        styles.navbar,
+                                                        !navbarVisibility && styles.hidden,
+                                                    )}
+                                                />
+                                                <AppRoutes
+                                                    routeClassName={styles.view}
+                                                />
+                                            </Init>
+                                        </BrowserRouter>
+                                    </NavbarContext.Provider>
+                                </AlertContext.Provider>
+                            </UserContext.Provider>
+                        </OptionContext.Provider>
+                    </ApolloProvider>
+                </UrqlProvider>
             </ErrorBoundary>
         </div>
     );
