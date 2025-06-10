@@ -21,7 +21,8 @@ interface Props {
     children: React.ReactNode;
     withPadding?: boolean;
     withWrap?: boolean;
-    numPreferredGridColumns?: 2 | 3 | 4 | 5;
+    numPreferredGridColumns?: number;
+    minGridColumnSize?: string;
 }
 
 function ListLayout(props: Props) {
@@ -33,6 +34,7 @@ function ListLayout(props: Props) {
         withWrap,
         children,
         numPreferredGridColumns = 2,
+        minGridColumnSize = '12rem',
     } = props;
 
     const elementRef = useRef<HTMLDivElement>(null);
@@ -44,6 +46,11 @@ function ListLayout(props: Props) {
                 String(numPreferredGridColumns),
             );
 
+            elementRef.current?.style.setProperty(
+                '--min-grid-column-size',
+                String(minGridColumnSize),
+            );
+
             const paddingPartitions = withPadding ? 2 : 0;
             const gapPartitions = numPreferredGridColumns - 1;
             const numPartitions = paddingPartitions + gapPartitions;
@@ -52,7 +59,7 @@ function ListLayout(props: Props) {
                 `calc(${getSpacingValue(spacing)} * ${numPartitions})`,
             );
         }
-    }, [numPreferredGridColumns, layout, withPadding, spacing]);
+    }, [numPreferredGridColumns, minGridColumnSize, layout, withPadding, spacing]);
 
     const spacingClassName = useSpacingToken({
         spacing,

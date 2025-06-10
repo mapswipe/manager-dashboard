@@ -1,14 +1,20 @@
-import {
-    FaCalendarAlt,
-    FaEdit,
-    FaUser,
-} from 'react-icons/fa';
+import { useState } from 'react';
+import { FaEdit } from 'react-icons/fa';
 import { GoOrganization } from 'react-icons/go';
+import {
+    IoCalendar,
+    IoChevronDown,
+    IoChevronUp,
+    IoEye,
+    IoPerson,
+} from 'react-icons/io5';
 import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
+import Button from '#components/Button';
 import Container from '#components/Container';
+import GridLayoutItem from '#components/GridLayoutItem';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
@@ -54,15 +60,6 @@ function Meta(props: MetaProps) {
     );
 }
 
-const dateFormatter = new Intl.DateTimeFormat(
-    undefined,
-    {
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit',
-    },
-);
-
 interface Props {
     value: ProjectsListQuery['projects']['results'][number];
 }
@@ -72,10 +69,36 @@ function ProjectListItem(props: Props) {
         value,
     } = props;
 
+    const [showDetails, setShowDetails] = useState(false);
+
     return (
-        <InlineLayout
+        <Container
             className={styles.projectListItem}
-            start={(
+            contentLayout="block"
+            spacing="lg"
+            withBackground
+            withPadding
+            withShadow
+            footerActions={(
+                <Button
+                    name={!showDetails}
+                    styleVariant="transparent"
+                    withoutPadding
+                    start={showDetails ? <IoChevronUp /> : <IoChevronDown />}
+                    onClick={setShowDetails}
+                    spacing="sm"
+                >
+                    {showDetails ? 'Hide details' : 'Show details'}
+                </Button>
+            )}
+        >
+            <ListLayout
+                className={styles.basicDetails}
+                layout="grid"
+                numPreferredGridColumns={4}
+                minGridColumnSize="9rem"
+                spacing="lg"
+            >
                 <img
                     className={styles.image}
                     alt=""
@@ -83,66 +106,68 @@ function ProjectListItem(props: Props) {
                         ? value.image.file.url
                         : projectTypeIllustrations[value.projectType]}
                 />
-            )}
-            withPadding
-        >
-            <Container
-                className={styles.details}
-                heading={value.name}
-                headingLevel={4}
-                headerActions={(
-                    <SmartLink
-                        route={routes.editProject}
-                        attrs={{
-                            id: value.id,
-                        }}
-                        start={<FaEdit />}
-                        spacing="sm"
-                        withoutPadding
+                <GridLayoutItem columnSpan={3}>
+                    <Container
+                        className={styles.details}
+                        heading={value.name}
+                        headingLevel={3}
+                        headerActions={(
+                            <SmartLink
+                                route={routes.editProject}
+                                attrs={{
+                                    id: value.id,
+                                }}
+                                start={<FaEdit />}
+                                spacing="sm"
+                                withoutPadding
+                            >
+                                Edit
+                            </SmartLink>
+                        )}
                     >
-                        Edit
-                    </SmartLink>
-                )}
-            >
-                <ListLayout>
-                    <Meta
-                        label={value.status}
-                    />
-                    <Meta
-                        icon={<ProjectTypeIcon type={value.projectType} />}
-                        label={value.projectType}
-                    />
-                    <Meta
-                        icon={<GoOrganization />}
-                        label={value.requestingOrganization.name}
-                    />
-                </ListLayout>
-                <div>
-                    <InlineLayout
-                        start={<FaCalendarAlt />}
-                        spacing="sm"
-                    >
-                        {dateFormatter.format(new Date(value.createdAt))}
-                    </InlineLayout>
-                    <InlineLayout
-                        start={<FaUser />}
-                        spacing="sm"
-                    >
-                        {value.createdBy.displayName}
-                    </InlineLayout>
-                    <TextOutput
-                        label="Look for"
-                        value={value.lookFor}
-                    />
-                </div>
-                <div className={styles.description}>
-                    {value.description}
-                </div>
+                        <ListLayout withWrap>
+                            <Meta
+                                label={value.status}
+                            />
+                            <Meta
+                                icon={<ProjectTypeIcon type={value.projectType} />}
+                                label={value.projectType}
+                            />
+                            <Meta
+                                icon={<GoOrganization />}
+                                label={value.requestingOrganization.name}
+                            />
+                        </ListLayout>
+                        <ListLayout withWrap>
+                            <TextOutput
+                                icon={<IoCalendar />}
+                                label="Created on"
+                                value={value.createdAt}
+                                valueType="date"
+                            />
+                            <TextOutput
+                                icon={<IoPerson />}
+                                label="Created by"
+                                value={value.createdBy.displayName}
+                            />
+                            <TextOutput
+                                icon={<IoEye />}
+                                label="Look for"
+                                value={value.lookFor}
+                            />
+                        </ListLayout>
+                        <div className={styles.description}>
+                            {value.description}
+                        </div>
+                    </Container>
+                </GridLayoutItem>
+            </ListLayout>
+            {showDetails && (
                 <ProjectSpecificDetails
                     projectId={value.id}
                 />
-            </Container>
-        </InlineLayout>
+            )}
+        </Container>
     );
 }
 

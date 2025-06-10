@@ -3,25 +3,20 @@ import React, {
     useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import {
-    gql,
-    useQuery,
-} from '@apollo/client';
 import { isDefined } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import PreloadMessage from '#base/components/PreloadMessage';
 import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';
 import TileServerContext, { defaultTileServersValue } from '#base/context/TileServerContext';
 import UserContext from '#base/context/UserContext';
 import {
-    AllEnumsQuery,
-    AllEnumsQueryVariables,
-    MeQuery,
-    MeQueryVariables,
-    TileServersQuery,
-    TileServersQueryVariables,
+    useAllEnumsQuery,
+    useMeQuery,
+    useTileServersQuery,
 } from '#generated/types/graphql';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TILE_SERVERS_QUERY = gql`
 query TileServers {
     tileServers {
@@ -45,6 +40,7 @@ query TileServers {
 
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ME_QUERY = gql`
 query Me {
     me {
@@ -54,6 +50,7 @@ query Me {
 }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ALL_ENUMS_QUERY = gql`
 query AllEnums {
     enums {
@@ -123,13 +120,12 @@ function Init(props: Props) {
         healthCheck();
     }, [setCsrfReady]);
 
-    const {
-        loading: meResponseLoading,
+    const [{
+        fetching: meResponseLoading,
         data: meResponseData,
-    } = useQuery<MeQuery, MeQueryVariables>(
-        ME_QUERY,
-        { skip: authenticated || !csrfReady },
-    );
+    }] = useMeQuery({
+        pause: authenticated || !csrfReady,
+    });
 
     useEffect(() => {
         if (!csrfReady || authenticated || meResponseLoading) {
@@ -150,21 +146,16 @@ function Init(props: Props) {
         });
     }, [csrfReady, authenticated, meResponseLoading, meResponseData, setUser]);
 
-    const {
-        // loading: allEnumsResponseLoading,
-        data: allEnumsResponse,
-    } = useQuery<AllEnumsQuery, AllEnumsQueryVariables>(
-        ALL_ENUMS_QUERY,
-        { skip: !csrfReady },
-    );
+    const [{ data: allEnumsResponse }] = useAllEnumsQuery({
+        pause: !csrfReady,
+    });
 
-    const {
-        loading: tileServersLoading,
+    const [{
+        fetching: tileServersLoading,
         data: tileServersResponse,
-    } = useQuery<TileServersQuery, TileServersQueryVariables>(
-        TILE_SERVERS_QUERY,
-        { skip: !csrfReady },
-    );
+    }] = useTileServersQuery({
+        pause: !csrfReady,
+    });
 
     if (!ready || !csrfReady || tileServersLoading) {
         return (

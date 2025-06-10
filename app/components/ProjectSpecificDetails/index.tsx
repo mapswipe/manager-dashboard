@@ -1,14 +1,8 @@
-import {
-    gql,
-    useQuery,
-} from '@apollo/client';
 import { isNotDefined } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import Container from '#components/Container';
-import {
-    ProjectSpecificDetailsQuery,
-    ProjectSpecificDetailsQueryVariables,
-} from '#generated/types/graphql';
+import { useProjectSpecificDetailsQuery } from '#generated/types/graphql';
 import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
 
 import CompareDetails from './CompareDetails';
@@ -16,13 +10,15 @@ import CompletenessDetails from './CompletenessDetails';
 import FindDetails from './FindDetails';
 import ValidateDetails from './ValidateDetails';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_SPECIFIC_DETAILS_QUERY = gql`
 ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 query ProjectSpecificDetails($id: ID!) {
     project(id: $id) {
         id
+        projectType
         projectTypeSpecifics {
-            ...ProjectTypeSpecificFields @unmask
+            ...ProjectTypeSpecificFields
         }
     }
 }
@@ -37,23 +33,27 @@ interface Props {
 function ProjectSpecificDetails(props: Props) {
     const { projectId } = props;
 
-    const {
+    const [{
         data: projectData,
-        loading: projectDataPending,
+        fetching: projectDataPending,
         error: projectDataError,
-    } = useQuery<ProjectSpecificDetailsQuery, ProjectSpecificDetailsQueryVariables>(
-        PROJECT_SPECIFIC_DETAILS_QUERY,
-        {
-            variables: { id: projectId ?? '' },
-            skip: isNotDefined(projectId),
-        },
-    );
+    }] = useProjectSpecificDetailsQuery({
+        variables: { id: projectId ?? '' },
+        pause: isNotDefined(projectId),
+    });
+
+    if (isNotDefined(projectData?.project.projectTypeSpecifics)) {
+        return null;
+    }
 
     return (
         <Container
             errored={!!projectDataError}
             errorMessage={projectDataError?.message}
             pending={projectDataPending}
+            heading={`${projectData.project.projectType} specific details`}
+            headingLevel={4}
+            withHeaderBorder
         >
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (

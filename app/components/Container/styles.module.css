@@ -1,4 +1,8 @@
 .container {
+    .heading-row {
+        align-items: baseline;
+    }
+
     .content {
         display: flex;
 

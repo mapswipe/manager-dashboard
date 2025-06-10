@@ -1,6 +1,9 @@
-import { gql } from '@apollo/client';
+import { gql } from 'urql';
 
-import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
+import {
+    OPERATION_INFO_FRAGMENT,
+    PROJECT_TYPE_SPECIFIC_FRAGMENT,
+} from '#utils/query';
 
 export const TUTORIAL_QUERY = gql`
 query TutorialDetails($id: ID!) {
@@ -58,6 +61,22 @@ query TutorialDetails($id: ID!) {
                         tileX
                         tileY
                         tileZ
+                    }
+                    ... on CompareTutorialTaskPropertyType {
+                        __typename
+                        tileX
+                        tileY
+                        tileZ
+                    }
+                    ... on CompletenessTutorialTaskPropertyType {
+                        __typename
+                        tileX
+                        tileY
+                        tileZ
+                    }
+                    ... on ValidateTutorialTaskPropertyType {
+                        __typename
+                        objectGeometry
                     }
                 }
             }
@@ -121,14 +140,19 @@ query TutorialProjectDetail($projectId: ID!) {
 `;
 
 export const CREATE_TUTORIAL_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
 mutation NewTutorial($data: TutorialCreateInput!) {
     createTutorial(data: $data) {
         ... on TutorialTypeMutationResponseType {
+            __typename
             errors
             ok
             result {
                 id
             }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
         }
     }
 }

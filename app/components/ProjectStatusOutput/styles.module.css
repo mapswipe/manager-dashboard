@@ -16,7 +16,7 @@
             gap: var(--spacing-small);
 
             .icon {
-                font-size: 1.5rem;
+                font-size: var(--font-size-lg);
             }
 
             .line {
@@ -32,12 +32,12 @@
             gap: var(--spacing-super-small);
 
             .label {
-                font-size: var(--font-size-medium);
+                font-size: var(--font-size-md);
             }
 
             .description {
                 color: var(--color-text-light);
-                font-size: var(--font-size-small);
+                font-size: var(--font-size-sm);
             }
         }
 

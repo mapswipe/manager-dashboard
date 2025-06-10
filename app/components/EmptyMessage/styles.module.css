@@ -3,20 +3,20 @@
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    padding: var(--spacing-small) var(--spacing-medium);
+    padding: var(--spacing-sm) var(--spacing-md);
     color: var(--color-text-faint);
-    gap: var(--spacing-small);
+    gap: var(--spacing-sm);
 
     .icon {
         font-size: 10rem;
     }
 
     .empty-message-title {
-        font-size: var(--font-size-large);
+        font-size: var(--font-size-lg);
         font-weight: var(--font-weight-light);
     }
 
     .empty-message-description {
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-sm);
     }
 }

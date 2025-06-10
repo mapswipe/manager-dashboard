@@ -9,23 +9,23 @@
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding: calc(var(--spacing-medium) - var(--spacing-small));
+            padding: calc(var(--spacing-md) - var(--spacing-sm));
 
             .current-year {
                 flex-basis: 40%;
-                padding: var(--spacing-small);
-                font-size: var(--font-size-large);
+                padding: var(--spacing-sm);
+                font-size: var(--font-size-lg);
             }
 
             .current-month {
                 flex-basis: 60%;
-                padding: var(--spacing-small);
+                padding: var(--spacing-sm);
             }
         }
 
         .week-days {
             display: flex;
-            padding: calc(var(--spacing-medium) - var(--spacing-small));
+            padding: calc(var(--spacing-md) - var(--spacing-sm));
 
             .week-day-name {
                 display: flex;
@@ -33,7 +33,7 @@
                 flex-basis: calc(100% / 7);
                 flex-shrink: 0;
                 justify-content: center;
-                padding: var(--spacing-small);
+                padding: var(--spacing-sm);
                 font-weight: var(--font-weight-bold);
             }
         }
@@ -43,7 +43,7 @@
         display: flex;
         flex-grow: 1;
         flex-wrap: wrap;
-        padding: calc(var(--spacing-medium) - var(--spacing-small)) var(--spacing-medium);
+        padding: calc(var(--spacing-md) - var(--spacing-sm)) var(--spacing-md);
 
         .day-container {
             --width: calc(100% / 7);
@@ -61,14 +61,14 @@
         flex-direction: column;
         flex-grow: 1;
         justify-content: center;
-        padding: var(--spacing-large);
+        padding: var(--spacing-lg);
         text-align: center;
         color: var(--color-text);
 
         .icon {
             opacity: var(--opacity-watermark);
-            margin: var(--spacing-medium);
-            font-size: var(--font-size-ultra-large);
+            margin: var(--spacing-md);
+            font-size: var(--font-size-3xl);
         }
     }
 
@@ -76,10 +76,10 @@
         display: flex;
         flex-shrink: 0;
         justify-content: flex-end;
-        padding: calc(var(--spacing-medium) - var(--spacing-small));
+        padding: calc(var(--spacing-md) - var(--spacing-sm));
 
         >* {
-            margin: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
+            margin: var(--spacing-sm) calc(var(--spacing-md) - var(--spacing-sm));
         }
     }
 }

@@ -2,23 +2,22 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    gql,
-    useQuery,
-} from '@apollo/client';
 import { _cs } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import SearchSelectInput, { type SearchSelectInputProps } from '#components/SelectInput/SearchSelectInput';
 import {
     GetProjectQuery,
     GetProjectQueryVariables,
     Ordering,
+    useGetProjectQuery,
 } from '#generated/types/graphql';
 import useDebouncedValue from '#hooks/useDebouncedValue';
 import useOptions from '#hooks/useOptions';
 
 import styles from './styles.module.css';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT = gql`
     query GetProject(
         $order: ProjectOrder,
@@ -89,13 +88,12 @@ function ProjectSelectInput<K extends string>(props: SelectInputProps<K>) {
         [debouncedSearchText],
     );
 
-    const {
-        loading,
-        previousData,
-        data = previousData,
-    } = useQuery<GetProjectQuery>(PROJECT, {
+    const [{
+        fetching,
+        data,
+    }] = useGetProjectQuery({
         variables: searchVariable,
-        skip: !opened,
+        pause: !opened,
     });
 
     const searchOptions = data?.projects?.results;
@@ -114,7 +112,7 @@ function ProjectSelectInput<K extends string>(props: SelectInputProps<K>) {
             onSearchValueChange={setSearchText}
             onShowDropdownChange={setOpened}
             options={options}
-            optionsPending={loading}
+            optionsPending={fetching}
             searchOptions={searchOptions}
             totalOptionsCount={totalOptionsCount ?? undefined}
         />

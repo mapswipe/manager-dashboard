@@ -12,10 +12,6 @@ import {
     useParams,
 } from 'react-router';
 import {
-    useMutation,
-    useQuery,
-} from '@apollo/client';
-import {
     _cs,
     compareNumber,
     isDefined,
@@ -43,19 +39,14 @@ import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
-    NewTutorialMutation,
-    NewTutorialMutationVariables,
     ProjectAssetMimetypeEnum,
-    ProjectOptionsQuery,
-    ProjectOptionsQueryVariables,
-    ProjectOutputAssetsQuery,
-    ProjectOutputAssetsQueryVariables,
     ProjectTypeEnum,
     TutorialCreateInput,
-    TutorialDetailsQuery,
-    TutorialDetailsQueryVariables,
-    TutorialProjectDetailQuery,
-    TutorialProjectDetailQueryVariables,
+    useNewTutorialMutation,
+    useProjectOptionsQuery,
+    useProjectOutputAssetsQuery,
+    useTutorialDetailsQuery,
+    useTutorialProjectDetailQuery,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
@@ -64,20 +55,13 @@ import {
     projectTypeToKeyMap,
 } from '#utils/common';
 import {
-    alertApolloError,
+    alertCombinedError,
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
 
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
 import InformationPageInput from './InformationPageInput';
-import {
-    CREATE_TUTORIAL_MUTATION,
-    PROJECT_ASSETS_QUERY,
-    PROJECT_DETAIL_QUERY,
-    PROJECT_OPTION_QUERY,
-    TUTORIAL_QUERY,
-} from './query';
 import ScenarioPageInput from './ScenarioPageInput';
 import tutorialCreateFormSchema, {
     defaultTutorialCreateFormValue,
@@ -99,24 +83,21 @@ function NewTutorial(props: Props) {
     const alert = useAlert();
 
     const [
+        { fetching: createNewTutorialPending },
         createNewTutorial,
-        // { loading: createNewTutorialPending },
-    ] = useMutation<NewTutorialMutation, NewTutorialMutationVariables>(CREATE_TUTORIAL_MUTATION);
+    ] = useNewTutorialMutation();
 
-    const {
+    const [{
         data: projectOptionsResponse,
-    } = useQuery<ProjectOptionsQuery, ProjectOptionsQueryVariables>(PROJECT_OPTION_QUERY);
+    }] = useProjectOptionsQuery();
 
-    const {
+    const [{
+        // fetching: tutorialDataPending,
         data: tutorialData,
-        // loading: tutorialDataPending,
-    } = useQuery<TutorialDetailsQuery, TutorialDetailsQueryVariables>(
-        TUTORIAL_QUERY,
-        {
-            variables: { id: tutorialIdFromParams ?? '' },
-            skip: isNotDefined(tutorialIdFromParams),
-        },
-    );
+    }] = useTutorialDetailsQuery({
+        variables: { id: tutorialIdFromParams ?? '' },
+        pause: isNotDefined(tutorialIdFromParams),
+    });
 
     const {
         value,
@@ -167,33 +148,27 @@ function NewTutorial(props: Props) {
         setFieldValue,
     );
 
-    const {
+    const [{
         data: projectAssetsResponse,
-    } = useQuery<ProjectOutputAssetsQuery, ProjectOutputAssetsQueryVariables>(
-        PROJECT_ASSETS_QUERY,
-        {
-            variables: isDefined(value.project) ? {
-                projectId: value.project,
-                pagination: {
-                    offset: 0,
-                    limit: 10,
-                },
-            } : undefined,
-            skip: isNotDefined(value.project),
+    }] = useProjectOutputAssetsQuery({
+        variables: {
+            projectId: value.project ?? '',
+            pagination: {
+                offset: 0,
+                limit: 10,
+            },
         },
-    );
+        pause: isNotDefined(value.project),
+    });
 
-    const {
+    const [{
         data: projectDetailResponse,
-    } = useQuery<TutorialProjectDetailQuery, TutorialProjectDetailQueryVariables>(
-        PROJECT_DETAIL_QUERY,
-        {
-            variables: isDefined(value.project) ? {
-                projectId: value.project,
-            } : undefined,
-            skip: isNotDefined(value.project),
+    }] = useTutorialProjectDetailQuery({
+        variables: {
+            projectId: value.project ?? '',
         },
-    );
+        pause: isNotDefined(value.project),
+    });
 
     const removeInformationPage = useCallback(
         (indexToRemove: number) => {
@@ -269,9 +244,7 @@ function NewTutorial(props: Props) {
 
             try {
                 const result = await createNewTutorial({
-                    variables: {
-                        data: finalValues,
-                    },
+                    data: finalValues,
                 });
 
                 if (checkAndAlertGraphQLResultError(result, alert)) {
@@ -325,7 +298,7 @@ function NewTutorial(props: Props) {
                     ),
                 );
             } catch (apolloError) {
-                alertApolloError(apolloError, alert);
+                alertCombinedError(apolloError, alert);
             }
         },
         [navigate, tutorialIdFromParams, createNewTutorial, setError, alert],
@@ -400,6 +373,9 @@ function NewTutorial(props: Props) {
         setFieldValue(scenarioPages, 'scenarios');
     }, [setFieldValue, projectDetailResponse]);
 
+    const inputsDisabled = createNewTutorialPending;
+    const actionsDisabled = inputsDisabled || isDefined(tutorialIdFromParams);
+
     return (
         <PageLayout
             className={_cs(styles.newTutorial, className)}
@@ -410,7 +386,7 @@ function NewTutorial(props: Props) {
                     colorVariant="accent"
                     styleVariant="filled"
                     onClick={handleSubmitButtonClick}
-                    disabled={isDefined(tutorialIdFromParams)}
+                    disabled={actionsDisabled}
                 >
                     Submit tutorial
                 </Button>
@@ -428,6 +404,7 @@ function NewTutorial(props: Props) {
                     value={value.name}
                     onChange={setFieldValue}
                     error={error?.name}
+                    disabled={inputsDisabled}
                 />
             </Container>
             <Container
@@ -446,7 +423,7 @@ function NewTutorial(props: Props) {
                     value={value.project}
                     onChange={setFieldValue}
                     error={error?.project}
-                    disabled={isDefined(tutorialIdFromParams)}
+                    disabled={inputsDisabled || isDefined(tutorialIdFromParams)}
                 />
                 {isDefined(projectDetailResponse) && (
                     <>

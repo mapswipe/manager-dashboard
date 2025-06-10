@@ -1,19 +1,18 @@
 import {
     useCallback,
+    useContext,
     useState,
 } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import {
-    gql,
-    useQuery,
-} from '@apollo/client';
-import {
     isDefined,
     isTruthyString,
 } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
+import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import PageLayout from '#components/PageLayout';
@@ -21,12 +20,9 @@ import Pager from '#components/Pager';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import {
-    ProjectsFilterEnumsQuery,
-    ProjectsFilterEnumsQueryVariables,
-    ProjectsListQuery,
-    ProjectsListQueryVariables,
     ProjectStatusEnum,
     ProjectTypeEnum,
+    useProjectsListQuery,
 } from '#generated/types/graphql';
 import useDebouncedValue from '#hooks/useDebouncedValue';
 import useInputState from '#hooks/useInputState';
@@ -40,6 +36,7 @@ import {
 
 import ProjectListItem from './ProjectListItem';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ENUM_QUERY = gql`
 query ProjectsFilterEnums {
     enums {
@@ -54,6 +51,7 @@ query ProjectsFilterEnums {
     }
 }
 `;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_LIST_QUERY = gql`
 query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
     projects(pagination: {offset: $offset, limit: $limit}, filters: $filters) {
@@ -117,24 +115,20 @@ function Projects(props: Props) {
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
-    const {
-        previousData: previousProjectsResponse,
-        data: projectsResponse = previousProjectsResponse,
-        loading: pending,
-    } = useQuery<ProjectsListQuery, ProjectsListQueryVariables>(
-        PROJECT_LIST_QUERY,
-        {
-            variables: {
-                filters: {
-                    name: { iContains: debouncedSearchText },
-                    status: { exact: selectedProjectStat },
-                    projectType: { exact: selectedProjectType },
-                },
-                offset: (activePage - 1) * pagePerItem,
-                limit: pagePerItem,
+    const [{
+        data: projectsResponse,
+        fetching: pending,
+    }] = useProjectsListQuery({
+        variables: {
+            filters: {
+                name: { iContains: debouncedSearchText },
+                status: { exact: selectedProjectStat },
+                projectType: { exact: selectedProjectType },
             },
+            offset: (activePage - 1) * pagePerItem,
+            limit: pagePerItem,
         },
-    );
+    });
 
     const handleClearFilterButtonClick = useCallback(() => {
         setSelectedProjectStat(undefined);
@@ -145,8 +139,9 @@ function Projects(props: Props) {
     const totalItems = projectsResponse?.projects.results.length ?? 0;
 
     const {
-        data: projectsFilterEnumsResponse,
-    } = useQuery<ProjectsFilterEnumsQuery, ProjectsFilterEnumsQueryVariables>(ENUM_QUERY);
+        ProjectTypeEnum: projectTypeOptions,
+        ProjectStatusEnum: projectStatusOptions,
+    } = useContext(EnumsContext);
 
     const filteredProjectList = projectsResponse?.projects.results ?? [];
     const totalCount = projectsResponse?.projects.totalCount ?? 0;
@@ -190,7 +185,7 @@ function Projects(props: Props) {
                     <RadioInput
                         label="Project type"
                         name={undefined}
-                        options={projectsFilterEnumsResponse?.enums.ProjectTypeEnum ?? []}
+                        options={projectTypeOptions ?? []}
                         value={selectedProjectType}
                         onChange={setSelectedProjectType}
                         keySelector={keySelector}
@@ -200,7 +195,7 @@ function Projects(props: Props) {
                     <RadioInput
                         label="Project status"
                         name={undefined}
-                        options={projectsFilterEnumsResponse?.enums.ProjectStatusEnum ?? []}
+                        options={projectStatusOptions ?? []}
                         value={selectedProjectStat}
                         onChange={setSelectedProjectStat}
                         keySelector={keySelector}

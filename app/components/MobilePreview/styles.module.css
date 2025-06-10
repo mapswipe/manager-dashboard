@@ -15,15 +15,15 @@
         }
 
         .back-icon {
-            font-size: var(--font-size-super-large);
+            font-size: var(--font-size-2xl);
         }
 
         .description {
-            font-size: var(--font-size-small);
+            font-size: var(--font-size-sm);
         }
 
         .info-icon {
-            font-size: var(--font-size-extra-large);
+            font-size: var(--font-size-xl);
         }
     }
 
@@ -51,7 +51,7 @@
             }
 
             .icons {
-                font-size: var(--font-size-super-large);
+                font-size: var(--font-size-2xl);
             }
         }
 

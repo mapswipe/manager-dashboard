@@ -6,11 +6,8 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { Cookies } from 'react-cookie';
 import { BrowserRouter } from 'react-router';
-import {
-    ApolloClient,
-    ApolloProvider,
-} from '@apollo/client';
 import {
     ErrorBoundary,
     init,
@@ -21,13 +18,18 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
+import { cacheExchange } from '@urql/exchange-graphcache';
+import {
+    Client as UrqlClient,
+    fetchExchange,
+    Provider as UrqlProvider,
+} from 'urql';
 
 import AppRoutes from '#base/components/AppRoutes';
 import AuthPopup from '#base/components/AuthPopup';
 import Init from '#base/components/Init';
 import Navbar from '#base/components/Navbar';
 import PreloadMessage from '#base/components/PreloadMessage';
-import apolloConfig from '#base/configs/apollo';
 import sentryConfig from '#base/configs/sentry';
 import NavbarContext, { type NavbarContextInterface } from '#base/context/NavbarContext';
 import OptionContext, { Options } from '#base/context/OptionContext';
@@ -35,6 +37,7 @@ import UserContext, { type UserContextInterface } from '#base/context/UserContex
 import { sync } from '#base/hooks/useAuthSync';
 import { User } from '#base/types/user';
 import AlertContainer from '#components/AlertContainer';
+import schema from '#generated/schema.json';
 import useAlertContextProviderValue from '#hooks/useAlertContextProviderValue';
 
 import AlertContext from './context/AlertContext';
@@ -45,7 +48,43 @@ if (sentryConfig) {
     init(sentryConfig);
 }
 
-const apolloClient = new ApolloClient(apolloConfig);
+const COOKIE_NAME = `MAPSWIPE-${import.meta.env.APP_ENVIRONMENT}-CSRFTOKEN`;
+const GRAPHQL_ENDPOINT = `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/graphql/`;
+
+const cookies = new Cookies();
+const gqlClient = new UrqlClient({
+    url: GRAPHQL_ENDPOINT,
+    exchanges: [
+        cacheExchange({
+            keys: new Proxy(
+                {
+                    AppEnumCollection: () => null,
+                },
+                {
+                    get(target, prop) {
+                        if (typeof prop === 'string' && prop.endsWith('Enum')) {
+                            return (data: { key: string }) => data.key;
+                        }
+
+                        const fallback = (data: { id: string }) => data.id;
+
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (target as any)[prop] || fallback;
+                    },
+                },
+            ),
+            schema,
+        }),
+        fetchExchange,
+    ],
+    fetchOptions: () => ({
+        headers: {
+            'X-CSRFToken': cookies.get(COOKIE_NAME),
+        },
+        credentials: 'include',
+    }),
+    requestPolicy: 'cache-and-network',
+});
 
 function Base() {
     const [user, setUser] = useState<User | undefined>();
@@ -133,7 +172,7 @@ function Base() {
                     />
                 )}
             >
-                <ApolloProvider client={apolloClient}>
+                <UrqlProvider value={gqlClient}>
                     <OptionContext.Provider value={optionContextValue}>
                         <UserContext.Provider value={userContext}>
                             <AlertContext.Provider value={alertContextValue}>
@@ -157,7 +196,7 @@ function Base() {
                             </AlertContext.Provider>
                         </UserContext.Provider>
                     </OptionContext.Provider>
-                </ApolloProvider>
+                </UrqlProvider>
             </ErrorBoundary>
         </div>
     );

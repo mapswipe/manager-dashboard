@@ -129,6 +129,7 @@ function Container(props: Props) {
                             spacing={spacing}
                             start={headerIcons}
                             end={headerActions}
+                            className={styles.headingRow}
                         >
                             <Heading
                                 level={headingLevel}

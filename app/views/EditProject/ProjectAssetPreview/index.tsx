@@ -3,26 +3,23 @@ import {
     useState,
 } from 'react';
 import {
-    gql,
-    useQuery,
-} from '@apollo/client';
-import {
     _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import {
     ProjectAssetMimetypeEnum,
-    ProjectAssetPreviewQuery,
-    ProjectAssetPreviewQueryVariables,
+    useProjectAssetPreviewQuery,
 } from '#generated/types/graphql';
 
 import { PartialTileServerInputFields } from '../UpdateProjectForm/TileServerInput/schema';
 
 import styles from './styles.module.css';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_ASSET_PREVIEW = gql`
 query ProjectAssetPreview($assetId: ID!) {
     projectAsset(id: $assetId) {
@@ -52,17 +49,14 @@ function ProjectAssetPreview(props: Props) {
 
     const [geoJson, setGeoJson] = useState<object | undefined>();
 
-    const {
+    const [{
         data: previewResponse,
-    } = useQuery<ProjectAssetPreviewQuery, ProjectAssetPreviewQueryVariables>(
-        PROJECT_ASSET_PREVIEW,
-        {
-            variables: {
-                assetId: assetId ?? '',
-            },
-            skip: isNotDefined(assetId),
+    }] = useProjectAssetPreviewQuery({
+        variables: {
+            assetId: assetId ?? '',
         },
-    );
+        pause: isNotDefined(assetId),
+    });
 
     const className = _cs(styles.projectAssetPreview, classNameFromProps);
     const {

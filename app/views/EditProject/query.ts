@@ -1,14 +1,10 @@
-import { gql } from '@apollo/client';
+import { gql } from 'urql';
 
-import {
-    TILE_SERVER_PROPERTY_FRAGMENT,
-    VECTOR_TILE_SERVER_PROPERTY_FRAGMENT,
-} from '#utils/query';
+import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
 
 // eslint-disable-next-line import/prefer-default-export
 export const PROJECT_QUERY = gql`
-${TILE_SERVER_PROPERTY_FRAGMENT}
-${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
+${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 query ProjectDetails($id: ID!) {
     project(id: $id) {
         additionalInfoUrl
@@ -30,65 +26,7 @@ query ProjectDetails($id: ID!) {
             }
         }
         projectTypeSpecifics {
-            ... on CompareProjectPropertyType {
-                aoiGeometry
-                zoomLevel
-                tileServerProperty {
-                    ...TileServerPropertyFields
-                }
-                tileServerBProperty {
-                    ...TileServerPropertyFields
-                }
-            }
-            ... on FindProjectPropertyType {
-                aoiGeometry
-                tileServerProperty {
-                    ...TileServerPropertyFields
-                }
-                zoomLevel
-            }
-            ... on CompletenessProjectPropertyType {
-                aoiGeometry
-                overlayTileServerProperty {
-                    type
-                    vector {
-                        circleColor
-                        circleOpacity
-                        circleRadius
-                        fillColor
-                        fillOpacity
-                        lineColor
-                        lineDasharray
-                        lineOpacity
-                        lineWidth
-                        tileServer {
-                            ...VectorTileServerPropertyFields
-                        }
-                    }
-                    raster {
-                        opacity,
-                        tileServer {
-                            ...TileServerPropertyFields
-                        }
-                    }
-                }
-                tileServerProperty {
-                    ...TileServerPropertyFields
-                }
-                zoomLevel
-            }
-            ... on ValidateProjectPropertyType {
-                objectSource {
-                    aoiGeometry
-                    objectGeojsonUrl
-                    ohsomeFilter
-                    sourceType
-                    taskingManagerProjectId
-                }
-                tileServerProperty {
-                    ...TileServerPropertyFields
-                }
-            }
+            ...ProjectTypeSpecificFields
         }
         requestingOrganization {
             id

@@ -1,16 +1,12 @@
 import {
-    ApolloError,
-    FetchResult,
-} from '@apollo/client';
-import {
-    getGraphQLErrorsFromResult,
-    graphQLResultHasError,
-} from '@apollo/client/utilities';
-import {
     isDefined,
     listToMap,
 } from '@togglecorp/fujs';
 import { nonFieldError } from '@togglecorp/toggle-form';
+import {
+    CombinedError,
+    OperationResult,
+} from 'urql';
 
 import useAlert from '#hooks/useAlert';
 
@@ -69,11 +65,15 @@ export function transformErrors(errors: Error[]) {
     return mappedErrors;
 }
 
-export function alertApolloError(
-    apolloError: unknown,
+function getGraphQLErrorsFromResult<T>(result: OperationResult<T>) {
+    return result?.error?.graphQLErrors;
+}
+
+export function alertCombinedError(
+    combinedError: unknown,
     alert: ReturnType<typeof useAlert>,
 ) {
-    if (!(apolloError instanceof ApolloError)) {
+    if (!(combinedError instanceof CombinedError)) {
         alert.show(
             'Unkown error!',
             {
@@ -84,46 +84,42 @@ export function alertApolloError(
         );
 
         // eslint-disable-next-line no-console
-        console.error(apolloError);
+        console.error(combinedError);
 
         return;
     }
 
-    if (apolloError.graphQLErrors.length !== 0) {
+    if (combinedError.graphQLErrors.length !== 0) {
         alert.show(
             'Request failed!',
             {
-                description: apolloError.graphQLErrors.map((error) => error.message).join(', '),
+                description: combinedError.graphQLErrors.map((error) => error.message).join(', '),
                 // eslint-disable-next-line max-len
                 // description: 'There\'s an error with the query, please copy the error message and contact the developer!',
                 variant: 'danger',
-                debugMessage: JSON.stringify(apolloError.graphQLErrors, null, 2),
+                debugMessage: JSON.stringify(combinedError.graphQLErrors, null, 2),
             },
         );
     }
 
-    if (apolloError.networkError) {
+    if (combinedError.networkError) {
         alert.show(
             'Network error!',
             {
                 description: 'Please make sure that you have an active internet connection!',
                 variant: 'danger',
-                debugMessage: JSON.stringify(apolloError.networkError, null, 2),
+                debugMessage: JSON.stringify(combinedError.networkError, null, 2),
             },
         );
     }
-
-    // TODO:
-    // apolloError.clientErrors
-    // apolloError.protocolErrors
 }
 
 export function checkAndAlertGraphQLResultError<T>(
-    result: FetchResult<T>,
+    result: OperationResult<T>,
     alert: ReturnType<typeof useAlert>,
 ) {
-    if (graphQLResultHasError(result)) {
-        const gqlErrors = getGraphQLErrorsFromResult(result);
+    const gqlErrors = getGraphQLErrorsFromResult(result);
+    if (isDefined(gqlErrors) && gqlErrors.length > 0) {
         const errorMessage = gqlErrors.map((gqlError) => gqlError.message).join(', ');
 
         alert.show(
