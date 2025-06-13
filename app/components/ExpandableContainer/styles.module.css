@@ -8,30 +8,30 @@
         border-top-left-radius: var(--radius-card-border);
         border-top-right-radius: var(--radius-card-border);
         background-color: var(--color-background-accent-hint);
-        padding: var(--spacing-medium);
+        padding: var(--spacing-md);
 
         .header {
             flex-grow: 1;
-            font-size: var(--font-size-large);
+            font-size: var(--font-size-lg);
         }
 
         .icons {
             display: flex;
             flex-shrink: 0;
-            gap: var(--spacing-medium);
+            gap: var(--spacing-md);
 
             >* {
-                font-size: var(--font-size-large);
+                font-size: var(--font-size-lg);
             }
         }
 
         .actions {
             display: flex;
             flex-shrink: 0;
-            gap: var(--spacing-medium);
+            gap: var(--spacing-md);
 
             >* {
-                font-size: var(--font-size-large);
+                font-size: var(--font-size-lg);
             }
         }
     }
@@ -48,6 +48,6 @@
         border-top: 0;
         border-bottom-left-radius: var(--radius-card-border);
         border-bottom-right-radius: var(--radius-card-border);
-        padding: var(--spacing-medium);
+        padding: var(--spacing-md);
     }
 }

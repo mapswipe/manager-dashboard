@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from 'urql';
 
 import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
 

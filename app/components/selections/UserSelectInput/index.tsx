@@ -2,23 +2,22 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    gql,
-    useQuery,
-} from '@apollo/client';
 import { _cs } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import SearchSelectInput, { type SearchSelectInputProps } from '#components/SelectInput/SearchSelectInput';
 import {
     GetUserQuery,
     GetUserQueryVariables,
     Ordering,
+    useGetUserQuery,
 } from '#generated/types/graphql';
 import useDebouncedValue from '#hooks/useDebouncedValue';
 import useOptions from '#hooks/useOptions';
 
 import styles from './styles.module.css';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER = gql`
     query GetUser(
         $order: UserOrder,
@@ -89,13 +88,12 @@ function UserSelectInput<K extends string>(props: SelectInputProps<K>) {
         [debouncedSearchText],
     );
 
-    const {
-        loading,
-        previousData,
-        data = previousData,
-    } = useQuery<GetUserQuery>(USER, {
+    const [{
+        fetching,
+        data,
+    }] = useGetUserQuery({
         variables: searchVariable,
-        skip: !opened,
+        pause: !opened,
     });
 
     const searchOptions = data?.users?.results;
@@ -113,7 +111,7 @@ function UserSelectInput<K extends string>(props: SelectInputProps<K>) {
             onSearchValueChange={setSearchText}
             onShowDropdownChange={setOpened}
             searchOptions={searchOptions}
-            optionsPending={loading}
+            optionsPending={fetching}
             totalOptionsCount={totalOptionsCount ?? undefined}
             options={options}
             onOptionsChange={setOptions}

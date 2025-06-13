@@ -3,14 +3,25 @@ import {
     useState,
 } from 'react';
 import { CgOrganisation } from 'react-icons/cg';
-import { IoAdd } from 'react-icons/io5';
+import { FaEdit } from 'react-icons/fa';
+import {
+    IoAdd,
+    IoCalendar,
+    IoPerson,
+} from 'react-icons/io5';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
-import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import Pager from '#components/Pager';
+import TextOutput from '#components/TextOutput';
+import { useOrganizationListQuery } from '#generated/types/graphql';
 import useBooleanState from '#hooks/useBooleanState';
-import useOrganizationListQuery from '#hooks/useOrganizationListQuery';
 import {
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
@@ -18,6 +29,26 @@ import {
 } from '#utils/common';
 
 import OrganizationFormModal from './OrganizationFormModal';
+
+import styles from './styles.module.css';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ORGANIZATION_LIST_QUERY = gql`
+query OrganizationList($pagination: OffsetPaginationInput!) {
+    organizations(pagination: $pagination) {
+        totalCount
+        results {
+            name
+            id
+            modifiedBy {
+                id
+                displayName
+            }
+            modifiedAt
+        }
+    }
+}
+`;
 
 interface Props {
     className?: string;
@@ -33,18 +64,25 @@ function OrganizationList(props: Props) {
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+    const [editOrganizationId, setEditOrganizationId] = useState<string | undefined>();
 
-    const {
-        previousData: previousOrganizationListResponse,
-        data: organizationListResponse = previousOrganizationListResponse,
-        loading: organizationListPending,
-        refetch: refetchOrganization,
-    } = useOrganizationListQuery({
-        offset: (activePage - 1) * pagePerItem,
-        limit: pagePerItem,
+    const [
+        {
+            data: organizationListResponse,
+            fetching: organizationListPending,
+        },
+        refetchOrganization,
+    ] = useOrganizationListQuery({
+        variables: {
+            pagination: {
+                offset: (activePage - 1) * pagePerItem,
+                limit: pagePerItem,
+            },
+        },
     });
 
     const handleOrganizationModalUpdate = useCallback(() => {
+        setEditOrganizationId(undefined);
         setShowAddModalFalse();
         refetchOrganization();
     }, [refetchOrganization, setShowAddModalFalse]);
@@ -55,16 +93,12 @@ function OrganizationList(props: Props) {
     return (
         <>
             <Container
-                className={className}
+                className={_cs(styles.organizationList, className)}
                 heading="Organizations"
                 headingLevel={2}
                 pending={organizationListPending}
                 empty={organizationList.length === 0}
                 withHeaderBorder
-                withFooterBorder
-                withBackground
-                withPadding
-                withShadow
                 spacing="lg"
                 headerActions={(
                     <Button
@@ -89,18 +123,63 @@ function OrganizationList(props: Props) {
                     />
                 )}
             >
-                {organizationList.map((organization) => (
-                    <InlineLayout
-                        key={organization.id}
-                        start={<CgOrganisation />}
-                    >
-                        {organization.name}
-                    </InlineLayout>
-                ))}
+                <ListLayout
+                    layout="grid"
+                    numPreferredGridColumns={3}
+                >
+                    {organizationList.map((organization) => (
+                        <Container
+                            key={organization.id}
+                            className={styles.organizationItem}
+                            heading={organization.name}
+                            headerIcons={<CgOrganisation className={styles.orgIcon} />}
+                            headingLevel={4}
+                            withBackground
+                            withPadding
+                            withShadow
+                            headerActions={(
+                                <Button
+                                    name={organization.id}
+                                    colorVariant="accent"
+                                    styleVariant="transparent"
+                                    withoutPadding
+                                    className={styles.editButton}
+                                    onClick={setEditOrganizationId}
+                                >
+                                    <FaEdit />
+                                </Button>
+                            )}
+                        >
+                            <ListLayout
+                                spacing="xs"
+                                layout="block"
+                            >
+                                <TextOutput
+                                    icon={<IoCalendar />}
+                                    label="Updated on"
+                                    value={organization.modifiedAt}
+                                    valueType="date"
+                                />
+                                <TextOutput
+                                    icon={<IoPerson />}
+                                    label="Updated by"
+                                    value={organization.modifiedBy.displayName}
+                                />
+                            </ListLayout>
+                        </Container>
+                    ))}
+                </ListLayout>
             </Container>
             {showAddModal && (
                 <OrganizationFormModal
                     onClose={setShowAddModalFalse}
+                    onUpdate={handleOrganizationModalUpdate}
+                />
+            )}
+            {isDefined(editOrganizationId) && (
+                <OrganizationFormModal
+                    organizationId={editOrganizationId}
+                    onClose={setEditOrganizationId}
                     onUpdate={handleOrganizationModalUpdate}
                 />
             )}

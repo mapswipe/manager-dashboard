@@ -2,7 +2,7 @@ import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.module.css';
 
-type HeadingLevel = 1 | 2 | 3 | 4 | 5;
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 const headingLevelToClassName: Record<HeadingLevel, string> = {
     1: styles.level1,
@@ -10,6 +10,7 @@ const headingLevelToClassName: Record<HeadingLevel, string> = {
     3: styles.level3,
     4: styles.level4,
     5: styles.level5,
+    6: styles.level6,
 };
 
 export interface Props {

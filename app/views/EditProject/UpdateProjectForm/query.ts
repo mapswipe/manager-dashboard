@@ -1,6 +1,9 @@
-import { gql } from '@apollo/client';
+import { gql } from 'urql';
 
-import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
+import {
+    OPERATION_INFO_FRAGMENT,
+    PROJECT_TYPE_SPECIFIC_FRAGMENT,
+} from '#utils/query';
 
 export const PROJECT_STATUS_QUERY = gql`
 query ProjectStatus($projectId: ID!) {
@@ -13,9 +16,11 @@ query ProjectStatus($projectId: ID!) {
 
 export const UPDATE_PROJECT_MUTATION = gql`
 ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
+${OPERATION_INFO_FRAGMENT}
 mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
     updateProject(data: $data, pk: $id) {
         ... on ProjectTypeMutationResponseType {
+            __typename
             errors
             ok
             result {
@@ -51,6 +56,9 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
                 status
                 verificationNumber
             }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
         }
     }
 }

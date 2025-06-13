@@ -20,6 +20,7 @@ const config: CodegenConfig = {
                 purgeMagicComment: true,
                 gqlImport: 'urql#gql',
                 dedupeFragments: true,
+                skipTypename: true,
 
                 // FIXME: Enable this later
                 // enumsAsTypes: true,

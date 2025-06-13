@@ -1,15 +1,29 @@
 import { useState } from 'react';
-import { CgUser } from 'react-icons/cg';
+import { IoPerson } from 'react-icons/io5';
+import { gql } from 'urql';
 
 import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
 import Pager from '#components/Pager';
-import useUserListQuery from '#hooks/useUserListQuery';
+import { useUserListQuery } from '#generated/types/graphql';
 import {
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
 } from '#utils/common';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const USER_LIST_QUERY = gql`
+query UserList($pagination: OffsetPaginationInput!) {
+    users(pagination: $pagination) {
+        totalCount
+        results {
+            displayName
+            id
+        }
+    }
+}
+`;
 
 interface Props {
     className?: string;
@@ -21,13 +35,16 @@ function UserList(props: Props) {
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
-    const {
-        previousData: previousUserListResponse,
-        data: userListResponse = previousUserListResponse,
-        loading: userListPending,
-    } = useUserListQuery({
-        offset: (activePage - 1) * pagePerItem,
-        limit: pagePerItem,
+    const [{
+        data: userListResponse,
+        fetching: userListPending,
+    }] = useUserListQuery({
+        variables: {
+            pagination: {
+                offset: (activePage - 1) * pagePerItem,
+                limit: pagePerItem,
+            },
+        },
     });
 
     const userList = userListResponse?.users.results ?? [];
@@ -60,7 +77,7 @@ function UserList(props: Props) {
             {userList.map((user) => (
                 <InlineLayout
                     key={user.id}
-                    start={<CgUser />}
+                    start={<IoPerson />}
                 >
                     {user.displayName}
                 </InlineLayout>

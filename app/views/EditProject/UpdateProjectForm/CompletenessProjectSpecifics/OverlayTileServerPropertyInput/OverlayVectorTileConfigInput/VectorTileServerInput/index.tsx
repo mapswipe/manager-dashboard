@@ -5,6 +5,7 @@ import {
 } from 'react';
 import {
     isDefined,
+    isNotDefined,
     listToMap,
 } from '@togglecorp/fujs';
 import {
@@ -19,6 +20,7 @@ import EnumsContext from '#base/context/EnumsContext';
 import TileServerContext from '#base/context/TileServerContext';
 import Container from '#components/Container';
 import RadioInput from '#components/RadioInput';
+import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import { VectorTileServerNameEnum } from '#generated/types/graphql';
 import {
@@ -33,7 +35,6 @@ import {
     VectorTileInputKeys,
     vectorTileServerNameToTileInputKey,
 } from './schema';
-import SelectInput from '#components/SelectInput';
 
 interface Props {
     label?: React.ReactNode;
@@ -98,6 +99,17 @@ function VectorTileServerInput(props: Props) {
         }
     }, [setFieldValue, tileServerMapping]);
 
+    const sourceNameOptions = useMemo(() => {
+        if (isNotDefined(value?.name) || value.name === VectorTileServerNameEnum.Custom) {
+            return [];
+        }
+
+        return tileServerMapping[value.name].layers.map((layer) => ({
+            key: layer,
+            label: layer,
+        }));
+    }, [value, tileServerMapping]);
+
     return (
         <Container
             heading={label}
@@ -132,9 +144,9 @@ function VectorTileServerInput(props: Props) {
                             value={value[fieldName]?.sourceName}
                             error={getErrorObject(error?.[fieldName])?.sourceName}
                             onChange={setCommonTileServerFieldValue}
-                            options={tileServerMapping[value.name]?.layers}
-                            keySelector={(a) => a}
-                            labelSelector={(a) => a}
+                            options={sourceNameOptions}
+                            keySelector={keySelector}
+                            labelSelector={labelSelector}
                         />
                     </>
                 )}

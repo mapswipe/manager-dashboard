@@ -1,6 +1,6 @@
 .input-label {
     color: var(--color-text);
-    font-size: var(--font-size-extra-small);
+    font-size: var(--font-size-sm);
 
     &.focused {
         color: var(--color-accent);

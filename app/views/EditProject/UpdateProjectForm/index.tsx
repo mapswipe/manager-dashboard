@@ -23,14 +23,9 @@ import { ulid } from 'ulid';
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
 import InputError from '#components/InputError/index.tsx';
-import ListLayout from '#components/ListLayout/index.tsx';
 import NonFieldError from '#components/NonFieldError';
-import NumberInput from '#components/NumberInput';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
-import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
-import TextArea from '#components/TextArea';
-import TextInput from '#components/TextInput';
 import {
     ProjectDetailsQuery,
     ProjectStatusEnum,
@@ -43,12 +38,13 @@ import useAlert from '#hooks/useAlert.ts';
 import useOptions from '#hooks/useOptions';
 import { projectTypeToKeyMap } from '#utils/common.ts';
 import {
-    alertApolloError,
+    alertCombinedError,
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
+import ProjectGeneralInputs from '#views/NewProject/ProjectGeneralInputs/index.tsx';
 
-import AssetInput from '../AssetInput/index.tsx';
+import ProjectAdditionalInputs from '../ProjectAdditionalInputs/index.tsx';
 import {
     defaultCompareSpecificFormValue,
     PartialCompareSpecificFields,
@@ -73,6 +69,8 @@ import projectUpdateFormSchema, {
     PartialProjectTypeSpecificInput,
     type PartialProjectUpdateInput,
 } from './schema.ts';
+
+const DEFAULT_POLL_DURATION = 3000;
 
 interface Props {
     className?: string;
@@ -103,7 +101,7 @@ function UpdateProjectForm(props: Props) {
 
         const intervalId = setInterval(() => {
             execProjectStatusQuery({ requestPolicy: 'cache-and-network' });
-        }, 3000);
+        }, DEFAULT_POLL_DURATION);
 
         return () => {
             clearInterval(intervalId);
@@ -252,7 +250,7 @@ function UpdateProjectForm(props: Props) {
                 { variant: 'success' },
             );
         } catch (apolloError) {
-            alertApolloError(apolloError, alert);
+            alertCombinedError(apolloError, alert);
         }
     }, [projectData.project.id, updateProject, setError, alert]);
 
@@ -364,99 +362,24 @@ function UpdateProjectForm(props: Props) {
                     Please make the necessary changes before proceeding!
                 </InputError>
             )}
-            <Container
-                heading="General"
-                withContentBackgroundAndPadding
-                withHeaderBorder
-                spacing="lg"
-            >
-                <TextInput
-                    label="Project title"
-                    name="name"
-                    value={value.name}
-                    onChange={setFieldValue}
-                    error={error?.name}
-                    disabled={baseInputsDisabled}
-                />
-                <TextArea
-                    label="Project description"
-                    name="description"
-                    value={value.description}
-                    onChange={setFieldValue}
-                    error={error?.description}
-                    disabled={baseInputsDisabled}
-                    rows={4}
-                />
-                <ListLayout layout="grid">
-                    <ListLayout
-                        layout="block"
-                    >
-                        <TextInput
-                            label="Look for"
-                            name="lookFor"
-                            value={value.lookFor}
-                            onChange={setFieldValue}
-                            error={error?.lookFor}
-                            disabled={baseInputsDisabled}
-                        />
-                        <OrganizationSelectInput
-                            label="Requesting organization"
-                            name="requestingOrganization"
-                            value={value.requestingOrganization}
-                            onChange={setFieldValue}
-                            error={error?.requestingOrganization}
-                            disabled={baseInputsDisabled}
-                        />
-                        <TextInput
-                            label="Additional info URL"
-                            name="additionalInfoUrl"
-                            value={value.additionalInfoUrl}
-                            onChange={setFieldValue}
-                            error={error?.additionalInfoUrl}
-                            disabled={baseInputsDisabled}
-                        />
-                        <NumberInput
-                            label="Verification number"
-                            name="verificationNumber"
-                            value={value.verificationNumber}
-                            onChange={setFieldValue}
-                            error={error?.verificationNumber}
-                            disabled={baseInputsDisabled}
-                        />
-                        <NumberInput
-                            label="Group size"
-                            name="groupSize"
-                            value={value.groupSize}
-                            onChange={setFieldValue}
-                            error={error?.groupSize}
-                            disabled={baseInputsDisabled}
-                        />
-                        <NumberInput
-                            label="Max tasks per user"
-                            name="maxTasksPerUser"
-                            value={value.maxTasksPerUser}
-                            onChange={setFieldValue}
-                            error={error?.maxTasksPerUser}
-                            disabled={baseInputsDisabled}
-                        />
-                    </ListLayout>
-                    <AssetInput
-                        projectId={projectData.project.id}
-                        label="Project cover image"
-                        name="image"
-                        inputType="image"
-                        value={value.image}
-                        onChange={setFieldValue}
-                        error={error?.image}
-                        disabled={baseInputsDisabled}
-                    />
-                </ListLayout>
-            </Container>
+            <ProjectGeneralInputs
+                value={value}
+                setFieldValue={setFieldValue}
+                error={error}
+                disabled={baseInputsDisabled}
+            />
+            <ProjectAdditionalInputs
+                projectId={projectData.project.id}
+                value={value}
+                setFieldValue={setFieldValue}
+                error={error}
+                disabled={baseInputsDisabled}
+            />
             <Container
                 withContentBackgroundAndPadding
                 withHeaderBorder
                 spacing="lg"
-                heading={projectContext.projectType}
+                heading={`${projectContext.projectType} specific details`}
                 headerDescription={(
                     <NonFieldError
                         error={error?.projectTypeSpecifics}

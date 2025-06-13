@@ -3,11 +3,8 @@ import React, {
     useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import {
-    gql,
-    useQuery,
-} from '@apollo/client';
 import { isDefined } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import PreloadMessage from '#base/components/PreloadMessage';
 import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';

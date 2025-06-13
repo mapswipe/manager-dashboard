@@ -8,10 +8,6 @@ import {
     MdSave,
 } from 'react-icons/md';
 import {
-    gql,
-    useMutation,
-} from '@apollo/client';
-import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -21,39 +17,46 @@ import {
     removeNull,
     useForm,
 } from '@togglecorp/toggle-form';
+import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
 import InputError from '#components/InputError';
 import ListLayout from '#components/ListLayout';
 import PageLayout from '#components/PageLayout';
+import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
-import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TutorialSelectInput from '#components/selections/TutorialSelectInput';
-import TextArea from '#components/TextArea';
-import TextInput from '#components/TextInput';
 import {
     ProcessedProjectUpdateInput,
     ProjectDetailsQuery,
     ProjectStatusEnum,
-    UpdateProcessedProjectMutation,
-    UpdateProcessedProjectMutationVariables,
+    useUpdateProcessedProjectMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import useOptions from '#hooks/useOptions';
 import {
-    alertApolloError,
+    alertCombinedError,
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
+import {
+    OPERATION_INFO_FRAGMENT,
+    PROJECT_TYPE_SPECIFIC_FRAGMENT,
+} from '#utils/query';
+import ProjectGeneralInputs from '#views/NewProject/ProjectGeneralInputs';
 
 import AssetInput from '../AssetInput';
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UPDATE_PROCESSED_PROJECT_MUTATION = gql`
 mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
+    ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
+    ${OPERATION_INFO_FRAGMENT}
     updateProcessedProject(data: $data, pk: $id) {
         ... on ProjectTypeMutationResponseType {
+            __typename
             errors
             ok
             result {
@@ -76,89 +79,7 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
                     }
                 }
                 projectTypeSpecifics {
-                    ... on CompareProjectPropertyType {
-                        aoiGeometry
-                        zoomLevel
-                        tileServerProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                        tileServerBProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                    }
-                    ... on FindProjectPropertyType {
-                        aoiGeometry
-                        tileServerProperty {
-                            bing {
-                                credits
-                            }
-                            custom {
-                                credits
-                                url
-                            }
-                            esri {
-                                credits
-                            }
-                            esriBeta {
-                                credits
-                            }
-                            mapbox {
-                                credits
-                            }
-                            maxarPremium {
-                                credits
-                            }
-                            maxarStandard {
-                                credits
-                            }
-                            name
-                        }
-                        zoomLevel
-                    }
+                    ...ProjectTypeSpecificFields
                 }
                 requestingOrganization {
                     id
@@ -171,6 +92,9 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
                 status
                 verificationNumber
             }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
         }
     }
 }
@@ -195,11 +119,9 @@ function UpdateProcessedProjectForm(props: Props) {
     const [, setTutorialOptions] = useOptions('tutorial');
 
     const [
+        { fetching: updateProcessedProjectPending },
         updateProcessedProject,
-        { loading: updateProcessedProjectPending },
-    ] = useMutation<UpdateProcessedProjectMutation, UpdateProcessedProjectMutationVariables>(
-        UPDATE_PROCESSED_PROJECT_MUTATION,
-    );
+    ] = useUpdateProcessedProjectMutation();
 
     const projectContext = useMemo(() => ({
         projectType: projectData?.project.projectType,
@@ -256,10 +178,8 @@ function UpdateProcessedProjectForm(props: Props) {
     ) => {
         try {
             const result = await updateProcessedProject({
-                variables: {
-                    id: projectData.project.id,
-                    data: finalValues,
-                },
+                id: projectData.project.id,
+                data: finalValues,
             });
 
             if (checkAndAlertGraphQLResultError(result, alert)) {
@@ -305,7 +225,7 @@ function UpdateProcessedProjectForm(props: Props) {
                 { variant: 'success' },
             );
         } catch (apolloError) {
-            alertApolloError(apolloError, alert);
+            alertCombinedError(apolloError, alert);
         }
     }, [projectData.project.id, updateProcessedProject, setError, alert]);
 
@@ -379,54 +299,19 @@ function UpdateProcessedProjectForm(props: Props) {
                     Please make the necessary changes before proceeding!
                 </InputError>
             )}
+            <ProjectGeneralInputs
+                value={value}
+                setFieldValue={setFieldValue}
+                error={error}
+                disabled={baseInputsDisabled}
+            />
             <Container
-                heading="General"
+                heading="Additional"
+                withContentBackgroundAndPadding
+                withHeaderBorder
                 spacing="lg"
             >
-                <TextInput
-                    label="Project title"
-                    name="name"
-                    value={value.name}
-                    onChange={setFieldValue}
-                    error={error?.name}
-                    disabled={baseInputsDisabled}
-                />
-                <TextArea
-                    label="Project description"
-                    name="description"
-                    value={value.description}
-                    onChange={setFieldValue}
-                    error={error?.description}
-                    disabled={baseInputsDisabled}
-                    rows={4}
-                />
                 <ListLayout layout="grid">
-                    <ListLayout layout="block">
-                        <TextInput
-                            label="Look for"
-                            name="lookFor"
-                            value={value.lookFor}
-                            onChange={setFieldValue}
-                            error={error?.lookFor}
-                            disabled={baseInputsDisabled}
-                        />
-                        <OrganizationSelectInput
-                            label="Requesting organization"
-                            name="requestingOrganization"
-                            value={value.requestingOrganization}
-                            onChange={setFieldValue}
-                            error={error?.requestingOrganization}
-                            disabled={baseInputsDisabled}
-                        />
-                        <TextInput
-                            label="Additional info URL"
-                            name="additionalInfoUrl"
-                            value={value.additionalInfoUrl}
-                            onChange={setFieldValue}
-                            error={error?.additionalInfoUrl}
-                            disabled={baseInputsDisabled}
-                        />
-                    </ListLayout>
                     <AssetInput
                         projectId={projectData.project.id}
                         label="Project cover image"
@@ -439,6 +324,9 @@ function UpdateProcessedProjectForm(props: Props) {
                     />
                 </ListLayout>
             </Container>
+            <ProjectSpecificDetails
+                projectId={projectData.project.id}
+            />
             <Container
                 heading="Tutorial"
             >

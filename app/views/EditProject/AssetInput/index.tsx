@@ -3,34 +3,37 @@ import {
     useId,
 } from 'react';
 import {
-    gql,
-    useMutation,
-} from '@apollo/client';
-import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import { ulid } from 'ulid';
+import { gql } from 'urql';
 
 import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
-    CreateProjectAssetMutation,
-    CreateProjectAssetMutationVariables,
     ProjectAssetMimetypeEnum,
+    useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 
 import ProjectAssetPreview from '../ProjectAssetPreview';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_ASSET_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
 mutation CreateProjectAsset($data: ProjectAssetCreateInput!) {
     createProjectAsset(data: $data) {
         ... on ProjectAssetTypeMutationResponseType {
+            __typename
             errors
             ok
             result {
                 id
             }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
         }
     }
 }
@@ -66,12 +69,9 @@ function AssetInput<const NAME>(props: Props<NAME>) {
 
     const inputId = useId();
     const [
+        { fetching: createProjectAssetPending },
         createProjectAsset,
-        { loading: createProjectAssetPending },
-    ] = useMutation<CreateProjectAssetMutation, CreateProjectAssetMutationVariables>(
-        CREATE_PROJECT_ASSET_MUTATION,
-        { context: { hasUpload: true } },
-    );
+    ] = useCreateProjectAssetMutation();
 
     const handleFileInputChange = useCallback(async (file: File | undefined) => {
         if (file) {
@@ -92,13 +92,11 @@ function AssetInput<const NAME>(props: Props<NAME>) {
             }
 
             const result = await createProjectAsset({
-                variables: {
-                    data: {
-                        clientId: ulid(),
-                        file,
-                        mimetype: selectedEnum,
-                        project: projectId,
-                    },
+                data: {
+                    clientId: ulid(),
+                    file,
+                    mimetype: selectedEnum,
+                    project: projectId,
                 },
             });
 

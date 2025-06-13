@@ -19,6 +19,8 @@ const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'ch
     center: [0, 0],
     zoom: 0,
     attributionControl: false,
+    scrollZoom: false,
+    doubleClickZoom: false,
 };
 
 interface Props {

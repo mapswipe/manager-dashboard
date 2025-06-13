@@ -4,11 +4,6 @@ import {
     useMemo,
 } from 'react';
 import {
-    ApolloError,
-    gql,
-    useMutation,
-} from '@apollo/client';
-import {
     _cs,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -20,23 +15,25 @@ import {
     requiredStringCondition,
     useForm,
 } from '@togglecorp/toggle-form';
+import {
+    CombinedError,
+    gql,
+} from 'urql';
 
 import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
-import {
-    LoginMutation,
-    LoginMutationVariables,
-} from '#generated/types/graphql';
+import { useLoginMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 import {
-    alertApolloError,
+    alertCombinedError,
     checkAndAlertGraphQLResultError,
 } from '#utils/error';
 
 import styles from './styles.module.css';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LOGIN_MUTATION = gql`
 mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
@@ -91,9 +88,9 @@ function Login(props: Props) {
     const error = getErrorObject(formError);
 
     const [
+        { fetching: pending },
         loginToGql,
-        { loading: pending },
-    ] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION);
+    ] = useLoginMutation();
 
     const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
@@ -110,17 +107,15 @@ function Login(props: Props) {
 
             try {
                 const result = await loginToGql({
-                    variables: { username: finalValues.email, password: finalValues.password },
+                    username: finalValues.email,
+                    password: finalValues.password,
                 });
 
                 if (checkAndAlertGraphQLResultError(result, alert)) {
                     return;
                 }
 
-                if (isNotDefined(result.data)
-                    // eslint-disable-next-line no-underscore-dangle
-                    || result.data.login.__typename !== 'UserMeType'
-                ) {
+                if (isNotDefined(result.data)) {
                     alert.show(
                         'Failed to login!',
                         {
@@ -143,11 +138,11 @@ function Login(props: Props) {
                     id: result.data.login.id,
                     displayName: result.data.login.displayName,
                 });
-            } catch (apolloError) {
-                alertApolloError(apolloError, alert);
+            } catch (combinedError) {
+                alertCombinedError(combinedError, alert);
 
-                if (apolloError instanceof ApolloError) {
-                    setError({ [nonFieldError]: apolloError.message });
+                if (combinedError instanceof CombinedError) {
+                    setError({ [nonFieldError]: combinedError.message });
                 }
             }
         }

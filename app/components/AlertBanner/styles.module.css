@@ -3,15 +3,15 @@
     gap: var(--spacing-large);
     border-radius: var(--radius-card-border);
     background-color: var(--color-banner-alert);
-    padding: var(--spacing-large);
+    padding: var(--spacing-lg);
 
     .banner-icon {
-        font-size: var(--font-size-super-large);
+        font-size: var(--font-size-xl);
     }
 
     .container {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-small);
+        gap: var(--spacing-sm);
     }
 }

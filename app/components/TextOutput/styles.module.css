@@ -1,11 +1,18 @@
 .text-output {
     display: flex;
-    align-items: baseline;
-    gap: var(--spacing-small);
+    align-items: center;
+    gap: var(--spacing-xs) var(--spacing-sm);
+
+    .icon {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+        color: var(--color-text-light);
+    }
 
     .label {
         color: var(--color-text-light);
-        font-size: var(--font-size-small);
+        font-weight: var(--font-weight-light);
 
         &.with-colon:after {
             content: ':';

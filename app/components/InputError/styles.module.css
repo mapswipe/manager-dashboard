@@ -1,4 +1,4 @@
 .input-error {
     color: var(--color-danger);
-    font-size: var(--font-size-extra-small);
+    font-size: var(--font-size-sm);
 }

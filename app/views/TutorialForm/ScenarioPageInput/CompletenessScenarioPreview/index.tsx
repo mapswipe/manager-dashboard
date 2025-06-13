@@ -3,7 +3,10 @@ import {
     useState,
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { removeNull } from '@togglecorp/toggle-form';
+import {
+    PartialForm,
+    removeNull,
+} from '@togglecorp/toggle-form';
 import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
@@ -42,7 +45,7 @@ const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
 interface Props {
     className?: string;
     tileServerProperty: ProjectTileServerConfig | undefined;
-    overlayTileServerProperty: ProjectOverlayTileServerConfig | undefined;
+    overlayTileServerProperty: PartialForm<ProjectOverlayTileServerConfig> | undefined;
     lookFor: string | undefined;
     scenario: PartialScenarioPageInputFields | undefined;
 }

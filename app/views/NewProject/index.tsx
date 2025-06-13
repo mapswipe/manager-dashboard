@@ -1,5 +1,6 @@
 import {
     useCallback,
+    useContext,
     useMemo,
 } from 'react';
 import { MdArrowForward } from 'react-icons/md';
@@ -7,11 +8,6 @@ import {
     generatePath,
     useNavigate,
 } from 'react-router';
-import {
-    gql,
-    useMutation,
-    useQuery,
-} from '@apollo/client';
 import {
     isDefined,
     isNotDefined,
@@ -25,8 +21,10 @@ import {
     useForm,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
+import { gql } from 'urql';
 
 import routes from '#base/configs/routes';
+import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
@@ -34,52 +32,45 @@ import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import SegmentInput from '#components/SegmentInput';
-import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
-import TextArea from '#components/TextArea';
-import TextInput from '#components/TextInput';
 import {
     AppEnumCollectionProjectTypeEnum,
-    NewProjectEnumsQuery,
-    NewProjectEnumsQueryVariables,
-    NewProjectMutation,
-    NewProjectMutationVariables,
     ProjectCreateInput,
     ProjectTypeEnum,
+    useNewProjectMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import { keySelector } from '#utils/common';
 import {
-    alertApolloError,
+    alertCombinedError,
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
+import { DeepNonNullable } from '#utils/types';
 
-const ENUM_QUERY = gql`
-query NewProjectEnums {
-    enums {
-        ProjectTypeEnum {
-            key
-            label
-        }
-    }
-}
-`;
+import ProjectGeneralInputs from './ProjectGeneralInputs';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
 mutation NewProject($data: ProjectCreateInput!) {
     createProject(data: $data) {
         ... on ProjectTypeMutationResponseType {
+            __typename
             errors
             ok
             result {
                 id
             }
         }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
     }
 }
 `;
 
-type PartialProjectCreateInputFields = PartialForm<ProjectCreateInput>;
+type PartialProjectCreateInputFields = PartialForm<DeepNonNullable<ProjectCreateInput>>;
 type ProjectCreateFormSchema = ObjectSchema<PartialProjectCreateInputFields>;
 
 const projectCreateFormSchema: ProjectCreateFormSchema = {
@@ -130,13 +121,11 @@ function NewProject(props: Props) {
     const alert = useAlert();
 
     const [
+        { fetching: createNewProjectPending },
         createNewProject,
-        { loading: createNewProjectPending },
-    ] = useMutation<NewProjectMutation, NewProjectMutationVariables>(CREATE_PROJECT_MUTATION);
+    ] = useNewProjectMutation();
 
-    const {
-        data: newProjectEnumsResponse,
-    } = useQuery<NewProjectEnumsQuery, NewProjectEnumsQueryVariables>(ENUM_QUERY);
+    const { ProjectTypeEnum: projectTypeOptions } = useContext(EnumsContext);
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),
@@ -160,9 +149,7 @@ function NewProject(props: Props) {
 
             try {
                 const result = await createNewProject({
-                    variables: {
-                        data: finalValues,
-                    },
+                    data: finalValues,
                 });
 
                 if (checkAndAlertGraphQLResultError(result, alert)) {
@@ -216,7 +203,7 @@ function NewProject(props: Props) {
                     ),
                 );
             } catch (apolloError) {
-                alertApolloError(apolloError, alert);
+                alertCombinedError(apolloError, alert);
             }
         },
         [createNewProject, navigate, setError, alert],
@@ -227,6 +214,9 @@ function NewProject(props: Props) {
         [validate, setError, handleFormSubmission],
     );
 
+    const inputsDisabled = createNewProjectPending;
+    const actionsDisabled = inputsDisabled;
+
     return (
         <PageLayout
             className={className}
@@ -236,7 +226,7 @@ function NewProject(props: Props) {
                 <Button
                     name={undefined}
                     onClick={handleSubmitButtonClick}
-                    disabled={createNewProjectPending}
+                    disabled={actionsDisabled}
                     colorVariant="accent"
                     styleVariant="filled"
                     end={<MdArrowForward />}
@@ -261,10 +251,11 @@ function NewProject(props: Props) {
                     onChange={setFieldValue}
                     value={value.projectType}
                     hint="Please note that you won't be able to change it later."
-                    options={newProjectEnumsResponse?.enums.ProjectTypeEnum ?? []}
+                    options={projectTypeOptions ?? []}
                     keySelector={keySelector}
                     labelSelector={projectTypeLabelSelector}
                     error={error?.projectType}
+                    disabled={inputsDisabled}
                 />
                 {isDefined(value.projectType) && (
                     <div>
@@ -272,49 +263,12 @@ function NewProject(props: Props) {
                     </div>
                 )}
             </Container>
-            <Container
-                heading="General"
-                withContentBackgroundAndPadding
-                withHeaderBorder
-                spacing="lg"
-            >
-                <TextInput
-                    label="Project title"
-                    name="name"
-                    value={value.name}
-                    onChange={setFieldValue}
-                    error={error?.name}
-                />
-                <TextArea
-                    label="Project description"
-                    name="description"
-                    value={value.description}
-                    onChange={setFieldValue}
-                    error={error?.description}
-                    rows={4}
-                />
-                <OrganizationSelectInput
-                    label="Requesting organization"
-                    name="requestingOrganization"
-                    value={value.requestingOrganization}
-                    onChange={setFieldValue}
-                    error={error?.requestingOrganization}
-                />
-                <TextInput
-                    label="Look for"
-                    name="lookFor"
-                    value={value.lookFor}
-                    onChange={setFieldValue}
-                    error={error?.lookFor}
-                />
-                <TextInput
-                    label="Additional info URL"
-                    name="additionalInfoUrl"
-                    value={value.additionalInfoUrl}
-                    onChange={setFieldValue}
-                    error={error?.additionalInfoUrl}
-                />
-            </Container>
+            <ProjectGeneralInputs
+                value={value}
+                error={error}
+                setFieldValue={setFieldValue}
+                disabled={inputsDisabled}
+            />
         </PageLayout>
     );
 }

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from 'urql';
 
 export const TILE_SERVER_PROPERTY_FRAGMENT = gql`
 fragment TileServerPropertyFields on ProjectTileServerConfig {
@@ -56,6 +56,7 @@ ${TILE_SERVER_PROPERTY_FRAGMENT}
 ${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
 fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeCompletenessProjectPropertyType {
     ... on CompareProjectPropertyType {
+        __typename
         aoiGeometry
         zoomLevel
         tileServerProperty {
@@ -66,6 +67,7 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         }
     }
     ... on FindProjectPropertyType {
+        __typename
         aoiGeometry
         tileServerProperty {
             ...TileServerPropertyFields
@@ -73,6 +75,7 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         zoomLevel
     }
     ... on CompletenessProjectPropertyType {
+        __typename
         aoiGeometry
         overlayTileServerProperty {
             type
@@ -103,6 +106,7 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         zoomLevel
     }
     ... on ValidateProjectPropertyType {
+        __typename
         objectSource {
             aoiGeometry
             objectGeojsonUrl
@@ -113,6 +117,18 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         tileServerProperty {
             ...TileServerPropertyFields
         }
+    }
+}
+`;
+
+export const OPERATION_INFO_FRAGMENT = gql`
+fragment OperationInfoFields on OperationInfo {
+    __typename
+    messages {
+        code
+        field
+        kind
+        message
     }
 }
 `;

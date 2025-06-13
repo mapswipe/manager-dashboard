@@ -2,11 +2,8 @@ import {
     useCallback,
     useContext,
 } from 'react';
-import {
-    gql,
-    useMutation,
-} from '@apollo/client';
 import { _cs } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
@@ -14,15 +11,17 @@ import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import { useLogoutMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 import {
-    alertApolloError,
+    alertCombinedError,
     checkAndAlertGraphQLResultError,
 } from '#utils/error';
 
 import styles from './styles.module.css';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LOGOUT_MUTATION = gql`
 mutation Logout {
     logout
@@ -41,11 +40,14 @@ function Navbar(props: Props) {
     } = useContext(UserContext);
     const alert = useAlert();
 
-    const [logout, { loading: logoutPending }] = useMutation(LOGOUT_MUTATION);
+    const [
+        { fetching: logoutPending },
+        logout,
+    ] = useLogoutMutation();
 
     const handleLogoutClick = useCallback(async () => {
         try {
-            const result = await logout();
+            const result = await logout({});
 
             if (checkAndAlertGraphQLResultError(result, alert)) {
                 return;
@@ -60,7 +62,7 @@ function Navbar(props: Props) {
             );
             setUser(undefined);
         } catch (apolloError) {
-            alertApolloError(apolloError, alert);
+            alertCombinedError(apolloError, alert);
         }
     }, [logout, setUser, alert]);
 

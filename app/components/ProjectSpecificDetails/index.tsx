@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
 import { isNotDefined } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import Container from '#components/Container';
 import { useProjectSpecificDetailsQuery } from '#generated/types/graphql';
@@ -16,6 +16,7 @@ ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 query ProjectSpecificDetails($id: ID!) {
     project(id: $id) {
         id
+        projectType
         projectTypeSpecifics {
             ...ProjectTypeSpecificFields
         }
@@ -41,11 +42,18 @@ function ProjectSpecificDetails(props: Props) {
         pause: isNotDefined(projectId),
     });
 
+    if (isNotDefined(projectData?.project.projectTypeSpecifics)) {
+        return null;
+    }
+
     return (
         <Container
             errored={!!projectDataError}
             errorMessage={projectDataError?.message}
             pending={projectDataPending}
+            heading={`${projectData.project.projectType} specific details`}
+            headingLevel={4}
+            withHeaderBorder
         >
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (
