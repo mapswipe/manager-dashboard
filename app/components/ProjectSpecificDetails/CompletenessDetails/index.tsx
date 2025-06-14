@@ -11,7 +11,7 @@ import TextOutput from '#components/TextOutput';
 import VectorTileMapSource from '#components/VectorTileMapSource';
 import {
     ProjectSpecificDetailsQuery,
-    TileServerNameEnum,
+    RasterTileServerNameEnum,
 } from '#generated/types/graphql';
 
 interface Props {
@@ -48,7 +48,7 @@ function CompletenessDetails(props: Props) {
                         label="Tile Server"
                         value={data?.tileServerProperty.name}
                     />
-                    {data.tileServerProperty.name === TileServerNameEnum.Custom && (
+                    {data.tileServerProperty.name === RasterTileServerNameEnum.Custom && (
                         <TextOutput
                             label="Custom URL"
                             value={data?.tileServerProperty.custom?.url}

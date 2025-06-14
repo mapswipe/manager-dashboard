@@ -5,9 +5,10 @@ import {
     requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
+import rasterTileServerFormSchema from '#components/RasterTileServerInput/schema';
 import {
     CompareProjectPropertyInput,
-    TileServerNameEnum,
+    RasterTileServerNameEnum,
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -15,7 +16,6 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import tileServerFormSchema from '../TileServerInput/schema';
 
 export type PartialCompareSpecificFields = PartialForm<
     DeepNonNullable<CompareProjectPropertyInput>
@@ -29,12 +29,12 @@ type CompareSpecificFormSchema = ObjectSchema<
 export const defaultCompareSpecificFormValue: PartialCompareSpecificFields = {
     zoomLevel: 18,
     tileServerProperty: {
-        name: TileServerNameEnum.Custom,
+        name: RasterTileServerNameEnum.Custom,
         custom: {
         },
     },
     tileServerBProperty: {
-        name: TileServerNameEnum.Custom,
+        name: RasterTileServerNameEnum.Custom,
         custom: {
         },
     },
@@ -46,8 +46,8 @@ const compareSpecificFormSchema: CompareSpecificFormSchema = {
             required: true,
             validations: [greaterThanCondition(0)],
         },
-        tileServerProperty: tileServerFormSchema,
-        tileServerBProperty: tileServerFormSchema,
+        tileServerProperty: rasterTileServerFormSchema,
+        tileServerBProperty: rasterTileServerFormSchema,
         aoiGeometry: {
             required: true,
             requiredValidation: requiredStringCondition,

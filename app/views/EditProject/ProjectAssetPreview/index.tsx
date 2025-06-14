@@ -10,12 +10,11 @@ import {
 import { gql } from 'urql';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
+import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import {
     ProjectAssetMimetypeEnum,
     useProjectAssetPreviewQuery,
 } from '#generated/types/graphql';
-
-import { PartialTileServerInputFields } from '../UpdateProjectForm/TileServerInput/schema';
 
 import styles from './styles.module.css';
 
@@ -37,7 +36,7 @@ query ProjectAssetPreview($assetId: ID!) {
 interface Props {
     className?: string;
     assetId: string | undefined;
-    geoJsonTileServer?: PartialTileServerInputFields;
+    geoJsonTileServer?: PartialRasterTileServerInputFields;
 }
 
 function ProjectAssetPreview(props: Props) {

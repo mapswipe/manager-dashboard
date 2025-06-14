@@ -6,7 +6,7 @@ export const defaultAllEnumsValue: AllEnumsQuery['enums'] = {
     ValidateObjectSourceTypeEnum: [],
     ProjectStatusEnum: [],
     ProjectTypeEnum: [],
-    TileServerNameEnum: [],
+    RasterTileServerNameEnum: [],
     VectorTileServerNameEnum: [],
     TutorialInformationPageBlockTypeEnum: [],
     TutorialScenarioIconEnum: [],

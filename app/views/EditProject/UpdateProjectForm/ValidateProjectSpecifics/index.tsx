@@ -6,11 +6,12 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
-import TileServerInput from '../TileServerInput';
+import RasterTileServerInput from '#components/RasterTileServerInput';
 import {
-    defaultTileServerInputValue,
-    PartialTileServerInputFields,
-} from '../TileServerInput/schema';
+    defaultRasterTileServerInputValue,
+    type PartialRasterTileServerInputFields,
+} from '#components/RasterTileServerInput/schema';
+
 import {
     defaultObjectSourceInputFormValue,
     PartialValidateObjectSourceInputFields,
@@ -37,10 +38,10 @@ function ValidateProjectSpecifics(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
+    const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialRasterTileServerInputFields>(
         'tileServerProperty' as const,
         setFieldValue,
-        defaultTileServerInputValue,
+        defaultRasterTileServerInputValue,
     );
 
     const setObjectSourceInputFieldValue = useFormObject<'objectSource', PartialValidateObjectSourceInputFields>(
@@ -58,7 +59,7 @@ function ValidateProjectSpecifics(props: Props) {
                 error={error?.objectSource}
                 projectId={projectId}
             />
-            <TileServerInput
+            <RasterTileServerInput
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}

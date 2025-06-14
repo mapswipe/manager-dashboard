@@ -6,7 +6,7 @@ import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
 import {
     ProjectSpecificDetailsQuery,
-    TileServerNameEnum,
+    RasterTileServerNameEnum,
 } from '#generated/types/graphql';
 import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
 
@@ -40,7 +40,7 @@ function FindDetails(props: Props) {
                     label="Tile Server"
                     value={data?.tileServerProperty.name}
                 />
-                {data.tileServerProperty.name === TileServerNameEnum.Custom && (
+                {data.tileServerProperty.name === RasterTileServerNameEnum.Custom && (
                     <TextOutput
                         label="Custom URL"
                         value={data?.tileServerProperty.custom?.url}

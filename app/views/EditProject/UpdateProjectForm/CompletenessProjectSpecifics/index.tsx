@@ -7,13 +7,13 @@ import {
 } from '@togglecorp/toggle-form';
 
 import NumberInput from '#components/NumberInput';
+import RasterTileServerInput from '#components/RasterTileServerInput';
+import {
+    defaultRasterTileServerInputValue,
+    type PartialRasterTileServerInputFields,
+} from '#components/RasterTileServerInput/schema';
 import AssetInput from '#views/EditProject/AssetInput';
 
-import TileServerInput from '../TileServerInput';
-import {
-    defaultTileServerInputValue,
-    PartialTileServerInputFields,
-} from '../TileServerInput/schema';
 import { PartialOverlayTileServerPropertyInputFields } from './OverlayTileServerPropertyInput/schema';
 import OverlayTileServerPropertyInput from './OverlayTileServerPropertyInput';
 import { type PartialCompletenessSpecificFields } from './schema';
@@ -37,10 +37,10 @@ function CompletenessProjectSpecifics(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
+    const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialRasterTileServerInputFields>(
         'tileServerProperty' as const,
         setFieldValue,
-        defaultTileServerInputValue,
+        defaultRasterTileServerInputValue,
     );
 
     const setOverlayTileServerInputFieldValue = useFormObject<'overlayTileServerProperty', PartialOverlayTileServerPropertyInputFields>(
@@ -70,7 +70,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 error={error?.zoomLevel}
                 disabled={disabled}
             />
-            <TileServerInput
+            <RasterTileServerInput
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}

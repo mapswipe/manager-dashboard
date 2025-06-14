@@ -1,7 +1,7 @@
 import { gql } from 'urql';
 
 export const TILE_SERVER_PROPERTY_FRAGMENT = gql`
-fragment TileServerPropertyFields on ProjectTileServerConfig {
+fragment RasterTileServerPropertyFields on ProjectRasterTileServerConfig {
     name
     bing {
         credits
@@ -60,17 +60,17 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         aoiGeometry
         zoomLevel
         tileServerProperty {
-            ...TileServerPropertyFields
+            ...RasterTileServerPropertyFields
         }
         tileServerBProperty {
-            ...TileServerPropertyFields
+            ...RasterTileServerPropertyFields
         }
     }
     ... on FindProjectPropertyType {
         __typename
         aoiGeometry
         tileServerProperty {
-            ...TileServerPropertyFields
+            ...RasterTileServerPropertyFields
         }
         zoomLevel
     }
@@ -96,12 +96,12 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
             raster {
                 opacity,
                 tileServer {
-                    ...TileServerPropertyFields
+                    ...RasterTileServerPropertyFields
                 }
             }
         }
         tileServerProperty {
-            ...TileServerPropertyFields
+            ...RasterTileServerPropertyFields
         }
         zoomLevel
     }
@@ -115,7 +115,7 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
             taskingManagerProjectId
         }
         tileServerProperty {
-            ...TileServerPropertyFields
+            ...RasterTileServerPropertyFields
         }
     }
 }
