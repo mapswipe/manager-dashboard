@@ -47,6 +47,8 @@ fragment VectorTileServerPropertyFields on ProjectVectorTileServerConfig {
         credits
         sourceName
         url
+        minZoom
+        maxZoom
     }
 }
 `;

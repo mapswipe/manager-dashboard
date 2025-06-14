@@ -66,7 +66,7 @@ function MobilePreview(props: Props) {
                             {headerDescription}
                         </div>
                         <Heading
-                            level={5}
+                            level={6}
                             className={styles.heading}
                         >
                             {heading}

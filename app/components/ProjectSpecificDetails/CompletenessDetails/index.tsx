@@ -4,7 +4,7 @@ import { removeNull } from '@togglecorp/toggle-form';
 import BaseMap from '#components/BaseMap';
 import Container from '#components/Container';
 import DefaultMapContainer from '#components/DefaultMapContainer';
-import GeoJsonMapSource from '#components/GeoJsonMapSource';
+import GeoJsonAssetMapSource from '#components/GeoJsonAssetMapSource';
 import GridLayoutItem from '#components/GridLayoutItem';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
@@ -72,8 +72,8 @@ function CompletenessDetails(props: Props) {
                     <VectorTileMapSource
                         tileConfig={removeNull(data.overlayTileServerProperty.vector)}
                     />
-                    <GeoJsonMapSource
-                        geometryAssetId={data.aoiGeometry}
+                    <GeoJsonAssetMapSource
+                        geoJsonAssetId={data.aoiGeometry}
                         zoomLevel={data.zoomLevel}
                     />
                 </BaseMap>

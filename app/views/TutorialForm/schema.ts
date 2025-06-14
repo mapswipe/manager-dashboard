@@ -22,7 +22,7 @@ import scenarioPageSchema, { ScenarioPageInputFields } from './ScenarioPageInput
 
 export type TutorialFormContext = {
     projectType: ProjectTypeEnum | undefined,
-};
+} | undefined;
 
 export type PartialTutorialCreateInputFields = PartialForm<
     DeepNonNullable<

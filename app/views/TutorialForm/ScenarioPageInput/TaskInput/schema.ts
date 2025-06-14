@@ -18,6 +18,7 @@ import {
 import comparePropertyInputSchema from './ComparePropertyInput/schema';
 import completenessPropertyInputSchema from './CompletenessPropertyInput/schema';
 import findPropertyInputSchema from './FindPropertyInput/schema';
+import validatePropertyInputSchema from './ValidatePropertyInput/schema';
 
 export type TaskInputFields = DeepNonNullable<TutorialTaskCreateInput>;
 export type PartialTaskInputFields = PartialForm<TaskInputFields, 'clientId'>;
@@ -41,27 +42,39 @@ const taskSchema: TaskSchema = {
         reference: {},
         projectTypeSpecifics: {
             fields: (): ReturnType<ProjectTypeSpecificsSchema['fields']> => {
-                if (context.projectType === ProjectTypeEnum.Find) {
+                if (context?.projectType === ProjectTypeEnum.Find) {
                     return {
                         find: findPropertyInputSchema,
                         completeness: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
                     };
                 }
 
-                if (context.projectType === ProjectTypeEnum.Compare) {
+                if (context?.projectType === ProjectTypeEnum.Compare) {
                     return {
                         compare: comparePropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
                     };
                 }
 
-                if (context.projectType === ProjectTypeEnum.Completeness) {
+                if (context?.projectType === ProjectTypeEnum.Completeness) {
                     return {
                         completeness: completenessPropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (context?.projectType === ProjectTypeEnum.Validate) {
+                    return {
+                        validate: validatePropertyInputSchema,
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
                     };
                 }
 
@@ -69,6 +82,7 @@ const taskSchema: TaskSchema = {
                     find: { forceValue: undefinedValue },
                     compare: { forceValue: undefinedValue },
                     completeness: { forceValue: undefinedValue },
+                    validate: { forceValue: undefinedValue },
                 };
             },
         },
