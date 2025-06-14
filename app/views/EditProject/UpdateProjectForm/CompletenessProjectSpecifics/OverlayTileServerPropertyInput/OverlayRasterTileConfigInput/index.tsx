@@ -7,11 +7,11 @@ import {
 } from '@togglecorp/toggle-form';
 
 import NumberInput from '#components/NumberInput';
-import TileServerInput from '#views/EditProject/UpdateProjectForm/TileServerInput';
+import RasterTileServerInput from '#components/RasterTileServerInput';
 import {
-    defaultTileServerInputValue,
-    PartialTileServerInputFields,
-} from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
+    defaultRasterTileServerInputValue,
+    PartialRasterTileServerInputFields,
+} from '#components/RasterTileServerInput/schema';
 
 import { PartialOverlayRasterTileConfigInputFields } from './schema';
 
@@ -34,10 +34,10 @@ function OverlayRasterTileConfigInput(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const setTileServerInputFieldValue = useFormObject<'tileServer', PartialTileServerInputFields>(
+    const setTileServerInputFieldValue = useFormObject<'tileServer', PartialRasterTileServerInputFields>(
         'tileServer' as const,
         setFieldValue,
-        defaultTileServerInputValue,
+        defaultRasterTileServerInputValue,
     );
 
     return (
@@ -50,7 +50,7 @@ function OverlayRasterTileConfigInput(props: Props) {
                 error={error?.opacity}
                 disabled={disabled}
             />
-            <TileServerInput
+            <RasterTileServerInput
                 value={value?.tileServer}
                 error={error?.tileServer}
                 setFieldValue={setTileServerInputFieldValue}

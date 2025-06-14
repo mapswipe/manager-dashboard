@@ -5,6 +5,7 @@ import {
     requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
+import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/RasterTileServerInput/schema';
 import { CompletenessProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -12,7 +13,6 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import tileServerFormSchema, { defaultTileServerInputValue } from '../TileServerInput/schema';
 import overlayTileServerPropertySchema, { defaultOverlayTileServerPropertyInputValue } from './OverlayTileServerPropertyInput/schema';
 
 export type PartialCompletenessSpecificFields = PartialForm<
@@ -26,7 +26,7 @@ type CompletenessSpecificFormSchema = ObjectSchema<
 
 export const defaultCompletenessSpecificFormValue: PartialCompletenessSpecificFields = {
     zoomLevel: 16,
-    tileServerProperty: defaultTileServerInputValue,
+    tileServerProperty: defaultRasterTileServerInputValue,
     overlayTileServerProperty: defaultOverlayTileServerPropertyInputValue,
 };
 
@@ -36,7 +36,7 @@ const completenessSpecificFormSchema: CompletenessSpecificFormSchema = {
             required: true,
             validations: [greaterThanCondition(0)],
         },
-        tileServerProperty: tileServerFormSchema,
+        tileServerProperty: rasterTileServerFormSchema,
         overlayTileServerProperty: overlayTileServerPropertySchema,
         aoiGeometry: {
             required: true,

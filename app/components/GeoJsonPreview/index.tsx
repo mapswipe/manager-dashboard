@@ -12,7 +12,7 @@ import {
 import getBbox from '@turf/bbox';
 
 import BaseMap from '#components/BaseMap';
-import { type PartialTileServerInputFields } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
+import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 
 import styles from './styles.module.css';
 
@@ -32,7 +32,7 @@ const defaultGeoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'
 
 interface Props {
     className?: string;
-    baseTileServer: PartialTileServerInputFields | undefined;
+    baseTileServer: PartialRasterTileServerInputFields | undefined;
     geoJson: GeoJSON.Feature<GeoJSON.Geometry>
         | GeoJSON.FeatureCollection<GeoJSON.Geometry>
         | undefined;

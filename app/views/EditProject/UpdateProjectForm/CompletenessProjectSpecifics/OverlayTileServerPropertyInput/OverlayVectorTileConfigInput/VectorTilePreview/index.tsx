@@ -11,8 +11,8 @@ import {
 
 import BaseMap from '#components/BaseMap';
 import GeoJsonMapSource from '#components/GeoJsonMapSource';
+import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import VectorTileMapSource from '#components/VectorTileMapSource';
-import { type PartialTileServerInputFields } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import { PartialOverlayVectorTileConfigInputFields } from '../schema';
 import { vectorTileServerNameToTileInputKey } from '../VectorTileServerInput/schema';
@@ -21,7 +21,7 @@ import styles from './styles.module.css';
 
 interface Props {
     className?: string;
-    baseTileServer: PartialTileServerInputFields | undefined;
+    baseTileServer: PartialRasterTileServerInputFields | undefined;
     aoiGeometryAssetId?: string;
     vectorTileConfig: PartialOverlayVectorTileConfigInputFields | undefined;
     zoomLevel?: number;

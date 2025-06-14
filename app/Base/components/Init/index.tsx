@@ -62,7 +62,7 @@ query AllEnums {
             key
             label
         }
-        TileServerNameEnum {
+        RasterTileServerNameEnum {
             key
             label
         }

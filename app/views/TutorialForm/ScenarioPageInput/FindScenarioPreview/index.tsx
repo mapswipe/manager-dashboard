@@ -8,7 +8,7 @@ import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
-import { ProjectTileServerConfig } from '#generated/types/graphql';
+import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
 import { iconMap } from '#utils/icon';
 
@@ -38,7 +38,7 @@ const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
 
 interface Props {
     className?: string;
-    tileServerProperty: ProjectTileServerConfig | undefined;
+    tileServerProperty: ProjectRasterTileServerConfig | undefined;
     lookFor: string | undefined;
     scenario: PartialScenarioPageInputFields | undefined;
 }

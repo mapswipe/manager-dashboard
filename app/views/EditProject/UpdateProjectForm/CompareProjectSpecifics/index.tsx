@@ -7,13 +7,13 @@ import {
 } from '@togglecorp/toggle-form';
 
 import NumberInput from '#components/NumberInput';
+import RasterTileServerInput from '#components/RasterTileServerInput';
+import {
+    defaultRasterTileServerInputValue,
+    type PartialRasterTileServerInputFields,
+} from '#components/RasterTileServerInput/schema';
 import AssetInput from '#views/EditProject/AssetInput';
 
-import TileServerInput from '../TileServerInput';
-import {
-    defaultTileServerInputValue,
-    PartialTileServerInputFields,
-} from '../TileServerInput/schema';
 import { type PartialCompareSpecificFields } from './schema';
 
 interface Props {
@@ -35,16 +35,16 @@ function CompareProjectSpecifics(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialTileServerInputFields>(
+    const setTileServerInputFieldValue = useFormObject<'tileServerProperty', PartialRasterTileServerInputFields>(
         'tileServerProperty',
         setFieldValue,
-        defaultTileServerInputValue,
+        defaultRasterTileServerInputValue,
     );
 
-    const setTileServerBInputFieldValue = useFormObject<'tileServerBProperty', PartialTileServerInputFields>(
+    const setTileServerBInputFieldValue = useFormObject<'tileServerBProperty', PartialRasterTileServerInputFields>(
         'tileServerBProperty',
         setFieldValue,
-        defaultTileServerInputValue,
+        defaultRasterTileServerInputValue,
     );
 
     return (
@@ -60,14 +60,14 @@ function CompareProjectSpecifics(props: Props) {
                 disabled={disabled}
                 withoutPreview
             />
-            <TileServerInput
+            <RasterTileServerInput
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
             />
-            <TileServerInput
+            <RasterTileServerInput
                 label="Tile server B"
                 value={value?.tileServerBProperty}
                 error={error?.tileServerBProperty}

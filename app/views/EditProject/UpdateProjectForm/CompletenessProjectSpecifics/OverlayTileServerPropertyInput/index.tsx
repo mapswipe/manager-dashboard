@@ -10,13 +10,13 @@ import {
 import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import RadioInput from '#components/RadioInput';
+import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import { OverlayLayerTypeEnum } from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
 } from '#utils/common';
 
-import { PartialTileServerInputFields } from '../../TileServerInput/schema';
 import {
     defaultOverlayRasterTileConfigInputValue,
     PartialOverlayRasterTileConfigInputFields,
@@ -35,7 +35,7 @@ interface Props {
     setFieldValue: (...entries: EntriesAsList<PartialOverlayTileServerPropertyInputFields>) => void;
     disabled?: boolean;
     aoiGeoJsonAssetId?: string;
-    baseTileServer: PartialTileServerInputFields | undefined;
+    baseTileServer: PartialRasterTileServerInputFields | undefined;
     zoomLevel?: number;
 }
 

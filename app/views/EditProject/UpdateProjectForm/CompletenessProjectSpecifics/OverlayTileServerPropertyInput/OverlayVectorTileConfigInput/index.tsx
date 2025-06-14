@@ -8,6 +8,7 @@ import {
 
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
+import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import SelectInput from '#components/SelectInput';
 import {
     colorOptions,
@@ -16,7 +17,6 @@ import {
     opacityOptions,
     valueSelector,
 } from '#utils/common';
-import { PartialTileServerInputFields } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
 
 import {
     defaultVectorTileServerInputValue,
@@ -32,7 +32,7 @@ interface Props {
     error: LeafError | ObjectError<PartialOverlayVectorTileConfigInputFields>;
     setFieldValue: (...entries: EntriesAsList<PartialOverlayVectorTileConfigInputFields>) => void;
     disabled?: boolean;
-    baseTileServer: PartialTileServerInputFields | undefined;
+    baseTileServer: PartialRasterTileServerInputFields | undefined;
     aoiGeometryAssetId?: string;
     zoomLevel?: number;
 }

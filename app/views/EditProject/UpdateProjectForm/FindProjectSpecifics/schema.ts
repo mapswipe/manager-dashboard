@@ -5,6 +5,7 @@ import {
     requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
+import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/RasterTileServerInput/schema';
 import { FindProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -12,7 +13,6 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import tileServerFormSchema, { defaultTileServerInputValue } from '../TileServerInput/schema';
 
 export type PartialFindSpecificFields = PartialForm<DeepNonNullable<FindProjectPropertyInput>>;
 type FindSpecificFormSchema = ObjectSchema<
@@ -22,7 +22,7 @@ type FindSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultFindSpecificFormValue: PartialFindSpecificFields = {
-    tileServerProperty: defaultTileServerInputValue,
+    tileServerProperty: defaultRasterTileServerInputValue,
 };
 
 const findSpecificFormSchema: FindSpecificFormSchema = {
@@ -31,7 +31,7 @@ const findSpecificFormSchema: FindSpecificFormSchema = {
             required: true,
             validations: [greaterThanCondition(0)],
         },
-        tileServerProperty: tileServerFormSchema,
+        tileServerProperty: rasterTileServerFormSchema,
         aoiGeometry: {
             required: true,
             requiredValidation: requiredStringCondition,

@@ -9,8 +9,8 @@ import {
 import Map from '@togglecorp/re-map';
 
 import TileServerContext from '#base/context/TileServerContext';
-import { TileServerNameEnum } from '#generated/types/graphql';
-import { type PartialTileServerInputFields } from '#views/EditProject/UpdateProjectForm/TileServerInput/schema';
+import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
+import { RasterTileServerNameEnum } from '#generated/types/graphql';
 
 const FALLBACK_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const FALLBACK_TILE_CREDITS = 'Map data from OpenStreetMap';
@@ -24,7 +24,7 @@ const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'ch
 };
 
 interface Props {
-    baseTileServer: PartialTileServerInputFields | undefined;
+    baseTileServer: PartialRasterTileServerInputFields | undefined;
     children?: React.ReactNode;
 }
 
@@ -61,7 +61,7 @@ function BaseMap(props: Props) {
             };
         }
 
-        if (name === TileServerNameEnum.Custom) {
+        if (name === RasterTileServerNameEnum.Custom) {
             return {
                 url: baseTileServer.custom?.url,
                 credits: baseTileServer.custom?.credits,
