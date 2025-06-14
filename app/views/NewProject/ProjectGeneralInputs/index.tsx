@@ -18,7 +18,7 @@ import {
 import { DeepNonNullable } from '#utils/types';
 
 type ProjectGeneralInputFields = Pick<
-ProjectCreateInput & ProjectUpdateInput,
+ProjectCreateInput | ProjectUpdateInput,
 'name'
 | 'description'
 | 'requestingOrganization'

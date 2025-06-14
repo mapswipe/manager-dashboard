@@ -34,6 +34,7 @@ function FindPropertyInput(props: Props) {
             className={className}
             layout="grid"
             numPreferredGridColumns={3}
+            minGridColumnSize="6rem"
         >
             <NumberInput
                 name="tileX"

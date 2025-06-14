@@ -10,7 +10,7 @@ import {
 } from '@togglecorp/re-map';
 
 import BaseMap from '#components/BaseMap';
-import GeoJsonMapSource from '#components/GeoJsonMapSource';
+import GeoJsonAssetMapSource from '#components/GeoJsonAssetMapSource';
 import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import VectorTileMapSource from '#components/VectorTileMapSource';
 
@@ -62,8 +62,8 @@ function VectorTilePreview(props: Props) {
             <VectorTileMapSource
                 tileConfig={vectorTileConfig}
             />
-            <GeoJsonMapSource
-                geometryAssetId={aoiGeometryAssetId}
+            <GeoJsonAssetMapSource
+                geoJsonAssetId={aoiGeometryAssetId}
                 zoomLevel={zoomLevel}
             />
             <MapOrder

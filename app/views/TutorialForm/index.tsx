@@ -2,6 +2,7 @@ import {
     useCallback,
     useEffect,
     useMemo,
+    useState,
 } from 'react';
 import { CgArrowTopRightR } from 'react-icons/cg';
 import { IoAdd } from 'react-icons/io5';
@@ -35,6 +36,7 @@ import GeoJsonFileInput from '#components/GeoJsonFileInput';
 import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
+import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
 import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
@@ -66,6 +68,7 @@ import ScenarioPageInput from './ScenarioPageInput';
 import tutorialCreateFormSchema, {
     defaultTutorialCreateFormValue,
     PartialTutorialCreateInputFields,
+    TutorialFormContext,
 } from './schema';
 import { validateFindTutorialGeoJson } from './utils';
 
@@ -78,6 +81,7 @@ interface Props {
 function NewTutorial(props: Props) {
     const { className } = props;
     const { id: tutorialIdFromParams } = useParams<{ id: string }>();
+    const [tutorialFormContext, setTutorialFormContext] = useState<TutorialFormContext>();
 
     const navigate = useNavigate();
     const alert = useAlert();
@@ -106,9 +110,11 @@ function NewTutorial(props: Props) {
         error: formError,
         validate,
         setError,
-    } = useForm(tutorialCreateFormSchema, {
-        value: defaultTutorialCreateFormValue,
-    });
+    } = useForm(
+        tutorialCreateFormSchema,
+        { value: defaultTutorialCreateFormValue },
+        tutorialFormContext,
+    );
 
     useEffect(() => {
         if (isNotDefined(tutorialData)) {
@@ -169,6 +175,16 @@ function NewTutorial(props: Props) {
         },
         pause: isNotDefined(value.project),
     });
+
+    useEffect(() => {
+        if (isNotDefined(projectDetailResponse)) {
+            return;
+        }
+
+        setTutorialFormContext({
+            projectType: projectDetailResponse.project.projectType,
+        });
+    }, [projectDetailResponse]);
 
     const removeInformationPage = useCallback(
         (indexToRemove: number) => {
@@ -438,43 +454,10 @@ function NewTutorial(props: Props) {
                                 label="Requesting organization"
                                 value={projectDetailResponse.project.requestingOrganization.name}
                             />
-                            {/* eslint-disable-next-line no-underscore-dangle */}
-                            {(projectDetailResponse.project.projectTypeSpecifics?.__typename === 'FindProjectPropertyType'
-                                // eslint-disable-next-line no-underscore-dangle
-                                || projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType'
-                                // eslint-disable-next-line no-underscore-dangle
-                                || projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType'
-                            ) && (
-                                <TextOutput
-                                    label="Zoom level"
-                                    value={projectDetailResponse
-                                        .project.projectTypeSpecifics?.zoomLevel}
-                                />
-                            )}
-                            <TextOutput
-                                label="Tile server"
-                                value={projectDetailResponse.project
-                                    .projectTypeSpecifics?.tileServerProperty.name}
-                            />
-                            {/* eslint-disable-next-line no-underscore-dangle */}
-                            {(projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType') && (
-                                <TextOutput
-                                    label="Tile server B"
-                                    value={projectDetailResponse
-                                        .project.projectTypeSpecifics?.tileServerBProperty.name}
-                                />
-                            )}
-
-                            {/* eslint-disable-next-line no-underscore-dangle */}
-                            {projectDetailResponse.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType' && (
-                                <TextOutput
-                                    label="Overlay Tile"
-                                    value={projectDetailResponse
-                                        .project.projectTypeSpecifics
-                                        ?.overlayTileServerProperty.type}
-                                />
-                            )}
                         </Container>
+                        <ProjectSpecificDetails
+                            projectId={projectDetailResponse.project.id}
+                        />
                         <Container
                             heading="Project Assets"
                             headingLevel={4}

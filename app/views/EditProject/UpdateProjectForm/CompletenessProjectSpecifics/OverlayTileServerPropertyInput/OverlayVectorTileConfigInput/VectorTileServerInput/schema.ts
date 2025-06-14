@@ -48,11 +48,7 @@ type CommonVectorTileServerConfigSchema = ObjectSchema<PartialCommonVectorTileSe
 
 export const defaultVectorTileServerInputValue: PartialVectorTileServerInputFields = {
     name: VectorTileServerNameEnum.Custom,
-    custom: {
-        url: 'https://vector.osm.org/shortbread_v1/{z}/{x}/{y}.mvt',
-        credits: 'MapTiler',
-        sourceName: 'buildings',
-    },
+    custom: {},
 };
 
 const vectorTileServerFormSchema: VectorTileServerFormSchema = {
@@ -101,6 +97,9 @@ const vectorTileServerFormSchema: VectorTileServerFormSchema = {
                                     validations: [imageryUrlCondition],
                                 },
                                 credits: {},
+                                // FIXME: add zoom validations
+                                minZoom: {},
+                                maxZoom: {},
                             }),
                         },
                     };

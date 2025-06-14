@@ -19,6 +19,7 @@ import {
 import EnumsContext from '#base/context/EnumsContext';
 import TileServerContext from '#base/context/TileServerContext';
 import Container from '#components/Container';
+import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
@@ -168,7 +169,7 @@ function VectorTileServerInput(props: Props) {
                             name="credits"
                             label="Imagery Credits"
                             hint="Insert appropriate imagery credits"
-                            value={value[fieldName]?.credits}
+                            value={value.custom?.credits}
                             error={getErrorObject(error?.[fieldName])?.credits}
                             onChange={setCustomTileServerFieldValue}
                             disabled={disabled}
@@ -176,8 +177,22 @@ function VectorTileServerInput(props: Props) {
                         <TextInput
                             label="Source name"
                             name="sourceName"
-                            value={value[fieldName]?.sourceName}
+                            value={value.custom?.sourceName}
                             error={getErrorObject(error?.[fieldName])?.sourceName}
+                            onChange={setCustomTileServerFieldValue}
+                        />
+                        <NumberInput
+                            label="Min Zoom"
+                            name="minZoom"
+                            value={value.custom?.minZoom}
+                            error={getErrorObject(error?.custom)?.minZoom}
+                            onChange={setCustomTileServerFieldValue}
+                        />
+                        <NumberInput
+                            label="Max Zoom"
+                            name="maxZoom"
+                            value={value.custom?.maxZoom}
+                            error={getErrorObject(error?.custom)?.maxZoom}
                             onChange={setCustomTileServerFieldValue}
                         />
                     </>

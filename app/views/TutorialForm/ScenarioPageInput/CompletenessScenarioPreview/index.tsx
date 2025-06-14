@@ -3,14 +3,16 @@ import {
     useState,
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
+import { MapContainer } from '@togglecorp/re-map';
 import {
     PartialForm,
     removeNull,
 } from '@togglecorp/toggle-form';
-import { FillLayerSpecification } from 'maplibre-gl';
 
-import GeoJsonPreview from '#components/GeoJsonPreview';
+import BaseMap from '#components/BaseMap';
+import GeoJsonMapSource from '#components/GeoJsonMapSource';
 import MobilePreview from '#components/MobilePreview';
+import VectorTileMapSource from '#components/VectorTileMapSource';
 import {
     ProjectOverlayTileServerConfig,
     ProjectRasterTileServerConfig,
@@ -22,25 +24,6 @@ import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
-
-const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
-    type: 'fill',
-    paint: {
-        'fill-color': [
-            'match',
-            ['get', 'reference'],
-            1,
-            'green',
-            2,
-            'yellow',
-            3,
-            'red',
-            'transparent',
-        ],
-        'fill-outline-color': '#ffffff',
-        'fill-opacity': 0.2,
-    },
-};
 
 interface Props {
     className?: string;
@@ -84,20 +67,22 @@ function CompletenessScenarioPreview(props: Props) {
                 popupDescription={preview?.description || '{description}'}
                 contentClassName={styles.content}
             >
-                <GeoJsonPreview
-                    className={styles.mapContainer}
-                    geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                <BaseMap
                     baseTileServer={removeNull(tileServerProperty)}
-                    geoJsonLayerOptions={layerOptions}
-                    padding={0}
-                />
-                <GeoJsonPreview
-                    className={_cs(styles.mapContainer, styles.overlay)}
-                    geoJson={generatedGeojson as GeoJSON.FeatureCollection}
-                    baseTileServer={removeNull(overlayTileServerProperty)}
-                    geoJsonLayerOptions={layerOptions}
-                    padding={0}
-                />
+                >
+                    <MapContainer
+                        className={styles.mapContainer}
+                    />
+                    <GeoJsonMapSource
+                        geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                        sourceKey="completeness-geojson-source"
+                        layerKey="completeness-geojson-layer"
+                    />
+                    <VectorTileMapSource
+                        tileConfig={removeNull(overlayTileServerProperty?.vector)}
+                    />
+                    {/* TODO: overlay for raster */}
+                </BaseMap>
             </MobilePreview>
             <PreviewSegmentInput
                 scenario={scenario}
