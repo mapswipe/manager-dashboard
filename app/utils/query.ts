@@ -56,7 +56,7 @@ fragment VectorTileServerPropertyFields on ProjectVectorTileServerConfig {
 export const PROJECT_TYPE_SPECIFIC_FRAGMENT = gql`
 ${TILE_SERVER_PROPERTY_FRAGMENT}
 ${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
-fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeCompletenessProjectPropertyType {
+fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyType {
     ... on CompareProjectPropertyType {
         __typename
         aoiGeometry
@@ -119,6 +119,11 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         tileServerProperty {
             ...RasterTileServerPropertyFields
         }
+    }
+    ... on ValidateImageProjectPropertyType {
+        __typename
+        baseQuestion
+        annotationsFile
     }
 }
 `;

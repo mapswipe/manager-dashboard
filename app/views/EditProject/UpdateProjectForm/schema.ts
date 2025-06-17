@@ -66,6 +66,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
                     };
                 }
 
@@ -75,6 +76,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         find: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
                     };
                 }
 
@@ -84,6 +86,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
                     };
                 }
 
@@ -93,6 +96,18 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         completeness: { forceValue: undefinedValue },
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (context?.projectType === ProjectTypeEnum.ValidateImage) {
+                    return {
+                        validateImage: { forceValue: undefinedValue },
+                        // validateImage: validateImageSpecificFormSchema,
+                        completeness: { forceValue: undefinedValue },
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
                     };
                 }
 
@@ -100,6 +115,8 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                     find: { forceValue: undefinedValue },
                     compare: { forceValue: undefinedValue },
                     completeness: { forceValue: undefinedValue },
+                    validate: { forceValue: undefinedValue },
+                    validateImage: { forceValue: undefinedValue },
                 };
             },
         },

@@ -34,6 +34,7 @@ const projectTypeIllustrations: Record<ProjectTypeEnum, string> = {
     [ProjectTypeEnum.Find]: findIllustration,
     [ProjectTypeEnum.Compare]: compareIllustration,
     [ProjectTypeEnum.Validate]: validateIllustration,
+    [ProjectTypeEnum.ValidateImage]: validateIllustration,
     [ProjectTypeEnum.Completeness]: findIllustration,
 };
 

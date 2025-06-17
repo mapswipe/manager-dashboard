@@ -48,6 +48,7 @@ const taskSchema: TaskSchema = {
                         completeness: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
                     };
                 }
 
@@ -57,6 +58,7 @@ const taskSchema: TaskSchema = {
                         find: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
                     };
                 }
 
@@ -66,6 +68,7 @@ const taskSchema: TaskSchema = {
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
                     };
                 }
 
@@ -75,6 +78,18 @@ const taskSchema: TaskSchema = {
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (context?.projectType === ProjectTypeEnum.ValidateImage) {
+                    return {
+                        validateImage: { forceValue: undefinedValue },
+                        // validateImage: validatePropertyInputSchema,
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
                     };
                 }
 
@@ -83,6 +98,7 @@ const taskSchema: TaskSchema = {
                     compare: { forceValue: undefinedValue },
                     completeness: { forceValue: undefinedValue },
                     validate: { forceValue: undefinedValue },
+                    validateImage: { forceValue: undefinedValue },
                 };
             },
         },

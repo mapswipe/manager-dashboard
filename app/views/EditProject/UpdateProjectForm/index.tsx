@@ -132,6 +132,10 @@ function UpdateProjectForm(props: Props) {
         if (projectData.project.projectType === ProjectTypeEnum.Validate) {
             return defaultValidateSpecificFormValue;
         }
+        if (projectData.project.projectType === ProjectTypeEnum.ValidateImage) {
+            // FIXME: Add validate image specifics
+            return {};
+        }
 
         return {};
     }, [projectData.project.projectType]);
@@ -413,6 +417,15 @@ function UpdateProjectForm(props: Props) {
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
+                {/* projectContext.projectType === ProjectTypeEnum.Validate && (
+                    <ValidateProjectSpecifics
+                        projectId={projectData.project.id}
+                        value={value.projectTypeSpecifics?.validate}
+                        setFieldValue={setValidateProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validate}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                ) */}
                 {projectContext.projectType === ProjectTypeEnum.Completeness && (
                     <CompletenessProjectSpecifics
                         projectId={projectData.project.id}

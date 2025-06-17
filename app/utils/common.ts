@@ -110,6 +110,7 @@ export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpeci
     [ProjectTypeEnum.Compare]: 'compare',
     [ProjectTypeEnum.Completeness]: 'completeness',
     [ProjectTypeEnum.Validate]: 'validate',
+    [ProjectTypeEnum.ValidateImage]: 'validateImage',
 };
 
 interface NumericValueOption {
