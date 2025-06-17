@@ -80,7 +80,6 @@ function ProjectTypeIcon(props: Props) {
                     </g>
                 </svg>
             )}
-            {/* FIXME: this is for validate */}
             {type === ProjectTypeEnum.Completeness && (
                 <svg
                     className={className}

@@ -15,6 +15,7 @@ import { DeepNonNullable } from '#utils/types';
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
 import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
+import validateImageSpecificFormSchema from './ValidateImageProjectSpecifics/schema.ts';
 import validateSpecificFormSchema from './ValidateProjectSpecifics/schema';
 
 export type UpdateProjectContext = {
@@ -102,8 +103,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.ValidateImage) {
                     return {
-                        validateImage: { forceValue: undefinedValue },
-                        // validateImage: validateImageSpecificFormSchema,
+                        validateImage: { forceValue: validateImageSpecificFormSchema },
                         completeness: { forceValue: undefinedValue },
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },

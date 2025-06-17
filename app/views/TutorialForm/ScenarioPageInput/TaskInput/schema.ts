@@ -84,8 +84,9 @@ const taskSchema: TaskSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.ValidateImage) {
                     return {
-                        validateImage: { forceValue: undefinedValue },
-                        // validateImage: validatePropertyInputSchema,
+                        // FIXME: Implement validate image task later
+                        validateImage: { forceValue: {} },
+                        // validateImage: { forceValue: validateImagePropertyInputSchema },
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
