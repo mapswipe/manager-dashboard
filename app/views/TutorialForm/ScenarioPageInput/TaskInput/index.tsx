@@ -129,6 +129,14 @@ function TaskInput(props: Props) {
                     disabled
                 />
             )}
+            {/* projectType === ProjectTypeEnum.ValidateImage && (
+                <ValidatePropertyInput
+                    value={value.projectTypeSpecifics?.validate}
+                    setFieldValue={setValidateProjectSpecificsFieldValue}
+                    error={getErrorObject(error?.projectTypeSpecifics)?.validate}
+                    disabled
+                />
+            ) */}
         </div>
     );
 }
