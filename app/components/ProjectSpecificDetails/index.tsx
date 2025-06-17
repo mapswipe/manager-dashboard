@@ -51,7 +51,7 @@ function ProjectSpecificDetails(props: Props) {
             errored={!!projectDataError}
             errorMessage={projectDataError?.message}
             pending={projectDataPending}
-            heading={`${projectData.project.projectType} specific details`}
+            heading={`${projectData.project.projectType.replace('_', ' ')} specific details`}
             headingLevel={4}
             withHeaderBorder
         >

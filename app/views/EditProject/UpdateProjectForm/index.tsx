@@ -57,6 +57,11 @@ import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
 } from './FindProjectSpecifics/schema';
+import ValidateImageProjectSpecifics from './ValidateImageProjectSpecifics/index.tsx';
+import {
+    defaultValidateImageSpecificFormValue,
+    PartialValidateImageSpecificFields,
+} from './ValidateImageProjectSpecifics/schema.ts';
 import ValidateProjectSpecifics from './ValidateProjectSpecifics/index.tsx';
 import {
     defaultValidateSpecificFormValue,
@@ -133,8 +138,7 @@ function UpdateProjectForm(props: Props) {
             return defaultValidateSpecificFormValue;
         }
         if (projectData.project.projectType === ProjectTypeEnum.ValidateImage) {
-            // FIXME: Add validate image specifics
-            return {};
+            return defaultValidateImageSpecificFormValue;
         }
 
         return {};
@@ -308,6 +312,12 @@ function UpdateProjectForm(props: Props) {
         defaultValidateSpecificFormValue,
     );
 
+    const setValidateImageProjectSpecificsFieldValue = useFormObject<'validateImage', PartialValidateImageSpecificFields>(
+        'validateImage',
+        setProjectSpecificFieldValue,
+        defaultValidateSpecificFormValue,
+    );
+
     const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessSpecificFields>(
         'completeness',
         setProjectSpecificFieldValue,
@@ -383,7 +393,7 @@ function UpdateProjectForm(props: Props) {
                 withContentBackgroundAndPadding
                 withHeaderBorder
                 spacing="lg"
-                heading={`${projectContext.projectType} specific details`}
+                heading={`${projectContext.projectType.replace('_', ' ')} specific details`}
                 headerDescription={(
                     <NonFieldError
                         error={error?.projectTypeSpecifics}
@@ -417,15 +427,15 @@ function UpdateProjectForm(props: Props) {
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
-                {/* projectContext.projectType === ProjectTypeEnum.Validate && (
-                    <ValidateProjectSpecifics
+                {projectContext.projectType === ProjectTypeEnum.ValidateImage && (
+                    <ValidateImageProjectSpecifics
                         projectId={projectData.project.id}
-                        value={value.projectTypeSpecifics?.validate}
-                        setFieldValue={setValidateProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.validate}
+                        value={value.projectTypeSpecifics?.validateImage}
+                        setFieldValue={setValidateImageProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
-                ) */}
+                )}
                 {projectContext.projectType === ProjectTypeEnum.Completeness && (
                     <CompletenessProjectSpecifics
                         projectId={projectData.project.id}
