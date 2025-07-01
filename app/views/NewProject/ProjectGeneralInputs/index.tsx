@@ -9,6 +9,7 @@ import {
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
+import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -18,12 +19,13 @@ import {
 import { DeepNonNullable } from '#utils/types';
 
 type ProjectGeneralInputFields = Pick<
-ProjectCreateInput | ProjectUpdateInput,
-'name'
-| 'description'
-| 'requestingOrganization'
-| 'lookFor'
-| 'additionalInfoUrl'
+    ProjectCreateInput | ProjectUpdateInput,
+    'name'
+    | 'description'
+    | 'requestingOrganization'
+    | 'lookFor'
+    | 'additionalInfoUrl'
+    | 'team'
 >
 
 type PartialProjectGeneralInputFields = PartialForm<
@@ -97,6 +99,14 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.lookFor}
                     onChange={setFieldValue}
                     error={error?.lookFor}
+                    disabled={disabled}
+                />
+                <TeamSelectInput
+                    label="Select Team"
+                    name="team"
+                    value={value?.team}
+                    onChange={setFieldValue}
+                    error={error?.team}
                     disabled={disabled}
                 />
             </ListLayout>

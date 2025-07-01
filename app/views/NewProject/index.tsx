@@ -90,6 +90,7 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         },
         description: {},
         additionalInfoUrl: {},
+        team: {},
     }),
 };
 
