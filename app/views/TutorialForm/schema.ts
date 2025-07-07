@@ -76,6 +76,7 @@ const tutorialCreateFormSchema: TutorialCreateFormSchema = {
             keySelector: (value) => value.clientId,
             member: () => informationPageSchema,
         },
+        status: {},
         scenarios: {
             keySelector: (value) => value.clientId,
             member: () => scenarioPageSchema,

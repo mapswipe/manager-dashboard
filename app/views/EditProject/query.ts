@@ -32,6 +32,10 @@ query ProjectDetails($id: ID!) {
             id
             name
         }
+        team {
+            id
+            name
+        }
         tutorial {
             id
             name

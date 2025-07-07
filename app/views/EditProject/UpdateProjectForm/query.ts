@@ -53,6 +53,10 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
                     id
                     name
                 }
+                team {
+                    id
+                    name
+                }
                 status
                 verificationNumber
             }

@@ -156,6 +156,11 @@ function ProjectListItem(props: Props) {
                                 label="Look for"
                                 value={value.lookFor}
                             />
+                            <TextOutput
+                                icon={<IoPerson />}
+                                label="Team"
+                                value={value.team?.name}
+                            />
                         </ListLayout>
                         <div className={styles.description}>
                             {value.description}

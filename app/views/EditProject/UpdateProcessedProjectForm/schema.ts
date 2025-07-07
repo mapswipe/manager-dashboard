@@ -40,6 +40,8 @@ const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
         additionalInfoUrl: {},
         description: {},
         image: {},
+        team: {},
+        status: {},
         tutorial: {
             required: true,
         },

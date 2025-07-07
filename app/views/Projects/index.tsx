@@ -85,6 +85,10 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
                 name
                 id
             }
+            team {
+                id
+                name
+            }
         }
         pageInfo {
             limit

@@ -38,10 +38,12 @@ import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
 import SelectInput from '#components/SelectInput';
+import TutorialStatusSelectInput from '#components/selections/TutorialStatusSelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
     ProjectAssetMimetypeEnum,
+    ProjectStatusEnum,
     ProjectTypeEnum,
     TutorialCreateInput,
     useNewTutorialMutation,
@@ -76,10 +78,11 @@ import styles from './styles.module.css';
 
 interface Props {
     className?: string;
+    statusOptions?: ProjectStatusEnum[];
 }
 
 function NewTutorial(props: Props) {
-    const { className } = props;
+    const { className, statusOptions } = props;
     const { id: tutorialIdFromParams } = useParams<{ id: string }>();
     const [tutorialFormContext, setTutorialFormContext] = useState<TutorialFormContext>();
 
@@ -192,8 +195,8 @@ function NewTutorial(props: Props) {
                 (oldValue: PartialInformationPageInputFields[] | undefined) => {
                     if (
                         isNotDefined(oldValue)
-                            || oldValue.length === 0
-                            || isNotDefined(oldValue[indexToRemove])
+                        || oldValue.length === 0
+                        || isNotDefined(oldValue[indexToRemove])
                     ) {
                         return oldValue;
                     }
@@ -328,8 +331,8 @@ function NewTutorial(props: Props) {
     const handleGeoJsonFileChange = useCallback((geoJson: GeoJSON.GeoJSON | undefined) => {
         if (
             isNotDefined(projectDetailResponse)
-                || isNotDefined(geoJson)
-                || !validateFindTutorialGeoJson(geoJson)
+            || isNotDefined(geoJson)
+            || !validateFindTutorialGeoJson(geoJson)
         ) {
             return;
         }
@@ -441,6 +444,16 @@ function NewTutorial(props: Props) {
                     error={error?.project}
                     disabled={inputsDisabled || isDefined(tutorialIdFromParams)}
                 />
+                {isDefined(tutorialIdFromParams) && (
+                    <TutorialStatusSelectInput
+                        label="Update Status"
+                        name="status"
+                        value={value?.status}
+                        onChange={setFieldValue}
+                        error={error?.status}
+                        options={statusOptions}
+                    />
+                )}
                 {isDefined(projectDetailResponse) && (
                     <>
                         <Container

@@ -89,6 +89,10 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
                     id
                     name
                 }
+                team {
+                    id
+                    name
+                }
                 status
                 verificationNumber
             }
@@ -117,6 +121,7 @@ function UpdateProcessedProjectForm(props: Props) {
     const alert = useAlert();
     const [, setOrganizationOptions] = useOptions('organization');
     const [, setTutorialOptions] = useOptions('tutorial');
+    const [, setTeamOptions] = useOptions('project');
 
     const [
         { fetching: updateProcessedProjectPending },
@@ -151,6 +156,8 @@ function UpdateProcessedProjectForm(props: Props) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectType,
             image,
+            team,
+            status,
             requestingOrganization,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectTypeSpecifics,
@@ -161,15 +168,27 @@ function UpdateProcessedProjectForm(props: Props) {
         if (isDefined(tutorial)) {
             setTutorialOptions([tutorial]);
         }
+        if (isDefined(team)) {
+            setTeamOptions([team]);
+        }
+
         setOrganizationOptions([requestingOrganization]);
 
         setValue({
             ...other,
             image: image?.id,
             tutorial: tutorial?.id,
+            team: team?.id,
+            status,
             requestingOrganization: requestingOrganization.id,
         });
-    }, [projectData, setTutorialOptions, setOrganizationOptions, setValue]);
+    }, [
+        projectData,
+        setTutorialOptions,
+        setOrganizationOptions,
+        setValue,
+        setTeamOptions,
+    ]);
 
     const error = getErrorObject(formError);
 

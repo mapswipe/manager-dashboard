@@ -11,6 +11,7 @@ export const defaultAllEnumsValue: AllEnumsQuery['enums'] = {
     TutorialInformationPageBlockTypeEnum: [],
     TutorialScenarioIconEnum: [],
     OverlayLayerTypeEnum: [],
+    TutorialStatusEnum: [],
 };
 
 const EnumsContext = createContext<AllEnumsQuery['enums']>(defaultAllEnumsValue);

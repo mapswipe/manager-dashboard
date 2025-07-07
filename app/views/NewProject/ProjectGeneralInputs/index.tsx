@@ -1,3 +1,5 @@
+import { useParams } from 'react-router';
+import { isDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -9,11 +11,13 @@ import {
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
+import ProjectStatusSelectInput from '#components/selections/ProjectStatusSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
     ProjectCreateInput,
+    ProjectStatusEnum,
     ProjectUpdateInput,
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
@@ -26,10 +30,12 @@ type ProjectGeneralInputFields = Pick<
     | 'lookFor'
     | 'additionalInfoUrl'
     | 'team'
+    | 'status'
+    | 'progress'
 >
 
 type PartialProjectGeneralInputFields = PartialForm<
-DeepNonNullable<ProjectGeneralInputFields>
+    DeepNonNullable<ProjectGeneralInputFields>
 >;
 
 interface Props {
@@ -37,6 +43,7 @@ interface Props {
     error: LeafError | ObjectError<PartialProjectGeneralInputFields>;
     setFieldValue: (...entries: EntriesAsList<PartialProjectGeneralInputFields>) => void;
     disabled?: boolean;
+    statusOptions?: ProjectStatusEnum[];
 }
 
 function ProjectGeneralInputs(props: Props) {
@@ -45,8 +52,10 @@ function ProjectGeneralInputs(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
+        statusOptions,
     } = props;
 
+    const { id: projectIdFromParams } = useParams<{ id: string }>();
     const error = getErrorObject(formError);
 
     return (
@@ -109,6 +118,17 @@ function ProjectGeneralInputs(props: Props) {
                     error={error?.team}
                     disabled={disabled}
                 />
+                {isDefined(projectIdFromParams) && (
+                    <ProjectStatusSelectInput
+                        label="Update Status"
+                        name="status"
+                        value={value?.status as string}
+                        onChange={setFieldValue}
+                        error={error?.status}
+                        disabled={disabled}
+                        options={statusOptions}
+                    />
+                )}
             </ListLayout>
         </Container>
     );
