@@ -38,6 +38,24 @@ const projects = wrap({
     visibility: 'is-authenticated',
 });
 
+const tutorials = wrap({
+    path: '/tutorials/',
+    title: 'Tutorials',
+    navbarVisibility: true,
+    component: lazy(() => import('#views/Tutorials')),
+    componentProps: {},
+    visibility: 'is-authenticated',
+});
+
+const teams = wrap({
+    path: '/teams/',
+    title: 'Teams',
+    navbarVisibility: true,
+    component: lazy(() => import('#views/Teams')),
+    componentProps: {},
+    visibility: 'is-authenticated',
+});
+
 const newProject = wrap({
     path: '/project/new/',
     title: 'New Project',
@@ -83,5 +101,7 @@ const routes = {
     newTutorial,
     editTutorial,
     fourHundredFour,
+    tutorials,
+    teams,
 };
 export default routes;

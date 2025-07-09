@@ -1,0 +1,6 @@
+.meta {
+    border-radius: var(--radius-button-border);
+    background-color: var(--color-background-accent-hint);
+    width: fit-content;
+    font-size: var(--font-size-sm);
+}
