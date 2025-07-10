@@ -1,7 +1,6 @@
 import {
     ObjectSchema,
     PartialForm,
-    requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
 import { ValidateImageProjectPropertyInput } from '#generated/types/graphql';
@@ -27,10 +26,6 @@ export const defaultValidateImageSpecificFormValue: PartialValidateImageSpecific
 const validateSpecificFormSchema: ValidateImageSpecificFormSchema = {
     fields: (): ReturnType<ValidateImageSpecificFormSchema['fields']> => ({
         annotationsFile: {},
-        baseQuestion: {
-            required: true,
-            requiredValidation: requiredStringCondition,
-        },
     }),
 };
 
