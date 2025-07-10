@@ -5,7 +5,6 @@ import {
     ObjectError,
 } from '@togglecorp/toggle-form';
 
-import TextInput from '#components/TextInput';
 import AssetInput from '#views/EditProject/AssetInput';
 
 import { type PartialValidateImageSpecificFields } from './schema.ts';
@@ -30,26 +29,16 @@ function ValidateProjectSpecifics(props: Props) {
     const error = getErrorObject(formError);
 
     return (
-        <>
-            <TextInput
-                label="Base question"
-                name="baseQuestion"
-                value={value?.baseQuestion}
-                onChange={setFieldValue}
-                error={error?.baseQuestion}
-                disabled={disabled}
-            />
-            <AssetInput
-                label="Annotations"
-                projectId={projectId}
-                name="annotationsFile"
-                onChange={setFieldValue}
-                value={value?.annotationsFile}
-                error={error?.annotationsFile}
-                disabled={disabled}
-                withoutPreview
-            />
-        </>
+        <AssetInput
+            label="Annotations"
+            projectId={projectId}
+            name="annotationsFile"
+            onChange={setFieldValue}
+            value={value?.annotationsFile}
+            error={error?.annotationsFile}
+            disabled={disabled}
+            withoutPreview
+        />
     );
 }
 

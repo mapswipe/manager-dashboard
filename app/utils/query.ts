@@ -122,7 +122,6 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
     }
     ... on ValidateImageProjectPropertyType {
         __typename
-        baseQuestion
         annotationsFile
     }
 }
