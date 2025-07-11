@@ -1,9 +1,12 @@
 import {
     useCallback,
+    useContext,
     useMemo,
-    useState,
 } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     createSubmitHandler,
     getErrorObject,
@@ -13,18 +16,32 @@ import {
     useForm,
 } from '@togglecorp/toggle-form';
 import {
-    AuthError,
-    AuthErrorCodes,
-    getAuth,
-    signInWithEmailAndPassword,
-} from 'firebase/auth';
+    CombinedError,
+    gql,
+} from 'urql';
 
+import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
-import useMountedRef from '#hooks/useMountedRef';
+import { useLoginMutation } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
+import {
+    alertCombinedError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
 
 import styles from './styles.module.css';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LOGIN_MUTATION = gql`
+mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+        id
+        displayName
+    }
+}
+`;
 
 interface LoginFormFields {
     email?: string | undefined;
@@ -57,7 +74,8 @@ function Login(props: Props) {
         className,
     } = props;
 
-    const mountedRef = useMountedRef();
+    const { setUser } = useContext(UserContext);
+    const alert = useAlert();
 
     const {
         setFieldValue,
@@ -66,74 +84,71 @@ function Login(props: Props) {
         validate,
         setError,
     } = useForm(loginFormSchema, { value: defaultLoginFormValue });
+
     const error = getErrorObject(formError);
 
-    const [pending, setPending] = useState(false);
+    const [
+        { fetching: pending },
+        loginToGql,
+    ] = useLoginMutation();
 
     const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
             if (!finalValues || !finalValues.email || !finalValues.password) {
-                // eslint-disable-next-line no-console
-                console.error('Email or password is not defined');
+                alert.show(
+                    'Failed to login!',
+                    {
+                        description: 'Please make sure you\'ve entered both email and password',
+                        variant: 'danger',
+                    },
+                );
                 return;
             }
 
             try {
-                setPending(true);
+                const result = await loginToGql({
+                    username: finalValues.email,
+                    password: finalValues.password,
+                });
 
-                const auth = getAuth();
-                await signInWithEmailAndPassword(
-                    auth,
-                    finalValues.email as string,
-                    finalValues.password as string,
+                if (checkAndAlertGraphQLResultError(result, alert)) {
+                    return;
+                }
+
+                if (isNotDefined(result.data)) {
+                    alert.show(
+                        'Failed to login!',
+                        {
+                            description: 'Unexpectected response from the server!',
+                            variant: 'danger',
+                        },
+                    );
+
+                    return;
+                }
+
+                alert.show(
+                    'Login successful!',
+                    {
+                        description: 'Navigating to home page.',
+                        variant: 'success',
+                    },
                 );
-                // NOTE: we will udpate the current user on <Init />
-                if (!mountedRef.current) {
-                    return;
+                setUser({
+                    id: result.data.login.id,
+                    displayName: result.data.login.displayName,
+                });
+            } catch (combinedError) {
+                alertCombinedError(combinedError, alert);
+
+                if (combinedError instanceof CombinedError) {
+                    setError({ [nonFieldError]: combinedError.message });
                 }
-                setPending(false);
-            } catch (submissionError) {
-                // eslint-disable-next-line no-console
-                console.error(submissionError);
-
-                if (!mountedRef.current) {
-                    return;
-                }
-
-                const errorCode = (submissionError as AuthError).code;
-
-                if (errorCode === AuthErrorCodes.USER_DELETED) {
-                    setError((prevError) => ({
-                        ...getErrorObject(prevError),
-                        email: 'User not found',
-                    }));
-                }
-
-                if (errorCode === AuthErrorCodes.INVALID_EMAIL) {
-                    setError((prevError) => ({
-                        ...getErrorObject(prevError),
-                        email: 'Invalid email',
-                    }));
-                }
-
-                if (errorCode === AuthErrorCodes.INVALID_PASSWORD) {
-                    setError((prevError) => ({
-                        ...getErrorObject(prevError),
-                        password: 'Invalid password',
-                    }));
-                }
-
-                setError((prevError) => ({
-                    ...getErrorObject(prevError),
-                    [nonFieldError]: 'Failed to authenticate',
-                }));
-
-                setPending(false);
             }
         }
 
         login();
-    }, [mountedRef, setError]);
+    }, [loginToGql, setError, setUser, alert]);
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),

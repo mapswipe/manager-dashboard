@@ -1,0 +1,4 @@
+.input-hint {
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+}

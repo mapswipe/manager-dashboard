@@ -14,17 +14,9 @@ const config = {
         'stylelint-config-concentric',
     ],
     plugins: [
-        'stylelint-no-unused-selectors',
         'stylelint-value-no-unknown-custom-properties',
     ],
     rules: {
-        'plugin/no-unused-selectors': [
-            true,
-            {
-                suffixesToStrip: ['.module'],
-                documents: ['{cssDir}/{cssName}.tsx'],
-            },
-        ],
         'csstools/value-no-unknown-custom-properties': [
             true,
             {

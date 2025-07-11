@@ -38,7 +38,7 @@ export function wrap<T extends string, K extends BaseProps>(
                 componentProps={componentProps}
                 overrideProps={overrideProps}
                 loginPage="/login/"
-                defaultPage="/projects/"
+                // defaultPage="/projects/"
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...otherProps}
             />

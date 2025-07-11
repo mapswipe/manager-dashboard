@@ -1,0 +1,173 @@
+import {
+    useCallback,
+    useContext,
+    useMemo,
+} from 'react';
+import {
+    isDefined,
+    listToMap,
+} from '@togglecorp/fujs';
+import {
+    EntriesAsList,
+    getErrorObject,
+    LeafError,
+    ObjectError,
+    useFormObject,
+} from '@togglecorp/toggle-form';
+
+import EnumsContext from '#base/context/EnumsContext';
+import TileServerContext from '#base/context/TileServerContext';
+import Container from '#components/Container';
+import ListLayout from '#components/ListLayout';
+import RadioInput from '#components/RadioInput';
+import TextInput from '#components/TextInput';
+import { RasterTileServerNameEnum } from '#generated/types/graphql';
+import {
+    keySelector,
+    labelSelector,
+} from '#utils/common';
+import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
+
+import {
+    PartialCommonRasterTileServerConfigFields,
+    PartialCustomRasterTileServerConfigFields,
+    type PartialRasterTileServerInputFields,
+    rasterTileServerNameToTileInputKey,
+    TileInputKeys,
+} from './schema';
+
+interface Props {
+    label?: React.ReactNode;
+    value: PartialRasterTileServerInputFields | undefined,
+    error: LeafError | ObjectError<PartialRasterTileServerInputFields>,
+    setFieldValue: (...entries: EntriesAsList<PartialRasterTileServerInputFields>) => void;
+    disabled?: boolean;
+    aoiGeoJsonAssetId?: string;
+}
+
+function RasterTileServerInput(props: Props) {
+    const {
+        label = 'Tile Server',
+        value,
+        error: formError,
+        setFieldValue,
+        disabled,
+        aoiGeoJsonAssetId,
+    } = props;
+
+    const error = getErrorObject(formError);
+
+    const {
+        RasterTileServerNameEnum: rasterTileServerNameOptions,
+    } = useContext(EnumsContext);
+
+    const fieldName = (isDefined(value)
+        && isDefined(value.name)
+    ) ? rasterTileServerNameToTileInputKey[value.name] : 'custom';
+
+    const setCommonRasterTileServerFieldValue = useFormObject<
+        Exclude<TileInputKeys, 'custom'>,
+        PartialCommonRasterTileServerConfigFields
+    >(
+        fieldName === 'custom' ? 'bing' : fieldName,
+        setFieldValue,
+        {},
+    );
+
+    const setCustomRasterTileServerFieldValue = useFormObject<
+        'custom',
+        PartialCustomRasterTileServerConfigFields
+    >(
+        'custom',
+        setFieldValue,
+        {},
+    );
+
+    const { raster: rasterTileServers } = useContext(TileServerContext);
+    const tileServerMapping = useMemo(() => (
+        listToMap(rasterTileServers, ({ type }) => type)
+    ), [rasterTileServers]);
+
+    const handleImageryServerChange = useCallback((newValue: RasterTileServerNameEnum) => {
+        setFieldValue(newValue, 'name');
+
+        if (newValue !== RasterTileServerNameEnum.Custom) {
+            setFieldValue(
+                {
+                    credits: tileServerMapping[newValue]?.credits,
+                },
+                rasterTileServerNameToTileInputKey[newValue],
+            );
+        }
+    }, [setFieldValue, tileServerMapping]);
+
+    return (
+        <Container
+            heading={label}
+            headingLevel={4}
+        >
+            <ListLayout
+                layout="grid"
+            >
+                <ListLayout layout="block">
+                    <RadioInput
+                        label="Imagery Server"
+                        name="name"
+                        options={rasterTileServerNameOptions ?? []}
+                        value={value?.name}
+                        onChange={handleImageryServerChange}
+                        keySelector={keySelector}
+                        labelSelector={labelSelector}
+                        error={error?.name}
+                        disabled={disabled}
+                        radioListLayout="block"
+                    />
+                    {isDefined(value)
+                        && isDefined(value.name)
+                        && value.name !== RasterTileServerNameEnum.Custom
+                        && (
+                            <TextInput
+                                name="credits"
+                                label="Imagery Credits"
+                                value={value[fieldName]?.credits}
+                                error={getErrorObject(error?.[fieldName])?.credits}
+                                onChange={setCommonRasterTileServerFieldValue}
+                                disabled={disabled}
+                            />
+                        )}
+                    {isDefined(value)
+                        && isDefined(value.name)
+                        && value.name === RasterTileServerNameEnum.Custom
+                        && (
+                            <>
+                                <TextInput
+                                    name="url"
+                                    label="Custom Imagery Server URL"
+                                    hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quadkey} as placeholders and that already includes the api key."
+                                    value={value.custom?.url}
+                                    error={getErrorObject(error?.custom)?.url}
+                                    onChange={setCustomRasterTileServerFieldValue}
+                                    disabled={disabled}
+                                />
+                                <TextInput
+                                    name="credits"
+                                    label="Imagery Credits"
+                                    hint="Insert appropriate imagery credits"
+                                    value={value[fieldName]?.credits}
+                                    error={getErrorObject(error?.[fieldName])?.credits}
+                                    onChange={setCustomRasterTileServerFieldValue}
+                                    disabled={disabled}
+                                />
+                            </>
+                        )}
+                </ListLayout>
+                <ProjectAssetPreview
+                    assetId={aoiGeoJsonAssetId}
+                    geoJsonTileServer={value}
+                />
+            </ListLayout>
+        </Container>
+    );
+}
+
+export default RasterTileServerInput;

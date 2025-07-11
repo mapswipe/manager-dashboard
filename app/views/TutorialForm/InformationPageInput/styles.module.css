@@ -1,0 +1,17 @@
+.information-page-input {
+    .content {
+        display: grid;
+        grid-template-columns: 1fr auto;
+    }
+
+    .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        flex-grow: 1;
+    }
+
+    .preview-container {
+        flex-shrink: 0;
+    }
+}

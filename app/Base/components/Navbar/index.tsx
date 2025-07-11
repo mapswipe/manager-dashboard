@@ -1,19 +1,32 @@
 import {
     useCallback,
     useContext,
-    useState,
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { getAuth } from 'firebase/auth';
+import { gql } from 'urql';
 
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
 import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
-import useMountedRef from '#hooks/useMountedRef';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
+import { useLogoutMutation } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
+import {
+    alertCombinedError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
 
 import styles from './styles.module.css';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LOGOUT_MUTATION = gql`
+mutation Logout {
+    logout
+}
+`;
 
 interface Props {
     className?: string;
@@ -25,83 +38,80 @@ function Navbar(props: Props) {
         user,
         setUser,
     } = useContext(UserContext);
-    const mountedRef = useMountedRef();
+    const alert = useAlert();
 
-    const [logoutPending, setLogoutPending] = useState(false);
+    const [
+        { fetching: logoutPending },
+        logout,
+    ] = useLogoutMutation();
 
     const handleLogoutClick = useCallback(async () => {
-        setLogoutPending(true);
-        const auth = getAuth();
-
         try {
-            await auth.signOut();
-            if (!mountedRef.current) {
+            const result = await logout({});
+
+            if (checkAndAlertGraphQLResultError(result, alert)) {
                 return;
             }
 
+            alert.show(
+                'Logout successful!',
+                {
+                    description: 'Navigating to login page.',
+                    variant: 'success',
+                },
+            );
             setUser(undefined);
-            setLogoutPending(false);
-        } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Failed to sign out', error);
-            if (!mountedRef.current) {
-                return;
-            }
-            setLogoutPending(false);
+        } catch (apolloError) {
+            alertCombinedError(apolloError, alert);
         }
-    }, [mountedRef, setUser]);
+    }, [logout, setUser, alert]);
 
     return (
         <nav className={_cs(className, styles.navbar)}>
-            <div className={styles.container}>
-                <div className={styles.appBrand}>
+            <InlineLayout
+                className={styles.content}
+                start={(
                     <img
                         className={styles.logo}
                         src={mapSwipeLogo}
                         alt="MapSwipe"
                     />
-                </div>
-                <div className={styles.main}>
-                    <div className={styles.navLinks}>
-                        <SmartNavLink
-                            route={route.home}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                        <SmartNavLink
-                            route={route.projects}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                        <SmartNavLink
-                            route={route.teams}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                        <SmartNavLink
-                            route={route.userGroups}
-                            className={styles.link}
-                            activeClassName={styles.active}
-                        />
-                    </div>
-                </div>
-                { user && (
-                    <div className={styles.userDetails}>
+                )}
+                end={user && (
+                    <ListLayout>
                         <div>
                             {user.displayName}
                         </div>
                         <Button
-                            variant="action"
-                            className={styles.logoutButton}
+                            styleVariant="transparent"
+                            colorVariant="text-on-dark"
                             name={undefined}
                             onClick={handleLogoutClick}
                             disabled={logoutPending}
+                            withoutPadding
                         >
                             Logout
                         </Button>
-                    </div>
+                    </ListLayout>
                 )}
-            </div>
+                spacing="lg"
+                withPadding
+            >
+                <ListLayout
+                    spacing="lg"
+                >
+                    <SmartNavLink
+                        route={route.home}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
+                    <SmartNavLink
+                        route={route.projects}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
+                </ListLayout>
+            </InlineLayout>
         </nav>
     );
 }

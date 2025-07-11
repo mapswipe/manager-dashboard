@@ -32,6 +32,7 @@ function SelectInput<T extends OptionKey, K extends string, O extends object, P 
     if (props.nonClearable) {
         return (
             <SearchSelectInput
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...otherProps}
                 // eslint-disable-next-line react/destructuring-assignment
                 onChange={props.onChange}
@@ -47,6 +48,7 @@ function SelectInput<T extends OptionKey, K extends string, O extends object, P 
     }
     return (
         <SearchSelectInput
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
             // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}

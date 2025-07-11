@@ -1,0 +1,18 @@
+.compare-scenario-preview {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    .preview-content {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .map-container {
+            width: var(--size-compare-preview);
+            height: var(--size-compare-preview);
+        }
+    }
+}

@@ -8,13 +8,13 @@
 
     .heading {
         color: var(--color-danger);
-        font-size: var(--font-size-super-large);
+        font-size: var(--font-size-2xl);
         font-weight: var(--font-weight-bold);
     }
 
     .message {
-        margin: var(--spacing-large) 0;
+        margin: var(--spacing-lg) 0;
         text-align: center;
-        font-size: var(--font-size-large);
+        font-size: var(--font-size-lg);
     }
 }

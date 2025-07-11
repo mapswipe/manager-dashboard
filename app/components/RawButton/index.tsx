@@ -3,18 +3,18 @@ import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.module.css';
 
-export interface Props<N> extends Omit<React.HTMLProps<HTMLButtonElement>, 'ref' | 'onClick' | 'name'>{
+export interface Props<NAME> extends Omit<React.HTMLProps<HTMLButtonElement>, 'ref' | 'onClick' | 'name'>{
     className?: string;
-    onClick?: (name: N, e: React.MouseEvent<HTMLButtonElement>) => void;
+    onClick?: (name: NAME, e: React.MouseEvent<HTMLButtonElement>) => void;
     type?: 'button' | 'submit' | 'reset';
-    name: N;
+    name: NAME;
     elementRef?: React.Ref<HTMLButtonElement>;
 }
 
 /**
  * The most basic button component (without styles)
  */
-function RawButton<N>(props: Props<N>) {
+function RawButton<NAME>(props: Props<NAME>) {
     const {
         className,
         onClick,
@@ -22,6 +22,7 @@ function RawButton<N>(props: Props<N>) {
         disabled,
         elementRef,
         name,
+        type = 'button',
         ...otherProps
     } = props;
 
@@ -37,7 +38,8 @@ function RawButton<N>(props: Props<N>) {
     return (
         <button
             ref={elementRef}
-            type="button"
+            // eslint-disable-next-line react/button-has-type
+            type={type}
             className={_cs(className, styles.rawButton)}
             disabled={disabled}
             onClick={onClick ? handleClick : undefined}

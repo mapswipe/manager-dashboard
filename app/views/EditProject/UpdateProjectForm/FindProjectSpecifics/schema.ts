@@ -1,0 +1,42 @@
+import {
+    greaterThanCondition,
+    ObjectSchema,
+    PartialForm,
+    requiredStringCondition,
+} from '@togglecorp/toggle-form';
+
+import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/RasterTileServerInput/schema';
+import { FindProjectPropertyInput } from '#generated/types/graphql';
+import { DeepNonNullable } from '#utils/types';
+
+import {
+    type PartialProjectUpdateInput,
+    type UpdateProjectContext,
+} from '../schema';
+
+export type PartialFindSpecificFields = PartialForm<DeepNonNullable<FindProjectPropertyInput>>;
+type FindSpecificFormSchema = ObjectSchema<
+    PartialFindSpecificFields,
+    PartialProjectUpdateInput,
+    UpdateProjectContext
+>;
+
+export const defaultFindSpecificFormValue: PartialFindSpecificFields = {
+    tileServerProperty: defaultRasterTileServerInputValue,
+};
+
+const findSpecificFormSchema: FindSpecificFormSchema = {
+    fields: (): ReturnType<FindSpecificFormSchema['fields']> => ({
+        zoomLevel: {
+            required: true,
+            validations: [greaterThanCondition(0)],
+        },
+        tileServerProperty: rasterTileServerFormSchema,
+        aoiGeometry: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+    }),
+};
+
+export default findSpecificFormSchema;

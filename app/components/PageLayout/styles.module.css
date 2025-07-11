@@ -1,0 +1,59 @@
+.page-layout {
+    --main-spacing: var(--spacing-lg);
+
+    display: grid;
+    grid-template-columns:
+        1fr
+        [page-content-start]
+            min(
+                100% - 2 * var(--main-spacing),
+                var(--width-page-content-max) - 2 * var(--main-spacing)
+            )
+        [page-content-end]
+        1fr;
+    grid-template-rows: auto 1fr auto;
+    background-color: var(--color-background);
+    padding: var(--spacing-xl) 0;
+    gap: var(--spacing-xl) var(--main-spacing);
+
+    .page-header {
+        grid-column: page-content;
+    }
+
+    .contents {
+        grid-column: page-content;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+
+        &.with-aside {
+            grid-template-columns: minmax(10rem, 20%) 1fr;
+        }
+
+        .aside {
+            .aside-content {
+                position: sticky;
+                top: 0;
+            }
+        }
+
+        .main {
+            display: contents;
+        }
+
+        @media screen and (max-width: 40rem) {
+            &.with-aside {
+                grid-template-columns: 1fr;
+            }
+
+            .aside {
+                width: 100%;
+            }
+        }
+    }
+
+    .footer-actions {
+        grid-column: page-content;
+        justify-self: end;
+    }
+}

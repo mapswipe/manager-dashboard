@@ -1,0 +1,15 @@
+.information-preview {
+    position: sticky;
+    top: 0;
+    overflow: auto;
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    .image-preview {
+        height: 10rem;
+    }
+}

@@ -1,0 +1,32 @@
+import { createContext } from 'react';
+
+export type AlertType = 'success' | 'warning' | 'danger' | 'info';
+
+export interface AlertParams {
+    name: string;
+    variant: AlertType;
+    title: React.ReactNode;
+    description?: React.ReactNode;
+    duration: number;
+    nonDismissable?: boolean;
+    debugMessage?: string;
+}
+
+export interface AlertContextProps {
+    alerts: AlertParams[];
+    addAlert: (p: AlertParams) => void;
+    removeAlert: (name: string) => void;
+    updateAlert: (name: string, params: Omit<AlertParams, 'name'>) => void;
+}
+
+const AlertContext = createContext<AlertContextProps>({
+    alerts: [],
+    // eslint-disable-next-line no-console
+    addAlert: () => { console.warn('AlertContext::addAlert called without a provider'); },
+    // eslint-disable-next-line no-console
+    removeAlert: () => { console.warn('AlertContext::removeAlert called without a provider'); },
+    // eslint-disable-next-line no-console
+    updateAlert: () => { console.warn('AlertContext::updateAlert called without a provider'); },
+});
+
+export default AlertContext;

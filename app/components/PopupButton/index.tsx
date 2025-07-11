@@ -10,13 +10,13 @@ import {
 } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
-import Button, { ButtonProps } from '#components/Button';
+import Button, { Props as ButtonProps } from '#components/Button';
 import Popup from '#components/Popup';
 import useBlurEffect from '#hooks/useBlurEffect';
 
 import styles from './styles.module.css';
 
-export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label'> {
+export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label' | 'elementRef'> {
     popupClassName?: string;
     popupContentClassName?: string;
     label: React.ReactNode;
@@ -35,7 +35,7 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
         children,
         label,
         name,
-        actions,
+        end,
         componentRef,
         arrowHidden,
         persistent = false,
@@ -81,9 +81,9 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
                 name={name}
                 elementRef={buttonRef}
                 onClick={handleShowPopup}
-                actions={(
+                end={(
                     <>
-                        {actions}
+                        {end}
                         {!arrowHidden && popupShown && <IoIosArrowUp />}
                         {!arrowHidden && !popupShown && <IoIosArrowDown />}
                     </>

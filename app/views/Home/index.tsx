@@ -1,24 +1,10 @@
-import { useState } from 'react';
-import {
-    IoChevronDown,
-    IoChevronUp,
-} from 'react-icons/io5';
-import { MdSearch } from 'react-icons/md';
-import { Link } from 'react-router';
-import { _cs } from '@togglecorp/fujs';
-
 import SmartLink from '#base/components/SmartLink';
-import route from '#base/configs/routes';
-import Button from '#components/Button';
-import TextInput from '#components/TextInput';
-import useBooleanState from '#hooks/useBooleanState';
-import useInputState from '#hooks/useInputState';
+import routes from '#base/configs/routes';
+import PageLayout from '#components/PageLayout';
 
-import OrganisationFormModal from './OrganisationFormModal';
-import OrganisationList from './OrganisationList';
+import OrganizationList from './OrganizationList';
 import TutorialList from './TutorialList';
-
-import styles from './styles.module.css';
+import UserList from './UserList';
 
 interface Props {
     className?: string;
@@ -27,110 +13,34 @@ interface Props {
 function Home(props: Props) {
     const { className } = props;
 
-    const [
-        showOrganisationFormModal,
-        setShowOrganisationFormModalTrue,
-        setShowOrganisationFormModalFalse,
-    ] = useBooleanState(false);
-
-    const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
-    const [showOrganisationList, setShowOrganisationList] = useState(false);
-    const [showTutorialList, setShowTutorialList] = useState(false);
-
     return (
-        <div className={_cs(styles.home, className)}>
-            <div className={styles.container}>
-                <div className={styles.introduction}>
-                    <div className={styles.greetings}>
-                        <div className={styles.welcome}>
-                            Welcome to
-                        </div>
-                        <div className={styles.appName}>
-                            MapSwipe Manager Dashboard
-                        </div>
-                    </div>
-                    <div className={styles.description}>
-                        <p>
-                            You can set up a new project by setting up project draft through
-                            &nbsp;
-                            <Link to="/new-project/">
-                                New Project
-                            </Link>
-                            &nbsp;
-                            page.
-                        </p>
-                        <p>
-                            You may find some of the useful stuff below.
-                        </p>
-                    </div>
-                </div>
-                <div className={styles.organisationContainer}>
-                    <div className={styles.header}>
-                        <h2 className={styles.heading}>
-                            Organisations
-                        </h2>
-                        <Button
-                            className={styles.addButton}
-                            name={undefined}
-                            onClick={setShowOrganisationFormModalTrue}
-                        >
-                            Add New Organisation
-                        </Button>
-                    </div>
-                    {showOrganisationList && (
-                        <OrganisationList className={styles.organisationList} />
-                    )}
-                    <Button
-                        name={!showOrganisationList}
-                        actions={showOrganisationList ? <IoChevronUp /> : <IoChevronDown />}
-                        onClick={setShowOrganisationList}
-                        variant="action"
-                    >
-                        {showOrganisationList ? 'Hide Organisations' : 'View Organisations'}
-                    </Button>
-                </div>
-                <div className={styles.tutorialsContainer}>
-                    <div className={styles.header}>
-                        <h2 className={styles.heading}>
-                            Tutorials
-                        </h2>
-                        {showTutorialList && (
-                            <TextInput
-                                icons={<MdSearch />}
-                                name={undefined}
-                                value={searchText}
-                                onChange={setSearchText}
-                                placeholder="Search by title"
-                            />
-                        )}
+        <PageLayout
+            className={className}
+            heading="MapSwipe Manager Dashboard"
+            headerDescription={(
+                <>
+                    <div>
+                        You can set up a new project by setting up project draft through
+                        &nbsp;
                         <SmartLink
-                            route={route.newTutorial}
+                            route={routes.newProject}
+                            spacing="none"
                         >
-                            Add New Tutorial
+                            New Project
                         </SmartLink>
+                        &nbsp;
+                        page.
                     </div>
-                    {showTutorialList && (
-                        <TutorialList
-                            className={styles.tutorialList}
-                            searchText={searchText}
-                        />
-                    )}
-                    <Button
-                        name={!showTutorialList}
-                        actions={showTutorialList ? <IoChevronUp /> : <IoChevronDown />}
-                        variant="action"
-                        onClick={setShowTutorialList}
-                    >
-                        {showTutorialList ? 'Hide Tutorials' : 'View Tutorials'}
-                    </Button>
-                </div>
-            </div>
-            {showOrganisationFormModal && (
-                <OrganisationFormModal
-                    onCloseButtonClick={setShowOrganisationFormModalFalse}
-                />
+                    <div>
+                        You may find some of the useful stuff below.
+                    </div>
+                </>
             )}
-        </div>
+        >
+            <OrganizationList />
+            <TutorialList />
+            <UserList />
+        </PageLayout>
     );
 }
 

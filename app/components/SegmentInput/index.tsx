@@ -1,12 +1,16 @@
-import { useCallback } from 'react';
+import {
+    useCallback,
+    useId,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import Button from '#components/Button';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
-import RawButton from '#components/RawButton';
+import ListLayout from '#components/ListLayout';
 
 import styles from './styles.module.css';
 
-interface Props<Value extends string | number | boolean, Option, Name> extends Omit<InputContainerProps, 'input'> {
+interface Props<Value extends string | number | boolean, Option, Name> extends Omit<InputContainerProps, 'input' | 'inputId'> {
     options: Option[];
     keySelector: (item: Option, index: number, data: Option[]) => Value;
     labelSelector: (item: Option, index: number, data: Option[]) => React.ReactNode;
@@ -19,7 +23,7 @@ interface Props<Value extends string | number | boolean, Option, Name> extends O
 function SegmentInput<
     Value extends string | number | boolean,
     Option,
-    Name,
+    const Name,
 >(props: Props<Value, Option, Name>) {
     const {
         options,
@@ -29,20 +33,16 @@ function SegmentInput<
         name,
         onChange,
         actions,
-        actionsContainerClassName,
         className,
         disabled,
         error,
-        errorContainerClassName,
         hint,
-        hintContainerClassName,
         icons,
-        iconsContainerClassName,
-        inputSectionClassName,
         label,
-        labelContainerClassName,
         readOnly,
     } = props;
+
+    const inputId = useId();
 
     const handleSegmentClick = useCallback((newValue: Value) => {
         onChange(newValue, name);
@@ -50,37 +50,39 @@ function SegmentInput<
 
     return (
         <InputContainer
+            inputId={inputId}
             actions={actions}
-            actionsContainerClassName={actionsContainerClassName}
             className={_cs(styles.segmentInput, className)}
             disabled={disabled}
             error={error}
-            errorContainerClassName={errorContainerClassName}
             hint={hint}
-            hintContainerClassName={hintContainerClassName}
             icons={icons}
-            iconsContainerClassName={iconsContainerClassName}
-            inputSectionClassName={inputSectionClassName}
-            inputContainerClassName={styles.segmentContainer}
             label={label}
-            labelContainerClassName={labelContainerClassName}
             readOnly={readOnly}
-            withoutInputSectionBorder
-            input={options.map((option, i) => {
-                const key = keySelector(option, i, options);
-                const optionLabel = labelSelector(option, i, options);
+            input={(
+                <ListLayout
+                    spacing="sm"
+                >
+                    {options.map((option, i) => {
+                        const key = keySelector(option, i, options);
+                        const optionLabel = labelSelector(option, i, options);
 
-                return (
-                    <RawButton
-                        className={_cs(styles.segment, key === value && styles.active)}
-                        name={key}
-                        key={String(key)}
-                        onClick={handleSegmentClick}
-                    >
-                        {optionLabel}
-                    </RawButton>
-                );
-            })}
+                        return (
+                            <Button
+                                id={inputId}
+                                styleVariant={key === value ? 'filled' : 'transparent'}
+                                colorVariant={key === value ? 'accent' : 'text'}
+                                name={key}
+                                key={String(key)}
+                                onClick={handleSegmentClick}
+                                spacing="sm"
+                            >
+                                {optionLabel}
+                            </Button>
+                        );
+                    })}
+                </ListLayout>
+            )}
         />
     );
 }

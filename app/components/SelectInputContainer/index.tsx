@@ -1,5 +1,6 @@
 import React, {
     useCallback,
+    useId,
     useRef,
 } from 'react';
 import {
@@ -87,7 +88,7 @@ export type SelectInputContainerProps<
     hasValue: boolean;
     nonClearable?: boolean;
     onClear: () => void;
-}, OMISSION> & Omit<InputContainerProps, 'input'> & ({
+}, OMISSION> & Omit<InputContainerProps, 'input' | 'inputId'> & ({
     grouped: true;
     groupLabelSelector: (option: O) => string;
     groupKeySelector: (option: O) => string | number;
@@ -105,18 +106,12 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
 ) {
     const {
         actions,
-        actionsContainerClassName,
         className,
         disabled,
         error,
-        errorContainerClassName,
         hint,
-        hintContainerClassName,
         icons,
-        iconsContainerClassName,
-        inputSectionClassName,
         label,
-        labelContainerClassName,
         name,
         onOptionClick,
         searchText,
@@ -146,6 +141,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
         hasValue,
     } = props;
 
+    const inputId = useId();
     const options = optionsFromProps ?? (emptyList as O[]);
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -322,7 +318,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
     return (
         <>
             <InputContainer
-                containerRef={containerRef}
+                elementRef={containerRef}
                 inputSectionRef={inputSectionRef}
                 actions={(
                     <>
@@ -331,7 +327,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
                             <Button
                                 onClick={onClear}
                                 disabled={disabled}
-                                variant="action"
+                                styleVariant="action"
                                 name={undefined}
                                 title="Clear"
                             >
@@ -341,7 +337,7 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
                         {!readOnly && (
                             <Button
                                 onClick={handleToggleDropdown}
-                                variant="action"
+                                styleVariant="action"
                                 name={undefined}
                                 title={dropdownShown ? 'Close' : 'Open'}
                             >
@@ -350,21 +346,17 @@ function SelectInputContainer<OK extends OptionKey, N extends string, O extends 
                         )}
                     </>
                 )}
-                actionsContainerClassName={actionsContainerClassName}
                 className={className}
                 disabled={disabled}
                 error={error}
-                errorContainerClassName={errorContainerClassName}
                 hint={hint}
-                hintContainerClassName={hintContainerClassName}
                 icons={icons}
-                iconsContainerClassName={iconsContainerClassName}
-                inputSectionClassName={inputSectionClassName}
                 label={label}
-                labelContainerClassName={labelContainerClassName}
                 readOnly={readOnly}
+                inputId={inputId}
                 input={(
                     <RawInput
+                        id={inputId}
                         name={name}
                         elementRef={inputElementRef}
                         readOnly={readOnly}

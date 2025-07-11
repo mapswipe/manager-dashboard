@@ -1,15 +1,13 @@
 import 'react-mde/lib/styles/css/react-mde-all.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 import {
     useCallback,
     useMemo,
     useState,
 } from 'react';
+import { Cookies } from 'react-cookie';
 import { BrowserRouter } from 'react-router';
-import {
-    ApolloClient,
-    ApolloProvider,
-} from '@apollo/client';
 import {
     ErrorBoundary,
     init,
@@ -20,20 +18,29 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
-import { initializeApp } from 'firebase/app';
+import { cacheExchange } from '@urql/exchange-graphcache';
+import {
+    Client as UrqlClient,
+    fetchExchange,
+    Provider as UrqlProvider,
+} from 'urql';
 
 import AppRoutes from '#base/components/AppRoutes';
 import AuthPopup from '#base/components/AuthPopup';
 import Init from '#base/components/Init';
 import Navbar from '#base/components/Navbar';
 import PreloadMessage from '#base/components/PreloadMessage';
-import apolloConfig from '#base/configs/apollo';
-import firebaseConfig from '#base/configs/firebase';
 import sentryConfig from '#base/configs/sentry';
 import NavbarContext, { type NavbarContextInterface } from '#base/context/NavbarContext';
+import OptionContext, { Options } from '#base/context/OptionContext';
 import UserContext, { type UserContextInterface } from '#base/context/UserContext';
 import { sync } from '#base/hooks/useAuthSync';
 import { User } from '#base/types/user';
+import AlertContainer from '#components/AlertContainer';
+import schema from '#generated/schema.json';
+import useAlertContextProviderValue from '#hooks/useAlertContextProviderValue';
+
+import AlertContext from './context/AlertContext';
 
 import styles from './styles.module.css';
 
@@ -41,11 +48,47 @@ if (sentryConfig) {
     init(sentryConfig);
 }
 
-const apolloClient = new ApolloClient(apolloConfig);
-initializeApp(firebaseConfig);
+const COOKIE_NAME = `MAPSWIPE-${import.meta.env.APP_ENVIRONMENT}-CSRFTOKEN`;
+const GRAPHQL_ENDPOINT = `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/graphql/`;
+
+const cookies = new Cookies();
+const gqlClient = new UrqlClient({
+    url: GRAPHQL_ENDPOINT,
+    exchanges: [
+        cacheExchange({
+            keys: new Proxy(
+                {
+                    AppEnumCollection: () => null,
+                },
+                {
+                    get(target, prop) {
+                        if (typeof prop === 'string' && prop.endsWith('Enum')) {
+                            return (data: { key: string }) => data.key;
+                        }
+
+                        const fallback = (data: { id: string }) => data.id;
+
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (target as any)[prop] || fallback;
+                    },
+                },
+            ),
+            schema,
+        }),
+        fetchExchange,
+    ],
+    fetchOptions: () => ({
+        headers: {
+            'X-CSRFToken': cookies.get(COOKIE_NAME),
+        },
+        credentials: 'include',
+    }),
+    requestPolicy: 'cache-and-network',
+});
 
 function Base() {
     const [user, setUser] = useState<User | undefined>();
+    const [options, setOptions] = useState<Options>({});
     const [navbarVisibility, setNavbarVisibility] = useState(false);
 
     const authenticated = !!user;
@@ -83,6 +126,14 @@ function Base() {
         [setUser],
     );
 
+    const optionContextValue: OptionContext = useMemo(
+        () => ({
+            options,
+            setOptions,
+        }),
+        [options, setOptions],
+    );
+
     const userContext: UserContextInterface = useMemo(
         () => ({
             authenticated,
@@ -108,6 +159,8 @@ function Base() {
         [navbarVisibility, setNavbarVisibility],
     );
 
+    const alertContextValue = useAlertContextProviderValue();
+
     return (
         <div className={styles.base}>
             <ErrorBoundary
@@ -119,26 +172,31 @@ function Base() {
                     />
                 )}
             >
-                <ApolloProvider client={apolloClient}>
-                    <UserContext.Provider value={userContext}>
-                        <NavbarContext.Provider value={navbarContext}>
-                            <AuthPopup />
-                            <BrowserRouter>
-                                <Init preloadClassName={styles.init}>
-                                    <Navbar
-                                        className={_cs(
-                                            styles.navbar,
-                                            !navbarVisibility && styles.hidden,
-                                        )}
-                                    />
-                                    <AppRoutes
-                                        routeClassName={styles.view}
-                                    />
-                                </Init>
-                            </BrowserRouter>
-                        </NavbarContext.Provider>
-                    </UserContext.Provider>
-                </ApolloProvider>
+                <UrqlProvider value={gqlClient}>
+                    <OptionContext.Provider value={optionContextValue}>
+                        <UserContext.Provider value={userContext}>
+                            <AlertContext.Provider value={alertContextValue}>
+                                <NavbarContext.Provider value={navbarContext}>
+                                    <AlertContainer />
+                                    <AuthPopup />
+                                    <BrowserRouter>
+                                        <Init preloadClassName={styles.init}>
+                                            <Navbar
+                                                className={_cs(
+                                                    styles.navbar,
+                                                    !navbarVisibility && styles.hidden,
+                                                )}
+                                            />
+                                            <AppRoutes
+                                                routeClassName={styles.view}
+                                            />
+                                        </Init>
+                                    </BrowserRouter>
+                                </NavbarContext.Provider>
+                            </AlertContext.Provider>
+                        </UserContext.Provider>
+                    </OptionContext.Provider>
+                </UrqlProvider>
             </ErrorBoundary>
         </div>
     );

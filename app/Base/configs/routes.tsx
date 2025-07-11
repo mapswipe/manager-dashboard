@@ -38,26 +38,8 @@ const projects = wrap({
     visibility: 'is-authenticated',
 });
 
-const teams = wrap({
-    path: '/teams/',
-    title: 'Teams',
-    navbarVisibility: true,
-    component: lazy(() => import('#views/Teams')),
-    componentProps: {},
-    visibility: 'is-authenticated',
-});
-
-const userGroups = wrap({
-    path: '/user-groups/',
-    title: 'User Groups',
-    navbarVisibility: true,
-    component: lazy(() => import('#views/UserGroups')),
-    componentProps: {},
-    visibility: 'is-authenticated',
-});
-
 const newProject = wrap({
-    path: '/new-project/',
+    path: '/project/new/',
     title: 'New Project',
     navbarVisibility: true,
     component: lazy(() => import('#views/NewProject')),
@@ -65,11 +47,29 @@ const newProject = wrap({
     visibility: 'is-authenticated',
 });
 
+const editProject = wrap({
+    path: '/project/:id/edit/',
+    title: 'Edit project',
+    navbarVisibility: true,
+    component: lazy(() => import('#views/EditProject')),
+    componentProps: {},
+    visibility: 'is-authenticated',
+});
+
 const newTutorial = wrap({
-    path: '/new-tutorial/',
+    path: '/tutorial/new/',
     title: 'New Tutorial',
     navbarVisibility: true,
-    component: lazy(() => import('#views/NewTutorial')),
+    component: lazy(() => import('#views/TutorialForm')),
+    componentProps: {},
+    visibility: 'is-authenticated',
+});
+
+const editTutorial = wrap({
+    path: '/tutorial/:id/edit/',
+    title: 'Edit Tutorial',
+    navbarVisibility: true,
+    component: lazy(() => import('#views/TutorialForm')),
     componentProps: {},
     visibility: 'is-authenticated',
 });
@@ -78,10 +78,10 @@ const routes = {
     login,
     home,
     projects,
-    teams,
-    userGroups,
     newProject,
+    editProject,
     newTutorial,
+    editTutorial,
     fourHundredFour,
 };
 export default routes;

@@ -1,0 +1,16 @@
+.inline-layout {
+    display: inline-flex;
+    width: 100%;
+
+    .children {
+        flex-grow: 1;
+    }
+
+    .start-content {
+        display: flex;
+    }
+
+    .end-content {
+        display: flex;
+    }
+}

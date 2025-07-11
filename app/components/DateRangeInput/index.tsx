@@ -1,6 +1,7 @@
 import {
     useCallback,
     useEffect,
+    useId,
     useMemo,
     useRef,
     useState,
@@ -16,12 +17,13 @@ import {
     randomString,
 } from '@togglecorp/fujs';
 
-import useBlurEffect from '../../hooks/useBlurEffect';
-import useBooleanState from '../../hooks/useBooleanState';
 import {
     dateStringToDate,
     ymdToDateString,
-} from '../../utils/common.tsx';
+} from '#utils/common';
+
+import useBlurEffect from '../../hooks/useBlurEffect';
+import useBooleanState from '../../hooks/useBooleanState';
 import Button from '../Button';
 import Calendar, { Props as CalendarProps } from '../Calendar';
 import CalendarDate, { Props as CalendarDateProps } from '../Calendar/CalendarDate';
@@ -114,21 +116,15 @@ export interface Props<N extends NameType> extends InheritedProps {
 function DateRangeInput<N extends NameType>(props: Props<N>) {
     const {
         actions,
-        actionsContainerClassName,
         className,
         disabled,
         error,
-        errorContainerClassName,
         hint,
-        hintContainerClassName,
         icons,
-        iconsContainerClassName,
-        inputSectionClassName,
         label,
-        labelContainerClassName,
         readOnly,
         inputElementRef,
-        containerRef: containerRefFromProps,
+        elementRef: containerRefFromProps,
         inputSectionRef: inputSectionRefFromProps,
         inputClassName,
         onChange,
@@ -136,6 +132,8 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
         value,
         placeholder,
     } = props;
+
+    const inputId = useId();
 
     const [tempDate, setTempDate] = useState<Partial<Value>>({
         startDate: undefined,
@@ -319,7 +317,8 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
     return (
         <>
             <InputContainer
-                containerRef={containerRef}
+                inputId={inputId}
+                elementRef={containerRef}
                 inputSectionRef={inputSectionRef}
                 actions={(
                     <>
@@ -348,22 +347,16 @@ function DateRangeInput<N extends NameType>(props: Props<N>) {
                         )}
                     </>
                 )}
-                actionsContainerClassName={actionsContainerClassName}
                 className={className}
                 disabled={disabled}
                 error={error}
-                errorContainerClassName={errorContainerClassName}
                 hint={hint}
-                hintContainerClassName={hintContainerClassName}
                 icons={icons}
-                iconsContainerClassName={iconsContainerClassName}
-                inputSectionClassName={inputSectionClassName}
-                inputContainerClassName={styles.inputContainer}
                 label={label}
-                labelContainerClassName={labelContainerClassName}
                 readOnly={readOnly}
                 input={(
                     <RawInput
+                        id={inputId}
                         elementRef={inputElementRef}
                         name="date-range"
                         value={dateInputLabel}

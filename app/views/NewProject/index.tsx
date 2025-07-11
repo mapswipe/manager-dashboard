@@ -2,116 +2,114 @@ import {
     useCallback,
     useContext,
     useMemo,
-    useState,
 } from 'react';
+import { MdArrowForward } from 'react-icons/md';
 import {
-    MdOutlinePublishedWithChanges,
-    MdOutlineUnpublished,
-} from 'react-icons/md';
-import { Link } from 'react-router';
+    generatePath,
+    useNavigate,
+} from 'react-router';
 import {
-    _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
-    analyzeErrors,
     createSubmitHandler,
     getErrorObject,
-    nonFieldError,
+    ObjectSchema,
+    PartialForm,
+    requiredStringCondition,
     useForm,
 } from '@togglecorp/toggle-form';
-import {
-    equalTo,
-    getDatabase,
-    orderByChild,
-    push as pushToDatabase,
-    query,
-    ref as databaseRef,
-    set as setToDatabase,
-} from 'firebase/database';
-import {
-    getDownloadURL,
-    getStorage,
-    ref as storageRef,
-    uploadBytes,
-} from 'firebase/storage';
+import { ulid } from 'ulid';
+import { gql } from 'urql';
 
-import projectTypeOptions from '#base/configs/projectTypes';
-import UserContext from '#base/context/UserContext';
-import AlertBanner from '#components/AlertBanner';
-import AnimatedSwipeIcon from '#components/AnimatedSwipeIcon';
+import routes from '#base/configs/routes';
+import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
-import Checkbox from '#components/Checkbox';
-import DateRangeInput from '#components/DateRangeInput';
-import ExpandableContainer from '#components/ExpandableContainer';
-import GeoJsonFileInput from '#components/GeoJsonFileInput';
-import InputSection from '#components/InputSection';
-import Modal from '#components/Modal';
-import NonFieldError from '#components/NonFieldError';
-import NumberInput from '#components/NumberInput';
+import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
+import PageLayout from '#components/PageLayout';
+import ProjectStatusOutput from '#components/ProjectStatusOutput';
+import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import SegmentInput from '#components/SegmentInput';
-import TextInput from '#components/TextInput';
-import TileServerInput, {
-    TILE_SERVER_BING,
-    TILE_SERVER_ESRI,
-    tileServerDefaultCredits,
-} from '#components/TileServerInput';
-import useMountedRef from '#hooks/useMountedRef';
 import {
-    formatProjectTopic,
-    labelSelector,
-    PROJECT_TYPE_BUILD_AREA,
-    PROJECT_TYPE_CHANGE_DETECTION,
-    PROJECT_TYPE_COMPLETENESS,
-    PROJECT_TYPE_FOOTPRINT,
-    PROJECT_TYPE_STREET,
-    ProjectInputType,
-    ProjectType,
-    valueSelector,
-} from '#utils/common';
-import { getValueFromFirebase } from '#utils/firebase';
-import CustomOptionInput from '#views/NewTutorial/CustomOptionInput';
-import CustomOptionPreview from '#views/NewTutorial/CustomOptionInput/CustomOptionPreview';
-
-import BasicProjectInfoForm from './BasicProjectInfoForm';
+    AppEnumCollectionProjectTypeEnum,
+    ProjectCreateInput,
+    ProjectTypeEnum,
+    useNewProjectMutation,
+} from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
+import { keySelector } from '#utils/common';
 import {
-    FILTER_BUILDINGS,
-    FILTER_OTHERS,
-    filterOptions,
-    getGroupSize,
-    PartialProjectFormType,
-    PROJECT_INPUT_TYPE_LINK,
-    PROJECT_INPUT_TYPE_TASKING_MANAGER_ID,
-    PROJECT_INPUT_TYPE_UPLOAD,
-    projectFormSchema,
-    ProjectFormType,
-    projectInputTypeOptions,
-    validateAoiOnOhsome,
-    validateProjectIdOnHotTaskingManager,
-} from './utils';
+    alertCombinedError,
+    checkAndAlertGraphQLResultError,
+    transformErrors,
+} from '#utils/error';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
+import { DeepNonNullable } from '#utils/types';
 
-import styles from './styles.module.css';
+import ProjectGeneralInputs from './ProjectGeneralInputs';
 
-const defaultProjectFormValue: PartialProjectFormType = {
-    // projectType: PROJECT_TYPE_BUILD_AREA,
-    projectNumber: 1,
-    visibility: 'public',
-    verificationNumber: 3,
-    zoomLevel: 18,
-    // groupSize: getGroupSize(PROJECT_TYPE_BUILD_AREA),
-    tileServer: {
-        name: TILE_SERVER_BING,
-        credits: tileServerDefaultCredits[TILE_SERVER_BING],
-    },
-    tileServerB: {
-        name: TILE_SERVER_ESRI,
-        credits: tileServerDefaultCredits[TILE_SERVER_ESRI],
-    },
-    // maxTasksPerUser: -1,
-    inputType: PROJECT_INPUT_TYPE_UPLOAD,
-    filter: FILTER_BUILDINGS,
-    panoOnly: false,
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const CREATE_PROJECT_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
+mutation NewProject($data: ProjectCreateInput!) {
+    createProject(data: $data) {
+        ... on ProjectTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                id
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
+
+type PartialProjectCreateInputFields = PartialForm<DeepNonNullable<ProjectCreateInput>>;
+type ProjectCreateFormSchema = ObjectSchema<PartialProjectCreateInputFields>;
+
+const projectCreateFormSchema: ProjectCreateFormSchema = {
+    fields: (): ReturnType<ProjectCreateFormSchema['fields']> => ({
+        clientId: {},
+        projectType: {
+            required: true,
+        },
+        requestingOrganization: {
+        },
+        lookFor: {
+            required: true,
+        },
+        name: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        description: {},
+        additionalInfoUrl: {},
+    }),
+};
+
+function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
+    return (
+        <InlineLayout
+            spacing="sm"
+            start={<ProjectTypeIcon type={value.key} />}
+        >
+            {value.label}
+        </InlineLayout>
+    );
+}
+
+const projectTypeDescriptions: Record<ProjectTypeEnum, string> = {
+    [ProjectTypeEnum.Find]: 'Swipe through satellite images to identify & select those that contain the requested features such as buildings, roadways, waterways and more.',
+    [ProjectTypeEnum.Compare]: 'Review before and after satellite images to detect changes in the environment that help inform damage assessment, climate change, or inaccurate data.',
+    [ProjectTypeEnum.Validate]: 'Assess building footprints for accuracy where buildings have been previously traced by remote mappers or through AI to identify where remapping is needed.',
+    [ProjectTypeEnum.ValidateImage]: 'Assess how well machine learning detections match real-world features in images, flagging false or inaccurate results. This helps improve model accuracy and dataset quality, supporting better outcomes for social good applications.',
+    [ProjectTypeEnum.Completeness]: 'Assess how well OSM data represents buildings in satellite imagery, flagging areas where mapping is incomplete. This helps identify areas needing further mapping efforts to enhance OSM\'s accuracy, especially for disaster response and risk assessment.',
 };
 
 interface Props {
@@ -119,737 +117,160 @@ interface Props {
 }
 
 function NewProject(props: Props) {
-    const {
-        className,
-    } = props;
-
-    const { user } = useContext(UserContext);
-
-    const mountedRef = useMountedRef();
-
-    const {
-        setFieldValue,
-        value,
-        error: formError,
-        validate,
-        setError,
-        setValue,
-    } = useForm(projectFormSchema, {
-        value: defaultProjectFormValue,
-    });
-
-    const [testPending, setTestPending] = useState(false);
-    const [geometryDescription, setGeometryDescription] = useState<string>();
-    const [TMIdDescription, setTMIdDescription] = useState<string>();
+    const { className } = props;
+    const navigate = useNavigate();
+    const alert = useAlert();
 
     const [
-        projectSubmissionStatus,
-        setProjectSubmissionStatus,
-    ] = useState<'started' | 'imageUpload' | 'projectSubmit' | 'success' | 'failed' | undefined>();
+        { fetching: createNewProjectPending },
+        createNewProject,
+    ] = useNewProjectMutation();
 
-    const error = useMemo(
-        () => getErrorObject(formError),
-        [formError],
-    );
+    const { ProjectTypeEnum: projectTypeOptions } = useContext(EnumsContext);
 
-    const handleProjectTypeChange = useCallback(
-        (projectType: ProjectType | undefined) => {
-            setValue((oldVal) => ({
-                ...oldVal,
-                projectType,
-                // We are un-setting geometry because geometry
-                // can be string or FeatureCollection
-                geometry: undefined,
+    const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
+        clientId: ulid(),
+    }), []);
 
-                // FIXME: also remove error for group size?
-                groupSize: getGroupSize(projectType),
+    const {
+        value,
+        error: formError,
+        setFieldValue,
+        validate,
+        setError,
+    } = useForm(projectCreateFormSchema, {
+        value: defaultBaseProjectFormValue,
+    });
 
-                // de-selecting the tutorial in the list
-                tutorialId: undefined,
-            }), true);
-            setGeometryDescription(undefined);
-            setTMIdDescription(undefined);
-        },
-        [setValue],
-    );
+    const error = getErrorObject(formError);
 
-    const handleInputTypeChange = useCallback(
-        (inputType: ProjectInputType | undefined) => {
-            setValue((oldVal) => ({
-                ...oldVal,
-                inputType,
-                // We are un-setting geometry because geometry
-                // can be string or FeatureCollection
-                geometry: undefined,
-            }), true);
-            setGeometryDescription(undefined);
-            setTMIdDescription(undefined);
-        },
-        [setValue],
-    );
+    const handleFormSubmission = useCallback(
+        async (submittedFormValues: PartialProjectCreateInputFields) => {
+            const finalValues = submittedFormValues as ProjectCreateInput;
 
-    const setFieldValueAndClearTestMessage: typeof setFieldValue = useCallback(
-        (...params) => {
-            setFieldValue(...params);
-            setGeometryDescription(undefined);
-            setTMIdDescription(undefined);
-        },
-        [setFieldValue],
-    );
-
-    const handleTestAoi = useCallback(() => {
-        const finalValues = value;
-        async function submitToFirebase() {
-            if (!mountedRef.current) {
-                return;
-            }
-            const {
-                filter,
-                filterText,
-                projectType,
-                inputType,
-                geometry,
-                TMId,
-            } = finalValues;
-
-            const finalFilter = filter === FILTER_OTHERS
-                ? filterText
-                : filter;
-
-            setTestPending(true);
-
-            if (projectType === PROJECT_TYPE_FOOTPRINT && inputType === 'aoi_file') {
-                const res = await validateAoiOnOhsome(geometry, finalFilter);
-                if (!mountedRef.current) {
-                    return;
-                }
-
-                if (res.errored) {
-                    setError((err) => ({
-                        ...getErrorObject(err),
-                        geometry: res.error,
-                    }));
-                    setGeometryDescription(undefined);
-                } else {
-                    setGeometryDescription(res.message);
-                }
-            } else if (projectType === PROJECT_TYPE_FOOTPRINT && inputType === 'TMId') {
-                const res = await validateProjectIdOnHotTaskingManager(
-                    TMId,
-                    finalFilter,
-                );
-                if (!mountedRef.current) {
-                    return;
-                }
-                if (res.errored) {
-                    setError((err) => ({
-                        ...getErrorObject(err),
-                        TMId: res.error,
-                    }));
-                    setTMIdDescription(undefined);
-                } else {
-                    setTMIdDescription(res.message);
-                }
-            }
-
-            setTestPending(false);
-        }
-        submitToFirebase();
-    }, [mountedRef, setError, value]);
-
-    const handleFormSubmission = useCallback((
-        finalValuesFromProps: PartialProjectFormType,
-    ) => {
-        const userId = user?.id;
-        const finalValues = finalValuesFromProps as ProjectFormType;
-
-        if (!userId) {
-            setError((err) => ({
-                ...getErrorObject(err),
-                [nonFieldError]: 'Cannot submit form because user is not defined',
-            }));
-            setProjectSubmissionStatus('failed');
-            return;
-        }
-
-        setProjectSubmissionStatus('started');
-
-        async function submitToFirebase() {
-            if (!mountedRef.current) {
-                return;
-            }
-            const {
-                projectImage,
-                visibility,
-                filter,
-                filterText,
-                name,
-                ...valuesToCopy
-            } = finalValues;
-
-            const finalFilter = filter === FILTER_OTHERS ? filterText : filter;
-
-            if (valuesToCopy.projectType === PROJECT_TYPE_FOOTPRINT && valuesToCopy.inputType === 'aoi_file') {
-                const res = await validateAoiOnOhsome(valuesToCopy.geometry, finalFilter);
-                if (!mountedRef.current) {
-                    return;
-                }
-                if (res.errored) {
-                    setError((err) => ({
-                        ...getErrorObject(err),
-                        geometry: res.error,
-                    }));
-                    setProjectSubmissionStatus('failed');
-                    return;
-                }
-            } else if (valuesToCopy.projectType === PROJECT_TYPE_FOOTPRINT && valuesToCopy.inputType === 'TMId') {
-                const res = await validateProjectIdOnHotTaskingManager(
-                    valuesToCopy.TMId,
-                    finalFilter,
-                );
-                if (!mountedRef.current) {
-                    return;
-                }
-                if (res.errored) {
-                    setError((err) => ({
-                        ...getErrorObject(err),
-                        TMId: res.error,
-                    }));
-                    setProjectSubmissionStatus('failed');
-                    return;
-                }
-                valuesToCopy.geometry = res.geometry;
-            }
-
-            valuesToCopy.startTimestamp = valuesToCopy.dateRange?.startDate ?? null;
-            valuesToCopy.endTimestamp = valuesToCopy.dateRange?.endDate ?? null;
-            valuesToCopy.isPano = valuesToCopy.panoOnly ? true : null;
-
-            const storage = getStorage();
-            const timestamp = (new Date()).getTime();
-            const uploadedImageRef = storageRef(storage, `projectImages/${timestamp}-project-image-${projectImage.name}`);
-
-            setProjectSubmissionStatus('imageUpload');
             try {
-                const uploadTask = await uploadBytes(uploadedImageRef, projectImage);
-                if (!mountedRef.current) {
-                    return;
-                }
-                const downloadUrl = await getDownloadURL(uploadTask.ref);
-                if (!mountedRef.current) {
+                const result = await createNewProject({
+                    data: finalValues,
+                });
+
+                if (checkAndAlertGraphQLResultError(result, alert)) {
                     return;
                 }
 
-                // NOTE: All the user don't have permission to access draft project
-                // FIXME: The firebase rules need to be changed to perform this on draft project
-                const database = getDatabase();
-                const projectTopicKey = formatProjectTopic(name);
-                const projectRef = databaseRef(database, 'v2/projects/');
+                if (isNotDefined(result.data)
+                    // eslint-disable-next-line no-underscore-dangle
+                    || result.data.createProject.__typename !== 'ProjectTypeMutationResponseType'
+                ) {
+                    alert.show(
+                        'Failed to create the Project!',
+                        {
+                            description: 'Unexpectected response from the server!',
+                            variant: 'danger',
+                        },
+                    );
+                    return;
+                }
 
-                const prevProjectNameQuery = query(
-                    projectRef,
-                    orderByChild('projectTopicKey'),
-                    equalTo(projectTopicKey),
+                const {
+                    ok,
+                    errors,
+                    result: createProjectResult,
+                } = result.data.createProject;
+
+                if (!ok || !createProjectResult) {
+                    alert.show(
+                        'Failed to create the Project!',
+                        {
+                            description: 'Please fix the errors and try again!',
+                            variant: 'danger',
+                        },
+                    );
+
+                    setError(transformErrors(errors));
+                    return;
+                }
+
+                alert.show(
+                    'Project created successfully!',
+                    {
+                        description: 'Navigating to edit page of the created project.',
+                        variant: 'success',
+                    },
                 );
-
-                const snapshot = await getValueFromFirebase(prevProjectNameQuery);
-                if (!mountedRef.current) {
-                    return;
-                }
-
-                if (snapshot.exists()) {
-                    setError((prevErr) => ({
-                        ...getErrorObject(prevErr),
-                        [nonFieldError]: 'A project with this name already exists, please use a different project name (Please note that the name comparison is not case sensitive)',
-                        name: 'A project with this name already exists',
-                    }));
-                    setProjectSubmissionStatus(undefined);
-                    return;
-                }
-
-                const projectDraftsRef = databaseRef(database, 'v2/projectDrafts/');
-                const newProjectDraftsRef = await pushToDatabase(projectDraftsRef);
-                if (!mountedRef.current) {
-                    return;
-                }
-                const newKey = newProjectDraftsRef.key;
-
-                if (newKey) {
-                    setProjectSubmissionStatus('projectSubmit');
-                    const newProjectRef = databaseRef(database, `v2/projectDrafts/${newKey}`);
-
-                    const uploadData = {
-                        ...valuesToCopy,
-                        name,
-                        projectTopicKey,
-                        filter: finalFilter,
-                        image: downloadUrl,
-                        createdBy: userId,
-                        teamId: visibility === 'public' ? null : visibility,
-                    };
-
-                    await setToDatabase(newProjectRef, uploadData);
-                    if (!mountedRef.current) {
-                        return;
-                    }
-                    setProjectSubmissionStatus('success');
-                } else {
-                    setProjectSubmissionStatus('failed');
-                }
-            } catch (submissionError: unknown) {
-                if (!mountedRef.current) {
-                    return;
-                }
-                // eslint-disable-next-line no-console
-                console.error(submissionError);
-                setError((err) => ({
-                    ...getErrorObject(err),
-                    [nonFieldError]: 'Some error occurred',
-                }));
-                setProjectSubmissionStatus('failed');
+                navigate(
+                    generatePath(
+                        routes.editProject.originalPath,
+                        { id: createProjectResult.id },
+                    ),
+                );
+            } catch (apolloError) {
+                alertCombinedError(apolloError, alert);
             }
-        }
-
-        submitToFirebase();
-    }, [user, mountedRef, setError]);
+        },
+        [createNewProject, navigate, setError, alert],
+    );
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
 
-    const hasErrors = useMemo(
-        () => analyzeErrors(error),
-        [error],
-    );
-
-    const submissionPending = (
-        projectSubmissionStatus === 'started'
-        || projectSubmissionStatus === 'imageUpload'
-        || projectSubmissionStatus === 'projectSubmit'
-    );
-
-    const tileServerVisible = value.projectType === PROJECT_TYPE_BUILD_AREA
-        || value.projectType === PROJECT_TYPE_FOOTPRINT
-        || value.projectType === PROJECT_TYPE_COMPLETENESS
-        || value.projectType === PROJECT_TYPE_CHANGE_DETECTION;
-
-    const tileServerBVisible = value.projectType === PROJECT_TYPE_CHANGE_DETECTION
-        || value.projectType === PROJECT_TYPE_COMPLETENESS;
-
-    const projectTypeEmpty = isNotDefined(value.projectType);
-
-    const { customOptions: customOptionsFromValue } = value;
-
-    const customOptions = useMemo(() => (customOptionsFromValue?.map((option) => ({
-        ...option,
-        optionId: option.value,
-        subOptions: option.subOptions?.map((subOption) => ({
-            ...subOption,
-            subOptionsId: subOption.value,
-        })),
-    }))), [customOptionsFromValue]);
-
-    const optionsError = useMemo(
-        () => getErrorObject(error?.customOptions),
-        [error?.customOptions],
-    );
-
-    const noOp = () => {};
+    const inputsDisabled = createNewProjectPending;
+    const actionsDisabled = inputsDisabled;
 
     return (
-        <div className={_cs(styles.newProject, className)}>
-            <div className={styles.container}>
-                <InputSection
-                    heading="Basic Project Information"
+        <PageLayout
+            className={className}
+            heading="Create a New Project"
+            headerDescription="Let's get started with adding basic information for the project. You can later add more project type specific details."
+            footerActions={(
+                <Button
+                    name={undefined}
+                    onClick={handleSubmitButtonClick}
+                    disabled={actionsDisabled}
+                    colorVariant="accent"
+                    styleVariant="filled"
+                    end={<MdArrowForward />}
                 >
-                    <SegmentInput
-                        name={'projectType' as const}
-                        onChange={handleProjectTypeChange}
-                        value={value.projectType}
-                        label="Project Type"
-                        hint="Select the type of your project."
-                        options={projectTypeOptions}
-                        keySelector={valueSelector}
-                        labelSelector={labelSelector}
-                        error={error?.projectType}
-                        disabled={submissionPending || testPending}
-                    />
-                    {value.projectType === PROJECT_TYPE_STREET && (
-                        <AlertBanner title="MapSwipe Web only">
-                            <div className={styles.warningContainer}>
-                                <div className={styles.warningItem}>
-                                    Projects of this type are currently
-                                    only visible in the web app.
-                                </div>
-                            </div>
-                        </AlertBanner>
-                    )}
-                    <BasicProjectInfoForm
-                        value={value}
-                        setValue={setValue}
-                        setFieldValue={setFieldValue}
-                        error={error}
-                        disabled={submissionPending || projectTypeEmpty}
-                    />
-                </InputSection>
-                {(
-                    (value.projectType === PROJECT_TYPE_FOOTPRINT
-                        || value.projectType === PROJECT_TYPE_STREET)
-                    && customOptions
-                    && customOptions.length > 0
-                ) && (
-                    <InputSection
-                        heading="Custom Options"
-                    >
-                        <NonFieldError
-                            error={optionsError}
-                        />
-                        {(customOptions && customOptions.length > 0) ? (
-                            <div className={styles.customOptionContainer}>
-                                <div className={styles.customOptionList}>
-                                    {customOptions.map((option, index) => (
-                                        <ExpandableContainer
-                                            key={option.value}
-                                            header={option.title || `Option ${index + 1}`}
-                                        >
-                                            <CustomOptionInput
-                                                key={option.value}
-                                                value={option}
-                                                index={index}
-                                                onChange={noOp}
-                                                error={optionsError?.[option.value]}
-                                                readOnly
-                                            />
-                                        </ExpandableContainer>
-                                    ))}
-                                </div>
-                                <CustomOptionPreview
-                                    value={customOptions}
-                                    lookFor={value.lookFor}
-                                />
-                            </div>
-                        ) : (
-                            <div>No options</div>
-                        )}
-                    </InputSection>
-                )}
-                {(value.projectType === PROJECT_TYPE_BUILD_AREA
-                    || value.projectType === PROJECT_TYPE_CHANGE_DETECTION
-                    || value.projectType === PROJECT_TYPE_COMPLETENESS) && (
-                    <InputSection
-                        heading="Zoom Level"
-                    >
-                        <NumberInput
-                            name={'zoomLevel' as const}
-                            value={value.zoomLevel}
-                            onChange={setFieldValue}
-                            label="Zoom Level"
-                            hint="We use the Tile Map Service zoom levels. Please check for your area which zoom level is available. For example, Bing imagery is available at zoomlevel 18 for most regions. If you use a custom tile server you may be able to use even higher zoom levels."
-                            error={error?.zoomLevel}
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                    </InputSection>
-                )}
-                {(value.projectType === PROJECT_TYPE_BUILD_AREA
-                    || value.projectType === PROJECT_TYPE_CHANGE_DETECTION
-                    || value.projectType === PROJECT_TYPE_COMPLETENESS
-                    || value.projectType === PROJECT_TYPE_STREET) && (
-                    <InputSection
-                        heading="Project AOI Geometry"
-                    >
-                        <GeoJsonFileInput
-                            name={'geometry' as const}
-                            value={value.geometry as GeoJSON.GeoJSON | undefined}
-                            onChange={setFieldValueAndClearTestMessage}
-                            label="Project AOI Geometry"
-                            hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
-                            error={error?.geometry}
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                    </InputSection>
-                )}
-                {value.projectType === PROJECT_TYPE_FOOTPRINT && (
-                    <InputSection
-                        heading="Project Tasks Geometry"
-                    >
-                        <SegmentInput
-                            label="Select an option for Project Task Geometry"
-                            name={'inputType' as const}
-                            onChange={handleInputTypeChange}
-                            value={value.inputType}
-                            options={projectInputTypeOptions}
-                            keySelector={valueSelector}
-                            labelSelector={labelSelector}
-                            error={error?.inputType}
-                            disabled={submissionPending || projectTypeEmpty || testPending}
-                        />
-                        {value.inputType === PROJECT_INPUT_TYPE_LINK && (
-                            <TextInput
-                                name={'geometry' as const}
-                                value={value.geometry as string | undefined}
-                                label="Input Geometries File (Direct Link)"
-                                hint="Provide a direct link to a GeoJSON file containing your building footprint geometries."
-                                error={error?.geometry}
-                                onChange={setFieldValue}
-                                disabled={submissionPending || projectTypeEmpty || testPending}
-                            />
-                        )}
-                        {value.inputType === PROJECT_INPUT_TYPE_UPLOAD && (
-                            <GeoJsonFileInput
-                                name={'geometry' as const}
-                                value={value.geometry as GeoJSON.GeoJSON}
-                                onChange={setFieldValueAndClearTestMessage}
-                                label="GeoJSON File"
-                                hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a maximum of 10 polygon geometries."
-                                error={error?.geometry}
-                                disabled={submissionPending || projectTypeEmpty || testPending}
-                            />
-                        )}
-                        {value.inputType === PROJECT_INPUT_TYPE_TASKING_MANAGER_ID && (
-                            <TextInput
-                                name={'TMId' as const}
-                                // NOTE: This is actually a string but
-                                // should only support numeric characters
-                                type="number"
-                                min="1"
-                                value={value.TMId}
-                                onChange={setFieldValueAndClearTestMessage}
-                                label="HOT Tasking Manager ProjectID"
-                                hint="Provide the ID of a HOT Tasking Manager Project (only numbers, e.g. 6526)."
-                                error={error?.TMId}
-                                disabled={submissionPending || projectTypeEmpty || testPending}
-                            />
-                        )}
-                        {(value.inputType === PROJECT_INPUT_TYPE_UPLOAD
-                            || value.inputType === PROJECT_INPUT_TYPE_TASKING_MANAGER_ID
-                        ) && (
-                            <>
-                                <SegmentInput
-                                    name={'filter' as const}
-                                    value={value.filter}
-                                    onChange={setFieldValueAndClearTestMessage}
-                                    label="Ohsome Filter"
-                                    hint="Please specify which objects should be included in your project."
-                                    options={filterOptions}
-                                    error={error?.filter}
-                                    keySelector={valueSelector}
-                                    labelSelector={labelSelector}
-                                    disabled={submissionPending || projectTypeEmpty || testPending}
-                                />
-                                {value.filter === FILTER_OTHERS && (
-                                    <TextInput
-                                        name={'filterText' as const}
-                                        value={value.filterText}
-                                        onChange={setFieldValueAndClearTestMessage}
-                                        error={error?.filterText}
-                                        label="Custom Filter"
-                                        disabled={(
-                                            submissionPending || projectTypeEmpty || testPending
-                                        )}
-                                        placeholder="amenities=* and geometry:polygon"
-                                    />
-                                )}
-                                <div className={styles.testContainer}>
-                                    <div className={styles.testSuccessMessage}>
-                                        <div className={styles.geometryDescription}>
-                                            {geometryDescription}
-                                        </div>
-                                        <div className={styles.tmidDescription}>
-                                            {TMIdDescription}
-                                        </div>
-                                    </div>
-                                    <Button
-                                        className={styles.testButton}
-                                        name={undefined}
-                                        onClick={handleTestAoi}
-                                        disabled={(
-                                            submissionPending || projectTypeEmpty || testPending
-                                        )}
-                                    >
-                                        {testPending ? 'Testing...' : 'Test'}
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                    </InputSection>
-                )}
-
-                <InputSection
-                    heading="Team Settings"
-                >
-                    <NumberInput
-                        name={'maxTasksPerUser' as const}
-                        value={value.maxTasksPerUser}
-                        onChange={setFieldValue}
-                        label="Max Tasks Per User"
-                        hint="How many tasks each user is allowed to work on for this project. Empty indicates that no limit is set."
-                        error={error?.maxTasksPerUser}
-                        disabled={submissionPending || projectTypeEmpty}
-                    />
-                </InputSection>
-
-                {tileServerVisible && (
-                    <InputSection
-                        heading={tileServerBVisible ? 'Tile Server A' : 'Tile Server'}
-                    >
-                        <TileServerInput
-                            name={'tileServer' as const}
-                            value={value.tileServer}
-                            error={error?.tileServer}
-                            onChange={setFieldValue}
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                    </InputSection>
-                )}
-
-                {tileServerBVisible && (
-                    <InputSection
-                        heading="Tile Server B"
-                    >
-                        <TileServerInput
-                            name={'tileServerB' as const}
-                            value={value.tileServerB}
-                            error={error?.tileServerB}
-                            onChange={setFieldValue}
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                    </InputSection>
-                )}
-
-                {value.projectType === PROJECT_TYPE_STREET && (
-                    <InputSection
-                        heading="Mapillary Image Filters"
-                    >
-                        <DateRangeInput
-                            name={'dateRange' as const}
-                            value={value?.dateRange}
-                            onChange={setFieldValue}
-                            error={error?.dateRange}
-                            label="Date range"
-                            hint="Choose a date range to filter images by the date they were captured at. Empty indicates that images of all capture dates are used."
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                        <NumberInput
-                            name={'creatorId' as const}
-                            value={value?.creatorId}
-                            onChange={setFieldValue}
-                            error={error?.creatorId}
-                            label="Image Creator ID"
-                            hint="Provide a valid Mapillary creator ID to filter for images belonging to a specific Mapillary user."
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                        <NumberInput
-                            name={'organizationId' as const}
-                            value={value?.organizationId}
-                            onChange={setFieldValue}
-                            error={error?.organizationId}
-                            label="Mapillary Organization ID"
-                            hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization."
-                            disabled={submissionPending || projectTypeEmpty}
-                        />
-                        <div className={styles.inputGroup}>
-                            <NumberInput
-                                name={'samplingThreshold' as const}
-                                value={value?.samplingThreshold}
-                                onChange={setFieldValue}
-                                error={error?.samplingThreshold}
-                                label="Image Sampling Threshold"
-                                hint="What should be the minimum distance (in km) between images on the same Mapillary sequence? Empty indicates that all images on each sequence are used."
-                                disabled={submissionPending || projectTypeEmpty}
-                            />
-                            <Checkbox
-                                name={'panoOnly' as const}
-                                value={value?.panoOnly}
-                                label="Only use 360 degree panorama images."
-                                onChange={setFieldValue}
-                                disabled={submissionPending || projectTypeEmpty}
-                            />
-                        </div>
-                    </InputSection>
-                )}
-
-                {error?.[nonFieldError] && (
-                    <div className={styles.errorMessage}>
-                        {error?.[nonFieldError]}
+                    Save Draft
+                </Button>
+            )}
+            aside={(
+                <ProjectStatusOutput
+                    value={undefined}
+                />
+            )}
+        >
+            <Container
+                withContentBackgroundAndPadding
+                withHeaderBorder
+                spacing="lg"
+                heading="Project Type"
+            >
+                <SegmentInput
+                    name="projectType"
+                    onChange={setFieldValue}
+                    value={value.projectType}
+                    hint="Please note that you won't be able to change it later."
+                    options={projectTypeOptions ?? []}
+                    keySelector={keySelector}
+                    labelSelector={projectTypeLabelSelector}
+                    error={error?.projectType}
+                    disabled={inputsDisabled}
+                />
+                {isDefined(value.projectType) && (
+                    <div>
+                        {projectTypeDescriptions[value.projectType]}
                     </div>
                 )}
-                {!nonFieldError && hasErrors && (
-                    <div className={styles.errorMessage}>
-                        Please correct all the errors above before submission!
-                    </div>
-                )}
-                <div className={styles.actions}>
-                    <Button
-                        name={undefined}
-                        onClick={handleSubmitButtonClick}
-                        disabled={submissionPending || projectTypeEmpty}
-                    >
-                        Submit
-                    </Button>
-                </div>
-                {isDefined(projectSubmissionStatus) && (
-                    <Modal
-                        className={styles.submissionStatusModal}
-                        heading="Creating a Draft Project"
-                        closeButtonHidden
-                        bodyClassName={styles.body}
-                        footerClassName={styles.actions}
-                        footer={(
-                            <>
-                                {projectSubmissionStatus === 'success' && (
-                                    <Link
-                                        to="/projects"
-                                    >
-                                        Go to Projects
-                                    </Link>
-                                )}
-                                {projectSubmissionStatus === 'failed' && (
-                                    <Button
-                                        name={undefined}
-                                        onClick={setProjectSubmissionStatus}
-                                    >
-                                        Okay
-                                    </Button>
-                                )}
-                            </>
-                        )}
-                    >
-                        {submissionPending && (
-                            <AnimatedSwipeIcon className={styles.swipeIcon} />
-                        )}
-                        {projectSubmissionStatus === 'success' && (
-                            <MdOutlinePublishedWithChanges className={styles.successIcon} />
-                        )}
-                        {projectSubmissionStatus === 'failed' && (
-                            <MdOutlineUnpublished className={styles.failureIcon} />
-                        )}
-                        {projectSubmissionStatus === 'imageUpload' && (
-                            <div className={styles.message}>
-                                Uploading cover image...
-                            </div>
-                        )}
-                        {projectSubmissionStatus === 'projectSubmit' && (
-                            <div className={styles.message}>
-                                Submitting project...
-                            </div>
-                        )}
-                        {projectSubmissionStatus === 'success' && (
-                            <div className={styles.postSubmissionMessage}>
-                                Your project has been uploaded. It can take up
-                                to one hour for the project to appear in the dashboard.
-                            </div>
-                        )}
-                        {projectSubmissionStatus === 'failed' && (
-                            <div className={styles.postSubmissionMessage}>
-                                Cannot submit Project at the moment!
-                                Please try again later!
-                            </div>
-                        )}
-                    </Modal>
-                )}
-            </div>
-        </div>
+            </Container>
+            <ProjectGeneralInputs
+                value={value}
+                error={error}
+                setFieldValue={setFieldValue}
+                disabled={inputsDisabled}
+            />
+        </PageLayout>
     );
 }
 

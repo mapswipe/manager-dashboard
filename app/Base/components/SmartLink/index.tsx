@@ -7,32 +7,30 @@ import useRouteMatching, {
     Attrs,
     RouteData,
 } from '#base/hooks/useRouteMatching';
-import {
-    ButtonProps,
-    useButtonFeatures,
-} from '#components/Button';
+import ButtonLayout, { type Props as ButtonLayoutProps } from '#components/ButtonLayout';
 
-export type Props = Omit<LinkProps, 'to'> & {
+export type Props = Omit<LinkProps, 'to'> & ButtonLayoutProps & {
     route: RouteData;
     attrs?: Attrs;
-    children?: React.ReactNode;
-    variant?: ButtonProps<unknown>['variant'];
 };
 
 function SmartLink(props: Props) {
     const {
         route,
         attrs,
-        children,
-        variant,
         className,
+        start,
+        children,
+        end,
+        startContainerClassName,
+        childrenContainerClassName,
+        endContainerClassName,
+        colorVariant = 'accent',
+        styleVariant = 'transparent',
+        withoutPadding,
+        spacing,
         ...otherProps
     } = props;
-
-    const extraProps = useButtonFeatures({
-        className,
-        variant,
-    });
 
     const routeData = useRouteMatching(route, attrs);
     if (!routeData) {
@@ -43,11 +41,22 @@ function SmartLink(props: Props) {
         <Link
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...extraProps}
             to={routeData.to}
         >
-            {children ?? routeData.children}
+            <ButtonLayout
+                className={className}
+                start={start}
+                end={end}
+                startContainerClassName={startContainerClassName}
+                endContainerClassName={endContainerClassName}
+                childrenContainerClassName={childrenContainerClassName}
+                spacing={spacing}
+                colorVariant={colorVariant}
+                styleVariant={styleVariant}
+                withoutPadding={withoutPadding}
+            >
+                {children ?? routeData.children}
+            </ButtonLayout>
         </Link>
     );
 }

@@ -27,38 +27,13 @@ function AppRoutes(props: Props) {
             )}
         >
             <RoutesWithSentry>
-                <Route
-                    path={routes.home.path}
-                    element={routes.home.load({ className })}
-                />
-                <Route
-                    path={routes.login.path}
-                    element={routes.login.load({ className })}
-                />
-                <Route
-                    path={routes.projects.path}
-                    element={routes.projects.load({ className })}
-                />
-                <Route
-                    path={routes.teams.path}
-                    element={routes.teams.load({ className })}
-                />
-                <Route
-                    path={routes.userGroups.path}
-                    element={routes.userGroups.load({ className })}
-                />
-                <Route
-                    path={routes.newProject.path}
-                    element={routes.newProject.load({ className })}
-                />
-                <Route
-                    path={routes.newTutorial.path}
-                    element={routes.newTutorial.load({ className })}
-                />
-                <Route
-                    path={routes.fourHundredFour.path}
-                    element={routes.fourHundredFour.load({ className })}
-                />
+                {Object.entries(routes).map(([key, route]) => (
+                    <Route
+                        key={key}
+                        path={route.path}
+                        element={route.load({ className })}
+                    />
+                ))}
             </RoutesWithSentry>
         </Suspense>
     );

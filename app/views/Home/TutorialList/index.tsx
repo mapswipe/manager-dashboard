@@ -1,136 +1,114 @@
-import { useMemo } from 'react';
-import { BsJournalBookmarkFill } from 'react-icons/bs';
-import { _cs } from '@togglecorp/fujs';
-import {
-    equalTo,
-    getDatabase,
-    orderByChild,
-    query,
-    ref,
-} from 'firebase/database';
+import { useState } from 'react';
+import { CgCollage } from 'react-icons/cg';
+import { FaEdit } from 'react-icons/fa';
+import { IoAdd } from 'react-icons/io5';
+import { gql } from 'urql';
 
+import SmartLink from '#base/components/SmartLink';
+import routes from '#base/configs/routes';
+import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
 import Pager from '#components/Pager';
-import PendingMessage from '#components/PendingMessage';
-import { rankedSearchOnList } from '#components/SelectInput/utils';
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
-import usePagination from '#hooks/usePagination';
+import { useTutorialListQuery } from '#generated/types/graphql';
 import {
-    ProjectType,
-    projectTypeLabelMap,
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
+    defaultPagePerItemOptions,
 } from '#utils/common';
 
-import styles from './styles.module.css';
-
-interface Tutorial {
-    name: string;
-    lookFor?: string;
-    projectType: ProjectType;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TUTORIAL_LIST_QUERY = gql`
+query TutorialList($pagination: OffsetPaginationInput!) {
+    tutorials(pagination: $pagination) {
+        totalCount
+        results {
+            name
+            id
+        }
+    }
 }
+`;
 
 interface Props {
     className?: string;
-    searchText?: string;
 }
 
 function TutorialList(props: Props) {
-    const { className, searchText } = props;
-    const tutorialsQuery = useMemo(
-        () => {
-            const db = getDatabase();
-            return query(
-                ref(db, '/v2/projects'),
-                orderByChild('status'),
-                equalTo('tutorial'),
-            );
-        },
-        [],
-    );
+    const { className } = props;
 
-    const {
-        data: tutorials,
-        pending,
-    } = useFirebaseDatabase<Tutorial>({
-        query: tutorialsQuery,
+    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
+    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+
+    const [{
+        data: tutorialListResponse,
+        fetching: tutorialListPending,
+    }] = useTutorialListQuery({
+        variables: {
+            pagination: {
+                offset: (activePage - 1) * pagePerItem,
+                limit: pagePerItem,
+            },
+        },
     });
 
-    const tutorialList = useMemo(
-        () => (tutorials ? Object.entries(tutorials).reverse() : []),
-        [tutorials],
-    );
-
-    const filteredTutorialList = useMemo(
-        () => rankedSearchOnList(
-            tutorialList,
-            searchText,
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            ([_, tutorial]) => tutorial.name,
-        ),
-        [tutorialList, searchText],
-    );
-
-    const {
-        showPager,
-        activePage,
-        setActivePage,
-        pagePerItem,
-        setPagePerItem,
-        pagePerItemOptions,
-        totalItems,
-        items: tutorialListInCurrentPage,
-    } = usePagination(filteredTutorialList);
+    const tutorialList = tutorialListResponse?.tutorials.results ?? [];
+    const totalItems = tutorialListResponse?.tutorials.totalCount ?? 0;
 
     return (
-        <div className={_cs(styles.tutorialList, className)}>
-            {pending && (
-                <PendingMessage />
+        <Container
+            className={className}
+            heading="Tutorials"
+            headingLevel={2}
+            pending={tutorialListPending}
+            empty={tutorialList.length === 0}
+            withHeaderBorder
+            withFooterBorder
+            withPadding
+            withBackground
+            withShadow
+            spacing="lg"
+            headerActions={(
+                <SmartLink
+                    route={routes.newTutorial}
+                    start={<IoAdd />}
+                    withoutPadding
+                >
+                    New Tutorial
+                </SmartLink>
             )}
-            {!pending && tutorialListInCurrentPage && tutorialListInCurrentPage.length > 0 && (
-                <div className={styles.list}>
-                    {tutorialListInCurrentPage.map((tutorialKeyAndItem) => {
-                        const [orgKey, tutorial] = tutorialKeyAndItem;
-
-                        return (
-                            <div
-                                className={styles.tutorial}
-                                key={orgKey}
-                            >
-                                <div className={styles.heading}>
-                                    <BsJournalBookmarkFill className={styles.icon} />
-                                    <div className={styles.name}>
-                                        {tutorial.name}
-                                    </div>
-                                </div>
-                                <div className={styles.lookFor}>
-                                    {projectTypeLabelMap[tutorial.projectType]}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+            footerActions={(
+                <Pager
+                    pagePerItem={pagePerItem}
+                    onPagePerItemChange={setPagePerItem}
+                    activePage={activePage}
+                    onActivePageChange={setActivePage}
+                    totalItems={totalItems}
+                    pagePerItemOptions={defaultPagePerItemOptions}
+                />
             )}
-            {!pending && (!tutorialListInCurrentPage || tutorialListInCurrentPage.length === 0) && (
-                <div className={styles.emptyList}>
-                    No tutorials yet!
-                </div>
-            )}
-            {!pending && showPager && (
-                <div className={styles.footerActions}>
-                    {tutorialListInCurrentPage.length > 0 && (
-                        <div className={styles.tutorialCount}>
-                            {`${totalItems} ${totalItems > 1 ? 'tutorials' : 'tutorial'}`}
-                        </div>
+        >
+            {tutorialList.map((tutorial) => (
+                <InlineLayout
+                    key={tutorial.id}
+                    start={<CgCollage />}
+                    end={(
+                        <SmartLink
+                            route={routes.editTutorial}
+                            attrs={{
+                                id: tutorial.id,
+                            }}
+                            start={<FaEdit />}
+                            spacing="sm"
+                            withoutPadding
+                        >
+                            Edit
+                        </SmartLink>
                     )}
-                    <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
-                        activePage={activePage}
-                        onActivePageChange={setActivePage}
-                        totalItems={totalItems}
-                        pagePerItemOptions={pagePerItemOptions}
-                    />
-                </div>
-            )}
-        </div>
+                >
+                    {tutorial.name}
+                </InlineLayout>
+            ))}
+        </Container>
     );
 }
 

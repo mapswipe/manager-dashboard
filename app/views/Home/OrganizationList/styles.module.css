@@ -1,0 +1,19 @@
+.organization-list {
+    .organization-item {
+        .org-icon {
+            line-height: 1;
+            font-size: var(--font-size-lg);
+        }
+
+        .edit-button {
+            transition: var(--duration-transition-medium) opacity ease-in-out;
+            opacity: 0;
+        }
+
+        &:hover {
+            .edit-button {
+                opacity: 1;
+            }
+        }
+    }
+}

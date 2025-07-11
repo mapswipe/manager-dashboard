@@ -1,35 +1,98 @@
-import { useMemo } from 'react';
-import { MdSearch } from 'react-icons/md';
-import { _cs } from '@togglecorp/fujs';
 import {
-    equalTo,
-    getDatabase,
-    orderByChild,
-    query,
-    ref,
-} from 'firebase/database';
+    useCallback,
+    useContext,
+    useState,
+} from 'react';
+import { FaSearch } from 'react-icons/fa';
+import {
+    isDefined,
+    isTruthyString,
+} from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
-import route from '#base/configs/routes';
+import routes from '#base/configs/routes';
+import EnumsContext from '#base/context/EnumsContext';
+import Button from '#components/Button';
+import Container from '#components/Container';
+import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
-import PendingMessage from '#components/PendingMessage';
 import RadioInput from '#components/RadioInput';
-import { rankedSearchOnList } from '#components/SelectInput/utils';
 import TextInput from '#components/TextInput';
-import useFirebaseDatabase from '#hooks/useFirebaseDatabase';
-import useInputState from '#hooks/useInputState';
-import usePagination from '#hooks/usePagination';
 import {
+    ProjectStatusEnum,
+    ProjectTypeEnum,
+    useProjectsListQuery,
+} from '#generated/types/graphql';
+import useDebouncedValue from '#hooks/useDebouncedValue';
+import useInputState from '#hooks/useInputState';
+import {
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
+    defaultPagePerItemOptions,
+    keySelector,
     labelSelector,
-    valueSelector,
 } from '#utils/common';
 
-import ProjectDetails, {
-    Project,
-    projectStatusOptions,
-} from './ProjectDetails';
+import ProjectListItem from './ProjectListItem';
 
-import styles from './styles.module.css';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ENUM_QUERY = gql`
+query ProjectsFilterEnums {
+    enums {
+        ProjectTypeEnum {
+            key
+            label
+        }
+        ProjectStatusEnum {
+            key
+            label
+        }
+    }
+}
+`;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const PROJECT_LIST_QUERY = gql`
+query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
+    projects(pagination: {offset: $offset, limit: $limit}, filters: $filters) {
+        totalCount
+        results {
+            id
+            additionalInfoUrl
+            createdBy {
+                displayName
+                id
+            }
+            createdAt
+            description
+            groupSize
+            isFeatured
+            lookFor
+            maxTasksPerUser
+            name
+            processingStatus
+            progress
+            projectType
+            status
+            verificationNumber
+            image {
+                id
+                file {
+                    url
+                }
+            }
+            requestingOrganization {
+                name
+                id
+            }
+        }
+        pageInfo {
+            limit
+            offset
+        }
+    }
+}
+`;
 
 interface Props {
     className?: string;
@@ -40,139 +103,141 @@ function Projects(props: Props) {
         className,
     } = props;
 
-    const [selectedProjectStat, setSelectedProjectStat] = useInputState<string>('active');
+    const [selectedProjectStat, setSelectedProjectStat] = useInputState<
+        ProjectStatusEnum | undefined
+    >(undefined);
+    const [selectedProjectType, setSelectedProjectType] = useInputState<
+        ProjectTypeEnum | undefined
+    >(undefined);
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
-    const projectQuery = useMemo(
-        () => {
-            const db = getDatabase();
-            return query(
-                ref(db, '/v2/projects'),
-                orderByChild('status'),
-                equalTo(selectedProjectStat),
-            );
-        },
-        [selectedProjectStat],
-    );
+    const debouncedSearchText = useDebouncedValue(searchText?.trim());
+    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
+    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
 
-    const {
-        data: projects,
-        pending,
-    } = useFirebaseDatabase<Project>({
-        query: projectQuery,
+    const [{
+        data: projectsResponse,
+        fetching: pending,
+    }] = useProjectsListQuery({
+        variables: {
+            filters: {
+                name: { iContains: debouncedSearchText },
+                status: { exact: selectedProjectStat },
+                projectType: { exact: selectedProjectType },
+            },
+            offset: (activePage - 1) * pagePerItem,
+            limit: pagePerItem,
+        },
     });
 
-    const projectList = useMemo(
-        () => (
-            projects
-                ? Object.values(projects)
-                    .filter((project) => !!project.projectId && project.status !== 'tutorial')
-                    .reverse()
-                : []
-        ),
-        [projects],
-    );
+    const handleClearFilterButtonClick = useCallback(() => {
+        setSelectedProjectStat(undefined);
+        setSelectedProjectType(undefined);
+        setSearchText(undefined);
+    }, [setSearchText, setSelectedProjectType, setSelectedProjectStat]);
 
-    const filteredProjectList = useMemo(
-        () => rankedSearchOnList(
-            projectList,
-            searchText,
-            (project) => project.name,
-        ),
-        [projectList, searchText],
-    );
+    const totalItems = projectsResponse?.projects.results.length ?? 0;
 
     const {
-        showPager,
-        activePage,
-        setActivePage,
-        pagePerItem,
-        setPagePerItem,
-        pagePerItemOptions,
-        totalItems,
-        items: filteredProjectListInCurrentPage,
-    } = usePagination(filteredProjectList);
+        ProjectTypeEnum: projectTypeOptions,
+        ProjectStatusEnum: projectStatusOptions,
+    } = useContext(EnumsContext);
+
+    const filteredProjectList = projectsResponse?.projects.results ?? [];
+    const totalCount = projectsResponse?.projects.totalCount ?? 0;
+
+    const filtersApplied = isTruthyString(debouncedSearchText)
+        || isDefined(selectedProjectStat)
+        || isDefined(selectedProjectType);
 
     return (
-        <div className={_cs(styles.projects, className)}>
-            <div className={styles.headingContainer}>
-                <h2 className={styles.heading}>
-                    Projects
-                </h2>
-                <div className={styles.actions}>
+        <PageLayout
+            heading="Projects"
+            className={className}
+            headerActions={(
+                <>
+                    <SmartLink
+                        route={routes.newTutorial}
+                        styleVariant="outline"
+                        spacing="md"
+                    >
+                        New Tutorial
+                    </SmartLink>
+                    <SmartLink
+                        route={routes.newProject}
+                        styleVariant="filled"
+                        colorVariant="accent"
+                        spacing="md"
+                    >
+                        New Project
+                    </SmartLink>
+                </>
+            )}
+            aside={(
+                <>
                     <TextInput
-                        icons={<MdSearch />}
+                        icons={<FaSearch />}
                         name={undefined}
                         value={searchText}
                         onChange={setSearchText}
                         placeholder="Search by title"
                     />
-                    <SmartLink
-                        route={route.newTutorial}
+                    <RadioInput
+                        label="Project type"
+                        name={undefined}
+                        options={projectTypeOptions ?? []}
+                        value={selectedProjectType}
+                        onChange={setSelectedProjectType}
+                        keySelector={keySelector}
+                        labelSelector={labelSelector}
+                        radioListLayout="block"
+                    />
+                    <RadioInput
+                        label="Project status"
+                        name={undefined}
+                        options={projectStatusOptions ?? []}
+                        value={selectedProjectStat}
+                        onChange={setSelectedProjectStat}
+                        keySelector={keySelector}
+                        labelSelector={labelSelector}
+                        radioListLayout="block"
+                    />
+                    <Button
+                        name={undefined}
+                        onClick={handleClearFilterButtonClick}
                     >
-                        Add New Tutorial
-                    </SmartLink>
-                    <SmartLink
-                        route={route.newProject}
-                    >
-                        Add New Project
-                    </SmartLink>
-                </div>
-            </div>
-            <div className={styles.container}>
-                <div className={styles.sidebar}>
-                    <div className={styles.filters}>
-                        <RadioInput
-                            label="Project Status"
-                            name={undefined}
-                            options={projectStatusOptions}
-                            value={selectedProjectStat}
-                            onChange={setSelectedProjectStat}
-                            keySelector={valueSelector}
-                            labelSelector={labelSelector}
-                        />
-                    </div>
-                </div>
-                <div
-                    className={_cs(styles.projectList, className)}
-                    key={selectedProjectStat}
-                >
-                    {pending && (
-                        <PendingMessage
-                            className={styles.loading}
-                        />
-                    )}
-                    {!pending && filteredProjectListInCurrentPage.length === 0 && (
-                        <div className={styles.emptyMessage}>
-                            No projects found!
-                        </div>
-                    )}
-                    {!pending && filteredProjectListInCurrentPage.length > 0 && (
-                        <div className={styles.projectCount}>
-                            {`${totalItems} ${totalItems > 1 ? 'projects' : 'project'}`}
-                        </div>
-                    )}
-                    {!pending && filteredProjectListInCurrentPage.map((project) => (
-                        <ProjectDetails
-                            key={project.projectId}
-                            data={project}
-                        />
-                    ))}
-                    {!pending && showPager && (
-                        <div className={styles.footerActions}>
-                            <Pager
-                                pagePerItem={pagePerItem}
-                                onPagePerItemChange={setPagePerItem}
-                                activePage={activePage}
-                                onActivePageChange={setActivePage}
-                                totalItems={totalItems}
-                                pagePerItemOptions={pagePerItemOptions}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+                        Clear filters
+                    </Button>
+                </>
+            )}
+        >
+            <Container
+                heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount} projects`}
+                pending={pending}
+                filtered={filtersApplied}
+                empty={totalCount === 0}
+                emptyMessage="No projects found!"
+                filteredEmptyMessage="No matching projects found!"
+                spacing="lg"
+                footerActions={(
+                    <Pager
+                        pagePerItem={pagePerItem}
+                        onPagePerItemChange={setPagePerItem}
+                        activePage={activePage}
+                        onActivePageChange={setActivePage}
+                        totalItems={projectsResponse?.projects.totalCount ?? 0}
+                        pagePerItemOptions={defaultPagePerItemOptions}
+                    />
+                )}
+            >
+                {!pending && filteredProjectList.map((project) => (
+                    <ProjectListItem
+                        key={project.id}
+                        value={project}
+                    />
+                ))}
+            </Container>
+        </PageLayout>
     );
 }
 

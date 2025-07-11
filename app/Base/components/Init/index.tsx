@@ -3,14 +3,92 @@ import React, {
     useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import {
-    getAuth,
-    onAuthStateChanged,
-    User,
-} from 'firebase/auth';
+import { isDefined } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import PreloadMessage from '#base/components/PreloadMessage';
+import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';
+import TileServerContext, { defaultTileServersValue } from '#base/context/TileServerContext';
 import UserContext from '#base/context/UserContext';
+import {
+    useAllEnumsQuery,
+    useMeQuery,
+    useTileServersQuery,
+} from '#generated/types/graphql';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TILE_SERVERS_QUERY = gql`
+query TileServers {
+    tileServers {
+        raster {
+            url
+            type
+            label
+            credits
+        }
+        vector {
+            label
+            layers
+            maxZoom
+            minZoom
+            type
+            url
+            credits
+        }
+    }
+}
+
+`;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ME_QUERY = gql`
+query Me {
+    me {
+        id
+        displayName
+    }
+}
+`;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ALL_ENUMS_QUERY = gql`
+query AllEnums {
+    enums {
+        ProjectStatusEnum {
+            key
+            label
+        }
+        ProjectTypeEnum {
+            key
+            label
+        }
+        RasterTileServerNameEnum {
+            key
+            label
+        }
+        VectorTileServerNameEnum {
+            key
+            label
+        }
+        TutorialInformationPageBlockTypeEnum {
+            key
+            label
+        }
+        TutorialScenarioIconEnum {
+            key
+            label
+        }
+        ValidateObjectSourceTypeEnum {
+            key
+            label
+        }
+        OverlayLayerTypeEnum {
+            key
+            label
+        }
+    }
+}
+`;
 
 interface Props {
     preloadClassName?: string;
@@ -22,89 +100,64 @@ function Init(props: Props) {
         children,
     } = props;
 
-    const { setUser } = React.useContext(UserContext);
-    const [ready, setReady] = useState(false);
+    const [csrfReady, setCsrfReady] = React.useState(false);
+    const { authenticated, setUser } = React.useContext(UserContext);
+    const [ready, setReady] = useState(authenticated);
 
-    // FIXME: use isMountedRef
-    useEffect(
-        () => {
-            function rejectAuth() {
-                ReactDOM.unstable_batchedUpdates(() => {
-                    setUser(undefined);
-                    setReady(true);
+    useEffect(() => {
+        async function healthCheck() {
+            try {
+                await fetch(
+                    `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/health-check/?format=json`,
+                    { credentials: 'include' },
+                );
+            } catch (ex) {
+                // eslint-disable-next-line no-console
+                console.error('Error getting health check', ex);
+            }
+            setCsrfReady(true);
+        }
+        healthCheck();
+    }, [setCsrfReady]);
+
+    const [{
+        fetching: meResponseLoading,
+        data: meResponseData,
+    }] = useMeQuery({
+        pause: authenticated || !csrfReady,
+    });
+
+    useEffect(() => {
+        if (!csrfReady || authenticated || meResponseLoading) {
+            return;
+        }
+
+        ReactDOM.unstable_batchedUpdates(() => {
+            if (isDefined(meResponseData) && isDefined(meResponseData.me)) {
+                setUser({
+                    id: meResponseData.me.id,
+                    displayName: meResponseData.me.displayName,
                 });
+            } else {
+                setUser(undefined);
             }
 
-            function approveAuth(currentUser: User) {
-                ReactDOM.unstable_batchedUpdates(() => {
-                    setUser({
-                        id: currentUser.uid,
-                        displayName: currentUser.displayName ?? 'Anonymous User',
-                        displayPictureUrl: currentUser.photoURL,
-                        email: currentUser.email,
-                    });
-                    setReady(true);
-                });
-            }
+            setReady(true);
+        });
+    }, [csrfReady, authenticated, meResponseLoading, meResponseData, setUser]);
 
-            const auth = getAuth();
-            const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-                if (!currentUser) {
-                    rejectAuth();
-                    return;
-                }
+    const [{ data: allEnumsResponse }] = useAllEnumsQuery({
+        pause: !csrfReady,
+    });
 
-                const idToken = await currentUser.getIdTokenResult();
-                if (!idToken) {
-                    await auth.signOut();
+    const [{
+        fetching: tileServersLoading,
+        data: tileServersResponse,
+    }] = useTileServersQuery({
+        pause: !csrfReady,
+    });
 
-                    // eslint-disable-next-line no-console
-                    console.error('Token is not valid');
-                    // eslint-disable-next-line no-alert
-                    alert('Token is not valid');
-
-                    rejectAuth();
-                    return;
-                }
-
-                if (!idToken.claims.projectManager) {
-                    await auth.signOut();
-
-                    // eslint-disable-next-line no-console
-                    console.error('The user does not have enough permissions for Manager Dashboard');
-                    // eslint-disable-next-line no-alert
-                    alert('The user does not have enough permissions for Manager Dashboard');
-
-                    rejectAuth();
-                    return;
-                }
-
-                const currentTime = new Date().getTime();
-                const lastAuthTime = ((idToken.claims.auth_time || 0) as number) * 1000;
-
-                const expiryDuration = 15 * 24 * 60 * 60 * 1000; // 15 days
-
-                if (currentTime - lastAuthTime > expiryDuration) {
-                    await auth.signOut();
-
-                    // eslint-disable-next-line no-console
-                    console.error('The user session has expired!');
-                    // eslint-disable-next-line no-alert
-                    alert('The user session has expired!');
-
-                    rejectAuth();
-                    return;
-                }
-
-                approveAuth(currentUser);
-            });
-
-            return unsubscribe;
-        },
-        [setUser],
-    );
-
-    if (!ready) {
+    if (!ready || !csrfReady || tileServersLoading) {
         return (
             <PreloadMessage
                 className={preloadClassName}
@@ -113,6 +166,16 @@ function Init(props: Props) {
         );
     }
 
-    return children;
+    return (
+        <TileServerContext.Provider
+            value={tileServersResponse?.tileServers ?? defaultTileServersValue}
+        >
+            <EnumsContext.Provider
+                value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+            >
+                {children}
+            </EnumsContext.Provider>
+        </TileServerContext.Provider>
+    );
 }
 export default Init;

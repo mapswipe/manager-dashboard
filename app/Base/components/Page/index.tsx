@@ -2,7 +2,7 @@ import React, {
     useContext,
     useEffect,
 } from 'react';
-import { redirect } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import PageTitle from '#base/components/PageTitle';
 import PreloadMessage from '#base/components/PreloadMessage';
@@ -48,6 +48,8 @@ function Page<T extends { className?: string }>(props: Props<T>) {
         path,
     } = props;
 
+    const navigate = useNavigate();
+
     const {
         authenticated,
     } = useContext(UserContext);
@@ -68,21 +70,32 @@ function Page<T extends { className?: string }>(props: Props<T>) {
             // flash
             if (!shouldRedirect) {
                 setNavbarVisibility(navbarVisibility);
+                return;
+            }
+
+            if (redirectToSignIn) {
+                navigate(loginPage);
+            }
+
+            if (redirectToHome) {
+                navigate(defaultPage, { replace: true });
             }
         },
         // NOTE: setNavbarVisibility will not change
         // NOTE: navbarVisibility will not change
         // NOTE: adding path because Path component is reused when used in Switch > Routes
-        [setNavbarVisibility, navbarVisibility, path, shouldRedirect],
+        [
+            setNavbarVisibility,
+            navbarVisibility,
+            path,
+            shouldRedirect,
+            navigate,
+            loginPage,
+            defaultPage,
+            redirectToSignIn,
+            redirectToHome,
+        ],
     );
-
-    if (redirectToSignIn) {
-        redirect(loginPage);
-    }
-
-    if (redirectToHome) {
-        redirect(defaultPage);
-    }
 
     // FIXME: custom error message from checkPermissions
     // FIXME: add a "back to home" or somewhere page

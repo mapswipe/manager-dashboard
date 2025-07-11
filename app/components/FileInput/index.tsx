@@ -1,68 +1,42 @@
-import {
-    useCallback,
-    useState,
-} from 'react';
+import { useCallback } from 'react';
 import { MdAttachFile } from 'react-icons/md';
-import {
-    _cs,
-    randomString,
-} from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
-import { useButtonFeatures } from '#components/Button';
-import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
+import ButtonLayout from '#components/ButtonLayout';
+import ListLayout from '#components/ListLayout';
 import Preview from '#components/Preview';
-import RawInput from '#components/RawInput';
+import RawInput, { Props as RawInputProps } from '#components/RawInput';
 
 import styles from './styles.module.css';
 
-export interface Props<Name> extends Omit<InputContainerProps, 'input'> {
-    value: File | undefined | null;
-    name: Name;
-    onChange: (newValue: File | undefined, name: Name) => void;
-    className?: string;
+export interface Props<NAME> extends Omit<RawInputProps<NAME>, 'value' | 'onChange'> {
     accept?: string;
+    className?: string;
+    inputId: string;
+    name: NAME;
+    onChange: (newValue: File | undefined, name: NAME) => void;
+    selectButtonLabel?: React.ReactNode;
     showPreview?: boolean;
+    value: File | undefined;
+    children?: React.ReactNode;
+    status?: React.ReactNode;
 }
 
-function FileInput<Name>(props: Props<Name>) {
+function FileInput<NAME>(props: Props<NAME>) {
     const {
-        value,
-        name,
-        onChange,
-        actions,
-        actionsContainerClassName,
+        accept,
         className,
         disabled,
-        error,
-        errorContainerClassName,
-        hint,
-        hintContainerClassName,
-        icons,
-        iconsContainerClassName,
-        inputSectionClassName,
-        label,
-        labelContainerClassName,
-        readOnly,
-        accept,
+        inputId,
+        name,
+        onChange,
+        selectButtonLabel = 'Select a file',
         showPreview,
-        description,
-        descriptionContainerClassName,
+        value,
+        children,
+        status = value?.name ?? 'No file selected',
+        ...otherInputProps
     } = props;
-
-    const [inputId] = useState(randomString);
-    const labelProps = useButtonFeatures({
-        children: (
-            <>
-                <MdAttachFile />
-                Select file
-            </>
-        ),
-        variant: 'secondary',
-        className: styles.label,
-        childrenClassName: styles.content,
-    });
-
-    const status = value?.name ?? 'No file chosen';
 
     const handleFiles = useCallback(
         (files: FileList | null) => {
@@ -80,7 +54,7 @@ function FileInput<Name>(props: Props<Name>) {
 
     const handleChange = useCallback((
         _: string | undefined,
-        __: Name,
+        __: NAME,
         e?: React.FormEvent<HTMLInputElement>,
     ) => {
         if (e) {
@@ -90,63 +64,47 @@ function FileInput<Name>(props: Props<Name>) {
     }, [handleFiles]);
 
     return (
-        <InputContainer
-            actions={actions}
-            actionsContainerClassName={actionsContainerClassName}
+        <ListLayout
             className={_cs(styles.fileInput, className)}
-            disabled={disabled}
-            error={error}
-            errorContainerClassName={errorContainerClassName}
-            hint={hint}
-            hintContainerClassName={hintContainerClassName}
-            icons={(
-                <>
-                    {icons}
-                    { }
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label
-                        htmlFor={inputId}
-                        // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...labelProps}
-                    />
-                </>
-            )}
-            iconsContainerClassName={_cs(styles.labelContainer, iconsContainerClassName)}
-            inputSectionClassName={_cs(styles.inputSection, inputSectionClassName)}
-            inputContainerClassName={styles.status}
-            label={label}
-            labelContainerClassName={labelContainerClassName}
-            readOnly={readOnly}
-            withoutInputSectionBorder
-            descriptionContainerClassName={descriptionContainerClassName}
-            description={(description || showPreview) && (
-                <>
-                    {description}
-                    {showPreview && (
-                        <Preview
-                            file={value}
-                        />
-                    )}
-                </>
-            )}
-            input={(
-                <>
-                    <span title={status}>
-                        {status}
-                    </span>
-                    <RawInput
-                        className={styles.input}
-                        id={inputId}
-                        type="file"
-                        value={undefined}
-                        name={name}
-                        onChange={handleChange}
-                        accept={accept}
+            layout="block"
+            spacing="sm"
+        >
+            <RawInput
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...otherInputProps}
+                className={styles.input}
+                id={inputId}
+                type="file"
+                value={undefined}
+                name={name}
+                onChange={handleChange}
+                accept={accept}
+                disabled={disabled}
+            />
+            <ListLayout
+                spacing="sm"
+                withWrap
+            >
+                <label htmlFor={inputId}>
+                    <ButtonLayout
+                        start={<MdAttachFile />}
+                        spacing="sm"
                         disabled={disabled}
-                    />
-                </>
+                    >
+                        {selectButtonLabel}
+                    </ButtonLayout>
+                </label>
+                <div>
+                    {status}
+                </div>
+            </ListLayout>
+            {showPreview && (
+                <Preview
+                    file={value}
+                />
             )}
-        />
+            {children}
+        </ListLayout>
     );
 }
 

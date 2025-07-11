@@ -1,5 +1,6 @@
 import {
     useCallback,
+    useId,
     useState,
 } from 'react';
 import {
@@ -7,8 +8,8 @@ import {
     HintError,
 } from '@placemarkio/check-geojson';
 
-import FileInput, { Props as FileInputProps } from '#components/FileInput';
-import GeoJsonPreview from '#components/GeoJsonPreview';
+import FileInput from '#components/FileInput';
+import InputContainerLayout, { type Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import useMountedRef from '#hooks/useMountedRef';
 
 type ParseGeoJSONResponse = {
@@ -55,26 +56,24 @@ function readUploadedFileAsText(inputFile: File) {
 const ONE_MB = 1024 * 1024;
 const DEFAULT_MAX_FILE_SIZE = ONE_MB;
 
-interface Props<N> extends Omit<FileInputProps<N>, 'value' | 'onChange' | 'accept'> {
+interface Props<NAME> extends Omit<InputContainerLayoutProps, 'children' | 'inputId'> {
+    name: NAME;
     maxFileSize?: number;
-    value: GeoJSON.GeoJSON | undefined | null;
-    onChange: (newValue: GeoJSON.GeoJSON | undefined, name: N) => void;
-    preview?: boolean;
+    onChange: (newValue: GeoJSON.GeoJSON | undefined, name: NAME) => void;
 }
 
 function GeoJsonFileInput<N>(props: Props<N>) {
     const {
-        value,
-        description,
+        name,
         error,
         maxFileSize = DEFAULT_MAX_FILE_SIZE,
         onChange,
-        name,
-        preview = false,
-        ...otherProps
+        disabled,
+        ...inputContainerLayoutProps
     } = props;
 
     const mountedRef = useMountedRef();
+    const inputId = useId();
 
     const [
         internalErrorMessage,
@@ -146,25 +145,22 @@ function GeoJsonFileInput<N>(props: Props<N>) {
     );
 
     return (
-        <FileInput
-            name={name}
-            value={tempValue}
-            description={(
-                <>
-                    {description}
-                    {preview && (
-                        <GeoJsonPreview
-                            geoJson={value ?? undefined}
-                        />
-                    )}
-                </>
-            )}
-            onChange={handleChange}
-            accept=".geojson,.geo.json"
+        <InputContainerLayout
+            inputId={inputId}
             error={internalErrorMessage ?? error}
+            disabled={disabled}
             // eslint-disable-next-line react/jsx-props-no-spreading
-            {...otherProps}
-        />
+            {...inputContainerLayoutProps}
+        >
+            <FileInput
+                inputId={inputId}
+                disabled={disabled}
+                name={name}
+                value={tempValue}
+                onChange={handleChange}
+                accept=".geojson,.geo.json"
+            />
+        </InputContainerLayout>
     );
 }
 

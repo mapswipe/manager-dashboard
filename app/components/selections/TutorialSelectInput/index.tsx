@@ -1,0 +1,122 @@
+import {
+    useMemo,
+    useState,
+} from 'react';
+import { _cs } from '@togglecorp/fujs';
+import { gql } from 'urql';
+
+import SearchSelectInput, { type SearchSelectInputProps } from '#components/SelectInput/SearchSelectInput';
+import {
+    GetTutorialQuery,
+    GetTutorialQueryVariables,
+    Ordering,
+    useGetTutorialQuery,
+} from '#generated/types/graphql';
+import useDebouncedValue from '#hooks/useDebouncedValue';
+import useOptions from '#hooks/useOptions';
+
+import styles from './styles.module.css';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TUTORIAL = gql`
+    query GetTutorial(
+        $order: TutorialOrder,
+        $filters: TutorialFilter,
+    ) {
+        tutorials(
+            order: $order,
+            filters: $filters,
+        ) {
+            totalCount
+            results {
+                id
+                name
+            }
+        }
+    }
+`;
+
+export type TutorialOption = NonNullable<NonNullable<GetTutorialQuery['tutorials']>['results']>[number];
+
+const keySelector = (d: TutorialOption) => d.id;
+const labelSelector = (d: TutorialOption) => d.name;
+
+type Def = { containerClassName?: string };
+type SelectInputProps<
+    K extends string,
+> = SearchSelectInputProps<
+    string,
+    K,
+    TutorialOption,
+    Def,
+    'keySelector'
+    | 'labelSelector'
+    | 'onOptionsChange'
+    | 'onSearchValueChange'
+    | 'onShowDropdownChange'
+    | 'options'
+    | 'optionsPending'
+    | 'searchOptions'
+    | 'totalOptionsCount'
+>;
+
+function TutorialSelectInput<K extends string>(props: SelectInputProps<K>) {
+    const {
+        className,
+        ...otherProps
+    } = props;
+
+    const [searchText, setSearchText] = useState<string | undefined>();
+    const [opened, setOpened] = useState(false);
+
+    const debouncedSearchText = useDebouncedValue(searchText);
+
+    const searchVariable = useMemo(
+        (): GetTutorialQueryVariables => (
+            debouncedSearchText ? {
+                filters: {
+                    name: {
+                        iContains: debouncedSearchText,
+                    },
+                },
+            } : {
+                order: {
+                    name: Ordering.Asc,
+                },
+            }
+        ),
+        [debouncedSearchText],
+    );
+
+    const [{
+        fetching,
+        data,
+    }] = useGetTutorialQuery({
+        variables: searchVariable,
+        pause: !opened,
+    });
+
+    const searchOptions = data?.tutorials?.results;
+    const totalOptionsCount = data?.tutorials?.totalCount;
+
+    const [options, setOptions] = useOptions('tutorial');
+
+    return (
+        <SearchSelectInput
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...otherProps}
+            className={_cs(styles.tutorialSelectInput, className)}
+            keySelector={keySelector}
+            labelSelector={labelSelector}
+            onOptionsChange={setOptions}
+            onSearchValueChange={setSearchText}
+            onShowDropdownChange={setOpened}
+            options={options}
+            optionsPending={fetching}
+            searchOptions={searchOptions}
+            totalOptionsCount={totalOptionsCount ?? undefined}
+        />
+    );
+}
+
+export default TutorialSelectInput;

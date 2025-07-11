@@ -1,0 +1,46 @@
+.container {
+    .heading-row {
+        align-items: baseline;
+    }
+
+    .content {
+        display: flex;
+
+        &.inline-content {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        &.block-content {
+            flex-direction: column;
+        }
+
+        &.pending-overlaid {
+            isolation: isolate;
+            position: relative;
+            min-height: 6rem;
+
+            .message {
+                z-index: 1;
+            }
+        }
+
+        &.with-background {
+            border-radius: var(--radius-card-border);
+            background-color: var(--color-foreground);
+        }
+    }
+
+    .description:empty {
+        display: none;
+    }
+
+    &.with-background {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-foreground);
+    }
+
+    &.with-shadow {
+        box-shadow: var(--shadow-card);
+    }
+}

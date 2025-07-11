@@ -1,12 +1,22 @@
-import { useCallback } from 'react';
+import {
+    useCallback,
+    useId,
+    useMemo,
+    useState,
+} from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import InputContainer, { Props as InputContainerProps } from '../InputContainer';
+import InputInteractivityContext, { InputInteractivityContextProps } from '#base/context/InputInteractivityContext';
+import InputError from '#components/InputError';
+import InputHint from '#components/InputHint';
+import InputLabel from '#components/InputLabel';
+
+import { Props as InputContainerProps } from '../InputContainer';
 import Radio from './Radio';
 
 import styles from './styles.module.css';
 
-export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'input' | 'actions' | 'icons' | 'actionsContainerClassName' | 'iconsContainerClassName'> {
+export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'input' | 'actions' | 'icons' | 'inputId'> {
     options: Option[];
     keySelector: (item: Option, index: number, data: Option[]) => Value;
     labelSelector: (item: Option, index: number, data: Option[]) => React.ReactNode;
@@ -14,11 +24,11 @@ export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'i
     name: Name;
     onChange: (newValue: Value, name: Name) => void;
     className?: string;
-    listContainerClassName?: string;
+    radioListLayout?: 'inline' | 'block';
 }
 
 function RadioInput<
-    N,
+    const N,
     O,
     V extends boolean | string | number,
 >(props: Props<N, O, V>) {
@@ -30,17 +40,15 @@ function RadioInput<
         name,
         onChange,
         className,
-        disabled,
+        disabled = false,
         error,
-        errorContainerClassName,
         hint,
-        hintContainerClassName,
-        inputSectionClassName,
         label,
-        labelContainerClassName,
         readOnly,
-        listContainerClassName,
+        radioListLayout = 'inline',
     } = props;
+
+    const inputId = useId();
 
     const handleRadioClick = useCallback((radioKey: V) => {
         if (onChange && !readOnly) {
@@ -48,40 +56,74 @@ function RadioInput<
         }
     }, [readOnly, onChange, name]);
 
-    return (
-        <InputContainer
-            className={_cs(
-                styles.radioInput,
-                // disabled && styles.disabled,
-                className,
-            )}
-            disabled={disabled}
-            error={error}
-            errorContainerClassName={errorContainerClassName}
-            hint={hint}
-            hintContainerClassName={hintContainerClassName}
-            inputSectionClassName={inputSectionClassName}
-            inputContainerClassName={_cs(styles.radioListContainer, listContainerClassName)}
-            label={label}
-            labelContainerClassName={labelContainerClassName}
-            readOnly={readOnly}
-            withoutInputSectionBorder
-            input={options?.map((option, i) => {
-                const key = keySelector(option, i, options);
-                const radioLabel = labelSelector(option, i, options);
+    const [focused, setFocused] = useState<boolean>(false);
+    const [hovered, setHovered] = useState<boolean>(false);
 
-                return (
-                    <Radio
-                        key={String(key)}
-                        value={value === key}
-                        name={key}
-                        onClick={handleRadioClick}
-                        inputName={typeof name === 'string' ? name : undefined}
-                        label={radioLabel}
-                    />
-                );
-            })}
-        />
+    const handleMouseOver = useCallback(() => {
+        setHovered(true);
+    }, []);
+
+    const handleMouseOut = useCallback(() => {
+        setHovered(false);
+    }, []);
+
+    const interactivityContextValue = useMemo<InputInteractivityContextProps>(() => ({
+        focused,
+        setFocused,
+        hovered,
+        setHovered,
+        disabled,
+    }), [focused, hovered, disabled]);
+
+    return (
+        <InputInteractivityContext.Provider value={interactivityContextValue}>
+            <div
+                className={_cs(styles.radioInput, className)}
+                onFocus={handleMouseOver}
+                onBlur={handleMouseOut}
+                onMouseOver={handleMouseOver}
+                onMouseOut={handleMouseOut}
+            >
+                {label && (
+                    <InputLabel inputId={inputId}>
+                        {label}
+                    </InputLabel>
+                )}
+                <div
+                    className={_cs(
+                        styles.radioList,
+                        radioListLayout === 'block' && styles.blockLayout,
+                        radioListLayout === 'inline' && styles.inlineLayout,
+                    )}
+                >
+                    {options?.map((option, i) => {
+                        const key = keySelector(option, i, options);
+                        const radioLabel = labelSelector(option, i, options);
+
+                        return (
+                            <Radio
+                                key={String(key)}
+                                value={value === key}
+                                name={key}
+                                onClick={handleRadioClick}
+                                inputName={typeof name === 'string' ? name : undefined}
+                                label={radioLabel}
+                            />
+                        );
+                    })}
+                </div>
+                {error && (
+                    <InputError>
+                        {error}
+                    </InputError>
+                )}
+                {!error && hint && (
+                    <InputHint>
+                        {hint}
+                    </InputHint>
+                )}
+            </div>
+        </InputInteractivityContext.Provider>
     );
 }
 

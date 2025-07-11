@@ -1,17 +1,22 @@
-version: '3.3'
-
 services:
   react:
-    command: sh -c 'yarn install --frozen-lockfile && yarn start'
+    # FIXME(tnagorra): Add type generation here
+    command: sh -c 'pnpm install && pnpm start'
     build:
-      context: ./
+      context: ../
       target: dev
-    tty: true
     environment:
-      NODE_OPTIONS: --openssl-legacy-provider
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-DEV}
+      APP_GRAPHQL_API_DOMAIN: ${APP_GRAPHQL_API_DOMAIN:-http://localhost:8000}
+      APP_GRAPHQL_CODEGEN_ENDPOINT: ${APP_GRAPHQL_CODEGEN_ENDPOINT:-./backend/schema.graphql}
     env_file:
-      - .env
+      - ../.env
     volumes:
-      - .:/code
+      - ../:/code
     ports:
-      - '3080:3080'
+      - '3000:3000'
+
+  web:
+    environment:
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-DEV}
+      FRONTEND_DOMAIN: ${FRONTEND_DOMAIN:-http://localhost:3000}  # NOTE: Not used right now

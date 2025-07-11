@@ -4,16 +4,20 @@ import {
 } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 
+import BlockLayout from '#components/BlockLayout';
 import Heading from '#components/Heading';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 
 import styles from './styles.module.css';
 
 interface Props {
     className?: string;
-    headingLabel?: React.ReactNode;
+    headerDescription?: React.ReactNode;
     heading?: React.ReactNode;
     actions?: React.ReactNode;
     children?: React.ReactNode;
+
     popupTitle?: React.ReactNode;
     popupDescription?: React.ReactNode;
     popupIcons?: React.ReactNode;
@@ -25,7 +29,7 @@ interface Props {
 function MobilePreview(props: Props) {
     const {
         className,
-        headingLabel,
+        headerDescription,
         heading,
         actions,
         children,
@@ -38,54 +42,62 @@ function MobilePreview(props: Props) {
     } = props;
 
     return (
-        <div className={_cs(styles.mobilePreview, className)}>
-            <div className={styles.header}>
-                <div className={styles.icons}>
-                    <IoArrowBack className={styles.backIcon} />
-                </div>
-                <Heading
-                    className={styles.heading}
-                    level={5}
+        <BlockLayout
+            className={_cs(styles.mobilePreview, className)}
+            start={(
+                <InlineLayout
+                    className={styles.header}
+                    withPadding
+                    start={(
+                        <IoArrowBack className={styles.backIcon} />
+                    )}
+                    end={(
+                        <>
+                            {actions}
+                            <IoInformationCircleOutline className={styles.infoIcon} />
+                        </>
+                    )}
                 >
-                    <div className={styles.label}>
-                        {headingLabel}
-                    </div>
-                    <div>
-                        {heading}
-                    </div>
-                </Heading>
-                <div className={styles.actions}>
-                    {actions}
-                    <IoInformationCircleOutline className={styles.infoIcon} />
-                </div>
-            </div>
-            <div className={styles.contentContainer}>
-                {(popupTitle || popupDescription || popupIcons) && (
-                    <div
-                        className={_cs(
-                            styles.popup,
-                            popupClassName,
-                            popupVerticalPosition === 'center' && styles.verticallyCentered,
-                        )}
+                    <ListLayout
+                        layout="block"
+                        spacing="xs"
                     >
-                        <div className={styles.details}>
-                            <div className={styles.popupTitle}>
-                                {popupTitle}
-                            </div>
-                            <div>
-                                {popupDescription}
-                            </div>
+                        <div className={styles.description}>
+                            {headerDescription}
                         </div>
-                        <div className={styles.icons}>
-                            {popupIcons}
-                        </div>
+                        <Heading
+                            level={6}
+                            className={styles.heading}
+                        >
+                            {heading}
+                        </Heading>
+                    </ListLayout>
+                </InlineLayout>
+            )}
+            childrenContainerClassName={_cs(styles.content, contentClassName)}
+            spacing="none"
+        >
+            {(popupTitle || popupDescription || popupIcons) && (
+                <InlineLayout
+                    end={popupIcons}
+                    endContainerClassName={styles.icons}
+                    className={_cs(
+                        styles.popup,
+                        popupClassName,
+                        popupVerticalPosition === 'center' && styles.verticallyCentered,
+                    )}
+                    withPadding
+                >
+                    <div className={styles.title}>
+                        {popupTitle}
                     </div>
-                )}
-                <div className={_cs(styles.content, contentClassName)}>
-                    {children}
-                </div>
-            </div>
-        </div>
+                    <div className={styles.description}>
+                        {popupDescription}
+                    </div>
+                </InlineLayout>
+            )}
+            {children}
+        </BlockLayout>
     );
 }
 

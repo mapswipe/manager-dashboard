@@ -1,7 +1,7 @@
 .radio {
     --cursor: default;
     display: flex;
-    gap: var(--spacing-small);
+    gap: var(--spacing-extra-small);
     align-items: center;
     cursor: var(--cursor);
 

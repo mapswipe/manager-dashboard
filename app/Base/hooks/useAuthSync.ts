@@ -4,8 +4,8 @@ import {
     useState,
 } from 'react';
 
-const AUTH_STATE = `${import.meta.env.REACT_APP_ID}-auth-state`;
-const LAST_USER = `${import.meta.env.REACT_APP_ID}-lastuser-state`;
+const AUTH_STATE = `${import.meta.env.APP_ID}-auth-state`;
+const LAST_USER = `${import.meta.env.APP_ID}-lastuser-state`;
 
 let authenticated = false;
 let user: string | undefined;

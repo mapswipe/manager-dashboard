@@ -1,0 +1,14 @@
+.new-tutorial {
+    .asset-card {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-background-accent-hint);
+        width: fit-content;
+        text-transform: uppercase;
+    }
+
+    .scenario-page,
+    .information-page {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-foreground);
+    }
+}

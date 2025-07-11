@@ -1,0 +1,12 @@
+.scenario-page-input {
+    .content {
+        display: grid;
+        grid-template-columns: 1fr auto;
+    }
+
+    .scenario-inputs {
+        display: grid;
+        grid-template-columns: 10rem 1fr 1fr;
+        gap: var(--spacing-md);
+    }
+}
