@@ -86,6 +86,10 @@ query AllEnums {
             key
             label
         }
+        TutorialStatusEnum {
+            key
+            label
+        }
     }
 }
 `;
