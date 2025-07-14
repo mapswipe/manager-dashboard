@@ -65,6 +65,8 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
         verificationNumber: {},
         groupSize: {},
         maxTasksPerUser: {},
+        team: {},
+        status: {},
         description: {},
         image: {},
         projectTypeSpecifics: {

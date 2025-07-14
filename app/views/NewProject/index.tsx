@@ -97,8 +97,7 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
             required: true,
             requiredValidation: requiredStringCondition,
         },
-        team: {
-        },
+        team: {},
         description: {},
         additionalInfoUrl: {},
     }),

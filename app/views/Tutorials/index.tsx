@@ -48,8 +48,8 @@ query TutorialFilterEnums {
 `;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TUTORIALS_LIST_QUERY = gql`
-query TutorialsList($filters: TutorialFilter, $offset: Int!, $limit: Int) {
-    tutorials(pagination: {offset: $offset, limit: $limit}, filters: $filters) {
+query TutorialsList($filters: TutorialFilter, $pagination: OffsetPaginationInput!) {
+    tutorials(pagination: $pagination, filters: $filters, includeAll: true) {
         totalCount
         results {
             id
@@ -96,8 +96,10 @@ function Tutorials(props: Props) {
                 name: { iContains: debouncedSearchText },
                 status: { exact: selectedTutorialStat },
             },
-            offset: (activePage - 1) * pagePerItem,
-            limit: pagePerItem,
+            pagination: {
+                offset: (activePage - 1) * pagePerItem,
+                limit: pagePerItem,
+            },
         },
     });
 
@@ -123,23 +125,14 @@ function Tutorials(props: Props) {
             heading="Tutorials"
             className={className}
             headerActions={(
-                <>
-                    <SmartLink
-                        route={routes.newProject}
-                        spacing="md"
-                        styleVariant="outline"
-                    >
-                        New Project
-                    </SmartLink>
-                    <SmartLink
-                        route={routes.newTutorial}
-                        colorVariant="accent"
-                        styleVariant="filled"
-                        spacing="md"
-                    >
-                        New Tutorial
-                    </SmartLink>
-                </>
+                <SmartLink
+                    route={routes.newTutorial}
+                    colorVariant="accent"
+                    styleVariant="filled"
+                    spacing="md"
+                >
+                    New Tutorial
+                </SmartLink>
             )}
             aside={(
                 <>
