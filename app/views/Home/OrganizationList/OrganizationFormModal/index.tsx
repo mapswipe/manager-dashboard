@@ -51,6 +51,8 @@ mutation CreateOrganization($data: OrganizationCreateInput!) {
             result {
                 id
                 name
+                abbreviation
+                description
                 clientId
                 modifiedBy {
                     id
@@ -78,6 +80,8 @@ mutation UpdateOrganization($id: ID!, $data: OrganizationUpdateInput!) {
             result {
                 id
                 name
+                abbreviation
+                description
                 clientId
                 modifiedBy {
                     id
@@ -105,11 +109,13 @@ query organizationDetails($id: ID!) {
         }
         modifiedAt
         name
+        abbreviation
+        description
     }
 }
 `;
 
-type OrganizationInput = Pick<OrganizationCreateInput & OrganizationUpdateInput, 'clientId' | 'name'>;
+type OrganizationInput = Pick<OrganizationCreateInput & OrganizationUpdateInput, 'clientId' | 'name' | 'abbreviation' | 'description'>;
 
 type PartialOrganizationCreateInputFields = PartialForm<
     DeepNonNullable<OrganizationInput>,
@@ -123,6 +129,12 @@ const schema: OrganizationCreateFormSchema = {
         clientId: {},
         name: {
             required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        description: {
+            requiredValidation: requiredStringCondition,
+        },
+        abbreviation: {
             requiredValidation: requiredStringCondition,
         },
     }),
@@ -183,6 +195,8 @@ function OrganizationFormModal(props: Props) {
             organization: {
                 name,
                 clientId,
+                abbreviation,
+                description,
             },
         } = organizationQueryResponse;
 
@@ -192,6 +206,8 @@ function OrganizationFormModal(props: Props) {
 
         setValue({
             clientId,
+            abbreviation: abbreviation ?? undefined,
+            description: description ?? undefined,
             name,
         });
     }, [organizationQueryResponse, setValue]);
@@ -326,7 +342,7 @@ function OrganizationFormModal(props: Props) {
     return (
         <Modal
             onClose={onClose}
-            heading="Add Organization"
+            heading={isDefined(organizationId) ? 'Update Organization' : 'Add Organization'}
             withHeaderBorder
             withFooterBorder
             spacing="lg"
@@ -354,11 +370,21 @@ function OrganizationFormModal(props: Props) {
                 error={error?.name}
                 disabled={inputsDisabled}
             />
+            <TextInput
+                name="abbreviation"
+                label="Abbreviation"
+                value={value?.abbreviation}
+                onChange={setFieldValue}
+                error={error?.abbreviation}
+                disabled={inputsDisabled}
+            />
             <TextArea
-                value={undefined}
+                value={value?.description}
                 name="description"
+                onChange={setFieldValue}
                 label="Description"
-                disabled
+                error={error?.description}
+                disabled={inputsDisabled}
             />
         </Modal>
     );
