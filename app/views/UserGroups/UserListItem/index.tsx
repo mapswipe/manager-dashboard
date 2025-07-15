@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import {
-    IoCalendar,
-    IoPerson,
-} from 'react-icons/io5';
+import { FaEdit } from 'react-icons/fa';
 import { gql } from 'urql';
 
+import Button from '#components/Button';
 import Container from '#components/Container';
 import ExpandableContainer from '#components/ExpandableContainer';
 import GridLayoutItem from '#components/GridLayoutItem';
@@ -13,9 +11,9 @@ import Pager from '#components/Pager';
 import Table, { Column } from '#components/Table';
 import TextOutput from '#components/TextOutput';
 import {
-    ContributorTeamMemberListQuery,
-    TeamsListQuery,
-    useContributorTeamMemberListQuery,
+    UserGroupMemberListQuery,
+    UserGroupsListQuery,
+    useUserGroupMemberListQuery,
 } from '#generated/types/graphql';
 import {
     DEFAULT_PAGE,
@@ -24,36 +22,40 @@ import {
 } from '#utils/common';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const CONTRIBUTOR_TEAM_MEMBER_LIST_QUERY = gql`
-query ContributorTeamMemberList($id: ID!, $pagination: OffsetPaginationInput) {
-    contributorTeam(id: $id) {
-        id
-        name
-        membersCount
-        members(pagination: $pagination) {
-            totalCount
-            results {
+const USER_GROUP_MEMBER_LIST_QUERY = gql`
+query UserGroupMemberList($filters: ContributorUserGroupMembershipFilter, $pagination: OffsetPaginationInput) {
+    contributorUserGroupMembers(
+        pagination: $pagination,
+        filters: $filters
+    ) {
+        results {
+            id
+            user {
                 id
                 userId
                 username
             }
-        }
+            userId
+        }      
+        totalCount
     }
 }
 `;
 
-type Value = TeamsListQuery['contributorTeams']['results'][number];
-type ContibutorTeamMemberType = ContributorTeamMemberListQuery['contributorTeam']['members']['results'][number];
+type Value = UserGroupsListQuery['contributorUserGroups']['results'][number];
+type UserMemberTye = UserGroupMemberListQuery['contributorUserGroupMembers']['results'][number];
 
 interface Props {
     value: Value;
+    onEdit: (id: string) => void;
 }
 
-const keySelector = (item: ContibutorTeamMemberType) => item.id;
+const keySelector = (item: UserMemberTye) => item.user.id;
 
-function TeamListItem(props: Props) {
+function UserListItem(props: Props) {
     const {
         value,
+        onEdit,
     } = props;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
@@ -62,9 +64,13 @@ function TeamListItem(props: Props) {
     const [{
         data: userMemberResponse,
         fetching: pending,
-    }] = useContributorTeamMemberListQuery({
+    }] = useUserGroupMemberListQuery({
         variables: {
-            id: value.id,
+            filters: {
+                userGroupId: {
+                    exact: value.id,
+                },
+            },
             pagination: {
                 offset: (activePage - 1) * pagePerItem,
                 limit: pagePerItem,
@@ -72,21 +78,32 @@ function TeamListItem(props: Props) {
         },
     });
 
-    const columns: Column<ContibutorTeamMemberType>[] = [
+    const columns: Column<UserMemberTye>[] = [
         {
             id: 'username',
             title: 'User Name',
-            cellRenderer: (item) => item.username,
+            cellRenderer: (item) => item.user.username,
         },
         {
             id: 'userId',
             title: 'User Id',
-            cellRenderer: (item) => item.userId,
+            cellRenderer: (item) => item.user.userId,
         },
     ];
 
     return (
         <ExpandableContainer
+            actions={(
+                <Button
+                    name={value.id}
+                    onClick={() => onEdit(value.id)}
+                    colorVariant="accent"
+                    styleVariant="transparent"
+                    withoutPadding
+                >
+                    <FaEdit />
+                </Button>
+            )}
             header={(
                 <ListLayout
                     layout="grid"
@@ -101,15 +118,12 @@ function TeamListItem(props: Props) {
                         >
                             <ListLayout withWrap>
                                 <TextOutput
-                                    icon={<IoCalendar />}
-                                    label="Created on"
-                                    value={value.createdAt}
-                                    valueType="date"
+                                    label="Member Count"
+                                    value={value.membersCount}
                                 />
                                 <TextOutput
-                                    icon={<IoPerson />}
-                                    label="Created by"
-                                    value={value.createdBy.displayName}
+                                    label="Description"
+                                    value={value.description}
                                 />
                             </ListLayout>
                         </Container>
@@ -121,7 +135,7 @@ function TeamListItem(props: Props) {
                 contentLayout="block"
                 spacing="lg"
                 pending={pending}
-                empty={userMemberResponse?.contributorTeam.members?.totalCount === 0}
+                empty={userMemberResponse?.contributorUserGroupMembers?.totalCount === 0}
                 emptyMessage="No User Member found!"
                 filteredEmptyMessage="No matching user member found!"
                 footerActions={(
@@ -130,7 +144,7 @@ function TeamListItem(props: Props) {
                         onPagePerItemChange={setPagePerItem}
                         activePage={activePage}
                         onActivePageChange={setActivePage}
-                        totalItems={userMemberResponse?.contributorTeam.members.totalCount ?? 0}
+                        totalItems={userMemberResponse?.contributorUserGroupMembers.totalCount ?? 0}
                         pagePerItemOptions={defaultPagePerItemOptions}
                     />
                 )}
@@ -138,11 +152,11 @@ function TeamListItem(props: Props) {
                 <Table
                     keySelector={keySelector}
                     columns={columns}
-                    data={userMemberResponse?.contributorTeam.members.results}
+                    data={userMemberResponse?.contributorUserGroupMembers?.results}
                 />
             </Container>
         </ExpandableContainer>
     );
 }
 
-export default TeamListItem;
+export default UserListItem;

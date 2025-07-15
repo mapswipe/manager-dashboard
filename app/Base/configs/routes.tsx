@@ -56,6 +56,15 @@ const teams = wrap({
     visibility: 'is-authenticated',
 });
 
+const users = wrap({
+    path: '/users/',
+    title: 'User Groups',
+    navbarVisibility: true,
+    component: lazy(() => import('#views/UserGroups')),
+    componentProps: {},
+    visibility: 'is-authenticated',
+});
+
 const newProject = wrap({
     path: '/project/new/',
     title: 'New Project',
@@ -103,5 +112,6 @@ const routes = {
     fourHundredFour,
     tutorials,
     teams,
+    users,
 };
 export default routes;

@@ -120,6 +120,11 @@ function Navbar(props: Props) {
                         className={styles.link}
                         activeClassName={styles.active}
                     />
+                    <SmartNavLink
+                        route={route.users}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
                 </ListLayout>
             </InlineLayout>
         </nav>

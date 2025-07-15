@@ -30,6 +30,15 @@ query TeamsList($filters: ContributorTeamFilter, $offset: Int!, $limit: Int) {
         results {
             id
             name
+            membersCount
+            members {
+                results {
+                    id
+                    username
+                    userId
+                }
+            totalCount
+            }
             createdBy {
                 id
                 displayName
@@ -110,8 +119,8 @@ function Teams(props: Props) {
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}
-                emptyMessage="No projects found!"
-                filteredEmptyMessage="No matching projects found!"
+                emptyMessage="No team found!"
+                filteredEmptyMessage="No matching team found!"
                 spacing="lg"
                 footerActions={(
                     <Pager
