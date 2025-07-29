@@ -1,11 +1,21 @@
+import { useCallback } from 'react';
+import { IoAdd } from 'react-icons/io5';
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
     LeafError,
     ObjectError,
+    useFormArray,
     useFormObject,
 } from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
 
+import Button from '#components/Button';
+import Container from '#components/Container';
+import CustomOptionInput from '#components/CustomOptionInput';
+import { PartialCustomOptionInputFields } from '#components/CustomOptionInput/schema';
+import NonFieldError from '#components/NonFieldError';
 import RasterTileServerInput from '#components/RasterTileServerInput';
 import {
     defaultRasterTileServerInputValue,
@@ -50,8 +60,65 @@ function ValidateProjectSpecifics(props: Props) {
         defaultObjectSourceInputFormValue,
     );
 
+    const {
+        setValue: setCustomOptionValue,
+        removeValue: removeCustomOption,
+    } = useFormArray(
+        'customOptions' as const,
+        setFieldValue,
+    );
+
+    const addCustomOption = useCallback((newCustomOptionIndex: number) => {
+        const newCustomOption: PartialCustomOptionInputFields = {
+            clientId: ulid(),
+            value: newCustomOptionIndex,
+        };
+
+        setFieldValue(
+            (oldValue: PartialCustomOptionInputFields[] | undefined) => (
+                [...(oldValue ?? []), newCustomOption]
+            ),
+            'customOptions' as const,
+        );
+    }, [setFieldValue]);
+
     return (
         <>
+            <Container
+                withBackground
+                withPadding
+                headingLevel={4}
+                heading="Result options"
+                spacing="lg"
+                headerActions={(
+                    <Button
+                        name={value?.customOptions?.length ?? 0}
+                        onClick={addCustomOption}
+                        styleVariant="transparent"
+                        start={<IoAdd />}
+                        withoutPadding
+                    >
+                        Add option
+                    </Button>
+                )}
+                headerDescription={(
+                    <NonFieldError error={error?.customOptions} />
+                )}
+                empty={isNotDefined(value?.customOptions) || value.customOptions.length === 0}
+            >
+                {value?.customOptions?.map((customOption, optionIndex) => (
+                    <CustomOptionInput
+                        key={customOption.clientId}
+                        index={optionIndex}
+                        value={customOption}
+                        onChange={setCustomOptionValue}
+                        error={getErrorObject(
+                            getErrorObject(error?.customOptions)?.[customOption.clientId],
+                        )}
+                        onRemove={removeCustomOption}
+                    />
+                ))}
+            </Container>
             <ObjectSourceInput
                 value={value?.objectSource}
                 setFieldValue={setObjectSourceInputFieldValue}
@@ -60,6 +127,9 @@ function ValidateProjectSpecifics(props: Props) {
                 projectId={projectId}
             />
             <RasterTileServerInput
+                withContainerBackground
+                withContainerPadding
+                containerSpacing="lg"
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}

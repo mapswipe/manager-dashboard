@@ -29,7 +29,7 @@ import {
 } from 'react-icons/io5';
 import { listToMap } from '@togglecorp/fujs';
 
-import { TutorialScenarioIconEnum } from '#generated/types/graphql';
+import { IconEnum } from '#generated/types/graphql';
 import oneTapIcon from '#resources/icons/1_Tap_Black.png';
 import twoTapIcon from '#resources/icons/2_Tap_Black.png';
 import threeTapIcon from '#resources/icons/3_Tap_Black.png';
@@ -54,139 +54,139 @@ function getPngIcon(src: string, alt: string) {
 }
 
 export interface IconItem {
-    key: TutorialScenarioIconEnum;
+    key: IconEnum;
     label: string;
     component: IconType;
 }
 
 export const customOptionsOnlyIconList: IconItem[] = [
     {
-        key: TutorialScenarioIconEnum.AddOutline,
+        key: IconEnum.AddOutline,
         label: 'Add',
         component: IoAddOutline,
     },
     {
-        key: TutorialScenarioIconEnum.AlertOutline,
+        key: IconEnum.AlertOutline,
         label: 'Alert',
         component: IoAlertOutline,
     },
     {
-        key: TutorialScenarioIconEnum.BanOutline,
+        key: IconEnum.BanOutline,
         label: 'Ban',
         component: IoBanOutline,
     },
     {
-        key: TutorialScenarioIconEnum.CheckmarkOutline,
+        key: IconEnum.CheckmarkOutline,
         label: 'Checkmark',
         component: IoCheckmarkOutline,
     },
     {
-        key: TutorialScenarioIconEnum.CloseOutline,
+        key: IconEnum.CloseOutline,
         label: 'Close',
         component: IoCloseOutline,
     },
     {
-        key: TutorialScenarioIconEnum.EggOutline,
+        key: IconEnum.EggOutline,
         label: 'Egg',
         component: IoEggOutline,
     },
     {
-        key: TutorialScenarioIconEnum.EllipseOutline,
+        key: IconEnum.EllipseOutline,
         label: 'Ellipse',
         component: IoEllipseOutline,
     },
     {
-        key: TutorialScenarioIconEnum.FlagOutline,
+        key: IconEnum.FlagOutline,
         label: 'Flag',
         component: IoFlagOutline,
     },
     {
-        key: TutorialScenarioIconEnum.HandLeftOutline,
+        key: IconEnum.HandLeftOutline,
         label: 'Hand Left',
         component: IoHandLeftOutline,
     },
     {
-        key: TutorialScenarioIconEnum.HandRightOutline,
+        key: IconEnum.HandRightOutline,
         label: 'Hand Right',
         component: IoHandRightOutline,
     },
     {
-        key: TutorialScenarioIconEnum.HappyOutline,
+        key: IconEnum.HappyOutline,
         label: 'Happy',
         component: IoHappyOutline,
     },
     {
-        key: TutorialScenarioIconEnum.HeartOutline,
+        key: IconEnum.HeartOutline,
         label: 'Heart',
         component: IoHeartOutline,
     },
     {
-        key: TutorialScenarioIconEnum.HelpOutline,
+        key: IconEnum.HelpOutline,
         label: 'Help',
         component: IoHelpOutline,
     },
     {
-        key: TutorialScenarioIconEnum.InformationOutline,
+        key: IconEnum.InformationOutline,
         label: 'Information',
         component: IoInformationOutline,
     },
     {
-        key: TutorialScenarioIconEnum.PrismOutline,
+        key: IconEnum.PrismOutline,
         label: 'Prism',
         component: IoPrismOutline,
     },
     {
-        key: TutorialScenarioIconEnum.RefreshOutline,
+        key: IconEnum.RefreshOutline,
         label: 'Refresh',
         component: IoRefreshOutline,
     },
     {
-        key: TutorialScenarioIconEnum.RemoveOutline,
+        key: IconEnum.RemoveOutline,
         label: 'Remove',
         component: IoRemoveOutline,
     },
     {
-        key: TutorialScenarioIconEnum.SadOutline,
+        key: IconEnum.SadOutline,
         label: 'Sad',
         component: IoSadOutline,
     },
     {
-        key: TutorialScenarioIconEnum.SearchOutline,
+        key: IconEnum.SearchOutline,
         label: 'Search',
         component: IoSearchOutline,
     },
     {
-        key: TutorialScenarioIconEnum.ShapesOutline,
+        key: IconEnum.ShapesOutline,
         label: 'Shapes',
         component: IoShapesOutline,
     },
     {
-        key: TutorialScenarioIconEnum.SquareOutline,
+        key: IconEnum.SquareOutline,
         label: 'Square',
         component: IoSquareOutline,
     },
     {
-        key: TutorialScenarioIconEnum.StarOutline,
+        key: IconEnum.StarOutline,
         label: 'Star',
         component: IoStarOutline,
     },
     {
-        key: TutorialScenarioIconEnum.ThumbsDownOutline,
+        key: IconEnum.ThumbsDownOutline,
         label: 'Thumbs Down',
         component: IoThumbsDownOutline,
     },
     {
-        key: TutorialScenarioIconEnum.ThumbsUpOutline,
+        key: IconEnum.ThumbsUpOutline,
         label: 'Thumbs Up',
         component: IoThumbsUpOutline,
     },
     {
-        key: TutorialScenarioIconEnum.TriangleOutline,
+        key: IconEnum.TriangleOutline,
         label: 'Triangle',
         component: IoTriangleOutline,
     },
     {
-        key: TutorialScenarioIconEnum.WarningOutline,
+        key: IconEnum.WarningOutline,
         label: 'Warning',
         component: IoWarningOutline,
     },
@@ -196,41 +196,41 @@ export const customOptionsOnlyIconList: IconItem[] = [
 // They need to be treated diffrently as they are loaded as pngs
 const scenarioOnlyIconList: IconItem[] = [
     {
-        key: TutorialScenarioIconEnum.Tap,
+        key: IconEnum.Tap,
         label: 'Tap',
         component: getPngIcon(angularTapIcon, 'tap'),
     },
     {
-        key: TutorialScenarioIconEnum.Tap_1,
+        key: IconEnum.Tap_1,
         label: '1-Tap',
         component: getPngIcon(oneTapIcon, 'one tap'),
     },
     {
-        key: TutorialScenarioIconEnum.Tap_2,
+        key: IconEnum.Tap_2,
         label: '2-Tap',
         component: getPngIcon(twoTapIcon, 'two tap'),
     },
     {
-        key: TutorialScenarioIconEnum.Tap_3,
+        key: IconEnum.Tap_3,
         label: '3-Tap',
         component: getPngIcon(threeTapIcon, 'three tap'),
     },
     {
-        key: TutorialScenarioIconEnum.SwipeLeft,
+        key: IconEnum.SwipeLeft,
         label: 'Swipe Left',
         component: getPngIcon(swipeIcon, 'swipe left'),
     },
     {
-        key: TutorialScenarioIconEnum.Check,
+        key: IconEnum.Check,
         label: 'Check',
         component: getPngIcon(check, 'check'),
     },
 ];
 
-export const combinedIconList = [...scenarioOnlyIconList, ...customOptionsOnlyIconList];
+export const iconList = [...scenarioOnlyIconList, ...customOptionsOnlyIconList];
 
-export const iconMap = listToMap(
-    combinedIconList,
+export const iconMapping = listToMap(
+    iconList,
     (icon) => icon.key,
     (icon) => icon.component,
 );

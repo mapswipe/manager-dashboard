@@ -28,9 +28,9 @@ import {
     labelSelector,
 } from '#utils/common';
 import {
-    combinedIconList,
     IconItem,
-    iconMap,
+    iconList,
+    iconMapping,
 } from '#utils/icon';
 
 import CompareScenarioPreview from './CompareScenarioPreview';
@@ -100,10 +100,10 @@ function ScenarioPageInput(props: Props) {
     );
 
     const InstructionsIcon = isDefined(value.instructionsIcon)
-        ? iconMap[value.instructionsIcon]
+        ? iconMapping[value.instructionsIcon]
         : null;
-    const HintIcon = isDefined(value.hintIcon) ? iconMap[value.hintIcon] : null;
-    const SuccessIcon = isDefined(value.successIcon) ? iconMap[value.successIcon] : null;
+    const HintIcon = isDefined(value.hintIcon) ? iconMapping[value.hintIcon] : null;
+    const SuccessIcon = isDefined(value.successIcon) ? iconMapping[value.successIcon] : null;
 
     return (
         <Container
@@ -130,7 +130,7 @@ function ScenarioPageInput(props: Props) {
                     <SelectInput
                         label="Instruction icon"
                         name="instructionsIcon"
-                        options={combinedIconList}
+                        options={iconList}
                         value={value.instructionsIcon}
                         onChange={setFieldValue}
                         keySelector={keySelector}
@@ -160,7 +160,7 @@ function ScenarioPageInput(props: Props) {
                         icons={HintIcon && <HintIcon />}
                         label="Hint icon"
                         name="hintIcon"
-                        options={combinedIconList}
+                        options={iconList}
                         value={value.hintIcon}
                         onChange={setFieldValue}
                         keySelector={keySelector}
@@ -188,7 +188,7 @@ function ScenarioPageInput(props: Props) {
                     <SelectInput
                         label="Success icon"
                         name="successIcon"
-                        options={combinedIconList}
+                        options={iconList}
                         value={value.successIcon}
                         onChange={setFieldValue}
                         keySelector={keySelector}

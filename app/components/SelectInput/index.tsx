@@ -7,14 +7,19 @@ import {
 type Def = { containerClassName?: string };
 
 export type SelectInputProps<
-    T extends OptionKey,
-    K extends string,
-    O extends object,
-    P extends Def,
-> = SearchSelectInputProps<T, K, O, P, 'onSearchValueChange' | 'searchOptions' | 'onShowDropdownChange' | 'totalOptionsCount'>;
+    OPTION_KEY extends OptionKey,
+    NAME,
+    OPTION extends object,
+    OPTION_RENDERER_PROPS extends Def,
+> = SearchSelectInputProps<OPTION_KEY, NAME, OPTION, OPTION_RENDERER_PROPS, 'onSearchValueChange' | 'searchOptions' | 'onShowDropdownChange' | 'totalOptionsCount'>;
 
-function SelectInput<T extends OptionKey, K extends string, O extends object, P extends Def>(
-    props: SelectInputProps<T, K, O, P>,
+function SelectInput<
+OPTION_KEY extends OptionKey,
+const NAME,
+OPTION extends object,
+OPTION_RENDERER_PROPS extends Def
+>(
+    props: SelectInputProps<OPTION_KEY, NAME, OPTION, OPTION_RENDERER_PROPS>,
 ) {
     const {
         name,

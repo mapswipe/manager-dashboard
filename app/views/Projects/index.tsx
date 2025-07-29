@@ -70,6 +70,9 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
             lookFor
             maxTasksPerUser
             name
+            topic
+            projectNumber
+            region
             processingStatus
             progress
             projectType
@@ -121,7 +124,7 @@ function Projects(props: Props) {
     }] = useProjectsListQuery({
         variables: {
             filters: {
-                name: { iContains: debouncedSearchText },
+                name: debouncedSearchText,
                 status: { exact: selectedProjectStat },
                 projectType: { exact: selectedProjectType },
             },
@@ -212,7 +215,7 @@ function Projects(props: Props) {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount} projects`}
+                heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount ?? 0} projects`}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}

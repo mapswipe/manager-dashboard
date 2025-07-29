@@ -75,9 +75,7 @@ function ProjectSelectInput<K extends string>(props: SelectInputProps<K>) {
         (): GetProjectQueryVariables => (
             debouncedSearchText ? {
                 filters: {
-                    name: {
-                        iContains: debouncedSearchText,
-                    },
+                    name: debouncedSearchText,
                 },
             } : {
                 order: {

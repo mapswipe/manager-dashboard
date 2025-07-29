@@ -8,7 +8,6 @@ import {
     IoEye,
     IoPerson,
 } from 'react-icons/io5';
-import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
@@ -103,9 +102,7 @@ function ProjectListItem(props: Props) {
                 <img
                     className={styles.image}
                     alt=""
-                    src={isDefined(value.image)
-                        ? value.image.file.url
-                        : projectTypeIllustrations[value.projectType]}
+                    src={value.image?.file.url ?? projectTypeIllustrations[value.projectType]}
                 />
                 <GridLayoutItem columnSpan={3}>
                     <Container

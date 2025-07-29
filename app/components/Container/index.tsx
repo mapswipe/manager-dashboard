@@ -33,7 +33,7 @@ export interface Props {
 
     footerIcons?: React.ReactNode;
     footerActions?: React.ReactNode;
-    footing?: React.ReactNode;
+    footer?: React.ReactNode;
     withFooterBorder?: boolean;
 
     pending?: boolean;
@@ -66,7 +66,7 @@ function Container(props: Props) {
         withHeaderBorder,
 
         footerIcons,
-        footing,
+        footer,
         footerActions,
         withFooterBorder,
 
@@ -98,7 +98,7 @@ function Container(props: Props) {
     const shouldShowHeader = shouldShowHeadingRow
         || isDefined(headerDescription);
 
-    const shouldShowFooter = isDefined(footing)
+    const shouldShowFooter = isDefined(footer)
         || isDefined(footerIcons)
         || isDefined(footerActions);
 
@@ -152,7 +152,7 @@ function Container(props: Props) {
                     start={footerIcons}
                     end={footerActions}
                 >
-                    {footing}
+                    {footer}
                 </InlineLayout>
             )}
             withStartSeparator={withHeaderBorder}

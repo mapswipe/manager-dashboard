@@ -3,6 +3,7 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
+import customOptionSchema from '#components/CustomOptionInput/schema';
 import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/RasterTileServerInput/schema';
 import { ValidateProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
@@ -14,7 +15,8 @@ import {
 import objectSourceFormSchema, { defaultObjectSourceInputFormValue } from './ObjectSourceInput/schema';
 
 export type PartialValidateSpecificFields = PartialForm<
-    DeepNonNullable<ValidateProjectPropertyInput>
+    DeepNonNullable<ValidateProjectPropertyInput>,
+    'clientId'
 >;
 type ValidateSpecificFormSchema = ObjectSchema<
     PartialValidateSpecificFields,
@@ -29,6 +31,10 @@ export const defaultValidateSpecificFormValue: PartialValidateSpecificFields = {
 
 const validateSpecificFormSchema: ValidateSpecificFormSchema = {
     fields: (): ReturnType<ValidateSpecificFormSchema['fields']> => ({
+        customOptions: {
+            keySelector: (value) => value.clientId,
+            member: () => customOptionSchema,
+        },
         objectSource: objectSourceFormSchema,
         tileServerProperty: rasterTileServerFormSchema,
     }),

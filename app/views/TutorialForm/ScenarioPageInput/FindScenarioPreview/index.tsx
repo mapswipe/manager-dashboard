@@ -10,7 +10,7 @@ import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
-import { iconMap } from '#utils/icon';
+import { iconMapping } from '#utils/icon';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
@@ -64,7 +64,7 @@ function FindScenarioPreview(props: Props) {
 
     const [preview, setPreview] = useState<PreviewItem | undefined>();
 
-    const Icon = preview?.icon ? iconMap[preview.icon] : undefined;
+    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
 
     return (
         <div className={_cs(styles.findScenarioPreview, className)}>

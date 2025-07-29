@@ -16,6 +16,9 @@ query ProjectDetails($id: ID!) {
         lookFor
         maxTasksPerUser
         name
+        topic
+        projectNumber
+        region
         processingStatus
         progress
         projectType

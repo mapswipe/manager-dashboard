@@ -74,7 +74,7 @@ query AllEnums {
             key
             label
         }
-        TutorialScenarioIconEnum {
+        IconEnum {
             key
             label
         }

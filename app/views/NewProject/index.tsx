@@ -83,10 +83,21 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         },
         lookFor: {
             required: true,
+            requiredValidation: requiredStringCondition,
         },
-        name: {
+        projectNumber: {
+            required: true,
+            // FIXME: add positive integer validation
+        },
+        topic: {
             required: true,
             requiredValidation: requiredStringCondition,
+        },
+        region: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        team: {
         },
         description: {},
         additionalInfoUrl: {},
@@ -130,6 +141,7 @@ function NewProject(props: Props) {
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),
+        projectNumber: 1,
     }), []);
 
     const {
