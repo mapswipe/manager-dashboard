@@ -93,7 +93,7 @@ const emptyList: unknown[] = [];
 
 function SearchSelectInput<
     T extends OptionKey,
-    K extends string,
+    K,
     O extends object,
     P extends Def,
 >(

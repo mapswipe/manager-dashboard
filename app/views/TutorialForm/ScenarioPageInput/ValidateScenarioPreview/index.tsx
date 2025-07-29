@@ -13,7 +13,7 @@ import { LineLayerSpecification } from 'maplibre-gl';
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
-import { iconMap } from '#utils/icon';
+import { iconMapping } from '#utils/icon';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
@@ -68,7 +68,7 @@ function ValidateScenarioPreview(props: Props) {
         };
     }, [scenario]);
 
-    const Icon = preview?.icon ? iconMap[preview.icon] : undefined;
+    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
 
     return (
         <div className={_cs(styles.validateScenarioPreview, className)}>

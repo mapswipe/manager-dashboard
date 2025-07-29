@@ -54,6 +54,9 @@ function ObjectSourceInput(props: Props) {
         <Container
             heading="Validation Object Source"
             headingLevel={4}
+            withPadding
+            withBackground
+            spacing="lg"
         >
             <RadioInput
                 label="Source type"

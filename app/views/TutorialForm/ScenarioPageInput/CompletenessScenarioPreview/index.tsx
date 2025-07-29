@@ -18,7 +18,7 @@ import {
     ProjectRasterTileServerConfig,
 } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
-import { iconMap } from '#utils/icon';
+import { iconMapping } from '#utils/icon';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
@@ -55,7 +55,7 @@ function CompletenessScenarioPreview(props: Props) {
         return createGeoJsonFromTiles(tiles);
     }, [scenario]);
 
-    const Icon = preview?.icon ? iconMap[preview.icon] : undefined;
+    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
 
     return (
         <div className={_cs(styles.completenessScenarioPreview, className)}>

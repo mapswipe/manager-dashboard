@@ -17,7 +17,7 @@ import {
 
 import EnumsContext from '#base/context/EnumsContext';
 import TileServerContext from '#base/context/TileServerContext';
-import Container from '#components/Container';
+import Container, { type Props as ContainerProps } from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
@@ -43,6 +43,10 @@ interface Props {
     setFieldValue: (...entries: EntriesAsList<PartialRasterTileServerInputFields>) => void;
     disabled?: boolean;
     aoiGeoJsonAssetId?: string;
+    withContainerBackground?: ContainerProps['withBackground'];
+    withContainerPadding?: ContainerProps['withPadding'];
+    containerSpacing?: ContainerProps['spacing'];
+    containerHeadingLevel?: ContainerProps['headingLevel'];
 }
 
 function RasterTileServerInput(props: Props) {
@@ -53,6 +57,10 @@ function RasterTileServerInput(props: Props) {
         setFieldValue,
         disabled,
         aoiGeoJsonAssetId,
+        withContainerPadding,
+        withContainerBackground,
+        containerSpacing,
+        containerHeadingLevel = 4,
     } = props;
 
     const error = getErrorObject(formError);
@@ -104,7 +112,10 @@ function RasterTileServerInput(props: Props) {
     return (
         <Container
             heading={label}
-            headingLevel={4}
+            headingLevel={containerHeadingLevel}
+            withBackground={withContainerBackground}
+            withPadding={withContainerPadding}
+            spacing={containerSpacing}
         >
             <ListLayout
                 layout="grid"

@@ -1,0 +1,170 @@
+import { useCallback } from 'react';
+import {
+    IoAdd,
+    IoTrashBin,
+} from 'react-icons/io5';
+import { isNotDefined } from '@togglecorp/fujs';
+import {
+    getErrorObject,
+    ObjectError,
+    SetValueArg,
+    useFormArray,
+    useFormObject,
+} from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
+
+import Button from '#components/Button';
+import Container from '#components/Container';
+import IconSelectInput from '#components/IconSelectInput';
+import ListLayout from '#components/ListLayout';
+import NumberInput from '#components/NumberInput';
+import TextArea from '#components/TextArea';
+import TextInput from '#components/TextInput';
+
+import { PartialCustomSubOptionInputFields } from './SubOptionInput/schema';
+import { PartialCustomOptionInputFields } from './schema';
+import SubOptionInput from './SubOptionInput';
+
+interface Props {
+    className?: string;
+    index: number;
+    value: PartialCustomOptionInputFields;
+    onChange: (
+        value: SetValueArg<PartialCustomOptionInputFields>,
+        index: number,
+    ) => void;
+    error: ObjectError<PartialCustomOptionInputFields> | undefined;
+    onRemove: (index: number) => void;
+}
+
+function CustomOption(props: Props) {
+    const {
+        className,
+        index,
+        value,
+        onChange,
+        error,
+        onRemove,
+    } = props;
+
+    const setFieldValue = useFormObject(
+        index,
+        onChange,
+        () => ({
+            clientId: ulid(),
+        }),
+    );
+
+    const {
+        setValue: setSubOptionValue,
+        removeValue: removeSubOption,
+    } = useFormArray(
+        'subOptions' as const,
+        setFieldValue,
+    );
+
+    const addSubOption = useCallback((newSubOptionIndex: number) => {
+        const newSubOption: PartialCustomSubOptionInputFields = {
+            clientId: ulid(),
+            value: newSubOptionIndex,
+        };
+
+        setFieldValue(
+            (oldValue: PartialCustomSubOptionInputFields[] | undefined) => (
+                [...(oldValue ?? []), newSubOption]
+            ),
+            'subOptions' as const,
+        );
+    }, [setFieldValue]);
+
+    return (
+        <Container
+            className={className}
+            heading={`Option #${index + 1}`}
+            headingLevel={5}
+            headerActions={(
+                <Button
+                    name={index}
+                    onClick={onRemove}
+                    styleVariant="transparent"
+                    colorVariant="danger"
+                    start={<IoTrashBin />}
+                    withoutPadding
+                >
+                    Remove
+                </Button>
+            )}
+            withHeaderBorder
+        >
+            <ListLayout layout="grid">
+                <ListLayout layout="block">
+                    <ListLayout
+                        layout="grid"
+                        minGridColumnSize="8rem"
+                    >
+                        <IconSelectInput
+                            label="Icon"
+                            name="icon"
+                            value={value.icon}
+                            onChange={setFieldValue}
+                            error={error?.icon}
+                            nonClearable
+                        />
+                        <NumberInput
+                            label="Value"
+                            name="value"
+                            value={value.value}
+                            onChange={setFieldValue}
+                            error={error?.value}
+                        />
+                    </ListLayout>
+                    <TextInput
+                        label="Title"
+                        name="title"
+                        value={value.title}
+                        onChange={setFieldValue}
+                        error={error?.title}
+                    />
+                    <TextArea
+                        label="Description"
+                        name="description"
+                        value={value.description}
+                        onChange={setFieldValue}
+                        error={error?.description}
+                    />
+                </ListLayout>
+                <Container
+                    heading="Sub options"
+                    headingLevel={5}
+                    headerActions={(
+                        <Button
+                            name={value?.subOptions?.length ?? 0}
+                            onClick={addSubOption}
+                            styleVariant="transparent"
+                            start={<IoAdd />}
+                            withoutPadding
+                        >
+                            Add sub option
+                        </Button>
+                    )}
+                    empty={isNotDefined(value.subOptions) || value.subOptions.length === 0}
+                >
+                    {value?.subOptions?.map((subOption, subOptionIndex) => (
+                        <SubOptionInput
+                            key={subOption.clientId}
+                            index={subOptionIndex}
+                            value={subOption}
+                            onChange={setSubOptionValue}
+                            error={getErrorObject(
+                                getErrorObject(error?.subOptions)?.[subOption.clientId],
+                            )}
+                            onRemove={removeSubOption}
+                        />
+                    ))}
+                </Container>
+            </ListLayout>
+        </Container>
+    );
+}
+
+export default CustomOption;

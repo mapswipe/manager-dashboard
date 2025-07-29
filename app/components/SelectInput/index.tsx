@@ -8,12 +8,12 @@ type Def = { containerClassName?: string };
 
 export type SelectInputProps<
     T extends OptionKey,
-    K extends string,
+    K,
     O extends object,
     P extends Def,
 > = SearchSelectInputProps<T, K, O, P, 'onSearchValueChange' | 'searchOptions' | 'onShowDropdownChange' | 'totalOptionsCount'>;
 
-function SelectInput<T extends OptionKey, K extends string, O extends object, P extends Def>(
+function SelectInput<T extends OptionKey, K, O extends object, P extends Def>(
     props: SelectInputProps<T, K, O, P>,
 ) {
     const {

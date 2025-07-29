@@ -9,7 +9,7 @@ export const defaultAllEnumsValue: AllEnumsQuery['enums'] = {
     RasterTileServerNameEnum: [],
     VectorTileServerNameEnum: [],
     TutorialInformationPageBlockTypeEnum: [],
-    TutorialScenarioIconEnum: [],
+    IconEnum: [],
     OverlayLayerTypeEnum: [],
 };
 

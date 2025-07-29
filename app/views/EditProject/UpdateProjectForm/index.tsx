@@ -27,6 +27,7 @@ import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import {
+    IconEnum,
     ProjectDetailsQuery,
     ProjectStatusEnum,
     ProjectTypeEnum,
@@ -135,7 +136,35 @@ function UpdateProjectForm(props: Props) {
         }
 
         if (projectData.project.projectType === ProjectTypeEnum.Validate) {
-            return defaultValidateSpecificFormValue;
+            return {
+                ...defaultValidateSpecificFormValue,
+                customOptions: [
+                    {
+                        clientId: ulid(),
+                        icon: IconEnum.CheckmarkOutline,
+                        iconColor: '#48f056',
+                        title: 'Yes',
+                        description: 'The shape outlines a building',
+                        value: 1,
+                    },
+                    {
+                        clientId: ulid(),
+                        icon: IconEnum.CloseOutline,
+                        iconColor: '#fa4656',
+                        title: 'No',
+                        description: 'The shape does not outline a building',
+                        value: 0,
+                    },
+                    {
+                        clientId: ulid(),
+                        icon: IconEnum.AlertOutline,
+                        iconColor: '#969696',
+                        title: 'Not sure',
+                        description: 'Imagery is not clear or obstructed by cloud',
+                        value: 2,
+                    },
+                ],
+            };
         }
         if (projectData.project.projectType === ProjectTypeEnum.ValidateImage) {
             return defaultValidateImageSpecificFormValue;
@@ -338,6 +367,17 @@ function UpdateProjectForm(props: Props) {
     const baseInputsDisabled = pending || !baseInputsEditable;
     const projectTypeSpecificInputsDisabled = pending || !projectTypeSpecificInputsEditable;
 
+    const findProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.find as PartialFindSpecificFields;
+    const compareProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.compare as PartialCompareSpecificFields;
+    const validateProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.validate as PartialValidateSpecificFields;
+    const completenessProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.completeness as PartialCompletenessSpecificFields;
+    const validateImageProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.validateImage as PartialValidateSpecificFields;
+
     return (
         <PageLayout
             heading="Update project"
@@ -390,7 +430,6 @@ function UpdateProjectForm(props: Props) {
                 disabled={baseInputsDisabled}
             />
             <Container
-                withContentBackgroundAndPadding
                 withHeaderBorder
                 spacing="lg"
                 heading={`${projectContext.projectType.replace('_', ' ')} specific details`}
@@ -403,7 +442,7 @@ function UpdateProjectForm(props: Props) {
                 {projectContext.projectType === ProjectTypeEnum.Find && (
                     <FindProjectSpecifics
                         projectId={projectData.project.id}
-                        value={value.projectTypeSpecifics?.find}
+                        value={findProjectTypeSpecifics}
                         setFieldValue={setFindProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.find}
                         disabled={projectTypeSpecificInputsDisabled}
@@ -412,7 +451,7 @@ function UpdateProjectForm(props: Props) {
                 {projectContext.projectType === ProjectTypeEnum.Compare && (
                     <CompareProjectSpecifics
                         projectId={projectData.project.id}
-                        value={value.projectTypeSpecifics?.compare}
+                        value={compareProjectTypeSpecifics}
                         setFieldValue={setCompareProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.compare}
                         disabled={projectTypeSpecificInputsDisabled}
@@ -421,27 +460,27 @@ function UpdateProjectForm(props: Props) {
                 {projectContext.projectType === ProjectTypeEnum.Validate && (
                     <ValidateProjectSpecifics
                         projectId={projectData.project.id}
-                        value={value.projectTypeSpecifics?.validate}
+                        value={validateProjectTypeSpecifics}
                         setFieldValue={setValidateProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validate}
-                        disabled={projectTypeSpecificInputsDisabled}
-                    />
-                )}
-                {projectContext.projectType === ProjectTypeEnum.ValidateImage && (
-                    <ValidateImageProjectSpecifics
-                        projectId={projectData.project.id}
-                        value={value.projectTypeSpecifics?.validateImage}
-                        setFieldValue={setValidateImageProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Completeness && (
                     <CompletenessProjectSpecifics
                         projectId={projectData.project.id}
-                        value={value.projectTypeSpecifics?.completeness}
+                        value={completenessProjectTypeSpecifics}
                         setFieldValue={setCompletenessProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                )}
+                {projectContext.projectType === ProjectTypeEnum.ValidateImage && (
+                    <ValidateImageProjectSpecifics
+                        projectId={projectData.project.id}
+                        value={validateImageProjectTypeSpecifics}
+                        setFieldValue={setValidateImageProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}

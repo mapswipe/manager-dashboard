@@ -5,7 +5,7 @@ import {
 import { isNotDefined } from '@togglecorp/fujs';
 
 import SegmentInput from '#components/SegmentInput';
-import { TutorialScenarioIconEnum } from '#generated/types/graphql';
+import { IconEnum } from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
@@ -27,7 +27,7 @@ const previewOptions: PreviewOption[] = [
 ];
 
 export interface PreviewItem {
-    icon: TutorialScenarioIconEnum | undefined,
+    icon: IconEnum | undefined,
     title: string | undefined,
     description: string | undefined,
 }

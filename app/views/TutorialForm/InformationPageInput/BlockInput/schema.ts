@@ -6,9 +6,7 @@ import {
 import { TutorialInformationPageBlockCreateInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
-export type BlockInputFields = DeepNonNullable<TutorialInformationPageBlockCreateInput> & {
-    clientId: string;
-}
+export type BlockInputFields = DeepNonNullable<TutorialInformationPageBlockCreateInput>;
 
 export type PartialBlockInputFields = PartialForm<
     BlockInputFields,
