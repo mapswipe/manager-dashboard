@@ -8,6 +8,7 @@ import {
 
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
+import NumberInput from '#components/NumberInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
@@ -19,11 +20,14 @@ import { DeepNonNullable } from '#utils/types';
 
 type ProjectGeneralInputFields = Pick<
 ProjectCreateInput | ProjectUpdateInput,
-'name'
-| 'description'
-| 'requestingOrganization'
+'description'
+| 'topic'
 | 'lookFor'
 | 'additionalInfoUrl'
+| 'projectNumber'
+| 'region'
+| 'requestingOrganization'
+| 'team'
 >
 
 type PartialProjectGeneralInputFields = PartialForm<
@@ -55,13 +59,31 @@ function ProjectGeneralInputs(props: Props) {
             spacing="lg"
         >
             <TextInput
-                label="Project title"
-                name="name"
-                value={value?.name}
+                label="Project topic"
+                name="topic"
+                value={value?.topic}
                 onChange={setFieldValue}
-                error={error?.name}
+                error={error?.topic}
                 disabled={disabled}
             />
+            <ListLayout layout="grid">
+                <TextInput
+                    label="Project region"
+                    name="region"
+                    value={value?.region}
+                    onChange={setFieldValue}
+                    error={error?.region}
+                    disabled={disabled}
+                />
+                <NumberInput
+                    label="Project number"
+                    name="projectNumber"
+                    value={value?.projectNumber}
+                    onChange={setFieldValue}
+                    error={error?.projectNumber}
+                    disabled={disabled}
+                />
+            </ListLayout>
             <TextArea
                 label="Project description"
                 name="description"
