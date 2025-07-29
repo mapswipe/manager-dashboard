@@ -368,15 +368,15 @@ function UpdateProjectForm(props: Props) {
     const projectTypeSpecificInputsDisabled = pending || !projectTypeSpecificInputsEditable;
 
     const findProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.find as PartialFindSpecificFields;
+        ?.find as PartialFindSpecificFields | undefined;
     const compareProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.compare as PartialCompareSpecificFields;
+        ?.compare as PartialCompareSpecificFields | undefined;
     const validateProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.validate as PartialValidateSpecificFields;
+        ?.validate as PartialValidateSpecificFields | undefined;
     const completenessProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.completeness as PartialCompletenessSpecificFields;
+        ?.completeness as PartialCompletenessSpecificFields | undefined;
     const validateImageProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.validateImage as PartialValidateSpecificFields;
+        ?.validateImage as PartialValidateSpecificFields | undefined;
 
     return (
         <PageLayout

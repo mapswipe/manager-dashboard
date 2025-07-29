@@ -36,7 +36,6 @@ Def,
 | 'searchOptions'
 | 'onShowDropdownChange'
 | 'totalOptionsCount'
-
 | 'value'
 | 'options'
 | 'keySelector'

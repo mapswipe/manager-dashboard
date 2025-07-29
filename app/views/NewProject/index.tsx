@@ -83,6 +83,7 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         },
         lookFor: {
             required: true,
+            requiredValidation: requiredStringCondition,
         },
         projectNumber: {
             required: true,
@@ -90,6 +91,7 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         },
         topic: {
             required: true,
+            requiredValidation: requiredStringCondition,
         },
         region: {
             required: true,

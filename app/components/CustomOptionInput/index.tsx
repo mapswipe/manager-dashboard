@@ -17,6 +17,7 @@ import Button from '#components/Button';
 import Container from '#components/Container';
 import IconSelectInput from '#components/IconSelectInput';
 import ListLayout from '#components/ListLayout';
+import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
@@ -110,6 +111,14 @@ function CustomOption(props: Props) {
                             error={error?.icon}
                             nonClearable
                         />
+                        <TextInput
+                            // TODO: use color input
+                            label="Color"
+                            name="iconColor"
+                            value={value.iconColor}
+                            onChange={setFieldValue}
+                            error={error?.iconColor}
+                        />
                         <NumberInput
                             label="Value"
                             name="value"
@@ -146,6 +155,9 @@ function CustomOption(props: Props) {
                         >
                             Add sub option
                         </Button>
+                    )}
+                    headerDescription={(
+                        <NonFieldError error={error?.subOptions} />
                     )}
                     empty={isNotDefined(value.subOptions) || value.subOptions.length === 0}
                 >

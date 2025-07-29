@@ -52,6 +52,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
         },
         topic: {
             required: true,
+            requiredValidation: requiredStringCondition,
         },
         region: {
             required: true,

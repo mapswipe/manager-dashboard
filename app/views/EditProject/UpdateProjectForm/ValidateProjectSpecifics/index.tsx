@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { IoAdd } from 'react-icons/io5';
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -14,6 +15,7 @@ import Button from '#components/Button';
 import Container from '#components/Container';
 import CustomOptionInput from '#components/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/CustomOptionInput/schema';
+import NonFieldError from '#components/NonFieldError';
 import RasterTileServerInput from '#components/RasterTileServerInput';
 import {
     defaultRasterTileServerInputValue,
@@ -99,6 +101,10 @@ function ValidateProjectSpecifics(props: Props) {
                         Add option
                     </Button>
                 )}
+                headerDescription={(
+                    <NonFieldError error={error?.customOptions} />
+                )}
+                empty={isNotDefined(value?.customOptions) || value.customOptions.length === 0}
             >
                 {value?.customOptions?.map((customOption, optionIndex) => (
                     <CustomOptionInput

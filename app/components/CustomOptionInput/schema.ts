@@ -1,6 +1,7 @@
 import {
     ObjectSchema,
     PartialForm,
+    requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
 import { CustomOptionInput } from '#generated/types/graphql';
@@ -24,11 +25,25 @@ export type CustomOptionSchema = ObjectSchema<
 const customOptionSchema: CustomOptionSchema = {
     fields: (): ReturnType<CustomOptionSchema['fields']> => ({
         clientId: {},
-        icon: {},
-        iconColor: {},
-        description: {},
-        title: {},
-        value: {},
+        icon: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        iconColor: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        description: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        title: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        value: {
+            required: true,
+        },
         subOptions: {
             keySelector: (value) => value.clientId,
             member: () => subOptionSchema,

@@ -33,6 +33,7 @@ const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
         },
         topic: {
             required: true,
+            requiredValidation: requiredStringCondition,
         },
         region: {
             required: true,
