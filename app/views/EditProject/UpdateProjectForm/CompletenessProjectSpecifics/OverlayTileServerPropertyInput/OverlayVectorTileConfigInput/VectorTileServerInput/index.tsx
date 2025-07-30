@@ -93,14 +93,14 @@ function VectorTileServerInput(props: Props) {
             setFieldValue(
                 {
                     credits: tileServerMapping[newValue]?.credits,
-                    sourceName: tileServerMapping[newValue]?.layers?.[0],
+                    sourceLayer: tileServerMapping[newValue]?.layers?.[0],
                 },
                 vectorTileServerNameToTileInputKey[newValue],
             );
         }
     }, [setFieldValue, tileServerMapping]);
 
-    const sourceNameOptions = useMemo(() => {
+    const sourceLayerOptions = useMemo(() => {
         if (isNotDefined(value?.name) || value.name === VectorTileServerNameEnum.Custom) {
             return [];
         }
@@ -141,11 +141,11 @@ function VectorTileServerInput(props: Props) {
                         />
                         <SelectInput
                             label="Source name"
-                            name="sourceName"
-                            value={value[fieldName]?.sourceName}
-                            error={getErrorObject(error?.[fieldName])?.sourceName}
+                            name="sourceLayer"
+                            value={value[fieldName]?.sourceLayer}
+                            error={getErrorObject(error?.[fieldName])?.sourceLayer}
                             onChange={setCommonTileServerFieldValue}
-                            options={sourceNameOptions}
+                            options={sourceLayerOptions}
                             keySelector={keySelector}
                             labelSelector={labelSelector}
                         />
@@ -175,10 +175,10 @@ function VectorTileServerInput(props: Props) {
                             disabled={disabled}
                         />
                         <TextInput
-                            label="Source name"
-                            name="sourceName"
-                            value={value.custom?.sourceName}
-                            error={getErrorObject(error?.[fieldName])?.sourceName}
+                            label="Source layer"
+                            name="sourceLayer"
+                            value={value.custom?.sourceLayer}
+                            error={getErrorObject(error?.[fieldName])?.sourceLayer}
                             onChange={setCustomTileServerFieldValue}
                         />
                         <NumberInput

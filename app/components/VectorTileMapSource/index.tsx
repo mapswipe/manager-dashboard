@@ -39,7 +39,7 @@ function VectorTileMapSource(props: Props) {
     const {
         url,
         credits,
-        sourceName,
+        sourceLayer,
         minZoom,
         maxZoom,
     } = useMemo(() => {
@@ -62,7 +62,7 @@ function VectorTileMapSource(props: Props) {
             return {
                 url: tileConfig.tileServer?.custom?.url,
                 credits: tileConfig.tileServer?.custom?.credits,
-                sourceName: tileConfig.tileServer?.custom?.sourceName,
+                sourceLayer: tileConfig.tileServer?.custom?.sourceLayer,
             };
         }
 
@@ -72,7 +72,7 @@ function VectorTileMapSource(props: Props) {
         return {
             url: vectorTileServerMapping[name]?.url,
             credits: vectorTileServerMapping[name]?.credits,
-            sourceName: tileServer?.sourceName,
+            sourceLayer: tileServer?.sourceLayer,
             minZoom: vectorTileServerMapping[name]?.minZoom,
             maxZoom: vectorTileServerMapping[name]?.maxZoom,
         };
@@ -93,35 +93,35 @@ function VectorTileMapSource(props: Props) {
     }, [url, credits, minZoom, maxZoom]);
 
     const lineLayerOptions = useMemo<Omit<maplibregl.LineLayerSpecification, 'id' | 'source'> | undefined>(() => {
-        if (isNotDefined(tileConfig) || isNotDefined(sourceName)) {
+        if (isNotDefined(tileConfig) || isNotDefined(sourceLayer)) {
             return undefined;
         }
 
         return {
             type: 'line',
-            'source-layer': sourceName,
+            'source-layer': sourceLayer,
             paint: {
                 'line-color': tileConfig.lineColor,
                 'line-width': tileConfig.lineWidth,
                 'line-opacity': tileConfig.lineOpacity,
             },
         };
-    }, [tileConfig, sourceName]);
+    }, [tileConfig, sourceLayer]);
 
     const fillLayerOptions = useMemo<Omit<maplibregl.FillLayerSpecification, 'id' | 'source'> | undefined>(() => {
-        if (isNotDefined(tileConfig) || isNotDefined(sourceName)) {
+        if (isNotDefined(tileConfig) || isNotDefined(sourceLayer)) {
             return undefined;
         }
 
         return {
             type: 'fill',
-            'source-layer': sourceName,
+            'source-layer': sourceLayer,
             paint: {
                 'fill-color': tileConfig.fillColor,
                 'fill-opacity': tileConfig.fillOpacity,
             },
         };
-    }, [tileConfig, sourceName]);
+    }, [tileConfig, sourceLayer]);
 
     if (isNotDefined(sourceOptions)) {
         return null;
@@ -132,8 +132,8 @@ function VectorTileMapSource(props: Props) {
     }
 
     const sourceKey = `overlay-source-${tileConfig.tileServer.name}`;
-    const fillLayerKey = `overlay-fill-layer-${sourceName}`;
-    const lineLayerKey = `overlay-line-layer-${sourceName}`;
+    const fillLayerKey = `overlay-fill-layer-${sourceLayer}`;
+    const lineLayerKey = `overlay-line-layer-${sourceLayer}`;
 
     return (
         <MapSource
