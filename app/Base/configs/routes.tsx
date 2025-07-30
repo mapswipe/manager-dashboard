@@ -60,7 +60,7 @@ const newTutorial = wrap({
     path: '/tutorial/new/',
     title: 'New Tutorial',
     navbarVisibility: true,
-    component: lazy(() => import('#views/TutorialForm')),
+    component: lazy(() => import('#views/NewTutorial')),
     componentProps: {},
     visibility: 'is-authenticated',
 });
@@ -69,7 +69,7 @@ const editTutorial = wrap({
     path: '/tutorial/:id/edit/',
     title: 'Edit Tutorial',
     navbarVisibility: true,
-    component: lazy(() => import('#views/TutorialForm')),
+    component: lazy(() => import('#views/EditTutorial')),
     componentProps: {},
     visibility: 'is-authenticated',
 });

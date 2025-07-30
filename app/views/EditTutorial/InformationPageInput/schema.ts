@@ -3,22 +3,19 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
-import {
-    TutorialInformationPageBlockCreateInput,
-    TutorialInformationPageCreateInput,
-} from '#generated/types/graphql';
+import { TutorialInformationPageCreateInput } from '#generated/types/graphql';
 import {
     DeepNonNullable,
     DeepReplace,
 } from '#utils/types';
 
-import blockFormSchema, { BlockInputFields } from './BlockInput/schema';
+import blockFormSchema, { PartialBlockInputFields } from './BlockInput/schema';
 
 export type InformationPagesInputFields = DeepNonNullable<
     DeepReplace<
-        TutorialInformationPageCreateInput & { clientId: string },
-        TutorialInformationPageBlockCreateInput,
-        BlockInputFields
+        TutorialInformationPageCreateInput,
+        TutorialInformationPageCreateInput['blocks'],
+        Array<PartialBlockInputFields>
     >
 >;
 

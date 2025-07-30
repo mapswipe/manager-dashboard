@@ -65,7 +65,7 @@ import {
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
-import tutorialCreateFormSchema, {
+import tutorialUpdate, {
     defaultTutorialCreateFormValue,
     PartialTutorialCreateInputFields,
     TutorialFormContext,
@@ -111,7 +111,7 @@ function NewTutorial(props: Props) {
         validate,
         setError,
     } = useForm(
-        tutorialCreateFormSchema,
+        tutorialUpdate,
         { value: defaultTutorialCreateFormValue },
         tutorialFormContext,
     );
@@ -404,7 +404,7 @@ function NewTutorial(props: Props) {
                     onClick={handleSubmitButtonClick}
                     disabled={actionsDisabled}
                 >
-                    Submit tutorial
+                    Update
                 </Button>
             )}
         >
