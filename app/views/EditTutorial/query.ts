@@ -139,10 +139,10 @@ query TutorialProjectDetail($projectId: ID!) {
 }
 `;
 
-export const CREATE_TUTORIAL_MUTATION = gql`
+export const UPDATE_TUTORIAL_MUTATION = gql`
 ${OPERATION_INFO_FRAGMENT}
-mutation NewTutorial($data: TutorialCreateInput!) {
-    createTutorial(data: $data) {
+mutation UpdateTutorial($id: ID!, $data: TutorialUpdateInput!) {
+    updateTutorial(pk: $id, data: $data) {
         ... on TutorialTypeMutationResponseType {
             __typename
             errors

@@ -7,8 +7,8 @@ import {
 
 import { TutorialCreateInput } from '#generated/types/graphql';
 
-type PartialTutorialCreateInputFields = PartialForm<TutorialCreateInput, 'clientId'>;
-type TutorialCreateFormSchema = ObjectSchema<PartialTutorialCreateInputFields>;
+export type PartialTutorialCreateInputFields = PartialForm<TutorialCreateInput, 'clientId'>;
+export type TutorialCreateFormSchema = ObjectSchema<PartialTutorialCreateInputFields>;
 
 const tutorialCreateFormSchema: TutorialCreateFormSchema = {
     fields: (): ReturnType<TutorialCreateFormSchema['fields']> => ({

@@ -6,32 +6,28 @@ import {
 
 import {
     ProjectTypeEnum,
-    TutorialInformationPageInput,
     TutorialUpdateInput,
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
+
+import informationPageSchema, { PartialInformationPageInputFields } from './InformationPageInput/schema';
+import scenarioPageSchema, { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
 
 export type TutorialFormContext = {
     projectType: ProjectTypeEnum | undefined,
 } | undefined;
 
-export type PartialTutorialCreateInputFields = PartialForm<
-    DeepNonNullable<TutorialUpdateInput>,
+export type PartialTutorialUpdateInputFields = PartialForm<
+    Omit<DeepNonNullable<TutorialUpdateInput>, 'informationPages' | 'scenarios'> & {
+        informationPages: Array<PartialInformationPageInputFields>,
+        scenarios: Array<PartialScenarioPageInputFields>,
+    },
     'clientId'
->;
-export type TutorialUpdateFormSchema = ObjectSchema<
-    PartialTutorialCreateInputFields,
-    PartialTutorialCreateInputFields,
-    TutorialFormContext
 >;
 
-type PartialTutorialInformationPageInputFields = PartialForm<
-    DeepNonNullable<TutorialInformationPageInput>,
-    'clientId'
->;
-type TutorialInformationPageFormSchema = ObjectSchema<
-    PartialTutorialInformationPageInputFields,
-    PartialTutorialCreateInputFields,
+export type TutorialUpdateFormSchema = ObjectSchema<
+    PartialTutorialUpdateInputFields,
+    PartialTutorialUpdateInputFields,
     TutorialFormContext
 >;
 
@@ -42,16 +38,16 @@ const tutorialUpdate: TutorialUpdateFormSchema = {
             required: true,
             requiredValidation: requiredStringCondition,
         },
+        // FIXME: project should not be included here
+        project: {},
+        status: {},
         informationPages: {
-            fields: (): ReturnType<TutorialInformationPageFormSchema['fields']> => ({
-                delete: {
-                    fields: () => ({
-                        id: {
-                            required: true,
-                        },
-                    }),
-                },
-            }),
+            keySelector: (informationPage) => informationPage.clientId,
+            member: () => informationPageSchema,
+        },
+        scenarios: {
+            keySelector: (scenario) => scenario.clientId,
+            member: () => scenarioPageSchema,
         },
     }),
 };

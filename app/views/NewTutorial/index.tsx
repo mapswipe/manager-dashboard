@@ -18,6 +18,7 @@ import {
     useForm,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
+import { gql } from 'urql';
 
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
@@ -46,9 +47,30 @@ import {
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
-import { PartialTutorialCreateInputFields } from '#views/EditTutorial/schema';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
+import { PartialTutorialUpdateInputFields } from '#views/EditTutorial/schema';
 
-import tutorialCreateFormSchema from './schema';
+import tutorialCreateFormSchema, { PartialTutorialCreateInputFields } from './schema';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const CREATE_TUTORIAL_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
+mutation NewTutorial($data: TutorialCreateInput!) {
+    createTutorial(data: $data) {
+        ... on TutorialTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                id
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
 
 interface Props {
     className?: string;
@@ -107,7 +129,7 @@ function NewTutorial(props: Props) {
     ] = useNewTutorialMutation();
 
     const handleFormSubmission = useCallback(
-        async (submittedValues: PartialTutorialCreateInputFields) => {
+        async (submittedValues: PartialTutorialUpdateInputFields) => {
             const finalValues = submittedValues as TutorialCreateInput;
 
             try {

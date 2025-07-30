@@ -2,22 +2,20 @@ import {
     useCallback,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import { CgArrowTopRightR } from 'react-icons/cg';
 import { IoAdd } from 'react-icons/io5';
 import { MdDownload } from 'react-icons/md';
-import {
-    generatePath,
-    useNavigate,
-    useParams,
-} from 'react-router';
+import { useParams } from 'react-router';
 import {
     _cs,
     compareNumber,
     isDefined,
     isNotDefined,
     listToGroupList,
+    listToMap,
     unique,
 } from '@togglecorp/fujs';
 import {
@@ -29,7 +27,6 @@ import {
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
-import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import GeoJsonFileInput from '#components/GeoJsonFileInput';
@@ -43,12 +40,12 @@ import TextOutput from '#components/TextOutput';
 import {
     ProjectAssetMimetypeEnum,
     ProjectTypeEnum,
-    TutorialCreateInput,
-    useNewTutorialMutation,
+    TutorialUpdateInput,
     useProjectOptionsQuery,
     useProjectOutputAssetsQuery,
     useTutorialDetailsQuery,
     useTutorialProjectDetailQuery,
+    useUpdateTutorialMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
@@ -66,13 +63,59 @@ import { PartialInformationPageInputFields } from './InformationPageInput/schema
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
 import tutorialUpdate, {
-    defaultTutorialCreateFormValue,
-    PartialTutorialCreateInputFields,
+    PartialTutorialUpdateInputFields,
     TutorialFormContext,
 } from './schema';
 import { validateFindTutorialGeoJson } from './utils';
 
 import styles from './styles.module.css';
+
+function createMapping<T extends { clientId: string }>(items: T[]) {
+    return listToMap(items, ({ clientId }) => clientId);
+}
+
+function createCud<
+    CURRENT_ITEM extends { clientId: string },
+    PREV_ITEM extends { clientId: string, id: string },
+    TRANSFORMED_UPDATED_VALUE,
+>(
+    currentValues: CURRENT_ITEM[],
+    prevValues: PREV_ITEM[],
+    transformUpdateValue: (
+        current: CURRENT_ITEM & { id: string },
+        previous: PREV_ITEM
+    ) => TRANSFORMED_UPDATED_VALUE = (current) => current as unknown as TRANSFORMED_UPDATED_VALUE,
+) {
+    const prevValueMapping = createMapping(prevValues);
+    const newValueMapping = createMapping(currentValues);
+
+    const createdValues = currentValues.filter(
+        ({ clientId }) => !prevValueMapping[clientId],
+    );
+
+    // FIXME: create diffing algorithm to check if values are actually updated
+    const updatedValues = currentValues.filter(
+        ({ clientId }) => !!prevValueMapping[clientId],
+    ).map((updatedValue) => {
+        const prevValue = prevValueMapping[updatedValue.clientId];
+        return transformUpdateValue(
+            {
+                ...updatedValue,
+                id: prevValue.id,
+            },
+            prevValue,
+        );
+    });
+    const deletedValues = prevValues.filter(
+        ({ clientId }) => !newValueMapping[clientId],
+    );
+
+    return [
+        ...createdValues.map((createValue) => ({ create: createValue })),
+        ...updatedValues.map((updateValue) => ({ update: updateValue })),
+        ...deletedValues.map(({ id }) => ({ delete: { id } })),
+    ];
+}
 
 interface Props {
     className?: string;
@@ -83,13 +126,12 @@ function NewTutorial(props: Props) {
     const { id: tutorialIdFromParams } = useParams<{ id: string }>();
     const [tutorialFormContext, setTutorialFormContext] = useState<TutorialFormContext>();
 
-    const navigate = useNavigate();
     const alert = useAlert();
 
     const [
-        { fetching: createNewTutorialPending },
-        createNewTutorial,
-    ] = useNewTutorialMutation();
+        { fetching: updateTutorialPending },
+        updateTutorial,
+    ] = useUpdateTutorialMutation();
 
     const [{
         data: projectOptionsResponse,
@@ -102,6 +144,12 @@ function NewTutorial(props: Props) {
         variables: { id: tutorialIdFromParams ?? '' },
         pause: isNotDefined(tutorialIdFromParams),
     });
+
+    const defaultTutorialCreateFormValue = useMemo<PartialTutorialUpdateInputFields>(() => ({
+        clientId: ulid(),
+    }), []);
+
+    const tutorialResponseRef = useRef<PartialTutorialUpdateInputFields>();
 
     const {
         value,
@@ -128,20 +176,25 @@ function NewTutorial(props: Props) {
             ...other
         } = removeNull(tutorial);
 
-        // FIXME: need to add clientId and fix the structure
-        setValue({
+        const transformedTutorial = {
             project: projectId,
             scenarios: scenarios.map((scenario) => ({
                 ...scenario,
                 tasks: scenario.tasks.map((task) => ({
                     ...task,
                     projectTypeSpecifics: {
+                        // FIXME: add other types
                         find: task.projectTypeSpecifics,
                     },
                 })),
             })),
             ...other,
-        });
+        };
+
+        tutorialResponseRef.current = transformedTutorial;
+
+        // FIXME: need to add clientId and fix the structure
+        setValue(transformedTutorial);
     }, [tutorialData, setValue]);
 
     const error = getErrorObject(formError);
@@ -249,18 +302,60 @@ function NewTutorial(props: Props) {
     );
 
     const handleFormSubmission = useCallback(
-        async (submittedValues: PartialTutorialCreateInputFields) => {
-            if (isDefined(tutorialIdFromParams)) {
+        async (submittedValues: PartialTutorialUpdateInputFields) => {
+            if (isNotDefined(tutorialIdFromParams) || isNotDefined(tutorialData)) {
                 // eslint-disable-next-line no-console
-                console.info('Edit not implemented yet!', submittedValues);
+                console.error('tutorial not loaded properly', tutorialIdFromParams, tutorialData);
                 return;
             }
 
-            const finalValues = submittedValues as TutorialCreateInput;
+            const {
+                informationPages: responseInformationPages,
+                scenarios: responseScenarios,
+            } = tutorialData.tutorial;
+
+            const {
+                informationPages: formInformationPages,
+                scenarios: formScenarios,
+                ...otherValues
+            } = submittedValues;
+
+            const informationPages = createCud(
+                formInformationPages ?? [],
+                responseInformationPages,
+                (formInformationPage, responseInformationPage) => ({
+                    ...formInformationPage,
+                    id: responseInformationPage.id,
+                    blocks: createCud(
+                        formInformationPage.blocks ?? [],
+                        responseInformationPage.blocks,
+                    ),
+                }),
+            );
+
+            const scenarios = createCud(
+                formScenarios ?? [],
+                responseScenarios,
+                (formScenario, responseScenario) => ({
+                    ...formScenario,
+                    id: responseScenario.id,
+                    tasks: createCud(
+                        formScenario.tasks ?? [],
+                        responseScenario.tasks ?? [],
+                    ),
+                }),
+            );
+
+            const finalValues: TutorialUpdateInput = {
+                ...otherValues,
+                informationPages,
+                scenarios,
+            } as TutorialUpdateInput; // FIXME: try to remove this typecast
 
             try {
-                const result = await createNewTutorial({
+                const result = await updateTutorial({
                     data: finalValues,
+                    id: tutorialIdFromParams,
                 });
 
                 if (checkAndAlertGraphQLResultError(result, alert)) {
@@ -269,7 +364,7 @@ function NewTutorial(props: Props) {
 
                 if (isNotDefined(result.data)
                     // eslint-disable-next-line no-underscore-dangle
-                    || result.data.createTutorial.__typename !== 'TutorialTypeMutationResponseType'
+                    || result.data.updateTutorial.__typename !== 'TutorialTypeMutationResponseType'
                 ) {
                     alert.show(
                         'Failed to create the Tutorial!',
@@ -285,12 +380,12 @@ function NewTutorial(props: Props) {
                 const {
                     ok,
                     errors,
-                    result: createTutorialResult,
-                } = result.data.createTutorial;
+                    result: updateTutorialResult,
+                } = result.data.updateTutorial;
 
-                if (!ok || !createTutorialResult) {
+                if (!ok || !updateTutorialResult) {
                     alert.show(
-                        'Failed to create the Tutorial!',
+                        'Failed to update the Tutorial!',
                         {
                             description: 'Please fix the errors and try again!',
                             variant: 'danger',
@@ -301,23 +396,23 @@ function NewTutorial(props: Props) {
                 }
 
                 alert.show(
-                    'Tutorial created successfully!',
+                    'Tutorial updated successfully!',
                     {
-                        description: 'Navigating to edit page of the created tutorial.',
+                        // description: 'Navigating to edit page of the created tutorial.',
                         variant: 'success',
                     },
-                );
-                navigate(
-                    generatePath(
-                        routes.editTutorial.originalPath,
-                        { id: createTutorialResult.id },
-                    ),
                 );
             } catch (apolloError) {
                 alertCombinedError(apolloError, alert);
             }
         },
-        [navigate, tutorialIdFromParams, createNewTutorial, setError, alert],
+        [
+            tutorialIdFromParams,
+            tutorialData,
+            updateTutorial,
+            alert,
+            setError,
+        ],
     );
 
     const handleSubmitButtonClick = useMemo(
@@ -389,8 +484,8 @@ function NewTutorial(props: Props) {
         setFieldValue(scenarioPages, 'scenarios');
     }, [setFieldValue, projectDetailResponse]);
 
-    const inputsDisabled = createNewTutorialPending;
-    const actionsDisabled = inputsDisabled || isDefined(tutorialIdFromParams);
+    const inputsDisabled = updateTutorialPending;
+    const actionsDisabled = inputsDisabled;
 
     return (
         <PageLayout
