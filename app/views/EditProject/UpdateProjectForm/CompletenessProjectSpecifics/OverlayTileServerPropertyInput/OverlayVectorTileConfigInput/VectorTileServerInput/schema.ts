@@ -89,7 +89,7 @@ const vectorTileServerFormSchema: VectorTileServerFormSchema = {
                         ...defaultVectorTileServerFieldsSchema,
                         [key]: {
                             fields: (): ReturnType<CustomVectorTileServerConfigSchema['fields']> => ({
-                                sourceName: {
+                                sourceLayer: {
                                     required: true,
                                 },
                                 url: {
@@ -109,7 +109,7 @@ const vectorTileServerFormSchema: VectorTileServerFormSchema = {
                     ...defaultVectorTileServerFieldsSchema,
                     [key]: {
                         fields: (): ReturnType<CommonVectorTileServerConfigSchema['fields']> => ({
-                            sourceName: {
+                            sourceLayer: {
                                 required: true,
                             },
                             credits: {},

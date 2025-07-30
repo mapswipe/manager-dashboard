@@ -36,7 +36,7 @@ function VectorTilePreview(props: Props) {
         zoomLevel,
     } = props;
 
-    const sourceName = useMemo(() => {
+    const sourceLayer = useMemo(() => {
         if (isNotDefined(vectorTileConfig) || isNotDefined(vectorTileConfig.tileServer)) {
             return {};
         }
@@ -51,7 +51,7 @@ function VectorTilePreview(props: Props) {
             vectorTileServerNameToTileInputKey[name]
         ];
 
-        return tileServer?.sourceName;
+        return tileServer?.sourceLayer;
     }, [vectorTileConfig]);
 
     return (
@@ -71,12 +71,12 @@ function VectorTilePreview(props: Props) {
                     getLayerName('base-tile-source', 'base-tile-layer', true),
                     getLayerName(
                         `overlay-source-${vectorTileConfig?.tileServer?.name}`,
-                        `overlay-fill-layer-${sourceName}`,
+                        `overlay-fill-layer-${sourceLayer}`,
                         true,
                     ),
                     getLayerName(
                         `overlay-source-${vectorTileConfig?.tileServer?.name}`,
-                        `overlay-line-layer-${sourceName}`,
+                        `overlay-line-layer-${sourceLayer}`,
                         true,
                     ),
                 ]}

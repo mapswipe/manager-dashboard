@@ -33,19 +33,19 @@ fragment VectorTileServerPropertyFields on ProjectVectorTileServerConfig {
     name
     openFreeMap {
         credits
-        sourceName
+        sourceLayer
     }
     openStreetMap {
         credits
-        sourceName
+        sourceLayer
     }
     versatiles {
         credits
-        sourceName
+        sourceLayer
     }
     custom {
         credits
-        sourceName
+        sourceLayer
         url
         minZoom
         maxZoom
