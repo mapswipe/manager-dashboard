@@ -7,7 +7,7 @@ import { gql } from 'urql';
 
 import GeoJsonMapSource from '#components/GeoJsonMapSource';
 import {
-    ProjectAssetMimetypeEnum,
+    AssetMimetypeEnum,
     useProjectAssetPreviewQuery,
 } from '#generated/types/graphql';
 
@@ -48,7 +48,7 @@ function GeoJsonAssetMapSource(props: Props) {
         async function fetchGeoJson() {
             if (isNotDefined(geometryAssetResponse)
                 || geometryAssetResponse
-                    .projectAsset.mimetype !== ProjectAssetMimetypeEnum.Geojson
+                    .projectAsset.mimetype !== AssetMimetypeEnum.Geojson
             ) {
                 return;
             }

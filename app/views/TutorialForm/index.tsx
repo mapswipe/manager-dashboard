@@ -41,7 +41,7 @@ import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
-    ProjectAssetMimetypeEnum,
+    AssetMimetypeEnum,
     ProjectTypeEnum,
     TutorialCreateInput,
     useNewTutorialMutation,
@@ -472,7 +472,7 @@ function NewTutorial(props: Props) {
                                     end={(
                                         <>
                                             {/* eslint-disable-next-line max-len */}
-                                            {projectAsset.mimetype === ProjectAssetMimetypeEnum.Geojson && (
+                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && (
                                                 <a
                                                     className={styles.projectAssetDownloadLink}
                                                     href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
