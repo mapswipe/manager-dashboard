@@ -35,7 +35,7 @@ import styles from './styles.module.css';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ORGANIZATION_LIST_QUERY = gql`
 query OrganizationList($pagination: OffsetPaginationInput!) {
-    organizations(pagination: $pagination) {
+    organizations(pagination: $pagination, includeAll: true) {
         totalCount
         results {
             name
