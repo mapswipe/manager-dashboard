@@ -18,6 +18,7 @@ import {
 import EnumsContext from '#base/context/EnumsContext';
 import TileServerContext from '#base/context/TileServerContext';
 import Container, { type Props as ContainerProps } from '#components/Container';
+import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import ListLayout from '#components/ListLayout';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
@@ -26,7 +27,6 @@ import {
     keySelector,
     labelSelector,
 } from '#utils/common';
-import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
 
 import {
     PartialCommonRasterTileServerConfigFields,

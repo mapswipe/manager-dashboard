@@ -5,7 +5,7 @@ import {
     ObjectError,
 } from '@togglecorp/toggle-form';
 
-import AssetInput from '#views/EditProject/AssetInput';
+import AssetInput from '#components/domain/AssetInput';
 
 import { type PartialValidateImageSpecificFields } from './schema.ts';
 

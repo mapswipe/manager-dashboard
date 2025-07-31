@@ -5,7 +5,7 @@ import {
     requiredStringCondition,
 } from '@togglecorp/toggle-form';
 
-import rasterTileServerFormSchema from '#components/RasterTileServerInput/schema';
+import rasterTileServerFormSchema from '#components/domain/RasterTileServerInput/schema';
 import {
     CompareProjectPropertyInput,
     RasterTileServerNameEnum,

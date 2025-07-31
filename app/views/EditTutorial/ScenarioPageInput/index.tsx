@@ -16,22 +16,12 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
-import InlineLayout from '#components/InlineLayout';
+import IconSelectInput from '#components/domain/IconSelectInput';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
-import SelectInput from '#components/SelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import { TutorialProjectDetailQuery } from '#generated/types/graphql';
-import {
-    keySelector,
-    labelSelector,
-} from '#utils/common';
-import {
-    IconItem,
-    iconList,
-    iconMapping,
-} from '#utils/icon';
 
 import CompareScenarioPreview from './CompareScenarioPreview';
 import CompletenessScenarioPreview from './CompletenessScenarioPreview';
@@ -41,17 +31,6 @@ import TaskInput from './TaskInput';
 import ValidateScenarioPreview from './ValidateScenarioPreview';
 
 import styles from './styles.module.css';
-
-function iconOptionLabelSelector(iconOption: IconItem) {
-    const Icon = iconOption.component;
-    return (
-        <InlineLayout
-            start={<Icon />}
-        >
-            {iconOption.label}
-        </InlineLayout>
-    );
-}
 
 interface Props {
     className?: string;
@@ -99,12 +78,6 @@ function ScenarioPageInput(props: Props) {
         [error?.tasks],
     );
 
-    const InstructionsIcon = isDefined(value.instructionsIcon)
-        ? iconMapping[value.instructionsIcon]
-        : null;
-    const HintIcon = isDefined(value.hintIcon) ? iconMapping[value.hintIcon] : null;
-    const SuccessIcon = isDefined(value.successIcon) ? iconMapping[value.successIcon] : null;
-
     return (
         <Container
             className={_cs(styles.scenarioPageInput, className)}
@@ -126,19 +99,36 @@ function ScenarioPageInput(props: Props) {
             contentClassName={styles.content}
         >
             <ListLayout layout="block">
-                <div className={styles.scenarioInputs}>
-                    <SelectInput
+                <ListLayout
+                    layout="grid"
+                    numPreferredGridColumns={3}
+                    minGridColumnSize="8rem"
+                >
+                    <IconSelectInput
                         label="Instruction icon"
                         name="instructionsIcon"
-                        options={iconList}
                         value={value.instructionsIcon}
                         onChange={setFieldValue}
-                        keySelector={keySelector}
-                        labelSelector={labelSelector}
-                        optionLabelSelector={iconOptionLabelSelector}
                         error={error?.instructionsIcon}
-                        icons={InstructionsIcon && <InstructionsIcon />}
+                        nonClearable
+                    />
+                    <IconSelectInput
+                        label="Hint icon"
+                        name="hintIcon"
+                        value={value.hintIcon}
+                        onChange={setFieldValue}
+                        error={error?.hintIcon}
                         disabled={disabled}
+                        nonClearable
+                    />
+                    <IconSelectInput
+                        label="Success icon"
+                        name="successIcon"
+                        value={value.successIcon}
+                        onChange={setFieldValue}
+                        error={error?.successIcon}
+                        disabled={disabled}
+                        nonClearable
                     />
                     <TextInput
                         label="Instruction title"
@@ -148,54 +138,12 @@ function ScenarioPageInput(props: Props) {
                         error={error?.instructionsTitle}
                         disabled={disabled}
                     />
-                    <TextArea
-                        name="instructionsDescription"
-                        label="Instruction description"
-                        value={value.instructionsDescription}
-                        onChange={setFieldValue}
-                        error={error?.instructionsDescription}
-                        disabled={disabled}
-                    />
-                    <SelectInput
-                        icons={HintIcon && <HintIcon />}
-                        label="Hint icon"
-                        name="hintIcon"
-                        options={iconList}
-                        value={value.hintIcon}
-                        onChange={setFieldValue}
-                        keySelector={keySelector}
-                        labelSelector={labelSelector}
-                        optionLabelSelector={iconOptionLabelSelector}
-                        error={error?.hintIcon}
-                        disabled={disabled}
-                    />
                     <TextInput
                         label="Hint title"
                         name="hintTitle"
                         value={value.hintTitle}
                         onChange={setFieldValue}
                         error={error?.hintTitle}
-                        disabled={disabled}
-                    />
-                    <TextArea
-                        name="hintDescription"
-                        label="Hint description"
-                        value={value.hintDescription}
-                        onChange={setFieldValue}
-                        error={error?.hintDescription}
-                        disabled={disabled}
-                    />
-                    <SelectInput
-                        label="Success icon"
-                        name="successIcon"
-                        options={iconList}
-                        value={value.successIcon}
-                        onChange={setFieldValue}
-                        keySelector={keySelector}
-                        labelSelector={labelSelector}
-                        optionLabelSelector={iconOptionLabelSelector}
-                        error={error?.successIcon}
-                        icons={SuccessIcon && <SuccessIcon />}
                         disabled={disabled}
                     />
                     <TextInput
@@ -207,6 +155,22 @@ function ScenarioPageInput(props: Props) {
                         disabled={disabled}
                     />
                     <TextArea
+                        name="instructionsDescription"
+                        label="Instruction description"
+                        value={value.instructionsDescription}
+                        onChange={setFieldValue}
+                        error={error?.instructionsDescription}
+                        disabled={disabled}
+                    />
+                    <TextArea
+                        name="hintDescription"
+                        label="Hint description"
+                        value={value.hintDescription}
+                        onChange={setFieldValue}
+                        error={error?.hintDescription}
+                        disabled={disabled}
+                    />
+                    <TextArea
                         name="successDescription"
                         label="Success description"
                         value={value.successDescription}
@@ -214,7 +178,7 @@ function ScenarioPageInput(props: Props) {
                         error={error?.successDescription}
                         disabled={disabled}
                     />
-                </div>
+                </ListLayout>
                 {isDefined(projectData) && (
                     <Container
                         heading="Tasks"

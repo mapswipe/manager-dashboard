@@ -5,7 +5,7 @@ import {
 import { isNotDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
-import GeoJsonMapSource from '#components/GeoJsonMapSource';
+import GeoJsonMapSource from '#components/domain/GeoJsonMapSource';
 import {
     AssetMimetypeEnum,
     useProjectAssetPreviewQuery,

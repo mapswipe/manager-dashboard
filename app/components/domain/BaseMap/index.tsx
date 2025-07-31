@@ -9,7 +9,7 @@ import {
 import Map from '@togglecorp/re-map';
 
 import TileServerContext from '#base/context/TileServerContext';
-import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
+import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
 
 const FALLBACK_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';

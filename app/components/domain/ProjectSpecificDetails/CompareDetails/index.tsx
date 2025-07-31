@@ -1,9 +1,9 @@
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
+import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import TextOutput from '#components/TextOutput';
 import { CompareProjectPropertyType } from '#generated/types/graphql';
-import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
 
 interface Props {
     data: CompareProjectPropertyType | undefined;

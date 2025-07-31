@@ -1,6 +1,7 @@
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
+import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import GridLayoutItem from '#components/GridLayoutItem';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
@@ -8,7 +9,6 @@ import {
     ProjectSpecificDetailsQuery,
     RasterTileServerNameEnum,
 } from '#generated/types/graphql';
-import ProjectAssetPreview from '#views/EditProject/ProjectAssetPreview';
 
 interface Props {
     data: ProjectSpecificDetailsQuery['project']['projectTypeSpecifics'];

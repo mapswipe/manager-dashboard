@@ -9,6 +9,7 @@ import {
 import { ulid } from 'ulid';
 import { gql } from 'urql';
 
+import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
@@ -16,8 +17,6 @@ import {
     useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
-
-import ProjectAssetPreview from '../ProjectAssetPreview';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_ASSET_MUTATION = gql`

@@ -1,6 +1,6 @@
 .task-input {
     display: grid;
-    grid-template-columns: 2rem 8rem auto;
+    grid-template-columns: max-content 7rem auto;
     gap: var(--spacing-md);
-    align-items: start;
+    align-items: baseline;
 }

@@ -10,7 +10,7 @@ import {
 import { removeNull } from '@togglecorp/toggle-form';
 import { LineLayerSpecification } from 'maplibre-gl';
 
-import GeoJsonPreview from '#components/GeoJsonPreview';
+import GeoJsonPreview from '#components/domain/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
 import { iconMapping } from '#utils/icon';

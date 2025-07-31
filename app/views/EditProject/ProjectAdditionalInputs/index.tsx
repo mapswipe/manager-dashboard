@@ -7,6 +7,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
+import AssetInput from '#components/domain/AssetInput';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import {
@@ -14,8 +15,6 @@ import {
     ProjectUpdateInput,
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
-
-import AssetInput from '../AssetInput';
 
 type ProjectAdditionalInputFields = Pick<
 ProjectUpdateInput & ProcessedProjectUpdateInput,

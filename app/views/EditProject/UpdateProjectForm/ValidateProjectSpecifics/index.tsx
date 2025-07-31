@@ -13,14 +13,14 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
-import CustomOptionInput from '#components/CustomOptionInput';
-import { PartialCustomOptionInputFields } from '#components/CustomOptionInput/schema';
-import NonFieldError from '#components/NonFieldError';
-import RasterTileServerInput from '#components/RasterTileServerInput';
+import CustomOptionInput from '#components/domain/CustomOptionInput';
+import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import RasterTileServerInput from '#components/domain/RasterTileServerInput';
 import {
     defaultRasterTileServerInputValue,
     type PartialRasterTileServerInputFields,
-} from '#components/RasterTileServerInput/schema';
+} from '#components/domain/RasterTileServerInput/schema';
+import NonFieldError from '#components/NonFieldError';
 
 import {
     defaultObjectSourceInputFormValue,

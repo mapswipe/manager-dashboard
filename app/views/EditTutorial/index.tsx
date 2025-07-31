@@ -29,11 +29,11 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
-import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import GeoJsonFileInput from '#components/domain/GeoJsonFileInput';
+import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
-import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
@@ -164,19 +164,65 @@ function NewTutorial(props: Props) {
             projectId,
             scenarios,
             ...other
-        } = removeNull(tutorial);
+        } = removeNull(tutorial, []);
 
         const transformedTutorial = {
             project: projectId,
             scenarios: scenarios.map((scenario) => ({
                 ...scenario,
-                tasks: scenario.tasks.map((task) => ({
-                    ...task,
-                    projectTypeSpecifics: {
-                        // FIXME: add other types
-                        find: task.projectTypeSpecifics,
-                    },
-                })),
+                tasks: scenario.tasks.map((task) => {
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'FindTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                find: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'CompareTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                compare: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'ValidateTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                validate: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'CompletenessTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                completeness: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'ValidateImageTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                validateImage: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    return { ...task };
+                }),
             })),
             ...other,
         };
