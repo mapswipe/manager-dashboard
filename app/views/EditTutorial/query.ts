@@ -25,13 +25,9 @@ query TutorialDetails($id: ID!) {
                 blockType
                 pageId
                 text
+                imageId
                 image {
-                    url
-                    size
-                    path
-                    name
-                    height
-                    width
+                    id
                 }
             }
         }
@@ -109,7 +105,6 @@ query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) 
         results {
             file {
                 url
-                size
                 name
             }
             id

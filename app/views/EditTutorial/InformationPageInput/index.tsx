@@ -44,6 +44,7 @@ interface Props {
     error: ObjectError<PartialInformationPageInputFields> | undefined;
     onRemove: (index: number) => void;
     lookForValue: string | undefined,
+    tutorialId: string,
 }
 
 function InformationPageInput(props: Props) {
@@ -55,6 +56,7 @@ function InformationPageInput(props: Props) {
         error,
         onRemove,
         lookForValue,
+        tutorialId,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -105,12 +107,30 @@ function InformationPageInput(props: Props) {
         [setFieldValue],
     );
 
-    const addBlock = useCallback(
+    const addTextBlock = useCallback(
         (newBlockIndex: number) => {
             const newBlock: PartialBlockInputFields = {
                 clientId: ulid(),
                 blockNumber: newBlockIndex + 1,
                 blockType: TutorialInformationPageBlockTypeEnum.Text,
+            };
+
+            setFieldValue(
+                (oldValue: PartialBlockInputFields[] | undefined) => (
+                    [...(oldValue ?? []), newBlock]
+                ),
+                'blocks' as const,
+            );
+        },
+        [setFieldValue],
+    );
+
+    const addImageBlock = useCallback(
+        (newBlockIndex: number) => {
+            const newBlock: PartialBlockInputFields = {
+                clientId: ulid(),
+                blockNumber: newBlockIndex + 1,
+                blockType: TutorialInformationPageBlockTypeEnum.Image,
             };
 
             setFieldValue(
@@ -157,7 +177,7 @@ function InformationPageInput(props: Props) {
                 />
                 <Container
                     heading="Blocks"
-                    headingLevel={4}
+                    headingLevel={5}
                     withHeaderBorder
                     headerActions={(
                         <>
@@ -166,13 +186,13 @@ function InformationPageInput(props: Props) {
                                 styleVariant="transparent"
                                 start={<IoAdd />}
                                 withoutPadding
-                                disabled
+                                onClick={addImageBlock}
                             >
                                 Add image block
                             </Button>
                             <Button
                                 name={value.blocks?.length ?? 0}
-                                onClick={addBlock}
+                                onClick={addTextBlock}
                                 styleVariant="transparent"
                                 start={<IoAdd />}
                                 withoutPadding
@@ -196,6 +216,7 @@ function InformationPageInput(props: Props) {
                             onChange={setBlockFieldValue}
                             error={getErrorObject(blockErrors?.[block.clientId])}
                             onRemove={removeBlock}
+                            tutorialId={tutorialId}
                         />
                     ))}
                 </Container>

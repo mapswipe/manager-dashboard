@@ -8,7 +8,8 @@ import {
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
-import Container from '#components/Container';
+import TutorialAssetInput from '#components/domain/TutorialAssetInput';
+import InlineLayout from '#components/InlineLayout';
 import TextArea from '#components/TextArea';
 import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
 
@@ -26,6 +27,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialBlockInputFields> | undefined;
     onRemove: (index: number) => void;
+    tutorialId: string;
 }
 
 function BlockInput(props: Props) {
@@ -36,6 +38,7 @@ function BlockInput(props: Props) {
         onChange,
         error,
         onRemove,
+        tutorialId,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -47,27 +50,24 @@ function BlockInput(props: Props) {
     );
 
     return (
-        <Container
+        <InlineLayout
             className={_cs(styles.blockInput, className)}
-            heading={`Block #${value.blockNumber ?? (index + 1)}`}
-            headingLevel={5}
-            headerActions={(
+            end={(
                 <Button
                     className={styles.removeButton}
                     name={index}
                     onClick={onRemove}
                     styleVariant="transparent"
                     colorVariant="danger"
-                    start={<IoTrashBin />}
                     withoutPadding
                 >
-                    Remove
+                    <IoTrashBin />
                 </Button>
             )}
-            spacing="none"
         >
             {value.blockType === TutorialInformationPageBlockTypeEnum.Text && (
                 <TextArea
+                    label={`#${value.blockNumber ?? (index + 1)} Text block`}
                     placeholder="Enter block text"
                     name="text"
                     value={value.text}
@@ -76,11 +76,17 @@ function BlockInput(props: Props) {
                 />
             )}
             {value.blockType === TutorialInformationPageBlockTypeEnum.Image && (
-                <div>
-                    Image upload is not implemented yet!
-                </div>
+                <TutorialAssetInput
+                    label={`#${value.blockNumber ?? (index + 1)} Image block`}
+                    name="image"
+                    tutorialId={tutorialId}
+                    value={value.image}
+                    onChange={setFieldValue}
+                    error={error?.image}
+                    inputType="image"
+                />
             )}
-        </Container>
+        </InlineLayout>
     );
 }
 

@@ -161,13 +161,15 @@ function NewTutorial(props: Props) {
 
         const { tutorial } = tutorialData;
         const {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectId,
             scenarios,
+            informationPages,
             ...other
         } = removeNull(tutorial, []);
 
-        const transformedTutorial = {
-            project: projectId,
+        const transformedTutorial: PartialTutorialUpdateInputFields = {
+            // project: projectId,
             scenarios: scenarios.map((scenario) => ({
                 ...scenario,
                 tasks: scenario.tasks.map((task) => {
@@ -222,6 +224,22 @@ function NewTutorial(props: Props) {
                     }
 
                     return { ...task };
+                }),
+            })),
+            informationPages: informationPages.map((informationPage) => ({
+                ...informationPage,
+                blocks: informationPage.blocks.map((block) => {
+                    const {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        image,
+                        imageId,
+                        ...blockProperties
+                    } = block;
+
+                    return {
+                        ...blockProperties,
+                        image: imageId,
+                    };
                 }),
             })),
             ...other,
@@ -523,6 +541,12 @@ function NewTutorial(props: Props) {
     const inputsDisabled = updateTutorialPending;
     const actionsDisabled = inputsDisabled;
 
+    if (isNotDefined(tutorialIdFromParams)) {
+        // eslint-disable-next-line no-console
+        console.error('Tutorial id not defined in params');
+        return null;
+    }
+
     return (
         <PageLayout
             className={_cs(styles.newTutorial, className)}
@@ -657,6 +681,7 @@ function NewTutorial(props: Props) {
                         onRemove={removeInformationPage}
                         error={getErrorObject(informationPageErrors?.[informationPage.clientId])}
                         lookForValue={projectDetailResponse?.project.lookFor}
+                        tutorialId={tutorialIdFromParams}
                     />
                 ))}
             </Container>

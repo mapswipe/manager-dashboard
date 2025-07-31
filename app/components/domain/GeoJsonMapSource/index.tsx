@@ -21,9 +21,9 @@ const geoJsonSourceOptions: Omit<maplibregl.GeoJSONSourceSpecification, 'data'> 
 const geoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'] = {
     type: 'line',
     paint: {
-        'line-color': '#ffff00',
+        'line-color': '#ffffff',
         'line-width': 2,
-        'line-dasharray': [2, 1],
+        // 'line-dasharray': [2, 1],
     },
 };
 
