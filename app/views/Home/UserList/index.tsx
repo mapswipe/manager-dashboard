@@ -15,7 +15,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_LIST_QUERY = gql`
 query UserList($pagination: OffsetPaginationInput!) {
-    users(pagination: $pagination) {
+    users(pagination: $pagination, includeAll: true) {
         totalCount
         results {
             displayName
