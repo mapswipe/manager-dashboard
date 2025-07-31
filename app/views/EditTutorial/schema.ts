@@ -38,8 +38,6 @@ const tutorialUpdate: TutorialUpdateFormSchema = {
             required: true,
             requiredValidation: requiredStringCondition,
         },
-        // FIXME: project should not be included here
-        project: {},
         status: {},
         informationPages: {
             keySelector: (informationPage) => informationPage.clientId,

@@ -34,25 +34,19 @@ import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
-import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
     AssetMimetypeEnum,
     ProjectTypeEnum,
     TutorialUpdateInput,
-    useProjectOptionsQuery,
     useProjectOutputAssetsQuery,
     useTutorialDetailsQuery,
     useTutorialProjectDetailQuery,
     useUpdateTutorialMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import {
-    idSelector,
-    nameSelector,
-    projectTypeToKeyMap,
-} from '#utils/common';
+import { projectTypeToKeyMap } from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -134,10 +128,6 @@ function NewTutorial(props: Props) {
     ] = useUpdateTutorialMutation();
 
     const [{
-        data: projectOptionsResponse,
-    }] = useProjectOptionsQuery();
-
-    const [{
         // fetching: tutorialDataPending,
         data: tutorialData,
     }] = useTutorialDetailsQuery({
@@ -211,22 +201,22 @@ function NewTutorial(props: Props) {
         data: projectAssetsResponse,
     }] = useProjectOutputAssetsQuery({
         variables: {
-            projectId: value.project ?? '',
+            projectId: tutorialData?.tutorial.projectId ?? '',
             pagination: {
                 offset: 0,
                 limit: 10,
             },
         },
-        pause: isNotDefined(value.project),
+        pause: isNotDefined(tutorialData?.tutorial.projectId),
     });
 
     const [{
         data: projectDetailResponse,
     }] = useTutorialProjectDetailQuery({
         variables: {
-            projectId: value.project ?? '',
+            projectId: tutorialData?.tutorial.projectId ?? '',
         },
-        pause: isNotDefined(value.project),
+        pause: isNotDefined(tutorialData?.tutorial.projectId),
     });
 
     useEffect(() => {
@@ -524,18 +514,6 @@ function NewTutorial(props: Props) {
                 withContentBackgroundAndPadding
                 spacing="lg"
             >
-                <SelectInput
-                    label="Select a project"
-                    name="project"
-                    hint="Informations like zoom level, tile server, etc will be inherited from the reference project"
-                    options={projectOptionsResponse?.projects.results}
-                    keySelector={idSelector}
-                    labelSelector={nameSelector}
-                    value={value.project}
-                    onChange={setFieldValue}
-                    error={error?.project}
-                    disabled={inputsDisabled || isDefined(tutorialIdFromParams)}
-                />
                 {isDefined(projectDetailResponse) && (
                     <>
                         <Container
