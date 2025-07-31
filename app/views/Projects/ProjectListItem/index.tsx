@@ -13,11 +13,11 @@ import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
+import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
+import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import GridLayoutItem from '#components/GridLayoutItem';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
-import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
-import ProjectTypeIcon from '#components/ProjectTypeIcon';
 import TextOutput from '#components/TextOutput';
 import {
     ProjectsListQuery,

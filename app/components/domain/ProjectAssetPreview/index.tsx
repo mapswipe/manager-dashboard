@@ -9,8 +9,8 @@ import {
 } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
-import GeoJsonPreview from '#components/GeoJsonPreview';
-import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
+import GeoJsonPreview from '#components/domain/GeoJsonPreview';
+import { PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import {
     AssetMimetypeEnum,
     useProjectAssetPreviewQuery,

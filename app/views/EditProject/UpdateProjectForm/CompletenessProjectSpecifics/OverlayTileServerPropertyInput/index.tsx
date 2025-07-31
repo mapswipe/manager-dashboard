@@ -9,8 +9,8 @@ import {
 
 import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
+import { PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import RadioInput from '#components/RadioInput';
-import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import { OverlayLayerTypeEnum } from '#generated/types/graphql';
 import {
     keySelector,

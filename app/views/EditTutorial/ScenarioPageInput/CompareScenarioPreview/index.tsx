@@ -6,7 +6,7 @@ import { _cs } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 import { FillLayerSpecification } from 'maplibre-gl';
 
-import GeoJsonPreview from '#components/GeoJsonPreview';
+import GeoJsonPreview from '#components/domain/GeoJsonPreview';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';

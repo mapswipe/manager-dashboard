@@ -1,14 +1,14 @@
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import BaseMap from '#components/BaseMap';
 import Container from '#components/Container';
 import DefaultMapContainer from '#components/DefaultMapContainer';
-import GeoJsonAssetMapSource from '#components/GeoJsonAssetMapSource';
+import BaseMap from '#components/domain/BaseMap';
+import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 import GridLayoutItem from '#components/GridLayoutItem';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
-import VectorTileMapSource from '#components/VectorTileMapSource';
 import {
     ProjectSpecificDetailsQuery,
     RasterTileServerNameEnum,

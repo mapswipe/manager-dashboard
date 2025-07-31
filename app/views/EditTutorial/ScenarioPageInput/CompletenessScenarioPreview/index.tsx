@@ -9,10 +9,10 @@ import {
     removeNull,
 } from '@togglecorp/toggle-form';
 
-import BaseMap from '#components/BaseMap';
-import GeoJsonMapSource from '#components/GeoJsonMapSource';
+import BaseMap from '#components/domain/BaseMap';
+import GeoJsonMapSource from '#components/domain/GeoJsonMapSource';
+import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 import MobilePreview from '#components/MobilePreview';
-import VectorTileMapSource from '#components/VectorTileMapSource';
 import {
     ProjectOverlayTileServerConfig,
     ProjectRasterTileServerConfig,

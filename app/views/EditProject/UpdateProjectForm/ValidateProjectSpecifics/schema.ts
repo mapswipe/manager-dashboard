@@ -3,8 +3,8 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
-import customOptionSchema from '#components/CustomOptionInput/schema';
-import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/RasterTileServerInput/schema';
+import customOptionSchema from '#components/domain/CustomOptionInput/schema';
+import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/domain/RasterTileServerInput/schema';
 import { ValidateProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 

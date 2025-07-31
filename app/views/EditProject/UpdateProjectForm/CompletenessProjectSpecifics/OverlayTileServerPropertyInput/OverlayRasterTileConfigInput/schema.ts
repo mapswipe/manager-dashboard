@@ -3,7 +3,7 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
-import rasterTileServerFormSchema from '#components/RasterTileServerInput/schema';
+import rasterTileServerFormSchema from '#components/domain/RasterTileServerInput/schema';
 import { ProjectOverlayRasterTileServerConfig } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 

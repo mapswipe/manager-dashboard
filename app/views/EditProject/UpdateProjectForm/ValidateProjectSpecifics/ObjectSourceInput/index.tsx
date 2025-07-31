@@ -8,6 +8,7 @@ import {
 
 import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
+import AssetInput from '#components/domain/AssetInput';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import { ValidateObjectSourceTypeEnum } from '#generated/types/graphql';
@@ -15,7 +16,6 @@ import {
     keySelector,
     labelSelector,
 } from '#utils/common';
-import AssetInput from '#views/EditProject/AssetInput';
 
 import { PartialValidateObjectSourceInputFields } from './schema';
 

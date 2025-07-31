@@ -22,10 +22,10 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
+import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
 import InputError from '#components/InputError/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
-import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import {
     IconEnum,
     ProjectDetailsQuery,

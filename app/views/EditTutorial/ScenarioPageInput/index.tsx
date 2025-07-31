@@ -16,7 +16,7 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
-import IconSelectInput from '#components/IconSelectInput';
+import IconSelectInput from '#components/domain/IconSelectInput';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';

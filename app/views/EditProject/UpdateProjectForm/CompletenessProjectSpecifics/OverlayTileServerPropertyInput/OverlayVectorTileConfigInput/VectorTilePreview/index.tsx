@@ -9,10 +9,10 @@ import {
     MapOrder,
 } from '@togglecorp/re-map';
 
-import BaseMap from '#components/BaseMap';
-import GeoJsonAssetMapSource from '#components/GeoJsonAssetMapSource';
-import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
-import VectorTileMapSource from '#components/VectorTileMapSource';
+import BaseMap from '#components/domain/BaseMap';
+import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
+import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 
 import { PartialOverlayVectorTileConfigInputFields } from '../schema';
 import { vectorTileServerNameToTileInputKey } from '../VectorTileServerInput/schema';

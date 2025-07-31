@@ -7,8 +7,8 @@ import {
 } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
+import { PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import ListLayout from '#components/ListLayout';
-import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import SelectInput from '#components/SelectInput';
 import {
     colorOptions,

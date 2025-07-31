@@ -29,11 +29,11 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
-import GeoJsonFileInput from '#components/GeoJsonFileInput';
+import GeoJsonFileInput from '#components/domain/GeoJsonFileInput';
+import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
-import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {

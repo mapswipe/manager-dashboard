@@ -21,11 +21,12 @@ import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
+import AssetInput from '#components/domain/AssetInput';
+import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
+import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
 import InputError from '#components/InputError';
 import ListLayout from '#components/ListLayout';
 import PageLayout from '#components/PageLayout';
-import ProjectSpecificDetails from '#components/ProjectSpecificDetails';
-import ProjectStatusOutput from '#components/ProjectStatusOutput';
 import TutorialSelectInput from '#components/selections/TutorialSelectInput';
 import {
     ProcessedProjectUpdateInput,
@@ -46,7 +47,6 @@ import {
 } from '#utils/query';
 import ProjectGeneralInputs from '#views/NewProject/ProjectGeneralInputs';
 
-import AssetInput from '../AssetInput';
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

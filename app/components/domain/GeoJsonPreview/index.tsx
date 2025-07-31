@@ -11,8 +11,8 @@ import {
 } from '@togglecorp/re-map';
 import getBbox from '@turf/bbox';
 
-import BaseMap from '#components/BaseMap';
-import { type PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
+import BaseMap from '#components/domain/BaseMap';
+import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 
 import styles from './styles.module.css';
 

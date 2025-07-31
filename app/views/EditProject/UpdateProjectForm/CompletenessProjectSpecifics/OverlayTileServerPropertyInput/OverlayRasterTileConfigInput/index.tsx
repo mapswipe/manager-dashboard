@@ -6,12 +6,12 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
-import NumberInput from '#components/NumberInput';
-import RasterTileServerInput from '#components/RasterTileServerInput';
+import RasterTileServerInput from '#components/domain/RasterTileServerInput';
 import {
     defaultRasterTileServerInputValue,
     PartialRasterTileServerInputFields,
-} from '#components/RasterTileServerInput/schema';
+} from '#components/domain/RasterTileServerInput/schema';
+import NumberInput from '#components/NumberInput';
 
 import { PartialOverlayRasterTileConfigInputFields } from './schema';
 
