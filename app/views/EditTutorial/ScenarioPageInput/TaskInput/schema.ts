@@ -11,9 +11,9 @@ import {
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 import {
-    type PartialTutorialCreateInputFields,
+    type PartialTutorialUpdateInputFields,
     type TutorialFormContext,
-} from '#views/TutorialForm/schema';
+} from '#views/EditTutorial/schema';
 
 import comparePropertyInputSchema from './ComparePropertyInput/schema';
 import completenessPropertyInputSchema from './CompletenessPropertyInput/schema';
@@ -24,7 +24,7 @@ export type TaskInputFields = DeepNonNullable<TutorialTaskCreateInput>;
 export type PartialTaskInputFields = PartialForm<TaskInputFields, 'clientId'>;
 type TaskSchema = ObjectSchema<
     PartialTaskInputFields,
-    PartialTutorialCreateInputFields,
+    PartialTutorialUpdateInputFields,
     TutorialFormContext
 >;
 
@@ -32,7 +32,7 @@ type ProjectTypeSpecifics = DeepNonNullable<TutorialTaskProjectTypeSpecificInput
 export type PartialProjectTypeSpecifics = PartialForm<ProjectTypeSpecifics>;
 type ProjectTypeSpecificsSchema = ObjectSchema<
     PartialProjectTypeSpecifics,
-    PartialTutorialCreateInputFields,
+    PartialTutorialUpdateInputFields,
     TutorialFormContext
 >;
 

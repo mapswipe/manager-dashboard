@@ -54,7 +54,7 @@ query ProjectsFilterEnums {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_LIST_QUERY = gql`
 query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
-    projects(pagination: {offset: $offset, limit: $limit}, filters: $filters) {
+    projects(pagination: {offset: $offset, limit: $limit}, filters: $filters, includeAll: true) {
         totalCount
         results {
             id

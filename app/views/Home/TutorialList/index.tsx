@@ -19,7 +19,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TUTORIAL_LIST_QUERY = gql`
 query TutorialList($pagination: OffsetPaginationInput!) {
-    tutorials(pagination: $pagination) {
+    tutorials(pagination: $pagination, includeAll: true) {
         totalCount
         results {
             name

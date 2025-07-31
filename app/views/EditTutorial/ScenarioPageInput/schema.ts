@@ -7,7 +7,7 @@ import { TutorialScenarioPageCreateInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
 import {
-    type PartialTutorialCreateInputFields,
+    type PartialTutorialUpdateInputFields,
     type TutorialFormContext,
 } from '../schema';
 import taskSchema from './TaskInput/schema';
@@ -23,7 +23,7 @@ export type PartialScenarioPageInputFields = PartialForm<
 
 export type ScenarioPageSchema = ObjectSchema<
     PartialScenarioPageInputFields,
-    PartialTutorialCreateInputFields,
+    PartialTutorialUpdateInputFields,
     TutorialFormContext
 >;
 

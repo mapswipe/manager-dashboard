@@ -12,7 +12,7 @@ import { gql } from 'urql';
 import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
-    ProjectAssetMimetypeEnum,
+    AssetMimetypeEnum,
     useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
@@ -76,11 +76,11 @@ function AssetInput<const NAME>(props: Props<NAME>) {
     const handleFileInputChange = useCallback(async (file: File | undefined) => {
         if (file) {
             const { type } = file;
-            const mimetypeEnumMap: Record<string, ProjectAssetMimetypeEnum> = {
-                'image/jpeg': ProjectAssetMimetypeEnum.ImageJpeg,
-                'image/png': ProjectAssetMimetypeEnum.ImagePng,
-                'image/gif': ProjectAssetMimetypeEnum.ImageGif,
-                'application/geo+json': ProjectAssetMimetypeEnum.Geojson,
+            const mimetypeEnumMap: Record<string, AssetMimetypeEnum> = {
+                'image/jpeg': AssetMimetypeEnum.ImageJpeg,
+                'image/png': AssetMimetypeEnum.ImagePng,
+                'image/gif': AssetMimetypeEnum.ImageGif,
+                'application/geo+json': AssetMimetypeEnum.Geojson,
             };
 
             const selectedEnum = mimetypeEnumMap[type];

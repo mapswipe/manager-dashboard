@@ -12,7 +12,7 @@ import { gql } from 'urql';
 import GeoJsonPreview from '#components/GeoJsonPreview';
 import { PartialRasterTileServerInputFields } from '#components/RasterTileServerInput/schema';
 import {
-    ProjectAssetMimetypeEnum,
+    AssetMimetypeEnum,
     useProjectAssetPreviewQuery,
 } from '#generated/types/graphql';
 
@@ -63,7 +63,7 @@ function ProjectAssetPreview(props: Props) {
         ImagePng,
         ImageJpeg,
         Geojson,
-    } = ProjectAssetMimetypeEnum;
+    } = AssetMimetypeEnum;
 
     useEffect(() => {
         async function fetchGeoJson() {
