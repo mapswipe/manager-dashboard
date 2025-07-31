@@ -24,19 +24,38 @@ export function createGeoJsonFromTiles(
         return undefined;
     }
 
+    const tilesSafe = tiles.map((tile) => {
+        const {
+            tileX,
+            tileY,
+            tileZ,
+        } = tile;
+
+        if (isNotDefined(tileX) || isNotDefined(tileY) || isNotDefined(tileZ)) {
+            return undefined;
+        }
+
+        return {
+            ...tile,
+            tileX,
+            tileY,
+            tileZ,
+        };
+    }).filter(isDefined);
+
+    if (tilesSafe.length === 0) {
+        return undefined;
+    }
+
     const geojson: GeoJSON.GeoJSON = {
         type: 'FeatureCollection' as const,
-        features: tiles.map((tile) => {
+        features: tilesSafe.map((tile) => {
             const {
                 tileX,
                 tileY,
                 tileZ,
                 reference,
             } = tile;
-
-            if (isNotDefined(tileX) || isNotDefined(tileY) || isNotDefined(tileZ)) {
-                return undefined;
-            }
 
             const west = tileToLng(tileX, tileZ);
             const east = tileToLng(tileX + 1, tileZ);

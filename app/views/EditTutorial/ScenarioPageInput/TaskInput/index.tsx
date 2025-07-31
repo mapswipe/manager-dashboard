@@ -55,31 +55,31 @@ function TaskInput(props: Props) {
     );
 
     const setProjectSpecificFieldValue = useFormObject<'projectTypeSpecifics', PartialProjectTypeSpecifics>(
-        'projectTypeSpecifics',
+        'projectTypeSpecifics' as const,
         setFieldValue,
         {},
     );
 
     const setFindProjectSpecificsFieldValue = useFormObject(
-        'find',
+        'find' as const,
         setProjectSpecificFieldValue,
         {},
     );
 
     const setCompareProjectSpecificsFieldValue = useFormObject(
-        'compare',
+        'compare' as const,
         setProjectSpecificFieldValue,
         {},
     );
 
     const setCompletenessProjectSpecificsFieldValue = useFormObject(
-        'completeness',
+        'completeness' as const,
         setProjectSpecificFieldValue,
         {},
     );
 
     const setValidateProjectSpecificsFieldValue = useFormObject<'validate', PartialValidatePropertyInputFields>(
-        'validate',
+        'validate' as const,
         setProjectSpecificFieldValue,
         {},
     );
@@ -90,7 +90,7 @@ function TaskInput(props: Props) {
                 {`#${index + 1}`}
             </div>
             <NumberInput
-                label="Reference"
+                icons="Reference:"
                 name="reference"
                 value={value.reference}
                 onChange={setFieldValue}

@@ -164,19 +164,65 @@ function NewTutorial(props: Props) {
             projectId,
             scenarios,
             ...other
-        } = removeNull(tutorial);
+        } = removeNull(tutorial, []);
 
         const transformedTutorial = {
             project: projectId,
             scenarios: scenarios.map((scenario) => ({
                 ...scenario,
-                tasks: scenario.tasks.map((task) => ({
-                    ...task,
-                    projectTypeSpecifics: {
-                        // FIXME: add other types
-                        find: task.projectTypeSpecifics,
-                    },
-                })),
+                tasks: scenario.tasks.map((task) => {
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'FindTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                find: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'CompareTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                compare: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'ValidateTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                validate: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'CompletenessTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                completeness: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'ValidateImageTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                validateImage: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    return { ...task };
+                }),
             })),
             ...other,
         };

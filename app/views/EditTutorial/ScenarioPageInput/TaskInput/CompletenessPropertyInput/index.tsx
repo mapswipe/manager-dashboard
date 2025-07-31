@@ -38,7 +38,7 @@ function CompletenessPropertyInput(props: Props) {
         >
             <NumberInput
                 name="tileX"
-                label="X"
+                icons="X:"
                 value={value?.tileX}
                 onChange={setFieldValue}
                 error={error?.tileX}
@@ -46,7 +46,7 @@ function CompletenessPropertyInput(props: Props) {
             />
             <NumberInput
                 name="tileY"
-                label="Y"
+                icons="Y:"
                 value={value?.tileY}
                 onChange={setFieldValue}
                 error={error?.tileY}
@@ -54,7 +54,7 @@ function CompletenessPropertyInput(props: Props) {
             />
             <NumberInput
                 name="tileZ"
-                label="Z"
+                icons="Z:"
                 value={value?.tileZ}
                 onChange={setFieldValue}
                 error={error?.tileZ}
