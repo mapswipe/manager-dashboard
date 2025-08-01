@@ -67,22 +67,30 @@ function TutorialAssetPreview(props: Props) {
 
     useEffect(() => {
         async function fetchGeoJson() {
-            if (isNotDefined(previewResponse)
+            if (
+                isNotDefined(previewResponse)
                 || previewResponse.tutorialAsset.mimetype !== Geojson
             ) {
                 return;
             }
 
-            const geoJsonResponse = await fetch(
-                previewResponse.tutorialAsset.file.url,
-            );
-
-            const rawGeoJson = await geoJsonResponse.json();
-
-            // TODO: validate
-            setGeoJson(rawGeoJson);
+            fetch(previewResponse.tutorialAsset.file.url)
+                .then((geoJsonResponse) => {
+                    if (!geoJsonResponse.ok) {
+                        throw new Error('Failed to fetch GeoJSON file.');
+                    }
+                    return geoJsonResponse.json();
+                })
+                .then((rawGeoJson) => {
+                    // TODO: validate
+                    setGeoJson(rawGeoJson);
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line no-console
+                    console.error('Error fetching GeoJSON:', error);
+                    setGeoJson(undefined);
+                });
         }
-
         fetchGeoJson();
     }, [previewResponse, Geojson]);
 

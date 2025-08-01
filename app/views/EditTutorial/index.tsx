@@ -622,6 +622,7 @@ function NewTutorial(props: Props) {
                             clientId: ulid(),
                             reference: feature.properties.reference,
                             projectTypeSpecifics: {
+                                // FIXME: Why objectGeometry is string?
                                 validate: {
                                     objectGeometry: JSON.stringify(feature.geometry, null, 4),
                                 } satisfies ValidatePropertyInputFields,

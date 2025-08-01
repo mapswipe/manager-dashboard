@@ -106,6 +106,15 @@ function TutorialAssetInput<const NAME>(props: Props<NAME>) {
                 && result.data.createTutorialAsset.result
             ) {
                 onChange(result.data.createTutorialAsset.result.id, name);
+            } else {
+                // eslint-disable-next-line no-underscore-dangle
+                const errorMessage = result.data
+                    ?.createTutorialAsset?.__typename === 'OperationInfo'
+                    ? result.data.createTutorialAsset.messages
+                    : result.data?.createTutorialAsset?.errors?.[0]?.message
+                    || 'Failed to upload file. Please try again.';
+                // eslint-disable-next-line no-console
+                console.error(errorMessage);
             }
         }
     }, [createTutorialAsset, tutorialId, onChange, name]);
