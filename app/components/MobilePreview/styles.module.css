@@ -31,13 +31,13 @@
         display: flex;
         position: relative;
         flex-direction: column;
-        padding: var(--spacing-md);
+        margin: var(--spacing-md);
         overflow: auto;
         isolation: isolate;
 
         .popup {
             position: absolute;
-            top: var(--spacing-md);
+            top: var(--spacing-sm);
             left: 0;
             z-index: 1;
             border-radius: var(--radius-card-border);

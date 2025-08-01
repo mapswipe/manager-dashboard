@@ -26,12 +26,14 @@ const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'ch
 interface Props {
     baseTileServer: PartialRasterTileServerInputFields | undefined;
     children?: React.ReactNode;
+    tileSize?: number;
 }
 
 function BaseMap(props: Props) {
     const {
         baseTileServer,
         children,
+        tileSize = 256,
     } = props;
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
@@ -85,7 +87,7 @@ function BaseMap(props: Props) {
                 'base-tile-source': {
                     type: 'raster',
                     tiles: [url],
-                    tileSize: 256,
+                    tileSize,
                     attribution: credits ?? '',
                 },
             },
@@ -95,7 +97,7 @@ function BaseMap(props: Props) {
                 source: 'base-tile-source',
             }],
         };
-    }, [url, credits]);
+    }, [url, tileSize, credits]);
 
     if (isNotDefined(mapStyle)) {
         return null;

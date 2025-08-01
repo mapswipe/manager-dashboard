@@ -21,10 +21,12 @@ import {
 import {
     createSubmitHandler,
     getErrorObject,
+    nonFieldError,
     removeNull,
     useForm,
     useFormArray,
 } from '@togglecorp/toggle-form';
+import { type } from 'arktype';
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
@@ -46,7 +48,6 @@ import {
     useUpdateTutorialMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import { projectTypeToKeyMap } from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -54,15 +55,134 @@ import {
 } from '#utils/error';
 
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
+import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
+import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
+import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
+import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
+import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
 import tutorialUpdate, {
     PartialTutorialUpdateInputFields,
     TutorialFormContext,
 } from './schema';
-import { validateFindTutorialGeoJson } from './utils';
 
 import styles from './styles.module.css';
+
+const PolygonType = type.object.as<GeoJSON.Polygon>();
+const MultiPolygonType = type.object.as<GeoJSON.MultiPolygon>();
+
+const CommonFeaturePropertyType = type({
+    screen: type.number,
+    reference: type.number,
+});
+const TileFeaturePropertyType = type({
+    tile_x: type.number,
+    tile_y: type.number,
+    tile_z: type.number,
+});
+
+const ValidateFeaturePropertyType = type.merge(
+    CommonFeaturePropertyType,
+    {
+        // This is not used anymore
+        // id: '"string" | "number"',
+    },
+);
+
+const FindFeaturePropertyType = type.merge(
+    CommonFeaturePropertyType,
+    TileFeaturePropertyType,
+    {
+        // This is not used anymore
+        // task_id: 'string',
+    },
+);
+const CompareFeaturePropertyType = type.merge(
+    CommonFeaturePropertyType,
+    TileFeaturePropertyType,
+    {
+        // This is not used anymore
+        // task_id: 'string',
+    },
+);
+
+const CompletenessFeaturePropertyType = type.merge(
+    CommonFeaturePropertyType,
+    TileFeaturePropertyType,
+    {
+        // This is not used anymore
+        // task_id: 'string',
+    },
+);
+/*
+const StreetFeaturePropertyType = type({
+    '...': CommonFeaturePropertyType,
+    // This is not used anymore
+    // id: '"string" | "number"',
+});
+*/
+
+const ValidateTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: ValidateFeaturePropertyType,
+    }).array(),
+});
+const FindTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: FindFeaturePropertyType,
+    }).array().narrow((features, ctx) => {
+        // FIXME: add similar validations to other types
+        const screens = features.map(({ properties }) => properties.screen);
+        const groupedScreens = listToGroupList(
+            screens,
+            (screen) => screen,
+            (screen) => screen,
+        );
+
+        const errors = Object.values(groupedScreens).map((group) => {
+            if (group.length === 6) {
+                return undefined;
+            }
+
+            return {
+                screen: group[0],
+                numEntries: group.length,
+            };
+        }).filter(isDefined);
+
+        if (errors.length === 0) {
+            return true;
+        }
+
+        const errorDescription = errors.map(({ screen, numEntries }) => `${numEntries} for screen ${screen}`).join(', ');
+        ctx.error({
+            problem: `expected to have 6 instances of every screen(found ${errorDescription})`,
+        });
+
+        return false;
+    }),
+});
+
+const CompareTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: CompareFeaturePropertyType,
+    }).array(),
+});
+
+const CompletenessTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: CompletenessFeaturePropertyType,
+    }).array(),
+});
 
 function createMapping<T extends { clientId: string }>(items: T[]) {
     return listToMap(items, ({ clientId }) => clientId);
@@ -161,13 +281,15 @@ function NewTutorial(props: Props) {
 
         const { tutorial } = tutorialData;
         const {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectId,
             scenarios,
+            informationPages,
             ...other
         } = removeNull(tutorial, []);
 
-        const transformedTutorial = {
-            project: projectId,
+        const transformedTutorial: PartialTutorialUpdateInputFields = {
+            // project: projectId,
             scenarios: scenarios.map((scenario) => ({
                 ...scenario,
                 tasks: scenario.tasks.map((task) => {
@@ -222,6 +344,22 @@ function NewTutorial(props: Props) {
                     }
 
                     return { ...task };
+                }),
+            })),
+            informationPages: informationPages.map((informationPage) => ({
+                ...informationPage,
+                blocks: informationPage.blocks.map((block) => {
+                    const {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        image,
+                        imageId,
+                        ...blockProperties
+                    } = block;
+
+                    return {
+                        ...blockProperties,
+                        image: imageId,
+                    };
                 }),
             })),
             ...other,
@@ -457,71 +595,165 @@ function NewTutorial(props: Props) {
     );
 
     const handleGeoJsonFileChange = useCallback((geoJson: GeoJSON.GeoJSON | undefined) => {
-        if (
-            isNotDefined(projectDetailResponse)
-                || isNotDefined(geoJson)
-                || !validateFindTutorialGeoJson(geoJson)
-        ) {
+        if (isNotDefined(projectDetailResponse) || isNotDefined(geoJson)) {
             return;
         }
 
-        if (projectDetailResponse.project.projectType === ProjectTypeEnum.Validate) {
-            const scenarioPages = geoJson.features.map((feature, i) => ({
-                clientId: ulid(),
-                scenarioPageNumber: isDefined(feature.properties.screen)
-                    ? feature.properties.screen
-                    : i + 1,
-                tasks: [
-                    {
+        const {
+            projectType,
+        } = projectDetailResponse.project;
+
+        if (projectType === ProjectTypeEnum.Validate) {
+            const result = ValidateTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const scenarioPages = result.features.map((feature, i) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: isDefined(feature.properties.screen)
+                        ? feature.properties.screen
+                        : i + 1,
+                    tasks: [
+                        {
+                            clientId: ulid(),
+                            reference: feature.properties.reference,
+                            projectTypeSpecifics: {
+                                // FIXME: Why objectGeometry is string?
+                                validate: {
+                                    objectGeometry: JSON.stringify(feature.geometry, null, 4),
+                                } satisfies ValidatePropertyInputFields,
+                            },
+                        },
+                    ],
+                }));
+
+                setFieldValue(scenarioPages, 'scenarios');
+            }
+        } else if (projectType === ProjectTypeEnum.Find) {
+            const result = FindTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const featuresByScreen = listToGroupList(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                );
+                const scenarioPages: PartialScenarioPageInputFields[] = unique(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                ).toSorted(
+                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
+                ).map(({ properties }) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: properties.screen,
+                    tasks: featuresByScreen[properties.screen].map((feature) => ({
                         clientId: ulid(),
                         reference: feature.properties.reference,
                         projectTypeSpecifics: {
-                            validate: {
-                                objectGeometry: JSON.stringify(feature.geometry, null, 4),
-                            },
+                            find: {
+                                tileX: feature.properties.tile_x,
+                                tileY: feature.properties.tile_y,
+                                tileZ: feature.properties.tile_z,
+                            } satisfies FindPropertyInputFields,
                         },
-                    },
-                ],
-            }));
+                    })),
+                }));
 
-            setFieldValue(scenarioPages, 'scenarios');
-            return;
+                setFieldValue(scenarioPages, 'scenarios');
+            }
+        } else if (projectType === ProjectTypeEnum.Compare) {
+            const result = CompareTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const featuresByScreen = listToGroupList(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                );
+
+                const scenarioPages = unique(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                ).toSorted(
+                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
+                ).map(({ properties }) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: properties.screen,
+                    tasks: featuresByScreen[properties.screen].map((feature) => ({
+                        clientId: ulid(),
+                        reference: feature.properties.reference,
+                        projectTypeSpecifics: {
+                            compare: {
+                                tileX: feature.properties.tile_x,
+                                tileY: feature.properties.tile_y,
+                                tileZ: feature.properties.tile_z,
+                            } satisfies ComparePropertyInputFields,
+                        },
+                    })),
+                }));
+
+                setFieldValue(scenarioPages, 'scenarios');
+            }
+        } else if (projectType === ProjectTypeEnum.Completeness) {
+            const result = CompletenessTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const featuresByScreen = listToGroupList(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                );
+
+                const scenarioPages = unique(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                ).toSorted(
+                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
+                ).map(({ properties }) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: properties.screen,
+                    tasks: featuresByScreen[properties.screen].map((feature) => ({
+                        clientId: ulid(),
+                        reference: feature.properties.reference,
+                        projectTypeSpecifics: {
+                            completeness: {
+                                tileX: feature.properties.tile_x,
+                                tileY: feature.properties.tile_y,
+                                tileZ: feature.properties.tile_z,
+                            } satisfies CompletenessPropertyInputFields,
+                        },
+                    })),
+                }));
+
+                setFieldValue(scenarioPages, 'scenarios');
+            }
         }
-
-        const featuresByScreen = listToGroupList(
-            geoJson.features,
-            (feature) => feature.properties.screen,
-        );
-
-        const projectTypeKey = projectTypeToKeyMap[projectDetailResponse.project.projectType];
-
-        const scenarioPages = unique(
-            geoJson.features,
-            (feature) => feature.properties.screen,
-        ).toSorted(
-            (a, b) => compareNumber(a.properties.screen, b.properties.screen),
-        ).map(({ properties }) => ({
-            clientId: ulid(),
-            scenarioPageNumber: properties.screen,
-            tasks: featuresByScreen[properties.screen].map((feature) => ({
-                clientId: ulid(),
-                reference: feature.properties.reference,
-                projectTypeSpecifics: {
-                    [projectTypeKey]: {
-                        tileX: feature.properties.tile_x,
-                        tileY: feature.properties.tile_y,
-                        tileZ: feature.properties.tile_z,
-                        objectGeometry: JSON.stringify(feature.geometry),
-                    },
-                },
-            })),
-        }));
-
-        setFieldValue(scenarioPages, 'scenarios');
-    }, [setFieldValue, projectDetailResponse]);
+    }, [projectDetailResponse, setError, setFieldValue]);
 
     const inputsDisabled = updateTutorialPending;
     const actionsDisabled = inputsDisabled;
+
+    if (isNotDefined(tutorialIdFromParams)) {
+        // eslint-disable-next-line no-console
+        console.error('Tutorial id not defined in params');
+        return null;
+    }
 
     return (
         <PageLayout
@@ -657,6 +889,7 @@ function NewTutorial(props: Props) {
                         onRemove={removeInformationPage}
                         error={getErrorObject(informationPageErrors?.[informationPage.clientId])}
                         lookForValue={projectDetailResponse?.project.lookFor}
+                        tutorialId={tutorialIdFromParams}
                     />
                 ))}
             </Container>

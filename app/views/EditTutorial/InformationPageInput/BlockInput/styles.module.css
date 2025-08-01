@@ -1,14 +1,12 @@
 .block-input {
-    border-radius: var(--radius-card-border);
-
     .remove-button {
         transition: var(--duration-transition-medium) opacity ease-in-out;
-        opacity: 0;
+        filter: saturate(0);
     }
 
     &:hover {
         .remove-button {
-            opacity: 1;
+            filter: saturate(100%);
         }
     }
 }

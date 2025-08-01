@@ -1,6 +1,6 @@
+import TutorialAssetPreview from '#components/domain/TutorialAssetPreview';
 import MarkdownPreview from '#components/MarkdownPreview';
 import MobilePreview from '#components/MobilePreview';
-import Preview from '#components/Preview';
 import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
 
 import { PartialInformationPageInputFields } from '../schema';
@@ -38,10 +38,10 @@ export default function InformationPagePreview(props: Props) {
 
                 if (page.blockType === TutorialInformationPageBlockTypeEnum.Image) {
                     return (
-                        <Preview
+                        <TutorialAssetPreview
                             key={page.blockNumber}
                             className={styles.imagePreview}
-                            file={page.image}
+                            assetId={page.image}
                         />
                     );
                 }

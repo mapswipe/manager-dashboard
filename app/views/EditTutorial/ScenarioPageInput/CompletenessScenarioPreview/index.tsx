@@ -67,9 +67,7 @@ function CompletenessScenarioPreview(props: Props) {
                 popupDescription={preview?.description || '{description}'}
                 contentClassName={styles.content}
             >
-                <BaseMap
-                    baseTileServer={removeNull(tileServerProperty)}
-                >
+                <BaseMap baseTileServer={removeNull(tileServerProperty)}>
                     <MapContainer
                         className={styles.mapContainer}
                     />

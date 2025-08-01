@@ -38,6 +38,7 @@ interface Props {
         | undefined;
     geoJsonLayerOptions?: ComponentProps<typeof MapLayer>['layerOptions'];
     padding?: number;
+    tileSize?: number;
 }
 
 function GeoJsonPreview(props: Props) {
@@ -47,6 +48,7 @@ function GeoJsonPreview(props: Props) {
         geoJson,
         geoJsonLayerOptions = defaultGeoJsonLayerOptions,
         padding = DEFAULT_MAP_PADDING,
+        tileSize,
     } = props;
 
     const bounds = isDefined(geoJson) ? getBbox(geoJson) : undefined;
@@ -54,6 +56,7 @@ function GeoJsonPreview(props: Props) {
     return (
         <BaseMap
             baseTileServer={baseTileServer}
+            tileSize={tileSize}
         >
             {isDefined(geoJson) && (
                 <MapSource
