@@ -40,6 +40,8 @@ query OrganizationList($pagination: OffsetPaginationInput!) {
         results {
             name
             id
+            abbreviation
+            description
             modifiedBy {
                 id
                 displayName
@@ -164,6 +166,16 @@ function OrganizationList(props: Props) {
                                     icon={<IoPerson />}
                                     label="Updated by"
                                     value={organization.modifiedBy.displayName}
+                                />
+                                <TextOutput
+                                    icon={<IoCalendar />}
+                                    label="Abbrevation"
+                                    value={organization.abbreviation}
+                                />
+                                <TextOutput
+                                    icon={<IoCalendar />}
+                                    label="Description"
+                                    value={organization.description}
                                 />
                             </ListLayout>
                         </Container>
