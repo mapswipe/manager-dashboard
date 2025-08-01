@@ -24,7 +24,7 @@ import {
     defaultPagePerItemOptions,
 } from '#utils/common';
 
-import UserGroupFormModal from './UserListItem/UserGroupFormModal';
+import UserGroupFormModal from './UserGroupFormModal';
 import UserListItem from './UserListItem';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -103,10 +103,6 @@ function UserGroups(props: Props) {
         },
     });
 
-    const handleClearFilterButtonClick = useCallback(() => {
-        setSearchText(undefined);
-    }, [setSearchText]);
-
     const totalItems = userGroupsResponse?.contributorUserGroups.results.length ?? 0;
 
     const filteredUserGroupList = userGroupsResponse?.contributorUserGroups.results ?? [];
@@ -145,7 +141,7 @@ function UserGroups(props: Props) {
                     />
                     <Button
                         name={undefined}
-                        onClick={handleClearFilterButtonClick}
+                        onClick={setSearchText}
                     >
                         Clear filters
                     </Button>
@@ -174,16 +170,13 @@ function UserGroups(props: Props) {
                 {!pending && filteredUserGroupList.map((user) => (
                     <UserListItem
                         key={user.id}
-                        value={user}
+                        id={user.id}
+                        name={user.name}
+                        description={user.description}
+                        membersCount={user.membersCount}
                         onEdit={setEditUserGroupId}
                     />
                 ))}
-                {showAddModal && (
-                    <UserGroupFormModal
-                        onClose={setShowAddModalFalse}
-                        onUpdate={handleUserGroupModalUpdate}
-                    />
-                )}
                 {isDefined(editUserGroupId) && (
                     <UserGroupFormModal
                         userGroupId={editUserGroupId}
@@ -192,6 +185,12 @@ function UserGroups(props: Props) {
                     />
                 )}
             </Container>
+            {showAddModal && (
+                <UserGroupFormModal
+                    onClose={setShowAddModalFalse}
+                    onUpdate={handleUserGroupModalUpdate}
+                />
+            )}
         </PageLayout>
     );
 }

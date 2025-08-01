@@ -191,7 +191,11 @@ function Tutorials(props: Props) {
                 {!pending && filteredTutorialList.map((tutorial) => (
                     <TutorialListItem
                         key={tutorial.id}
-                        value={tutorial}
+                        id={tutorial.id}
+                        status={tutorial.status}
+                        name={tutorial.name}
+                        createdAt={tutorial.createdAt}
+                        createdBy={tutorial.createdBy.displayName}
                     />
                 ))}
             </Container>

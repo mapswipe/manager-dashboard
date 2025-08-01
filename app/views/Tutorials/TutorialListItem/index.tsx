@@ -11,7 +11,6 @@ import GridLayoutItem from '#components/GridLayoutItem';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
-import { TutorialsListQuery } from '#generated/types/graphql';
 
 import styles from './styles.module.css';
 
@@ -39,12 +38,20 @@ function Meta(props: MetaProps) {
 }
 
 interface Props {
-    value: TutorialsListQuery['tutorials']['results'][number];
+    id: string;
+    status: string;
+    name: string;
+    createdAt: string;
+    createdBy: string;
 }
 
 function TutorialListItem(props: Props) {
     const {
-        value,
+        id,
+        status,
+        name,
+        createdAt,
+        createdBy,
     } = props;
 
     return (
@@ -65,14 +72,12 @@ function TutorialListItem(props: Props) {
             >
                 <GridLayoutItem columnSpan={4}>
                     <Container
-                        heading={value.name}
+                        heading={name}
                         headingLevel={3}
                         headerActions={(
                             <SmartLink
                                 route={routes.editTutorial}
-                                attrs={{
-                                    id: value.id,
-                                }}
+                                attrs={{ id }}
                                 start={<FaEdit />}
                                 spacing="sm"
                                 withoutPadding
@@ -83,20 +88,20 @@ function TutorialListItem(props: Props) {
                     >
                         <ListLayout withWrap>
                             <Meta
-                                label={value.status}
+                                label={status}
                             />
                         </ListLayout>
                         <ListLayout withWrap>
                             <TextOutput
                                 icon={<IoCalendar />}
                                 label="Created on"
-                                value={value.createdAt}
+                                value={createdAt}
                                 valueType="date"
                             />
                             <TextOutput
                                 icon={<IoPerson />}
                                 label="Created by"
-                                value={value.createdBy.displayName}
+                                value={createdBy}
                             />
                         </ListLayout>
                     </Container>

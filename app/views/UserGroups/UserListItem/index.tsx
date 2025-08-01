@@ -12,7 +12,6 @@ import Table, { Column } from '#components/Table';
 import TextOutput from '#components/TextOutput';
 import {
     UserGroupMemberListQuery,
-    UserGroupsListQuery,
     useUserGroupMemberListQuery,
 } from '#generated/types/graphql';
 import {
@@ -42,11 +41,13 @@ query UserGroupMemberList($filters: ContributorUserGroupMembershipFilter, $pagin
 }
 `;
 
-type Value = UserGroupsListQuery['contributorUserGroups']['results'][number];
 type UserMemberTye = UserGroupMemberListQuery['contributorUserGroupMembers']['results'][number];
 
 interface Props {
-    value: Value;
+    id: string;
+    name: string;
+    description: string;
+    membersCount: number;
     onEdit: (id: string) => void;
 }
 
@@ -54,21 +55,26 @@ const keySelector = (item: UserMemberTye) => item.user.id;
 
 function UserListItem(props: Props) {
     const {
-        value,
+        id,
+        name,
+        description,
+        membersCount,
         onEdit,
     } = props;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+    const [expanded, setExpanded] = useState(false);
 
     const [{
         data: userMemberResponse,
         fetching: pending,
     }] = useUserGroupMemberListQuery({
+        pause: !expanded,
         variables: {
             filters: {
                 userGroupId: {
-                    exact: value.id,
+                    exact: id,
                 },
             },
             pagination: {
@@ -93,10 +99,11 @@ function UserListItem(props: Props) {
 
     return (
         <ExpandableContainer
+            onExpandedChange={setExpanded}
             actions={(
                 <Button
-                    name={value.id}
-                    onClick={() => onEdit(value.id)}
+                    name={id}
+                    onClick={onEdit}
                     colorVariant="accent"
                     styleVariant="transparent"
                     withoutPadding
@@ -113,23 +120,24 @@ function UserListItem(props: Props) {
                 >
                     <GridLayoutItem columnSpan={4}>
                         <Container
-                            heading={value.name}
+                            heading={name}
                             headingLevel={3}
                         >
                             <ListLayout withWrap>
                                 <TextOutput
                                     label="Member Count"
-                                    value={value.membersCount}
+                                    value={membersCount}
                                 />
                                 <TextOutput
                                     label="Description"
-                                    value={value.description}
+                                    value={description}
                                 />
                             </ListLayout>
                         </Container>
                     </GridLayoutItem>
                 </ListLayout>
             )}
+            expanded={expanded}
         >
             <Container
                 contentLayout="block"

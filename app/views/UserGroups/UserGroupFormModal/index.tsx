@@ -223,7 +223,7 @@ function UserGroupFormModal(props: Props) {
                         || result.data.createContributorUserGroup.__typename !== 'ContributorUserGroupTypeMutationResponseType'
                     ) {
                         alert.show(
-                            'Failed to create the Organization!',
+                            'Failed to create the User Group!',
                             {
                                 description: 'Unexpectected response from the server!',
                                 variant: 'danger',

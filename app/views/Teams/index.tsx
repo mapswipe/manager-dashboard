@@ -1,7 +1,4 @@
-import {
-    useCallback,
-    useState,
-} from 'react';
+import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { isTruthyString } from '@togglecorp/fujs';
 import { gql } from 'urql';
@@ -81,10 +78,6 @@ function Teams(props: Props) {
         },
     });
 
-    const handleClearFilterButtonClick = useCallback(() => {
-        setSearchText(undefined);
-    }, [setSearchText]);
-
     const totalItems = teamsResponse?.contributorTeams.results.length ?? 0;
 
     const filteredTeamList = teamsResponse?.contributorTeams.results ?? [];
@@ -107,7 +100,7 @@ function Teams(props: Props) {
                     />
                     <Button
                         name={undefined}
-                        onClick={handleClearFilterButtonClick}
+                        onClick={setSearchText}
                     >
                         Clear filters
                     </Button>
@@ -136,7 +129,10 @@ function Teams(props: Props) {
                 {!pending && filteredTeamList.map((team) => (
                     <TeamListItem
                         key={team.id}
-                        value={team}
+                        id={team.id}
+                        name={team.name}
+                        createdAt={team.createdAt}
+                        createdBy={team.createdBy.displayName}
                     />
                 ))}
             </Container>

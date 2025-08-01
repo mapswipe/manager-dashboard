@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import {
+    useMemo,
+    useState,
+} from 'react';
 import {
     IoCalendar,
     IoPerson,
@@ -14,7 +17,6 @@ import Table, { Column } from '#components/Table';
 import TextOutput from '#components/TextOutput';
 import {
     ContributorTeamMemberListQuery,
-    TeamsListQuery,
     useContributorTeamMemberListQuery,
 } from '#generated/types/graphql';
 import {
@@ -42,29 +44,36 @@ query ContributorTeamMemberList($id: ID!, $pagination: OffsetPaginationInput) {
 }
 `;
 
-type Value = TeamsListQuery['contributorTeams']['results'][number];
 type ContibutorTeamMemberType = ContributorTeamMemberListQuery['contributorTeam']['members']['results'][number];
 
 interface Props {
-    value: Value;
+    id: string;
+    name: string;
+    createdAt: string;
+    createdBy: string;
 }
 
 const keySelector = (item: ContibutorTeamMemberType) => item.id;
 
 function TeamListItem(props: Props) {
     const {
-        value,
+        id,
+        name,
+        createdAt,
+        createdBy,
     } = props;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+    const [expanded, setExpanded] = useState(false);
 
     const [{
         data: userMemberResponse,
         fetching: pending,
     }] = useContributorTeamMemberListQuery({
+        pause: !expanded,
         variables: {
-            id: value.id,
+            id,
             pagination: {
                 offset: (activePage - 1) * pagePerItem,
                 limit: pagePerItem,
@@ -72,7 +81,7 @@ function TeamListItem(props: Props) {
         },
     });
 
-    const columns: Column<ContibutorTeamMemberType>[] = [
+    const columns = useMemo<Column<ContibutorTeamMemberType>[]>(() => [
         {
             id: 'username',
             title: 'User Name',
@@ -83,10 +92,11 @@ function TeamListItem(props: Props) {
             title: 'User Id',
             cellRenderer: (item) => item.userId,
         },
-    ];
+    ], []);
 
     return (
         <ExpandableContainer
+            onExpandedChange={setExpanded}
             header={(
                 <ListLayout
                     layout="grid"
@@ -96,26 +106,27 @@ function TeamListItem(props: Props) {
                 >
                     <GridLayoutItem columnSpan={4}>
                         <Container
-                            heading={value.name}
+                            heading={name}
                             headingLevel={3}
                         >
                             <ListLayout withWrap>
                                 <TextOutput
                                     icon={<IoCalendar />}
                                     label="Created on"
-                                    value={value.createdAt}
+                                    value={createdAt}
                                     valueType="date"
                                 />
                                 <TextOutput
                                     icon={<IoPerson />}
                                     label="Created by"
-                                    value={value.createdBy.displayName}
+                                    value={createdBy}
                                 />
                             </ListLayout>
                         </Container>
                     </GridLayoutItem>
                 </ListLayout>
             )}
+            expanded={expanded}
         >
             <Container
                 contentLayout="block"
