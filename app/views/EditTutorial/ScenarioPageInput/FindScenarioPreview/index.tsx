@@ -76,6 +76,7 @@ function FindScenarioPreview(props: Props) {
                 popupDescription={preview?.description || '{description}'}
             >
                 <GeoJsonPreview
+                    tileSize={160}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}
