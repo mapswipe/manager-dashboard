@@ -16,6 +16,8 @@ interface Props {
     className?: string;
     children?: React.ReactNode;
     openByDefault?: boolean;
+    expanded?: boolean;
+    onExpandedChange?: (v: boolean) => void;
 }
 
 function ExpandableContainer(props: Props) {
@@ -26,9 +28,21 @@ function ExpandableContainer(props: Props) {
         header,
         actions,
         openByDefault = false,
+        expanded,
+        onExpandedChange,
     } = props;
 
-    const [isExpanded, setIsExpanded] = useState(openByDefault);
+    const [internalExpanded, setInternalExpanded] = useState(openByDefault);
+    const isExpanded = expanded ?? internalExpanded;
+
+    const handleToggle = () => {
+        const newValue = !isExpanded;
+        if (onExpandedChange) {
+            onExpandedChange(newValue);
+        } else {
+            setInternalExpanded(newValue);
+        }
+    };
 
     return (
         <div
@@ -51,7 +65,7 @@ function ExpandableContainer(props: Props) {
                     {actions}
                     <Button
                         name={!isExpanded}
-                        onClick={setIsExpanded}
+                        onClick={handleToggle}
                         styleVariant="action"
                         title={isExpanded ? 'Collapse' : 'Expand'}
                     >
