@@ -10,6 +10,7 @@ import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
+import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
@@ -31,7 +32,7 @@ ProjectCreateInput | ProjectUpdateInput,
 >
 
 type PartialProjectGeneralInputFields = PartialForm<
-DeepNonNullable<ProjectGeneralInputFields>
+    DeepNonNullable<ProjectGeneralInputFields>
 >;
 
 interface Props {
@@ -119,6 +120,15 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.lookFor}
                     onChange={setFieldValue}
                     error={error?.lookFor}
+                    disabled={disabled}
+                />
+                <TeamSelectInput
+                    label="Select Team (Private)"
+                    name="team"
+                    hint="Please note that if selected, this project will only be visible to the team members"
+                    value={value?.team}
+                    onChange={setFieldValue}
+                    error={error?.team}
                     disabled={disabled}
                 />
             </ListLayout>

@@ -88,6 +88,10 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
                 name
                 id
             }
+            team {
+                id
+                name
+            }
         }
         pageInfo {
             limit
@@ -158,23 +162,14 @@ function Projects(props: Props) {
             heading="Projects"
             className={className}
             headerActions={(
-                <>
-                    <SmartLink
-                        route={routes.newTutorial}
-                        styleVariant="outline"
-                        spacing="md"
-                    >
-                        New Tutorial
-                    </SmartLink>
-                    <SmartLink
-                        route={routes.newProject}
-                        styleVariant="filled"
-                        colorVariant="accent"
-                        spacing="md"
-                    >
-                        New Project
-                    </SmartLink>
-                </>
+                <SmartLink
+                    route={routes.newProject}
+                    styleVariant="filled"
+                    colorVariant="accent"
+                    spacing="md"
+                >
+                    New Project
+                </SmartLink>
             )}
             aside={(
                 <>

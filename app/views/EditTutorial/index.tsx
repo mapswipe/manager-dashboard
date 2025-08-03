@@ -34,6 +34,7 @@ import Container from '#components/Container';
 import GeoJsonFileInput from '#components/domain/GeoJsonFileInput';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import InlineLayout from '#components/InlineLayout';
+import Modal from '#components/Modal';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import TextInput from '#components/TextInput';
@@ -41,6 +42,7 @@ import TextOutput from '#components/TextOutput';
 import {
     AssetMimetypeEnum,
     ProjectTypeEnum,
+    TutorialStatusEnum,
     TutorialUpdateInput,
     useProjectOutputAssetsQuery,
     useTutorialDetailsQuery,
@@ -241,6 +243,8 @@ function NewTutorial(props: Props) {
     const [tutorialFormContext, setTutorialFormContext] = useState<TutorialFormContext>();
 
     const alert = useAlert();
+
+    const [newStatus, setNewStatus] = useState<TutorialStatusEnum | undefined>();
 
     const [
         { fetching: updateTutorialPending },
@@ -746,6 +750,22 @@ function NewTutorial(props: Props) {
         }
     }, [projectDetailResponse, setError, setFieldValue]);
 
+    const handleStatusUpdateCancel = useCallback(() => {
+        setNewStatus(undefined);
+    }, []);
+
+    const handleStatusUpdateConfirm = useCallback(() => {
+        if (isNotDefined(tutorialData)) {
+            return;
+        }
+
+        handleFormSubmission({
+            clientId: tutorialData.tutorial.clientId,
+            status: newStatus,
+        });
+        setNewStatus(undefined);
+    }, [handleFormSubmission, newStatus, tutorialData]);
+
     const inputsDisabled = updateTutorialPending;
     const actionsDisabled = inputsDisabled;
 
@@ -759,6 +779,34 @@ function NewTutorial(props: Props) {
         <PageLayout
             className={_cs(styles.newTutorial, className)}
             heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
+            headerActions={(
+                <>
+                    {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
+                        <Button
+                            name={TutorialStatusEnum.Published}
+                            onClick={setNewStatus}
+                        >
+                            Publish
+                        </Button>
+                    )}
+                    {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
+                        <Button
+                            name={TutorialStatusEnum.Archived}
+                            onClick={setNewStatus}
+                        >
+                            Discard
+                        </Button>
+                    )}
+                    {tutorialData?.tutorial.status === TutorialStatusEnum.Published && (
+                        <Button
+                            name={TutorialStatusEnum.Archived}
+                            onClick={setNewStatus}
+                        >
+                            Archive
+                        </Button>
+                    )}
+                </>
+            )}
             footerActions={(
                 <Button
                     name={undefined}
@@ -935,6 +983,42 @@ function NewTutorial(props: Props) {
                     />
                 ))}
             </Container>
+            {isDefined(newStatus) && (
+                <Modal
+                    heading="Confirm status update!"
+                    size="sm"
+                    footerActions={(
+                        <>
+                            <Button
+                                name="cancel"
+                                onClick={handleStatusUpdateCancel}
+                                styleVariant="transparent"
+                                withoutPadding
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                name="confirm"
+                                onClick={handleStatusUpdateConfirm}
+                                styleVariant="transparent"
+                                withoutPadding
+                            >
+                                Confirm
+                            </Button>
+                        </>
+                    )}
+                    onClose={handleStatusUpdateCancel}
+                >
+                    {`Are you sure you want to change the status to ${newStatus} ?`}
+                    {(newStatus === TutorialStatusEnum.Archived
+                        || newStatus === TutorialStatusEnum.Discarded
+                    ) && (
+                        <p>
+                            Please note that this action is irreversable!
+                        </p>
+                    )}
+                </Modal>
+            )}
         </PageLayout>
     );
 }

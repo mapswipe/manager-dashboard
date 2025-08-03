@@ -45,6 +45,7 @@ import {
 } from '#utils/error';
 import ProjectGeneralInputs from '#views/NewProject/ProjectGeneralInputs/index.tsx';
 
+import ProjectActions from '../ProjectActions/index.tsx';
 import ProjectAdditionalInputs from '../ProjectAdditionalInputs/index.tsx';
 import {
     defaultCompareSpecificFormValue,
@@ -92,6 +93,7 @@ function UpdateProjectForm(props: Props) {
     const alert = useAlert();
     const [, setOrganizationOptions] = useOptions('organization');
     const [, setTutorialOptions] = useOptions('tutorial');
+    const [, setTeamOptions] = useOptions('project');
 
     const [, execProjectStatusQuery] = useProjectStatusQuery({
         variables: {
@@ -204,6 +206,8 @@ function UpdateProjectForm(props: Props) {
             requestingOrganization,
             projectTypeSpecifics,
             image,
+            status,
+            team,
             tutorial,
             ...other
         } = removeNull(projectData.project);
@@ -211,13 +215,18 @@ function UpdateProjectForm(props: Props) {
         if (isDefined(tutorial)) {
             setTutorialOptions([tutorial]);
         }
+        if (isDefined(team)) {
+            setTeamOptions([team]);
+        }
         setOrganizationOptions([requestingOrganization]);
 
         setValue({
             ...other,
             requestingOrganization: requestingOrganization.id,
             image: image?.id,
+            team: team?.id,
             tutorial: tutorial?.id,
+            status,
             projectTypeSpecifics: {
                 // TODO: replace with the default value
                 [projectTypeToKeyMap[projectType]]: projectTypeSpecifics
@@ -228,6 +237,7 @@ function UpdateProjectForm(props: Props) {
         projectData,
         setValue,
         setTutorialOptions,
+        setTeamOptions,
         setOrganizationOptions,
         defaultProjectTypeSpecificsValue,
     ]);
@@ -382,6 +392,13 @@ function UpdateProjectForm(props: Props) {
         <PageLayout
             heading="Update project"
             className={className}
+            headerActions={(isDefined(projectData) && (
+                <ProjectActions
+                    projectId={projectData.project.id}
+                    clientId={projectData.project.clientId}
+                    status={projectData.project.status}
+                />
+            ))}
             footerActions={(
                 <>
                     <Button
