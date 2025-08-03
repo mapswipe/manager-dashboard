@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import {
+    useCallback,
+    useState,
+} from 'react';
 import { FaEdit } from 'react-icons/fa';
 import { gql } from 'urql';
 
@@ -12,13 +15,20 @@ import Table, { Column } from '#components/Table';
 import TextOutput from '#components/TextOutput';
 import {
     UserGroupMemberListQuery,
+    useUpdateUserGroupMutation,
     useUserGroupMemberListQuery,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import {
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
 } from '#utils/common';
+import {
+    alertCombinedError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_GROUP_MEMBER_LIST_QUERY = gql`
@@ -40,6 +50,34 @@ query UserGroupMemberList($filters: ContributorUserGroupMembershipFilter, $pagin
 }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const USER_GROUP_UPDATE_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
+mutation UpdateUserGroup($id: ID!, $data: ContributorUserGroupUpdateInput!) {
+    updateContributorUserGroup(pk: $id, data: $data) {
+        ... on ContributorUserGroupTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                id
+                name
+                description
+                clientId
+                modifiedBy {
+                    id
+                    displayName
+                }
+                modifiedAt
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
+
 type UserMemberTye = UserGroupMemberListQuery['contributorUserGroupMembers']['results'][number];
 
 interface Props {
@@ -48,6 +86,9 @@ interface Props {
     description: string;
     membersCount: number;
     onEdit: (id: string) => void;
+    archive: boolean;
+    clientId: string;
+    refetchUserGroup: () => void;
 }
 
 const keySelector = (item: UserMemberTye) => item.user.id;
@@ -59,11 +100,21 @@ function UserListItem(props: Props) {
         description,
         membersCount,
         onEdit,
+        archive,
+        clientId,
+        refetchUserGroup,
     } = props;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
     const [expanded, setExpanded] = useState(false);
+    const alert = useAlert();
+    const [isArchived, setIsArchived] = useState(archive);
+
+    const [
+        { fetching: updateUserGroupPending },
+        updateUserGroup,
+    ] = useUpdateUserGroupMutation();
 
     const [{
         data: userMemberResponse,
@@ -96,19 +147,75 @@ function UserListItem(props: Props) {
         },
     ];
 
+    const handleStatus = useCallback(async () => {
+        const newStatus = !isArchived;
+
+        try {
+            const result = await updateUserGroup({
+                id,
+                data: {
+                    clientId,
+                    name,
+                    description,
+                    isArchived: newStatus,
+                },
+            });
+
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            // eslint-disable-next-line no-underscore-dangle
+            if (result.data?.updateContributorUserGroup.__typename !== 'ContributorUserGroupTypeMutationResponseType') {
+                alert.show('Failed to update archive status!', { variant: 'danger' });
+                return;
+            }
+
+            alert.show(
+                newStatus ? 'Archived successfully!' : 'Unarchived successfully!',
+                { variant: 'success' },
+            );
+
+            setIsArchived(newStatus);
+            refetchUserGroup();
+        } catch (err) {
+            alertCombinedError(err, alert);
+        }
+    }, [
+        isArchived,
+        id,
+        updateUserGroup,
+        alert,
+        name,
+        description,
+        clientId,
+        refetchUserGroup,
+    ]);
+
     return (
         <ExpandableContainer
             onExpandedChange={setExpanded}
             actions={(
-                <Button
-                    name={id}
-                    onClick={onEdit}
-                    colorVariant="accent"
-                    styleVariant="transparent"
-                    withoutPadding
-                >
-                    <FaEdit />
-                </Button>
+                <>
+                    <Button
+                        name="isArchived"
+                        styleVariant="transparent"
+                        onClick={handleStatus}
+                        withoutPadding
+                        disabled={updateUserGroupPending}
+                    >
+                        {isArchived ? 'Archive' : 'Unarchive'}
+                    </Button>
+                    <Button
+                        name={id}
+                        onClick={onEdit}
+                        colorVariant="accent"
+                        styleVariant="transparent"
+                        withoutPadding
+                    >
+                        <FaEdit />
+                    </Button>
+                </>
             )}
             header={(
                 <ListLayout

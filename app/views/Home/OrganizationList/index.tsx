@@ -20,13 +20,23 @@ import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import Pager from '#components/Pager';
 import TextOutput from '#components/TextOutput';
-import { useOrganizationListQuery } from '#generated/types/graphql';
+import {
+    OrganizationUpdateInput,
+    useOrganizationListQuery,
+    useUpdateOrganizationMutation,
+} from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import useBooleanState from '#hooks/useBooleanState';
 import {
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
 } from '#utils/common';
+import {
+    alertCombinedError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 
 import OrganizationFormModal from './OrganizationFormModal';
 
@@ -40,6 +50,8 @@ query OrganizationList($pagination: OffsetPaginationInput!) {
         results {
             name
             id
+            clientId
+            isArchived
             abbreviation
             description
             modifiedBy {
@@ -47,6 +59,35 @@ query OrganizationList($pagination: OffsetPaginationInput!) {
                 displayName
             }
             modifiedAt
+        }
+    }
+}
+`;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ORGANIZATION_UPDATE_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
+mutation UpdateOrganization($id: ID!, $data: OrganizationUpdateInput!) {
+    updateOrganization(pk: $id, data: $data) {
+        ... on OrganizationTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                id
+                name
+                abbreviation
+                description
+                clientId
+                modifiedBy {
+                    id
+                    displayName
+                }
+                modifiedAt
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
         }
     }
 }
@@ -67,6 +108,13 @@ function OrganizationList(props: Props) {
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
     const [editOrganizationId, setEditOrganizationId] = useState<string | undefined>();
+
+    const alert = useAlert();
+
+    const [
+        { fetching: updateOrganizationPending },
+        updateOrganization,
+    ] = useUpdateOrganizationMutation();
 
     const [
         {
@@ -91,6 +139,40 @@ function OrganizationList(props: Props) {
 
     const organizationList = organizationListResponse?.organizations.results ?? [];
     const totalItems = organizationListResponse?.organizations.totalCount ?? 0;
+
+    const handleStatus = useCallback(async (org: OrganizationUpdateInput & { id: string }) => {
+        const newStatus = !org.isArchived;
+
+        try {
+            const result = await updateOrganization({
+                id: org.id,
+                data: {
+                    clientId: org.clientId,
+                    isArchived: newStatus,
+                    name: org.name,
+                },
+            });
+
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            // eslint-disable-next-line no-underscore-dangle
+            if (result.data?.updateOrganization.__typename !== 'OrganizationTypeMutationResponseType') {
+                alert.show('Failed to update archive status!', { variant: 'danger' });
+                return;
+            }
+
+            alert.show(
+                newStatus ? 'Archived successfully!' : 'Unarchived successfully!',
+                { variant: 'success' },
+            );
+
+            refetchOrganization();
+        } catch (err) {
+            alertCombinedError(err, alert);
+        }
+    }, [updateOrganization, alert, refetchOrganization]);
 
     return (
         <>
@@ -140,16 +222,27 @@ function OrganizationList(props: Props) {
                             withPadding
                             withShadow
                             headerActions={(
-                                <Button
-                                    name={organization.id}
-                                    colorVariant="accent"
-                                    styleVariant="transparent"
-                                    withoutPadding
-                                    className={styles.editButton}
-                                    onClick={setEditOrganizationId}
-                                >
-                                    <FaEdit />
-                                </Button>
+                                <>
+                                    <Button
+                                        name="isArchived"
+                                        styleVariant="transparent"
+                                        onClick={() => handleStatus(organization)}
+                                        withoutPadding
+                                        disabled={updateOrganizationPending}
+                                    >
+                                        {organization.isArchived ? 'Unarchive' : 'Archive'}
+                                    </Button>
+                                    <Button
+                                        name={organization.id}
+                                        colorVariant="accent"
+                                        styleVariant="transparent"
+                                        withoutPadding
+                                        className={styles.editButton}
+                                        onClick={setEditOrganizationId}
+                                    >
+                                        <FaEdit />
+                                    </Button>
+                                </>
                             )}
                         >
                             <ListLayout
