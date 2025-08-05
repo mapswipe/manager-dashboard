@@ -40,11 +40,9 @@ query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit
             userMemberships(pagination: $pagination) {
                 results {
                     id
-                    userId
                     user {
                         username
                         id
-                        userId
                     }
                 }
                 pageInfo {

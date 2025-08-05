@@ -32,7 +32,7 @@ query TeamsList($filters: ContributorTeamFilter, $offset: Int!, $limit: Int) {
                 results {
                     id
                     username
-                    userId
+                    firebaseId
                 }
             totalCount
             }

@@ -36,7 +36,7 @@ query ContributorTeamMemberList($id: ID!, $pagination: OffsetPaginationInput) {
             totalCount
             results {
                 id
-                userId
+                firebaseId
                 username
             }
         }
@@ -88,9 +88,9 @@ function TeamListItem(props: Props) {
             cellRenderer: (item) => item.username,
         },
         {
-            id: 'userId',
+            id: 'firebaseId',
             title: 'User Id',
-            cellRenderer: (item) => item.userId,
+            cellRenderer: (item) => item.firebaseId,
         },
     ], []);
 
