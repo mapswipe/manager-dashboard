@@ -87,8 +87,7 @@ const TileFeaturePropertyType = type({
 const ValidateFeaturePropertyType = type.merge(
     CommonFeaturePropertyType,
     {
-        // This is not used anymore
-        // id: '"string" | "number"',
+        id: type.number,
     },
 );
 
@@ -628,6 +627,7 @@ function NewTutorial(props: Props) {
                             projectTypeSpecifics: {
                                 // FIXME: Why objectGeometry is string?
                                 validate: {
+                                    identifier: feature.properties.id,
                                     objectGeometry: JSON.stringify(feature.geometry, null, 4),
                                 } satisfies ValidatePropertyInputFields,
                             },
