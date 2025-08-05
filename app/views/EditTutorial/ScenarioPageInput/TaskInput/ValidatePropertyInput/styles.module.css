@@ -1,6 +1,8 @@
 .validate-property-input {
     .geometry {
-        font-family: var(--font-family-monospace);
-        font-size: var(--font-size-2xs);
+        textarea {
+            font-family: var(--font-family-monospace);
+            font-size: var(--font-size-2xs);
+        }
     }
 }

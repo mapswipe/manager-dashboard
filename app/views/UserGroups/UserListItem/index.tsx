@@ -31,11 +31,10 @@ query UserGroupMemberList($filters: ContributorUserGroupMembershipFilter, $pagin
             id
             user {
                 id
-                userId
+                firebaseId
                 username
             }
-            userId
-        }      
+        }
         totalCount
     }
 }
@@ -91,9 +90,9 @@ function UserListItem(props: Props) {
             cellRenderer: (item) => item.user.username,
         },
         {
-            id: 'userId',
+            id: 'id',
             title: 'User Id',
-            cellRenderer: (item) => item.user.userId,
+            cellRenderer: (item) => item.user.firebaseId,
         },
     ];
 

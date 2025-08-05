@@ -109,7 +109,6 @@ function ObjectSourceInput(props: Props) {
                     value={value.ohsomeFilter}
                     error={error?.ohsomeFilter}
                     onChange={setFieldValue}
-                    readOnly
                 />
             )}
         </Container>

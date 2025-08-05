@@ -6,6 +6,7 @@ import {
     ObjectError,
 } from '@togglecorp/toggle-form';
 
+import NumberInput from '#components/NumberInput';
 import TextArea from '#components/TextArea';
 
 import { PartialValidatePropertyInputFields } from './schema';
@@ -33,6 +34,14 @@ function ValidatePropertyInput(props: Props) {
 
     return (
         <div className={_cs(className, styles.validatePropertyInput)}>
+            <NumberInput
+                label="Identifier"
+                name="identifier"
+                value={value?.identifier}
+                error={error?.identifier}
+                onChange={setFieldValue}
+                disabled={disabled}
+            />
             <TextArea
                 className={styles.geometry}
                 label="Object Geometry"

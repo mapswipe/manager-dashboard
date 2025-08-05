@@ -55,7 +55,7 @@ function ValidateScenarioPreview(props: Props) {
 
             return {
                 type: 'Feature' as const,
-                geometry: JSON.parse(task.projectTypeSpecifics?.validate?.objectGeometry),
+                geometry: JSON.parse(task.projectTypeSpecifics.validate.objectGeometry),
                 properties: {
                     reference: task.reference,
                 },

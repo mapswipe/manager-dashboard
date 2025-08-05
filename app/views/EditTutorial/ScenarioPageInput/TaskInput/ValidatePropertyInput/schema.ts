@@ -13,6 +13,7 @@ type TaskSchema = ObjectSchema<PartialValidatePropertyInputFields>;
 
 const validatePropertyInputSchema: TaskSchema = {
     fields: (): ReturnType<TaskSchema['fields']> => ({
+        identifier: {},
         objectGeometry: {},
     }),
 };

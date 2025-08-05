@@ -72,6 +72,7 @@ query TutorialDetails($id: ID!) {
                     }
                     ... on ValidateTutorialTaskPropertyType {
                         __typename
+                        identifier
                         objectGeometry
                     }
                     ... on ValidateImageTutorialTaskPropertyType {
