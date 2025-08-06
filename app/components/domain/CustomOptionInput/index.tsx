@@ -1,8 +1,4 @@
-import {
-    useCallback,
-    useEffect,
-    useRef,
-} from 'react';
+import { useCallback } from 'react';
 import {
     IoAdd,
     IoTrashBin,
@@ -16,7 +12,6 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
-import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
@@ -26,27 +21,10 @@ import NonFieldError from '#components/NonFieldError';
 import NumberInput from '#components/NumberInput';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
-import {
-    ProjectTypeEnum,
-    useDefaultCustomOptionsQuery,
-} from '#generated/types/graphql';
 
 import { PartialCustomSubOptionInputFields } from './SubOptionInput/schema';
 import { PartialCustomOptionInputFields } from './schema';
 import SubOptionInput from './SubOptionInput';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DEFAULT_CUSTOM_OPTIONS = gql`
-query DefaultCustomOptions($projectType: ProjectTypeEnum!) {
-    defaultCustomOptions(projectType: $projectType) {
-        value
-        title
-        iconColor
-        icon
-        description
-    }
-}
-`;
 
 interface Props {
     className?: string;
@@ -58,7 +36,6 @@ interface Props {
     ) => void;
     error: ObjectError<PartialCustomOptionInputFields> | undefined;
     onRemove: (index: number) => void;
-    projectType: ProjectTypeEnum;
 }
 
 function CustomOption(props: Props) {
@@ -69,7 +46,6 @@ function CustomOption(props: Props) {
         onChange,
         error,
         onRemove,
-        projectType,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -88,35 +64,6 @@ function CustomOption(props: Props) {
         setFieldValue,
     );
 
-    const [
-        {
-            data: customOptionResponse,
-        },
-    ] = useDefaultCustomOptionsQuery({
-        variables: {
-            projectType,
-        },
-    });
-
-    const hasInitializedOption = useRef(false);
-
-    useEffect(() => {
-        if (
-            !hasInitializedOption.current
-            && customOptionResponse?.defaultCustomOptions
-        ) {
-            const defaultOption = customOptionResponse.defaultCustomOptions[index];
-            if (defaultOption) {
-                setFieldValue(defaultOption.title, 'title');
-                setFieldValue(defaultOption.icon, 'icon');
-                setFieldValue(defaultOption.iconColor, 'iconColor');
-                setFieldValue(defaultOption.value, 'value');
-                setFieldValue(defaultOption.description, 'description');
-                hasInitializedOption.current = true;
-            }
-        }
-    }, [customOptionResponse, index, setFieldValue]);
-
     const addSubOption = useCallback((newSubOptionIndex: number) => {
         const newSubOption: PartialCustomSubOptionInputFields = {
             clientId: ulid(),
@@ -124,10 +71,9 @@ function CustomOption(props: Props) {
         };
 
         setFieldValue(
-            (oldValue: PartialCustomSubOptionInputFields[] | undefined) => [
-                ...(oldValue ?? []),
-                newSubOption,
-            ],
+            (oldValue: PartialCustomSubOptionInputFields[] | undefined) => (
+                [...(oldValue ?? []), newSubOption]
+            ),
             'subOptions' as const,
         );
     }, [setFieldValue]);
