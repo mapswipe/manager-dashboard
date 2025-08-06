@@ -13,6 +13,7 @@ import Button from '#components/Button';
 import Container from '#components/Container';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
+import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import { useUserGroupsListQuery } from '#generated/types/graphql';
 import useBooleanState from '#hooks/useBooleanState';
@@ -22,6 +23,8 @@ import {
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
+    keySelector,
+    labelSelector,
 } from '#utils/common';
 
 import UserGroupFormModal from './UserGroupFormModal';
@@ -29,11 +32,13 @@ import UserListItem from './UserListItem';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_GROUPS_LIST_QUERY = gql`
-query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit: Int, $pagination: OffsetPaginationInput) {
-    contributorUserGroups(pagination: {offset: $offset, limit: $limit}, filters: $filters) {
+query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit: Int, $pagination: OffsetPaginationInput, $includeAll: Boolean!= false) {
+    contributorUserGroups(pagination: {offset: $offset, limit: $limit}, filters: $filters, includeAll: $includeAll) {
         totalCount
         results {
             id
+            clientId
+            isArchived
             name
             membersCount
             description
@@ -59,6 +64,11 @@ query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit
 }
 `;
 
+const statusOptions = [
+    { key: true, label: 'Archive' },
+    { key: false, label: 'Unarchive' },
+];
+
 interface Props {
     className?: string;
 }
@@ -76,6 +86,9 @@ function UserGroups(props: Props) {
     const [editUserGroupId, setEditUserGroupId] = useState<string | undefined>();
 
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
+    const [archivedStatus, setArchivedStatus] = useState<
+        boolean | undefined
+    >(undefined);
 
     const debouncedSearchText = useDebouncedValue(searchText?.trim());
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
@@ -91,7 +104,9 @@ function UserGroups(props: Props) {
         variables: {
             filters: {
                 name: { iContains: debouncedSearchText },
+                isArchived: { exact: archivedStatus },
             },
+            includeAll: true,
             pagination: {
                 offset: 0,
                 limit: 5,
@@ -113,6 +128,11 @@ function UserGroups(props: Props) {
         setShowAddModalFalse();
         refetchUserGroup();
     }, [refetchUserGroup, setShowAddModalFalse]);
+
+    const handleClearFilterButtonClick = useCallback(() => {
+        setArchivedStatus(undefined);
+        setSearchText(undefined);
+    }, [setSearchText, setArchivedStatus]);
 
     return (
         <PageLayout
@@ -137,9 +157,19 @@ function UserGroups(props: Props) {
                         onChange={setSearchText}
                         placeholder="Search by title"
                     />
+                    <RadioInput
+                        label="Usergroup status"
+                        name={undefined}
+                        options={statusOptions}
+                        value={archivedStatus}
+                        onChange={setArchivedStatus}
+                        keySelector={keySelector}
+                        labelSelector={labelSelector}
+                        radioListLayout="block"
+                    />
                     <Button
                         name={undefined}
-                        onClick={setSearchText}
+                        onClick={handleClearFilterButtonClick}
                     >
                         Clear filters
                     </Button>
@@ -165,24 +195,27 @@ function UserGroups(props: Props) {
                     />
                 )}
             >
-                {!pending && filteredUserGroupList.map((user) => (
+                {filteredUserGroupList.map((userGroup) => (
                     <UserListItem
-                        key={user.id}
-                        id={user.id}
-                        name={user.name}
-                        description={user.description}
-                        membersCount={user.membersCount}
+                        key={userGroup.id}
+                        id={userGroup.id}
+                        name={userGroup.name}
+                        description={userGroup.description}
+                        membersCount={userGroup.membersCount}
                         onEdit={setEditUserGroupId}
+                        isArchived={userGroup.isArchived}
+                        clientId={userGroup.clientId}
+                        refetchUserGroup={refetchUserGroup}
                     />
                 ))}
-                {isDefined(editUserGroupId) && (
-                    <UserGroupFormModal
-                        userGroupId={editUserGroupId}
-                        onClose={setEditUserGroupId}
-                        onUpdate={handleUserGroupModalUpdate}
-                    />
-                )}
             </Container>
+            {isDefined(editUserGroupId) && (
+                <UserGroupFormModal
+                    userGroupId={editUserGroupId}
+                    onClose={setEditUserGroupId}
+                    onUpdate={handleUserGroupModalUpdate}
+                />
+            )}
             {showAddModal && (
                 <UserGroupFormModal
                     onClose={setShowAddModalFalse}

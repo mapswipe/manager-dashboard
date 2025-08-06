@@ -8,9 +8,7 @@ import {
 } from 'react-icons/io5';
 import { gql } from 'urql';
 
-import Container from '#components/Container';
 import ExpandableContainer from '#components/ExpandableContainer';
-import GridLayoutItem from '#components/GridLayoutItem';
 import ListLayout from '#components/ListLayout';
 import Pager from '#components/Pager';
 import Table, { Column } from '#components/Table';
@@ -83,75 +81,69 @@ function TeamListItem(props: Props) {
 
     const columns = useMemo<Column<ContibutorTeamMemberType>[]>(() => [
         {
+            id: 'id',
+            title: 'User Id',
+            cellRenderer: (item) => item.id,
+        },
+        {
             id: 'username',
             title: 'User Name',
             cellRenderer: (item) => item.username,
         },
         {
             id: 'firebaseId',
-            title: 'User Id',
+            title: 'Firebase Id',
             cellRenderer: (item) => item.firebaseId,
         },
     ], []);
 
+    const membersCount = userMemberResponse?.contributorTeam.members.totalCount ?? 0;
+
     return (
         <ExpandableContainer
-            onExpandedChange={setExpanded}
-            header={(
-                <ListLayout
-                    layout="grid"
-                    numPreferredGridColumns={4}
-                    minGridColumnSize="9rem"
-                    spacing="lg"
-                >
-                    <GridLayoutItem columnSpan={4}>
-                        <Container
-                            heading={name}
-                            headingLevel={3}
-                        >
-                            <ListLayout withWrap>
-                                <TextOutput
-                                    icon={<IoCalendar />}
-                                    label="Created on"
-                                    value={createdAt}
-                                    valueType="date"
-                                />
-                                <TextOutput
-                                    icon={<IoPerson />}
-                                    label="Created by"
-                                    value={createdBy}
-                                />
-                            </ListLayout>
-                        </Container>
-                    </GridLayoutItem>
+            name={undefined}
+            onExpansionChange={setExpanded}
+            heading={`${name} (${membersCount} members)`}
+            headingLevel={5}
+            headerDescription={(
+                <ListLayout>
+                    <TextOutput
+                        icon={<IoCalendar />}
+                        label="Created on"
+                        value={createdAt}
+                        valueType="date"
+                    />
+                    <TextOutput
+                        icon={<IoPerson />}
+                        label="Created by"
+                        value={createdBy}
+                    />
                 </ListLayout>
             )}
-            expanded={expanded}
-        >
-            <Container
-                contentLayout="block"
-                spacing="lg"
-                pending={pending}
-                empty={userMemberResponse?.contributorTeam.members?.totalCount === 0}
-                emptyMessage="No User Member found!"
-                filteredEmptyMessage="No matching user member found!"
-                footerActions={(
-                    <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
-                        activePage={activePage}
-                        onActivePageChange={setActivePage}
-                        totalItems={userMemberResponse?.contributorTeam.members.totalCount ?? 0}
-                        pagePerItemOptions={defaultPagePerItemOptions}
-                    />
-                )}
-            >
-                <Table
-                    keySelector={keySelector}
-                    columns={columns}
-                    data={userMemberResponse?.contributorTeam.members.results}
+            isExpanded={expanded}
+            withPadding
+            withBackground
+            footerActions={expanded ? (
+                <Pager
+                    pagePerItem={pagePerItem}
+                    onPagePerItemChange={setPagePerItem}
+                    activePage={activePage}
+                    onActivePageChange={setActivePage}
+                    totalItems={membersCount}
+                    pagePerItemOptions={defaultPagePerItemOptions}
                 />
-            </Container>
+            ) : null}
+            spacing="lg"
+            pending={pending}
+            empty={expanded && membersCount === 0}
+            emptyMessage="No member found!"
+            filteredEmptyMessage="No matching member found!"
+        >
+            <Table
+                keySelector={keySelector}
+                columns={columns}
+                data={userMemberResponse?.contributorTeam.members.results}
+            />
         </ExpandableContainer>
     );
 }

@@ -1,71 +1,43 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 import {
     IoIosArrowDown,
     IoIosArrowUp,
 } from 'react-icons/io';
-import { _cs } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
+import Container, { type Props as ContainerProps } from '#components/Container';
 
-import styles from './styles.module.css';
-
-interface Props {
-    icons?: React.ReactNode;
-    header?: React.ReactNode;
-    actions?: React.ReactNode;
-    className?: string;
-    children?: React.ReactNode;
-    openByDefault?: boolean;
-    expanded?: boolean;
-    onExpandedChange?: (v: boolean) => void;
+interface Props<NAME> extends ContainerProps {
+    name: NAME,
+    initallyExpanded?: boolean;
+    isExpanded?: boolean;
+    onExpansionChange?: (v: boolean, name: NAME) => void;
 }
 
-function ExpandableContainer(props: Props) {
+function ExpandableContainer<NAME>(props: Props<NAME>) {
     const {
         children,
-        className,
-        icons,
-        header,
-        actions,
-        openByDefault = false,
-        expanded,
-        onExpandedChange,
+        isExpanded,
+        headerActions,
+        onExpansionChange,
+        name,
+        ...containerProps
     } = props;
 
-    const [internalExpanded, setInternalExpanded] = useState(openByDefault);
-    const isExpanded = expanded ?? internalExpanded;
-
-    const handleToggle = () => {
-        const newValue = !isExpanded;
-        if (onExpandedChange) {
-            onExpandedChange(newValue);
-        } else {
-            setInternalExpanded(newValue);
-        }
-    };
+    const handleExpandButtonClick = useCallback((newValue: boolean) => {
+        onExpansionChange?.(newValue, name);
+    }, [name, onExpansionChange]);
 
     return (
-        <div
-            className={_cs(
-                styles.expandableContainer,
-                isExpanded && styles.expanded,
-                className,
-            )}
-        >
-            <div className={styles.headerContainer}>
-                {icons && (
-                    <div className={styles.icons}>
-                        {icons}
-                    </div>
-                )}
-                <div className={styles.header}>
-                    {header}
-                </div>
-                <div className={styles.actions}>
-                    {actions}
+        <Container
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...containerProps}
+            headerActions={(
+                <>
+                    {headerActions}
                     <Button
                         name={!isExpanded}
-                        onClick={handleToggle}
+                        onClick={handleExpandButtonClick}
                         styleVariant="action"
                         title={isExpanded ? 'Collapse' : 'Expand'}
                     >
@@ -75,14 +47,11 @@ function ExpandableContainer(props: Props) {
                             <IoIosArrowDown />
                         )}
                     </Button>
-                </div>
-            </div>
-            {isExpanded && (
-                <div className={styles.children}>
-                    {children}
-                </div>
+                </>
             )}
-        </div>
+        >
+            {isExpanded && children}
+        </Container>
     );
 }
 

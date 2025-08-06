@@ -126,7 +126,7 @@ function Teams(props: Props) {
                     />
                 )}
             >
-                {!pending && filteredTeamList.map((team) => (
+                {filteredTeamList.map((team) => (
                     <TeamListItem
                         key={team.id}
                         id={team.id}

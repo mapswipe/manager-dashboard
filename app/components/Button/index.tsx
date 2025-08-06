@@ -3,7 +3,9 @@ import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.module.css';
 
-export type Props<NAME> = Omit<ButtonLayoutProps, 'elementRef'> & Omit<RawButtonProps<NAME>, 'children' | 'start'>;
+export type Props<NAME> = Omit<ButtonLayoutProps, 'elementRef'> & Omit<RawButtonProps<NAME>, 'children' | 'start'> & {
+    layoutElementRef?: ButtonLayoutProps['elementRef'];
+};
 
 function Button<NAME>(props: Props<NAME>) {
     const {
@@ -20,6 +22,7 @@ function Button<NAME>(props: Props<NAME>) {
         type = 'button',
         disabled,
         withoutPadding,
+        layoutElementRef,
         ...buttonProps
     } = props;
 
@@ -32,6 +35,7 @@ function Button<NAME>(props: Props<NAME>) {
             {...buttonProps}
         >
             <ButtonLayout
+                elementRef={layoutElementRef}
                 className={className}
                 start={start}
                 end={end}

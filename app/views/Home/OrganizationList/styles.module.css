@@ -5,14 +5,14 @@
             font-size: var(--font-size-lg);
         }
 
-        .edit-button {
-            transition: var(--duration-transition-medium) opacity ease-in-out;
-            opacity: 0;
-        }
+        .organization-status {
+            align-items: center;
+            border-radius: var(--radius-card-border);
+            background-color: var(--color-background-accent-hint);
+            width: fit-content;
 
-        &:hover {
-            .edit-button {
-                opacity: 1;
+            &.archived {
+                opacity: 0.5;
             }
         }
     }
