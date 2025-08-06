@@ -26,22 +26,17 @@ import Container from '#components/Container';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import InlineLayout from '#components/InlineLayout';
 import PageLayout from '#components/PageLayout';
-import SelectInput from '#components/SelectInput';
+import ProjectSelectInput from '#components/selections/ProjectSelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
     AssetMimetypeEnum,
     TutorialCreateInput,
     useNewTutorialMutation,
-    useProjectOptionsQuery,
     useProjectOutputAssetsQuery,
     useTutorialProjectDetailQuery,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import {
-    idSelector,
-    nameSelector,
-} from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -86,7 +81,6 @@ function NewTutorial(props: Props) {
         clientId: ulid(),
     }), []);
 
-    const [{ data: projectOptionsResponse }] = useProjectOptionsQuery();
     const {
         value,
         setFieldValue,
@@ -234,18 +228,15 @@ function NewTutorial(props: Props) {
                 />
             </Container>
             <Container
-                heading="Project"
+                heading="Reference Project"
                 withHeaderBorder
                 withContentBackgroundAndPadding
                 spacing="lg"
-                headerDescription="Informations like zoom level, tile server, etc will be inherited from the reference project"
+                headerDescription="Some information will be inherited from from the selected project"
             >
-                <SelectInput
-                    label="Select a project"
+                <ProjectSelectInput
+                    label="Select a reference project"
                     name="project"
-                    options={projectOptionsResponse?.projects.results}
-                    keySelector={idSelector}
-                    labelSelector={nameSelector}
                     value={value.project}
                     onChange={setFieldValue}
                     error={error?.project}

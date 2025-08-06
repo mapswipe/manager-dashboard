@@ -86,17 +86,6 @@ query TutorialDetails($id: ID!) {
 }
 `;
 
-export const PROJECT_OPTION_QUERY = gql`
-query ProjectOptions {
-    projects {
-        results {
-            id
-            name
-        }
-    }
-}
-`;
-
 export const PROJECT_ASSETS_QUERY = gql`
 query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
     projectAssets(
