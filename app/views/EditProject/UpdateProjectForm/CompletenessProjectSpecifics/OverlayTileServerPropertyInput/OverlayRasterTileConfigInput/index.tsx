@@ -51,6 +51,7 @@ function OverlayRasterTileConfigInput(props: Props) {
                 disabled={disabled}
             />
             <RasterTileServerInput
+                label={null}
                 value={value?.tileServer}
                 error={error?.tileServer}
                 setFieldValue={setTileServerInputFieldValue}

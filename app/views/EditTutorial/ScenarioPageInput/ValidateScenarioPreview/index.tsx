@@ -85,6 +85,7 @@ function ValidateScenarioPreview(props: Props) {
                     geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}
                     geoJsonLayerOptions={layerOptions}
+                    fitInSingleTile
                 />
             </MobilePreview>
             <PreviewSegmentInput

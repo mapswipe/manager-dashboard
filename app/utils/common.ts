@@ -118,46 +118,138 @@ interface NumericValueOption {
     label: string;
 }
 
-interface StringValueOption {
+export interface StringValueOption {
     value: string;
     label: string;
 }
 
 export const colorOptions: StringValueOption[] = [
     {
-        value: '#ffffff',
-        label: 'White',
-    },
-    {
-        value: '#000000',
-        label: 'Black',
-    },
-    {
-        value: '#ff0000',
         label: 'Red',
+        value: '#f44336',
     },
     {
-        value: '#00ff00',
-        label: 'Green',
+        label: 'Pink',
+        value: '#e91e63',
     },
     {
-        value: '#0000ff',
+        label: 'Purple',
+        value: '#9c27b0',
+    },
+    {
+        label: 'Deep Purple',
+        value: '#673ab7',
+    },
+    {
+        label: 'Indigo',
+        value: '#3f51b5',
+    },
+    {
         label: 'Blue',
+        value: '#2196f3',
+    },
+    {
+        label: 'Light Blue',
+        value: '#03a9f4',
+    },
+    {
+        label: 'Cyan',
+        value: '#00bcd4',
+    },
+    {
+        label: 'Teal',
+        value: '#009688',
+    },
+    {
+        label: 'Green',
+        value: '#4caf50',
+    },
+    {
+        label: 'Light Green',
+        value: '#8bc34a',
+    },
+    {
+        label: 'Lime',
+        value: '#cddc39',
+    },
+    {
+        label: 'Yellow',
+        value: '#ffeb3b',
+    },
+    {
+        label: 'Amber',
+        value: '#ffc107',
+    },
+    {
+        label: 'Orange',
+        value: '#ff9800',
+    },
+    {
+        label: 'Deep Orange',
+        value: '#ff5722',
+    },
+    {
+        label: 'Brown',
+        value: '#795548',
+    },
+    {
+        label: 'Grey',
+        value: '#9e9e9e',
+    },
+    {
+        label: 'Blue Grey',
+        value: '#607d8b',
+    },
+    {
+        label: 'Black',
+        value: '#000000',
+    },
+    {
+        label: 'White',
+        value: '#ffffff',
     },
 ];
 
 export const opacityOptions: NumericValueOption[] = [
     {
-        value: 0.25,
-        label: '25%',
+        value: 0,
+        label: '0%',
+    },
+    {
+        value: 0.1,
+        label: '10%',
+    },
+    {
+        value: 0.2,
+        label: '20%',
+    },
+    {
+        value: 0.3,
+        label: '30%',
+    },
+    {
+        value: 0.4,
+        label: '40%',
     },
     {
         value: 0.5,
         label: '50%',
     },
     {
-        value: 0.75,
-        label: '75%',
+        value: 0.6,
+        label: '60%',
+    },
+    {
+        value: 0.7,
+        label: '70%',
+    },
+    {
+        value: 0.8,
+        label: '80%',
+    },
+    {
+        value: 0.9,
+        label: '90%',
     },
     {
         value: 1,
@@ -173,5 +265,17 @@ export const lineWidthOptions: NumericValueOption[] = [
     {
         value: 2,
         label: '2',
+    },
+    {
+        value: 3,
+        label: '3',
+    },
+    {
+        value: 4,
+        label: '4',
+    },
+    {
+        value: 5,
+        label: '5',
     },
 ];

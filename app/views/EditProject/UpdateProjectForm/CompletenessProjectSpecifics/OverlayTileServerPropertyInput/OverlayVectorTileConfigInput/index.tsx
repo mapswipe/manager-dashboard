@@ -6,6 +6,7 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
+import ColorSelectInput from '#components/ColorSelectInput';
 import Container from '#components/Container';
 import { PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import ListLayout from '#components/ListLayout';
@@ -64,97 +65,9 @@ function OverlayVectorTileConfigInput(props: Props) {
         >
             <ListLayout
                 layout="grid"
-                numPreferredGridColumns={2}
-            >
-                {/*
-                <NumberInput
-                    name="circleRadius"
-                    label="Circle Radius"
-                    value={value?.circleRadius}
-                    error={error?.circleRadius}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                <SelectInput
-                    name="circleColor"
-                    label="Circle Color"
-                    options={colorOptions}
-                    keySelector={valueSelector}
-                    labelSelector={labelSelector}
-                    value={value?.circleColor}
-                    error={error?.circleColor}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                <NumberInput
-                    name="circleOpacity"
-                    label="Circle Opacity"
-                    value={value?.circleOpacity}
-                    error={error?.circleOpacity}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                */}
-                <SelectInput
-                    name="lineColor"
-                    label="Line Color"
-                    options={colorOptions}
-                    keySelector={valueSelector}
-                    labelSelector={labelSelector}
-                    value={value?.lineColor}
-                    error={error?.lineColor}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                <SelectInput
-                    name="lineOpacity"
-                    label="Line Opacity"
-                    options={opacityOptions}
-                    keySelector={valueSelector}
-                    labelSelector={labelSelector}
-                    value={value?.lineOpacity}
-                    error={error?.lineOpacity}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                <SelectInput
-                    name="lineWidth"
-                    label="Line Width"
-                    options={lineWidthOptions}
-                    keySelector={valueSelector}
-                    labelSelector={labelSelector}
-                    value={value?.lineWidth}
-                    error={error?.lineWidth}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                <SelectInput
-                    name="fillColor"
-                    label="Fill Color"
-                    options={colorOptions}
-                    keySelector={valueSelector}
-                    labelSelector={labelSelector}
-                    value={value?.fillColor}
-                    error={error?.fillColor}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-                <SelectInput
-                    name="fillOpacity"
-                    label="Fill Opacity"
-                    options={opacityOptions}
-                    keySelector={valueSelector}
-                    labelSelector={labelSelector}
-                    value={value?.fillOpacity}
-                    error={error?.fillOpacity}
-                    disabled={disabled}
-                    onChange={setFieldValue}
-                />
-            </ListLayout>
-            <ListLayout
-                layout="grid"
             >
                 <VectorTileServerInput
+                    label={null}
                     value={value?.tileServer}
                     error={error?.tileServer}
                     setFieldValue={setVectorTileServerFieldValue}
@@ -167,6 +80,95 @@ function OverlayVectorTileConfigInput(props: Props) {
                     zoomLevel={zoomLevel}
                 />
             </ListLayout>
+            <Container
+                heading="Overlay style"
+                headingLevel={5}
+                withHeaderBorder
+            >
+                <ListLayout
+                    layout="grid"
+                    numPreferredGridColumns={3}
+                >
+                    {/*
+                    <NumberInput
+                        name="circleRadius"
+                        label="Circle Radius"
+                        value={value?.circleRadius}
+                        error={error?.circleRadius}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    <SelectInput
+                        name="circleColor"
+                        label="Circle Color"
+                        options={colorOptions}
+                        keySelector={valueSelector}
+                        labelSelector={labelSelector}
+                        value={value?.circleColor}
+                        error={error?.circleColor}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    <NumberInput
+                        name="circleOpacity"
+                        label="Circle Opacity"
+                        value={value?.circleOpacity}
+                        error={error?.circleOpacity}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    */}
+                    <ColorSelectInput
+                        name="lineColor"
+                        label="Line Color"
+                        value={value?.lineColor}
+                        error={error?.lineColor}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    <SelectInput
+                        name="lineOpacity"
+                        label="Line Opacity"
+                        options={opacityOptions}
+                        keySelector={valueSelector}
+                        labelSelector={labelSelector}
+                        value={value?.lineOpacity}
+                        error={error?.lineOpacity}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    <SelectInput
+                        name="lineWidth"
+                        label="Line Width"
+                        options={lineWidthOptions}
+                        keySelector={valueSelector}
+                        labelSelector={labelSelector}
+                        value={value?.lineWidth}
+                        error={error?.lineWidth}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    <ColorSelectInput
+                        name="fillColor"
+                        label="Fill Color"
+                        value={value?.fillColor}
+                        error={error?.fillColor}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                    <SelectInput
+                        name="fillOpacity"
+                        label="Fill Opacity"
+                        options={opacityOptions}
+                        keySelector={valueSelector}
+                        labelSelector={labelSelector}
+                        value={value?.fillOpacity}
+                        error={error?.fillOpacity}
+                        disabled={disabled}
+                        onChange={setFieldValue}
+                    />
+                </ListLayout>
+            </Container>
         </Container>
     );
 }

@@ -19,6 +19,7 @@ import {
 import EnumsContext from '#base/context/EnumsContext';
 import TileServerContext from '#base/context/TileServerContext';
 import Container from '#components/Container';
+import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import SelectInput from '#components/SelectInput';
@@ -117,6 +118,7 @@ function VectorTileServerInput(props: Props) {
             headingLevel={4}
         >
             <RadioInput
+                label="Imagery Server"
                 name="name"
                 options={vectorTileServerNameOptions}
                 keySelector={keySelector}
@@ -140,7 +142,7 @@ function VectorTileServerInput(props: Props) {
                             disabled={disabled}
                         />
                         <SelectInput
-                            label="Source name"
+                            label="Source layer"
                             name="sourceLayer"
                             value={value[fieldName]?.sourceLayer}
                             error={getErrorObject(error?.[fieldName])?.sourceLayer}
@@ -158,7 +160,7 @@ function VectorTileServerInput(props: Props) {
                     <>
                         <TextInput
                             name="url"
-                            label="Custom Imagery Server URL"
+                            label="Imagery Server URL"
                             hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quadkey} as placeholders and that already includes the api key."
                             value={value.custom?.url}
                             error={getErrorObject(error?.custom)?.url}
@@ -181,20 +183,22 @@ function VectorTileServerInput(props: Props) {
                             error={getErrorObject(error?.[fieldName])?.sourceLayer}
                             onChange={setCustomTileServerFieldValue}
                         />
-                        <NumberInput
-                            label="Min Zoom"
-                            name="minZoom"
-                            value={value.custom?.minZoom}
-                            error={getErrorObject(error?.custom)?.minZoom}
-                            onChange={setCustomTileServerFieldValue}
-                        />
-                        <NumberInput
-                            label="Max Zoom"
-                            name="maxZoom"
-                            value={value.custom?.maxZoom}
-                            error={getErrorObject(error?.custom)?.maxZoom}
-                            onChange={setCustomTileServerFieldValue}
-                        />
+                        <ListLayout layout="grid">
+                            <NumberInput
+                                label="Min Zoom"
+                                name="minZoom"
+                                value={value.custom?.minZoom}
+                                error={getErrorObject(error?.custom)?.minZoom}
+                                onChange={setCustomTileServerFieldValue}
+                            />
+                            <NumberInput
+                                label="Max Zoom"
+                                name="maxZoom"
+                                value={value.custom?.maxZoom}
+                                error={getErrorObject(error?.custom)?.maxZoom}
+                                onChange={setCustomTileServerFieldValue}
+                            />
+                        </ListLayout>
                     </>
                 )}
         </Container>

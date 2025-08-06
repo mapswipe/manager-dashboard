@@ -5,14 +5,19 @@ import {
 } from '@togglecorp/fujs';
 import {
     MapBounds,
+    MapCenter,
     MapContainer,
     MapLayer,
     MapSource,
 } from '@togglecorp/re-map';
-import getBbox from '@turf/bbox';
 
 import BaseMap from '#components/domain/BaseMap';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
+import {
+    getBbox,
+    getCenterFromBBox,
+    getZoomLevelFromBbox,
+} from '#utils/geo';
 
 import styles from './styles.module.css';
 
@@ -39,6 +44,7 @@ interface Props {
     geoJsonLayerOptions?: ComponentProps<typeof MapLayer>['layerOptions'];
     padding?: number;
     tileSize?: number;
+    fitInSingleTile?: boolean;
 }
 
 function GeoJsonPreview(props: Props) {
@@ -49,9 +55,12 @@ function GeoJsonPreview(props: Props) {
         geoJsonLayerOptions = defaultGeoJsonLayerOptions,
         padding = DEFAULT_MAP_PADDING,
         tileSize,
+        fitInSingleTile = false,
     } = props;
 
-    const bounds = isDefined(geoJson) ? getBbox(geoJson) : undefined;
+    const bounds = getBbox(geoJson);
+    const center = getCenterFromBBox(bounds);
+    const zoomLevel = getZoomLevelFromBbox(bounds);
 
     return (
         <BaseMap
@@ -71,12 +80,21 @@ function GeoJsonPreview(props: Props) {
                 </MapSource>
             )}
             <MapContainer className={_cs(styles.geoJsonPreview, className)} />
-            {isDefined(bounds) && (
+            {isDefined(bounds) && !fitInSingleTile && (
                 <MapBounds
-                    bounds={bounds as [number, number, number, number]}
+                    bounds={bounds}
                     padding={padding}
                     // FIXME: use constants
-                    duration={1000}
+                    duration={500}
+                />
+            )}
+            {fitInSingleTile && (
+                <MapCenter
+                    center={center}
+                    centerOptions={{
+                        zoom: zoomLevel,
+                        duration: 500,
+                    }}
                 />
             )}
         </BaseMap>
