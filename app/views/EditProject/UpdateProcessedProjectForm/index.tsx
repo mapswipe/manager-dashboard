@@ -360,6 +360,7 @@ function UpdateProcessedProjectForm(props: Props) {
                 <TutorialSelectInput
                     label="Select a tutorial for this project"
                     name="tutorial"
+                    projectType={projectData.project.projectType}
                     value={value.tutorial}
                     onChange={setFieldValue}
                     error={error?.tutorial}

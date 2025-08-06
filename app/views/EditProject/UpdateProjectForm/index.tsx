@@ -477,6 +477,7 @@ function UpdateProjectForm(props: Props) {
                 {projectContext.projectType === ProjectTypeEnum.Validate && (
                     <ValidateProjectSpecifics
                         projectId={projectData.project.id}
+                        projectType={projectData.project.projectType}
                         value={validateProjectTypeSpecifics}
                         setFieldValue={setValidateProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validate}

@@ -10,6 +10,7 @@ import {
     GetTutorialQuery,
     GetTutorialQueryVariables,
     Ordering,
+    ProjectTypeEnum,
     useGetTutorialQuery,
 } from '#generated/types/graphql';
 import useDebouncedValue from '#hooks/useDebouncedValue';
@@ -58,11 +59,14 @@ type SelectInputProps<
     | 'optionsPending'
     | 'searchOptions'
     | 'totalOptionsCount'
->;
+> & {
+    projectType: ProjectTypeEnum;
+};
 
 function TutorialSelectInput<K extends string>(props: SelectInputProps<K>) {
     const {
         className,
+        projectType,
         ...otherProps
     } = props;
 
@@ -72,20 +76,26 @@ function TutorialSelectInput<K extends string>(props: SelectInputProps<K>) {
     const debouncedSearchText = useDebouncedValue(searchText);
 
     const searchVariable = useMemo(
-        (): GetTutorialQueryVariables => (
-            debouncedSearchText ? {
-                filters: {
+        (): GetTutorialQueryVariables => ({
+            filters: {
+                project: {
+                    projectType: {
+                        exact: projectType,
+                    },
+                },
+                ...(debouncedSearchText ? {
                     name: {
                         iContains: debouncedSearchText,
                     },
-                },
-            } : {
+                } : {}),
+            },
+            ...(debouncedSearchText ? {} : {
                 order: {
                     name: Ordering.Asc,
                 },
-            }
-        ),
-        [debouncedSearchText],
+            }),
+        }),
+        [debouncedSearchText, projectType],
     );
 
     const [{

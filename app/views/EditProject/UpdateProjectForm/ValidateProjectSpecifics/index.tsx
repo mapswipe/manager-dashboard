@@ -21,6 +21,7 @@ import {
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
 import NonFieldError from '#components/NonFieldError';
+import { ProjectTypeEnum } from '#generated/types/graphql';
 
 import {
     defaultObjectSourceInputFormValue,
@@ -35,6 +36,7 @@ interface Props {
     error: LeafError | ObjectError<PartialValidateSpecificFields>;
     setFieldValue: (...entries: EntriesAsList<PartialValidateSpecificFields>) => void;
     disabled?: boolean;
+    projectType: ProjectTypeEnum,
 }
 
 function ValidateProjectSpecifics(props: Props) {
@@ -44,6 +46,7 @@ function ValidateProjectSpecifics(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
+        projectType,
     } = props;
 
     const error = getErrorObject(formError);
@@ -112,6 +115,7 @@ function ValidateProjectSpecifics(props: Props) {
                         index={optionIndex}
                         value={customOption}
                         onChange={setCustomOptionValue}
+                        projectType={projectType}
                         error={getErrorObject(
                             getErrorObject(error?.customOptions)?.[customOption.clientId],
                         )}

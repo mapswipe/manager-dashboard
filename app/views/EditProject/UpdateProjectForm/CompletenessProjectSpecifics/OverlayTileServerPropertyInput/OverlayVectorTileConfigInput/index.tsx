@@ -12,7 +12,6 @@ import { PartialRasterTileServerInputFields } from '#components/domain/RasterTil
 import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
-    colorOptions,
     labelSelector,
     lineWidthOptions,
     opacityOptions,
