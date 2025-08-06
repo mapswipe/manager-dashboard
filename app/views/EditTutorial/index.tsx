@@ -87,6 +87,8 @@ const TileFeaturePropertyType = type({
 const ValidateFeaturePropertyType = type.merge(
     CommonFeaturePropertyType,
     {
+        // This is not used anymore
+        // id: '"string" | "number"',
         id: type.number,
     },
 );
@@ -754,17 +756,64 @@ function NewTutorial(props: Props) {
         setNewStatus(undefined);
     }, []);
 
-    const handleStatusUpdateConfirm = useCallback(() => {
+    const handleStatusUpdateConfirm = useCallback(async () => {
         if (isNotDefined(tutorialData)) {
             return;
         }
 
-        handleFormSubmission({
-            clientId: tutorialData.tutorial.clientId,
-            status: newStatus,
-        });
+        try {
+            const result = await updateTutorial({
+                data: {
+                    clientId: tutorialData.tutorial.clientId,
+                    status: newStatus,
+                },
+                id: tutorialData.tutorial.id,
+            });
+
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            if (isNotDefined(result.data)
+                // eslint-disable-next-line no-underscore-dangle
+                || result.data.updateTutorial.__typename !== 'TutorialTypeMutationResponseType'
+            ) {
+                alert.show(
+                    'Failed to create the Tutorial!',
+                    {
+                        description: 'Unexpectected response from the server!',
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
+            const {
+                ok,
+                errors,
+                result: updateTutorialResult,
+            } = result.data.updateTutorial;
+
+            if (!ok || !updateTutorialResult) {
+                alert.show(
+                    'Failed to update status of the Tutorial!',
+                    { variant: 'danger' },
+                );
+                setError(transformErrors(errors));
+                return;
+            }
+
+            alert.show(
+                'Tutorial status updated successfully!',
+                { variant: 'success' },
+            );
+        } catch (apolloError) {
+            alertCombinedError(apolloError, alert);
+        }
+
         setNewStatus(undefined);
-    }, [handleFormSubmission, newStatus, tutorialData]);
+    }, [alert, setError, newStatus, updateTutorial, tutorialData]);
 
     const inputsDisabled = updateTutorialPending;
     const actionsDisabled = inputsDisabled;
@@ -781,7 +830,10 @@ function NewTutorial(props: Props) {
             heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
             headerActions={(
                 <>
-                    {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
+                    {(
+                        tutorialData?.tutorial.status === TutorialStatusEnum.Draft
+                        || tutorialData?.tutorial.status === TutorialStatusEnum.Archived
+                    ) && (
                         <Button
                             name={TutorialStatusEnum.Published}
                             onClick={setNewStatus}
@@ -791,7 +843,7 @@ function NewTutorial(props: Props) {
                     )}
                     {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
                         <Button
-                            name={TutorialStatusEnum.Archived}
+                            name={TutorialStatusEnum.Discarded}
                             onClick={setNewStatus}
                         >
                             Discard

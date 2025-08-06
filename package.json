@@ -25,6 +25,7 @@
     "dependencies": {
         "@graphql-codegen/introspection": "^4.0.3",
         "@graphql-codegen/typescript-operations": "^4.2.0",
+        "@mapbox/tilebelt": "^2.0.2",
         "@placemarkio/check-geojson": "^0.1.12",
         "@sentry/react": "^9.13.0",
         "@sentry/tracing": "^7.120.3",

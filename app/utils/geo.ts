@@ -1,7 +1,40 @@
+import { bboxToTile } from '@mapbox/tilebelt';
 import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
+import turfBbox from '@turf/bbox';
+
+type BoundingBox = [number, number, number, number];
+
+export function getCenterFromBBox(bbox: BoundingBox | undefined): [number, number] {
+    if (isNotDefined(bbox)) {
+        return [0, 0];
+    }
+
+    const [minLon, minLat, maxLon, maxLat] = bbox;
+    const centerLon = (minLon + maxLon) / 2;
+    const centerLat = (minLat + maxLat) / 2;
+    return [centerLon, centerLat] as const; // [longitude, latitude]
+}
+
+export function getBbox(geoJson: GeoJSON.GeoJSON | undefined) {
+    if (isNotDefined(geoJson)) {
+        return undefined;
+    }
+
+    const bounds = turfBbox(geoJson);
+    return [bounds[0], bounds[1], bounds[2], bounds[3]];
+}
+
+export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
+    if (isNotDefined(bbox)) {
+        return 14;
+    }
+
+    const tile = bboxToTile(bbox);
+    return tile[2];
+}
 
 export function tileToLng(x: number, z: number) {
     return (x / (2 ** z)) * 360 - 180;

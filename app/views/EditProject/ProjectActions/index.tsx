@@ -189,6 +189,15 @@ function ProjectActions(props: Props) {
                     Discard
                 </Button>
             )}
+            {status === ProjectStatusEnum.Paused && (
+                <Button
+                    name={ProjectStatusEnum.Published}
+                    onClick={setNewStatus}
+                    disabled={actionsDisabled}
+                >
+                    Un-pause
+                </Button>
+            )}
             {status === ProjectStatusEnum.Published && (
                 <Button
                     name={ProjectStatusEnum.Paused}

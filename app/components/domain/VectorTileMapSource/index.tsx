@@ -104,6 +104,7 @@ function VectorTileMapSource(props: Props) {
                 'line-color': tileConfig.lineColor,
                 'line-width': tileConfig.lineWidth,
                 'line-opacity': tileConfig.lineOpacity,
+                'line-dasharray': tileConfig.lineDasharray,
             },
         };
     }, [tileConfig, sourceLayer]);
