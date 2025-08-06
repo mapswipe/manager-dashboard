@@ -91,7 +91,7 @@ export function imageryUrlCondition(value: string | null | undefined) {
         return undefined;
     }
 
-    if (value.includes('{quadkey}')) {
+    if (value.includes('{quad_key}')) {
         return undefined;
     }
 
@@ -102,7 +102,7 @@ export function imageryUrlCondition(value: string | null | undefined) {
     ) {
         return undefined;
     }
-    return 'Imagery url must contain {x}, {y} (or {-y}) & {z} placeholders or {quadkey} placeholder.';
+    return 'Imagery url must contain {x}, {y} (or {-y}) & {z} placeholders or {quad_key} placeholder.';
 }
 
 export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {

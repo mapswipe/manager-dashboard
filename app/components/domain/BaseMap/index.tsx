@@ -11,6 +11,7 @@ import Map from '@togglecorp/re-map';
 import TileServerContext from '#base/context/TileServerContext';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
+import { standardizeQuadKey } from '#utils/geo';
 
 const FALLBACK_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const FALLBACK_TILE_CREDITS = 'Map data from OpenStreetMap';
@@ -86,7 +87,8 @@ function BaseMap(props: Props) {
             sources: {
                 'base-tile-source': {
                     type: 'raster',
-                    tiles: [url],
+                    // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
+                    tiles: [standardizeQuadKey(url)],
                     tileSize,
                     attribution: credits ?? '',
                 },
