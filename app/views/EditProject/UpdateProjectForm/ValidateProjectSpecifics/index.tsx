@@ -10,7 +10,6 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
-import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
@@ -22,10 +21,6 @@ import {
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
 import NonFieldError from '#components/NonFieldError';
-import {
-    ProjectTypeEnum,
-    useDefaultCustomOptionsQuery,
-} from '#generated/types/graphql';
 
 import {
     defaultObjectSourceInputFormValue,
@@ -34,26 +29,12 @@ import {
 import ObjectSourceInput from './ObjectSourceInput';
 import { type PartialValidateSpecificFields } from './schema';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DEFAULT_CUSTOM_OPTIONS = gql`
-query DefaultCustomOptions($projectType: ProjectTypeEnum!) {
-    defaultCustomOptions(projectType: $projectType) {
-        value
-        title
-        iconColor
-        icon
-        description
-    }
-}
-`;
-
 interface Props {
     projectId: string;
     value: PartialValidateSpecificFields | undefined | null;
     error: LeafError | ObjectError<PartialValidateSpecificFields>;
     setFieldValue: (...entries: EntriesAsList<PartialValidateSpecificFields>) => void;
     disabled?: boolean;
-    projectType: ProjectTypeEnum,
 }
 
 function ValidateProjectSpecifics(props: Props) {
@@ -63,16 +44,7 @@ function ValidateProjectSpecifics(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
-        projectType,
     } = props;
-
-    const [
-        { data: customOptionResponse },
-    ] = useDefaultCustomOptionsQuery({
-        variables: {
-            projectType,
-        },
-    });
 
     const error = getErrorObject(formError);
 
@@ -96,16 +68,10 @@ function ValidateProjectSpecifics(props: Props) {
         setFieldValue,
     );
 
-    const addCustomOption = useCallback((index: number) => {
-        const defaultOption = customOptionResponse?.defaultCustomOptions?.[index];
-
+    const addCustomOption = useCallback((newCustomOptionIndex: number) => {
         const newCustomOption: PartialCustomOptionInputFields = {
             clientId: ulid(),
-            value: defaultOption?.value ?? index,
-            title: defaultOption?.title,
-            icon: defaultOption?.icon,
-            iconColor: defaultOption?.iconColor,
-            description: defaultOption?.description,
+            value: newCustomOptionIndex,
         };
 
         setFieldValue(
@@ -114,7 +80,7 @@ function ValidateProjectSpecifics(props: Props) {
             ),
             'customOptions' as const,
         );
-    }, [setFieldValue, customOptionResponse]);
+    }, [setFieldValue]);
 
     return (
         <>

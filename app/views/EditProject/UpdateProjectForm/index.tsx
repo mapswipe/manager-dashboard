@@ -19,6 +19,7 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
+import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
@@ -27,11 +28,11 @@ import InputError from '#components/InputError/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import {
-    IconEnum,
     ProjectDetailsQuery,
     ProjectStatusEnum,
     ProjectTypeEnum,
     ProjectUpdateInput,
+    useDefaultCustomOptionsQuery,
     useProjectStatusQuery,
     useUpdateProjectMutation,
 } from '#generated/types/graphql';
@@ -84,6 +85,19 @@ interface Props {
     projectData: ProjectDetailsQuery;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const DEFAULT_CUSTOM_OPTIONS = gql`
+query DefaultCustomOptions($projectType: ProjectTypeEnum!) {
+    defaultCustomOptions(projectType: $projectType) {
+        value
+        title
+        iconColor
+        icon
+        description
+    }
+}
+`;
+
 function UpdateProjectForm(props: Props) {
     const {
         className,
@@ -100,6 +114,12 @@ function UpdateProjectForm(props: Props) {
             projectId: projectData.project.id,
         },
         pause: true,
+    });
+
+    const [{ data: customOptionResponse }] = useDefaultCustomOptionsQuery({
+        variables: {
+            projectType: projectData.project.projectType,
+        },
     });
 
     useEffect(() => {
@@ -138,42 +158,50 @@ function UpdateProjectForm(props: Props) {
         }
 
         if (projectData.project.projectType === ProjectTypeEnum.Validate) {
+            const baseValue = projectData.project.projectType === ProjectTypeEnum.Validate
+                ? defaultValidateSpecificFormValue
+                : defaultValidateImageSpecificFormValue;
+
+            const customOptionsFromQuery = customOptionResponse?.defaultCustomOptions?.map(
+                (opt) => ({
+                    clientId: ulid(),
+                    icon: opt.icon,
+                    iconColor: opt.iconColor,
+                    title: opt.title,
+                    description: opt.description,
+                    value: opt.value,
+                }),
+            ) ?? [];
+
             return {
-                ...defaultValidateSpecificFormValue,
-                customOptions: [
-                    {
-                        clientId: ulid(),
-                        icon: IconEnum.CheckmarkOutline,
-                        iconColor: '#48f056',
-                        title: 'Yes',
-                        description: 'The shape outlines a building',
-                        value: 1,
-                    },
-                    {
-                        clientId: ulid(),
-                        icon: IconEnum.CloseOutline,
-                        iconColor: '#fa4656',
-                        title: 'No',
-                        description: 'The shape does not outline a building',
-                        value: 0,
-                    },
-                    {
-                        clientId: ulid(),
-                        icon: IconEnum.AlertOutline,
-                        iconColor: '#969696',
-                        title: 'Not sure',
-                        description: 'Imagery is not clear or obstructed by cloud',
-                        value: 2,
-                    },
-                ],
+                ...baseValue,
+                customOptions: customOptionsFromQuery,
             };
         }
         if (projectData.project.projectType === ProjectTypeEnum.ValidateImage) {
-            return defaultValidateImageSpecificFormValue;
+            const baseValue = projectData.project.projectType === ProjectTypeEnum.ValidateImage
+                ? defaultValidateSpecificFormValue
+                : defaultValidateImageSpecificFormValue;
+
+            const customOptionsFromQuery = customOptionResponse?.defaultCustomOptions?.map(
+                (opt) => ({
+                    clientId: ulid(),
+                    icon: opt.icon,
+                    iconColor: opt.iconColor,
+                    title: opt.title,
+                    description: opt.description,
+                    value: opt.value,
+                }),
+            ) ?? [];
+
+            return {
+                ...baseValue,
+                customOptions: customOptionsFromQuery,
+            };
         }
 
         return {};
-    }, [projectData.project.projectType]);
+    }, [projectData.project.projectType, customOptionResponse?.defaultCustomOptions]);
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectUpdateInput>(() => ({
         clientId: ulid(),
@@ -477,7 +505,6 @@ function UpdateProjectForm(props: Props) {
                 {projectContext.projectType === ProjectTypeEnum.Validate && (
                     <ValidateProjectSpecifics
                         projectId={projectData.project.id}
-                        projectType={projectData.project.projectType}
                         value={validateProjectTypeSpecifics}
                         setFieldValue={setValidateProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validate}
