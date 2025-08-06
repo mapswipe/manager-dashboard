@@ -149,6 +149,7 @@ mutation UpdateTutorial($id: ID!, $data: TutorialUpdateInput!) {
             ok
             result {
                 id
+                status
             }
         }
         ... on OperationInfo {

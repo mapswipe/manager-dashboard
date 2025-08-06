@@ -830,7 +830,10 @@ function NewTutorial(props: Props) {
             heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
             headerActions={(
                 <>
-                    {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
+                    {(
+                        tutorialData?.tutorial.status === TutorialStatusEnum.Draft
+                        || tutorialData?.tutorial.status === TutorialStatusEnum.Archived
+                    ) && (
                         <Button
                             name={TutorialStatusEnum.Published}
                             onClick={setNewStatus}
