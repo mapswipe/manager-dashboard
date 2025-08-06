@@ -28,14 +28,6 @@ query TeamsList($filters: ContributorTeamFilter, $offset: Int!, $limit: Int) {
             id
             name
             membersCount
-            members {
-                results {
-                    id
-                    username
-                    firebaseId
-                }
-            totalCount
-            }
             createdBy {
                 id
                 displayName

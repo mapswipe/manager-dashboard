@@ -1,7 +1,6 @@
 import InlineLayout from '#components/InlineLayout';
 import SelectInput from '#components/SelectInput';
 import { SearchSelectInputProps } from '#components/SelectInput/SearchSelectInput';
-import { IconEnum } from '#generated/types/graphql';
 import {
     colorOptions,
     labelSelector,

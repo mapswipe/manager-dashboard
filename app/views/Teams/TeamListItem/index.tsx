@@ -97,7 +97,7 @@ function TeamListItem(props: Props) {
         },
     ], []);
 
-    const membersCount = userMemberResponse?.contributorTeam.members.totalCount ?? 0;
+    const membersCount = userMemberResponse?.contributorTeam.membersCount ?? 0;
 
     return (
         <ExpandableContainer
