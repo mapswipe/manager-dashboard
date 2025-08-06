@@ -3,16 +3,14 @@ import {
     useState,
 } from 'react';
 import { FaEdit } from 'react-icons/fa';
+import { IoArchive } from 'react-icons/io5';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
-import Container from '#components/Container';
 import ExpandableContainer from '#components/ExpandableContainer';
-import GridLayoutItem from '#components/GridLayoutItem';
-import ListLayout from '#components/ListLayout';
+import OverflowMenu from '#components/OverflowMenu';
 import Pager from '#components/Pager';
 import Table, { Column } from '#components/Table';
-import TextOutput from '#components/TextOutput';
 import {
     UserGroupMemberListQuery,
     useUpdateUserGroupMutation,
@@ -86,7 +84,7 @@ interface Props {
     description: string;
     membersCount: number;
     onEdit: (id: string) => void;
-    archive: boolean;
+    isArchived: boolean;
     clientId: string;
     refetchUserGroup: () => void;
 }
@@ -100,7 +98,7 @@ function UserListItem(props: Props) {
         description,
         membersCount,
         onEdit,
-        archive,
+        isArchived,
         clientId,
         refetchUserGroup,
     } = props;
@@ -109,7 +107,6 @@ function UserListItem(props: Props) {
     const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
     const [expanded, setExpanded] = useState(false);
     const alert = useAlert();
-    const [isArchived, setIsArchived] = useState(archive);
 
     const [
         { fetching: updateUserGroupPending },
@@ -136,20 +133,23 @@ function UserListItem(props: Props) {
 
     const columns: Column<UserMemberTye>[] = [
         {
+            id: 'id',
+            title: 'User Id',
+            cellRenderer: (item) => item.user.id,
+        },
+        {
             id: 'username',
             title: 'User Name',
             cellRenderer: (item) => item.user.username,
         },
         {
-            id: 'id',
-            title: 'User Id',
+            id: 'firebaseId',
+            title: 'Firebase ID',
             cellRenderer: (item) => item.user.firebaseId,
         },
     ];
 
-    const handleStatus = useCallback(async () => {
-        const newStatus = !isArchived;
-
+    const handleStatusUpdate = useCallback(async (newArchivedStatus: boolean) => {
         try {
             const result = await updateUserGroup({
                 id,
@@ -157,7 +157,7 @@ function UserListItem(props: Props) {
                     clientId,
                     name,
                     description,
-                    isArchived: newStatus,
+                    isArchived: newArchivedStatus,
                 },
             });
 
@@ -172,17 +172,15 @@ function UserListItem(props: Props) {
             }
 
             alert.show(
-                newStatus ? 'Archived successfully!' : 'Unarchived successfully!',
+                newArchivedStatus ? 'Archived successfully!' : 'Unarchived successfully!',
                 { variant: 'success' },
             );
 
-            setIsArchived(newStatus);
             refetchUserGroup();
         } catch (err) {
             alertCombinedError(err, alert);
         }
     }, [
-        isArchived,
         id,
         updateUserGroup,
         alert,
@@ -194,81 +192,62 @@ function UserListItem(props: Props) {
 
     return (
         <ExpandableContainer
-            onExpandedChange={setExpanded}
-            actions={(
+            name={undefined}
+            isExpanded={expanded}
+            onExpansionChange={setExpanded}
+            headingLevel={5}
+            withBackground
+            withPadding
+            headerActions={(
                 <>
-                    <Button
-                        name="isArchived"
-                        styleVariant="transparent"
-                        onClick={handleStatus}
-                        withoutPadding
-                        disabled={updateUserGroupPending}
-                    >
-                        {isArchived ? 'Archive' : 'Unarchive'}
-                    </Button>
-                    <Button
-                        name={id}
-                        onClick={onEdit}
-                        colorVariant="accent"
-                        styleVariant="transparent"
-                        withoutPadding
-                    >
-                        <FaEdit />
-                    </Button>
+                    {isArchived ? 'Archived' : 'Active'}
+                    <OverflowMenu>
+                        <Button
+                            name={!isArchived}
+                            styleVariant="transparent"
+                            onClick={handleStatusUpdate}
+                            withoutPadding
+                            disabled={updateUserGroupPending}
+                            start={<IoArchive />}
+                        >
+                            {isArchived ? 'Unarchive' : 'Archive'}
+                        </Button>
+                        <Button
+                            name={id}
+                            onClick={onEdit}
+                            styleVariant="transparent"
+                            withoutPadding
+                            start={<FaEdit />}
+                        >
+                            Edit
+                        </Button>
+                    </OverflowMenu>
                 </>
             )}
-            header={(
-                <ListLayout
-                    layout="grid"
-                    numPreferredGridColumns={4}
-                    minGridColumnSize="9rem"
-                    spacing="lg"
-                >
-                    <GridLayoutItem columnSpan={4}>
-                        <Container
-                            heading={name}
-                            headingLevel={3}
-                        >
-                            <ListLayout withWrap>
-                                <TextOutput
-                                    label="Member Count"
-                                    value={membersCount}
-                                />
-                                <TextOutput
-                                    label="Description"
-                                    value={description}
-                                />
-                            </ListLayout>
-                        </Container>
-                    </GridLayoutItem>
-                </ListLayout>
-            )}
-            expanded={expanded}
-        >
-            <Container
-                contentLayout="block"
-                spacing="lg"
-                pending={pending}
-                empty={userMemberResponse?.contributorUserGroupMembers?.totalCount === 0}
-                emptyMessage="No User Member found!"
-                filteredEmptyMessage="No matching user member found!"
-                footerActions={(
-                    <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
-                        activePage={activePage}
-                        onActivePageChange={setActivePage}
-                        totalItems={userMemberResponse?.contributorUserGroupMembers.totalCount ?? 0}
-                        pagePerItemOptions={defaultPagePerItemOptions}
-                    />
-                )}
-            >
-                <Table
-                    keySelector={keySelector}
-                    columns={columns}
-                    data={userMemberResponse?.contributorUserGroupMembers?.results}
+            heading={`${name} (${membersCount} members)`}
+            headerDescription={description}
+            contentLayout="block"
+            spacing="lg"
+            pending={pending}
+            empty={expanded && membersCount === 0}
+            emptyMessage="No member found!"
+            filteredEmptyMessage="No matching member found!"
+            footerActions={expanded ? (
+                <Pager
+                    pagePerItem={pagePerItem}
+                    onPagePerItemChange={setPagePerItem}
+                    activePage={activePage}
+                    onActivePageChange={setActivePage}
+                    totalItems={membersCount}
+                    pagePerItemOptions={defaultPagePerItemOptions}
                 />
-            </Container>
+            ) : null}
+        >
+            <Table
+                keySelector={keySelector}
+                columns={columns}
+                data={userMemberResponse?.contributorUserGroupMembers?.results}
+            />
         </ExpandableContainer>
     );
 }

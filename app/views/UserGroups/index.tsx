@@ -195,7 +195,7 @@ function UserGroups(props: Props) {
                     />
                 )}
             >
-                {!pending && filteredUserGroupList.map((userGroup) => (
+                {filteredUserGroupList.map((userGroup) => (
                     <UserListItem
                         key={userGroup.id}
                         id={userGroup.id}
@@ -203,19 +203,19 @@ function UserGroups(props: Props) {
                         description={userGroup.description}
                         membersCount={userGroup.membersCount}
                         onEdit={setEditUserGroupId}
-                        archive={userGroup.isArchived}
+                        isArchived={userGroup.isArchived}
                         clientId={userGroup.clientId}
                         refetchUserGroup={refetchUserGroup}
                     />
                 ))}
-                {isDefined(editUserGroupId) && (
-                    <UserGroupFormModal
-                        userGroupId={editUserGroupId}
-                        onClose={setEditUserGroupId}
-                        onUpdate={handleUserGroupModalUpdate}
-                    />
-                )}
             </Container>
+            {isDefined(editUserGroupId) && (
+                <UserGroupFormModal
+                    userGroupId={editUserGroupId}
+                    onClose={setEditUserGroupId}
+                    onUpdate={handleUserGroupModalUpdate}
+                />
+            )}
             {showAddModal && (
                 <UserGroupFormModal
                     onClose={setShowAddModalFalse}

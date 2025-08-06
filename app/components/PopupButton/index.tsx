@@ -11,6 +11,7 @@ import {
 import { _cs } from '@togglecorp/fujs';
 
 import Button, { Props as ButtonProps } from '#components/Button';
+import ListLayout from '#components/ListLayout';
 import Popup from '#components/Popup';
 import useBlurEffect from '#hooks/useBlurEffect';
 
@@ -31,10 +32,8 @@ export interface PopupButtonProps<NAME extends number | string | undefined> exte
 function PopupButton<NAME extends number | string | undefined>(props: PopupButtonProps<NAME>) {
     const {
         popupClassName,
-        popupContentClassName,
         children,
         label,
-        name,
         end,
         componentRef,
         arrowHidden,
@@ -43,7 +42,7 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
         ...otherProps
     } = props;
 
-    const buttonRef = useRef<HTMLButtonElement>(null);
+    const buttonRef = useRef<HTMLDivElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
 
     const [popupShown, setPopupShown] = useState(defaultShown ?? false);
@@ -59,18 +58,34 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
         [componentRef],
     );
 
-    useBlurEffect(
-        popupShown && !persistent,
-        setPopupShown,
-        popupRef,
-        buttonRef,
-    );
-
-    const handleShowPopup = useCallback(
+    const handleShowPopup: NonNullable<ButtonProps<undefined>['onClick']> = useCallback(
         () => {
-            setPopupShown((prevState) => !prevState);
+            setPopupShown((prevValue) => !prevValue);
         },
         [],
+    );
+
+    const handlePopupBlur = useCallback(
+        (clickedInside: boolean, clickedInParent: boolean) => {
+            // const isClickedWithin = clickedInside || clickedInParent;
+            if (clickedInParent) {
+                return;
+            }
+
+            if (clickedInside && persistent) {
+                return;
+            }
+
+            setPopupShown(false);
+        },
+        [setPopupShown, persistent],
+    );
+
+    useBlurEffect(
+        popupShown,
+        handlePopupBlur,
+        popupRef,
+        buttonRef,
     );
 
     return (
@@ -78,8 +93,8 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
             <Button
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...otherProps}
-                name={name}
-                elementRef={buttonRef}
+                name={undefined}
+                layoutElementRef={buttonRef}
                 onClick={handleShowPopup}
                 end={(
                     <>
@@ -96,9 +111,12 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
                     elementRef={popupRef}
                     parentRef={buttonRef}
                     className={_cs(styles.popup, popupClassName)}
-                    contentClassName={_cs(styles.popupContent, popupContentClassName)}
                 >
-                    {children}
+                    <ListLayout
+                        layout="block"
+                    >
+                        {children}
+                    </ListLayout>
                 </Popup>
             )}
         </>

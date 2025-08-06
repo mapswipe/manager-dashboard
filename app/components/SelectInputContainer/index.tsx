@@ -218,12 +218,17 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
     );
 
     const handlePopupBlur = useCallback(
-        (isClickedWithin: boolean) => {
-            if (!isClickedWithin) {
-                handleHideDropdown();
-            } else if (persistentOptionPopup && inputElementRef.current) {
-                inputElementRef.current.focus();
+        (clickedInside: boolean, clickedInParent: boolean) => {
+            if (clickedInParent) {
+                return;
             }
+
+            if (clickedInside && persistentOptionPopup) {
+                inputElementRef.current?.focus();
+                return;
+            }
+
+            handleHideDropdown();
         },
         [handleHideDropdown, persistentOptionPopup],
     );

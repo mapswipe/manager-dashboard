@@ -6,8 +6,8 @@ import { CgOrganisation } from 'react-icons/cg';
 import { FaEdit } from 'react-icons/fa';
 import {
     IoAdd,
-    IoCalendar,
-    IoPerson,
+    IoArchive,
+    IoCheckmark,
 } from 'react-icons/io5';
 import {
     _cs,
@@ -17,11 +17,11 @@ import { gql } from 'urql';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import OverflowMenu from '#components/OverflowMenu';
 import Pager from '#components/Pager';
-import TextOutput from '#components/TextOutput';
 import {
-    OrganizationUpdateInput,
     useOrganizationListQuery,
     useUpdateOrganizationMutation,
 } from '#generated/types/graphql';
@@ -138,9 +138,10 @@ function OrganizationList(props: Props) {
     }, [refetchOrganization, setShowAddModalFalse]);
 
     const organizationList = organizationListResponse?.organizations.results ?? [];
+    type Organization = typeof organizationList[number];
     const totalItems = organizationListResponse?.organizations.totalCount ?? 0;
 
-    const handleStatus = useCallback(async (org: OrganizationUpdateInput & { id: string }) => {
+    const handleOrganizationStatusChange = useCallback(async (org: Organization) => {
         const newStatus = !org.isArchived;
 
         try {
@@ -149,7 +150,6 @@ function OrganizationList(props: Props) {
                 data: {
                     clientId: org.clientId,
                     isArchived: newStatus,
-                    name: org.name,
                 },
             });
 
@@ -217,60 +217,45 @@ function OrganizationList(props: Props) {
                             className={styles.organizationItem}
                             heading={organization.name}
                             headerIcons={<CgOrganisation className={styles.orgIcon} />}
-                            headingLevel={4}
+                            headingLevel={5}
                             withBackground
                             withPadding
                             withShadow
                             headerActions={(
-                                <>
+                                <OverflowMenu>
                                     <Button
-                                        name="isArchived"
+                                        name={organization}
                                         styleVariant="transparent"
-                                        onClick={() => handleStatus(organization)}
+                                        onClick={handleOrganizationStatusChange}
                                         withoutPadding
                                         disabled={updateOrganizationPending}
+                                        start={<IoArchive />}
                                     >
                                         {organization.isArchived ? 'Unarchive' : 'Archive'}
                                     </Button>
                                     <Button
                                         name={organization.id}
-                                        colorVariant="accent"
                                         styleVariant="transparent"
                                         withoutPadding
-                                        className={styles.editButton}
                                         onClick={setEditOrganizationId}
+                                        start={<FaEdit />}
                                     >
-                                        <FaEdit />
+                                        Edit
                                     </Button>
-                                </>
+                                </OverflowMenu>
                             )}
                         >
-                            <ListLayout
+                            <InlineLayout
+                                className={_cs(
+                                    styles.organizationStatus,
+                                    organization.isArchived && styles.archived,
+                                )}
+                                withPadding
                                 spacing="xs"
-                                layout="block"
+                                start={organization.isArchived ? <IoArchive /> : <IoCheckmark />}
                             >
-                                <TextOutput
-                                    icon={<IoCalendar />}
-                                    label="Updated on"
-                                    value={organization.modifiedAt}
-                                    valueType="date"
-                                />
-                                <TextOutput
-                                    icon={<IoPerson />}
-                                    label="Updated by"
-                                    value={organization.modifiedBy.displayName}
-                                />
-                                <TextOutput
-                                    icon={<IoCalendar />}
-                                    label="Abbrevation"
-                                    value={organization.abbreviation}
-                                />
-                                <TextOutput
-                                    icon={<IoCalendar />}
-                                    label="Description"
-                                    value={organization.description}
-                                />
-                            </ListLayout>
+                                {organization.isArchived ? 'Archived' : 'Active'}
+                            </InlineLayout>
                         </Container>
                     ))}
                 </ListLayout>

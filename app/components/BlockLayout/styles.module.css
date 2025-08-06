@@ -11,4 +11,11 @@
         border: 0;
         border-top: var(--width-separator-thin) solid var(--color-separator);
     }
+
+    .end-content,
+    .start-content {
+        &:empty {
+            display: none;
+        }
+    }
 }

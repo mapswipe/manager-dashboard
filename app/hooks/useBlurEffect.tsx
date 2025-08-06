@@ -1,37 +1,39 @@
-import { useEffect } from 'react';
+import React from 'react';
 
 function useBlurEffect(
     shouldWatch: boolean,
-    callback: (isClickedWithin: boolean, e: MouseEvent) => void,
+    // NOTE: the api is a bit different
+    callback: (clickedInside: boolean, clickedInParent: boolean, e: Event) => void,
     elementRef: React.RefObject<HTMLElement>,
     parentRef: React.RefObject<HTMLElement>,
 ) {
-    useEffect(
+    React.useEffect(
         () => {
             if (!shouldWatch) {
                 return undefined;
             }
 
-            const handleDocumentClick = (e: MouseEvent) => {
+            const handleDocumentClick = (e: Event) => {
                 const { current: element } = elementRef;
                 const { current: parent } = parentRef;
 
-                const isElementOrContainedInElement = element
-                    ? element === e.target || element.contains(e.target as HTMLElement)
+                const targetNode = e.target as Node | null;
+
+                const isElementOrContainedInElement = e && element
+                    ? element === e.target || element.contains(targetNode)
                     : false;
+
                 const isParentOrContainedInParent = parent
-                    ? parent === e.target || parent.contains(e.target as HTMLElement)
+                    ? parent === e.target || parent.contains(targetNode)
                     : false;
 
-                const clickedInside = isElementOrContainedInElement || isParentOrContainedInParent;
-
-                callback(clickedInside, e);
+                callback(isElementOrContainedInElement, isParentOrContainedInParent, e);
             };
 
-            document.addEventListener('click', handleDocumentClick, true);
+            document.addEventListener('click', handleDocumentClick);
 
             return () => {
-                document.removeEventListener('click', handleDocumentClick, true);
+                document.removeEventListener('click', handleDocumentClick);
             };
         },
         [shouldWatch, callback, elementRef, parentRef],
