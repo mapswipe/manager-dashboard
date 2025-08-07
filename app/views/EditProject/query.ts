@@ -46,5 +46,19 @@ query ProjectDetails($id: ID!) {
         status
         verificationNumber
     }
+    defaultValidateCustomOptions: defaultCustomOptions(projectType: VALIDATE) {
+        description
+        icon
+        iconColor
+        title
+        value
+    }
+    defaultValidateImageCustomOptions: defaultCustomOptions(projectType: VALIDATE_IMAGE) {
+        description
+        icon
+        iconColor
+        title
+        value
+    }
 }
 `;

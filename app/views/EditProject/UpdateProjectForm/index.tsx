@@ -27,7 +27,6 @@ import InputError from '#components/InputError/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import {
-    IconEnum,
     ProjectDetailsQuery,
     ProjectStatusEnum,
     ProjectTypeEnum,
@@ -140,40 +139,26 @@ function UpdateProjectForm(props: Props) {
         if (projectData.project.projectType === ProjectTypeEnum.Validate) {
             return {
                 ...defaultValidateSpecificFormValue,
-                customOptions: [
-                    {
-                        clientId: ulid(),
-                        icon: IconEnum.CheckmarkOutline,
-                        iconColor: '#48f056',
-                        title: 'Yes',
-                        description: 'The shape outlines a building',
-                        value: 1,
-                    },
-                    {
-                        clientId: ulid(),
-                        icon: IconEnum.CloseOutline,
-                        iconColor: '#fa4656',
-                        title: 'No',
-                        description: 'The shape does not outline a building',
-                        value: 0,
-                    },
-                    {
-                        clientId: ulid(),
-                        icon: IconEnum.AlertOutline,
-                        iconColor: '#969696',
-                        title: 'Not sure',
-                        description: 'Imagery is not clear or obstructed by cloud',
-                        value: 2,
-                    },
-                ],
+                customOptions: projectData.defaultValidateCustomOptions.map((customOption) => ({
+                    clientId: ulid(),
+                    ...customOption,
+                })),
             };
         }
         if (projectData.project.projectType === ProjectTypeEnum.ValidateImage) {
-            return defaultValidateImageSpecificFormValue;
+            return {
+                ...defaultValidateImageSpecificFormValue,
+                customOptions: projectData.defaultValidateImageCustomOptions.map(
+                    (customOption) => ({
+                        clientId: ulid(),
+                        ...customOption,
+                    }),
+                ),
+            };
         }
 
         return {};
-    }, [projectData.project.projectType]);
+    }, [projectData]);
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectUpdateInput>(() => ({
         clientId: ulid(),
