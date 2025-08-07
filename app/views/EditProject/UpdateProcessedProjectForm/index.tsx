@@ -364,6 +364,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     onChange={setFieldValue}
                     error={error?.tutorial}
                     disabled={baseInputsDisabled}
+                    projectType={projectData.project.projectType}
                 />
             </Container>
         </PageLayout>

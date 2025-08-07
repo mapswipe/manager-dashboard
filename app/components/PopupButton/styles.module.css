@@ -1,3 +1,8 @@
 .popup {
-    padding: var(--spacing-md);
+    .popup-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
 }

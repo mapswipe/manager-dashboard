@@ -11,7 +11,6 @@ import {
 import { _cs } from '@togglecorp/fujs';
 
 import Button, { Props as ButtonProps } from '#components/Button';
-import ListLayout from '#components/ListLayout';
 import Popup from '#components/Popup';
 import useBlurEffect from '#hooks/useBlurEffect';
 
@@ -111,12 +110,9 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
                     elementRef={popupRef}
                     parentRef={buttonRef}
                     className={_cs(styles.popup, popupClassName)}
+                    contentClassName={styles.popupContent}
                 >
-                    <ListLayout
-                        layout="block"
-                    >
-                        {children}
-                    </ListLayout>
+                    {children}
                 </Popup>
             )}
         </>

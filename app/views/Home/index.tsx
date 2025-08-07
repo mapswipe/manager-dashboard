@@ -3,7 +3,6 @@ import routes from '#base/configs/routes';
 import PageLayout from '#components/PageLayout';
 
 import OrganizationList from './OrganizationList';
-import TutorialList from './TutorialList';
 import UserList from './UserList';
 
 interface Props {
@@ -38,7 +37,6 @@ function Home(props: Props) {
             )}
         >
             <OrganizationList />
-            <TutorialList />
             <UserList />
         </PageLayout>
     );
