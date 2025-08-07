@@ -18,7 +18,7 @@ export function getCenterFromBBox(bbox: BoundingBox | undefined): [number, numbe
     return [centerLon, centerLat] as const; // [longitude, latitude]
 }
 
-export function getBbox(geoJson: GeoJSON.GeoJSON | undefined) {
+export function getBbox(geoJson: GeoJSON.GeoJSON | undefined): BoundingBox | undefined {
     if (isNotDefined(geoJson)) {
         return undefined;
     }
