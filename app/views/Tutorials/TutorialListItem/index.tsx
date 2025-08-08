@@ -73,7 +73,7 @@ function TutorialListItem(props: Props) {
                 <GridLayoutItem columnSpan={4}>
                     <Container
                         heading={name}
-                        headingLevel={3}
+                        headingLevel={5}
                         headerActions={(
                             <SmartLink
                                 route={routes.editTutorial}

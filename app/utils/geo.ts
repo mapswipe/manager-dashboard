@@ -1,11 +1,14 @@
-import { bboxToTile } from '@mapbox/tilebelt';
+import {
+    bboxToTile,
+    tileToGeoJSON,
+} from '@mapbox/tilebelt';
 import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import turfBbox from '@turf/bbox';
 
-type BoundingBox = [number, number, number, number];
+export type BoundingBox = [number, number, number, number];
 
 export function getCenterFromBBox(bbox: BoundingBox | undefined): [number, number] {
     if (isNotDefined(bbox)) {
@@ -39,15 +42,6 @@ export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
 export function standardizeQuadKey(url: string) {
     // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
     return url.replace('{quad_key}', '{quadkey}');
-}
-
-export function tileToLng(x: number, z: number) {
-    return (x / (2 ** z)) * 360 - 180;
-}
-
-export function tileToLat(y: number, z: number) {
-    const n = Math.PI - 2 * Math.PI * (y / (2 ** z));
-    return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
 }
 
 export function createGeoJsonFromTiles(
@@ -95,23 +89,9 @@ export function createGeoJsonFromTiles(
                 reference,
             } = tile;
 
-            const west = tileToLng(tileX, tileZ);
-            const east = tileToLng(tileX + 1, tileZ);
-            const north = tileToLat(tileY, tileZ);
-            const south = tileToLat(tileY + 1, tileZ);
-
             const feature = {
                 type: 'Feature' as const,
-                geometry: {
-                    type: 'Polygon' as const,
-                    coordinates: [[
-                        [west, south],
-                        [east, south],
-                        [east, north],
-                        [west, north],
-                        [west, south],
-                    ]],
-                },
+                geometry: tileToGeoJSON([tileX, tileY, tileZ]),
                 properties: {
                     tile_x: tileX,
                     tile_y: tileY,

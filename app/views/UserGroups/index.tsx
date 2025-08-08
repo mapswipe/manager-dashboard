@@ -177,7 +177,7 @@ function UserGroups(props: Props) {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${userGroupsResponse?.contributorUserGroups.totalCount} teams`}
+                footer={`Showing ${totalItems} of ${userGroupsResponse?.contributorUserGroups.totalCount} teams`}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}

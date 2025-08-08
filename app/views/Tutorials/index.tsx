@@ -163,7 +163,7 @@ function Tutorials(props: Props) {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${tutorialResponse?.tutorials.totalCount} tutorial`}
+                footer={`Showing ${totalItems} of ${tutorialResponse?.tutorials.totalCount} tutorial`}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}

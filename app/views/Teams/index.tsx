@@ -100,7 +100,7 @@ function Teams(props: Props) {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${teamsResponse?.contributorTeams.totalCount} teams`}
+                footer={`Showing ${totalItems} of ${teamsResponse?.contributorTeams.totalCount} teams`}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}

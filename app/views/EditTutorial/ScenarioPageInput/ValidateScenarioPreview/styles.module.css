@@ -7,10 +7,13 @@
     .content {
         align-items: center;
         justify-content: space-between;
+        padding: 0 var(--spacing-lg);
     }
 
     .map-container {
         z-index: 0;
-        height: var(--height-mobile-preview-builarea-content);
+        border-radius: var(--radius-card-border);
+        width: var(--size-tile-validate);
+        height: calc(1.5 * var(--size-tile-validate));
     }
 }

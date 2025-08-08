@@ -69,14 +69,17 @@ function FindScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.findScenarioPreview, className)}>
             <MobilePreview
-                heading={lookFor || '{look for}'}
-                headerDescription="You are looking for:"
+                heading="You are looking for:"
+                headerDescription={lookFor || '{look for}'}
                 popupIcons={Icon && <Icon />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
+                popupVariant={preview?.popupVariant}
+                contentClassName={styles.content}
             >
                 <GeoJsonPreview
-                    tileSize={160}
+                    // NOTE: this should match --tile-size
+                    tileSize={180}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}

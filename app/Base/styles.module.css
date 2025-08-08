@@ -120,8 +120,8 @@ p {
     --font-size-3xl: 2rem;
     --font-size-4xl: 2.25rem;
 
-    --font-weight-light: 400;
-    --font-weight-medium: 500;
+    --font-weight-light: 350;
+    --font-weight-medium: 400;
     --font-weight-bold: 700;
 
     --opacity-disabled-element: 0.5;
@@ -133,15 +133,15 @@ p {
     --width-scrollbar: 0.75rem;
     --width-page-content-max: 80rem;
 
+    --size-tile: 180px;
 
-    --size-tile-preview: 160px;
-    --size-compare-preview: 14rem;
-    --width-mobile-preview: calc(var(--spacing-md) * 2 + var(--size-tile-preview) * 2);
-    --height-mobile-preview: 40rem;
+    --size-tile-find: var(--size-tile);
+    --size-tile-compare: calc(var(--size-tile) * 2);
+    --size-tile-validate: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
+    --size-tile-completeness: var(--size-tile-find);
 
-    --height-mobile-preview-builarea-content: 30rem;
-    --height-mobile-preview-footprint-content: 22rem;
-    --height-mobile-preview-change-detection-content: 14rem;
+    --width-mobile-preview: calc(var(--size-tile) * 2);
+    --height-mobile-preview: calc(var(--width-mobile-preview) * 19 / 9);
 
     --radius-popup-border: 0.25rem;
     --radius-scrollbar-border: 0.25rem;
