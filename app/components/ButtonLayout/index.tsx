@@ -34,6 +34,7 @@ function ButtonLayout(props: Props) {
     const {
         colorVariant = 'text',
         styleVariant = 'outline',
+        spacingOffset = -1,
         className,
         withoutPadding = false,
         disabled,
@@ -50,6 +51,7 @@ function ButtonLayout(props: Props) {
                 disabled && styles.disabled,
                 className,
             )}
+            spacingOffset={spacingOffset}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...inlineLayoutProps}
         />

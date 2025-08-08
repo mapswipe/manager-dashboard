@@ -161,7 +161,7 @@ function VectorTileServerInput(props: Props) {
                         <TextInput
                             name="url"
                             label="Imagery Server URL"
-                            hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quadkey} as placeholders and that already includes the api key."
+                            hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
                             value={value.custom?.url}
                             error={getErrorObject(error?.custom)?.url}
                             onChange={setCustomTileServerFieldValue}

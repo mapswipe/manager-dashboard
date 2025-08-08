@@ -36,6 +36,11 @@ export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
     return tile[2];
 }
 
+export function standardizeQuadKey(url: string) {
+    // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
+    return url.replace('{quad_key}', '{quadkey}');
+}
+
 export function tileToLng(x: number, z: number) {
     return (x / (2 ** z)) * 360 - 180;
 }

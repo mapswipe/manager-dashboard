@@ -17,7 +17,7 @@ import {
 interface Props {
     spacing?: SpacingType;
     modes?: SpacingMode[];
-    offset?: 0;
+    offset?: number;
 }
 
 function useSpacingToken(props: Props) {

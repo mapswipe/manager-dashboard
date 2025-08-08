@@ -21,6 +21,7 @@ export interface Props {
     childrenContainerClassName?: string;
     endContainerClassName?: string;
     spacing?: SpacingType;
+    spacingOffset?: number;
     withPadding?: boolean;
 }
 
@@ -35,6 +36,7 @@ function InlineLayout(props: Props) {
         childrenContainerClassName,
         endContainerClassName,
         spacing,
+        spacingOffset,
         withPadding,
     } = props;
 
@@ -49,6 +51,7 @@ function InlineLayout(props: Props) {
     const spacingClassName = useSpacingToken({
         spacing,
         modes: spacingModes,
+        offset: spacingOffset ?? 0,
     });
 
     const innerSpacingClassName = useSpacingToken({
