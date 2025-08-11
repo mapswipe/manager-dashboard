@@ -5,10 +5,13 @@
     gap: var(--spacing-sm);
 
     .content {
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0;
 
         .map-container {
-            height: calc(3 * var(--size-tile-preview));
+            height: calc(3 * var(--size-tile-completeness));
 
             &.overlay {
                 position: absolute;

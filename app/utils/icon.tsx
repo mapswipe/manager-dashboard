@@ -38,7 +38,7 @@ import angularTapIcon from '#resources/icons/tap_icon_angular.png';
 import check from '#resources/icons/tick_green_on_white.png';
 
 function getPngIcon(src: string, alt: string) {
-    const element = () => (
+    const element = (props: { className?: string }) => (
         <img
             src={src}
             alt={alt}
@@ -47,6 +47,8 @@ function getPngIcon(src: string, alt: string) {
                 width: '1em',
                 objectFit: 'contain',
             }}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
         />
     );
 

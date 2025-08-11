@@ -210,7 +210,7 @@ function Projects(props: Props) {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount ?? 0} projects`}
+                footer={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount ?? 0} projects`}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}

@@ -11,8 +11,8 @@
         justify-content: space-between;
 
         .map-container {
-            width: var(--size-compare-preview);
-            height: var(--size-compare-preview);
+            width: var(--size-tile-compare);
+            height: var(--size-tile-compare);
         }
     }
 }

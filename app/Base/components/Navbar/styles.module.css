@@ -15,9 +15,11 @@
         }
 
         .link {
-            opacity: 0.8;
+            opacity: 0.6;
             border-bottom: var(--width-separator-thin) solid transparent;
             color: var(--color-text-on-dark);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
 
             &.active {
                 opacity: 1;

@@ -30,6 +30,7 @@ export interface PreviewItem {
     icon: IconEnum | undefined,
     title: string | undefined,
     description: string | undefined,
+    popupVariant?: 'default' | 'success',
 }
 
 interface Props {
@@ -69,6 +70,7 @@ function PreviewSegmentInput(props: Props) {
                 icon: scenario.successIcon,
                 title: scenario.successTitle,
                 description: scenario.successDescription,
+                popupVariant: 'success',
             });
         }
     }, [scenario, currentPreview, onPreviewChange]);

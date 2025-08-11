@@ -5,11 +5,15 @@
     gap: var(--spacing-sm);
     isolation: isolate;
 
-    .map-container {
-        flex-grow: 0;
-        flex-shrink: 0;
-        z-index: 0;
-        width: calc(var(--size-tile-preview) * 2);
-        height: calc(var(--size-tile-preview) * 3);
+    .content {
+        padding-top: var(--spacing-lg);
+
+        .map-container {
+            flex-grow: 0;
+            flex-shrink: 0;
+            z-index: 0;
+            width: calc(var(--size-tile-find) * 2);
+            height: calc(var(--size-tile-find) * 3);
+        }
     }
 }

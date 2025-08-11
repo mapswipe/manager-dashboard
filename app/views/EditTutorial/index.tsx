@@ -990,6 +990,7 @@ function NewTutorial(props: Props) {
                         error={getErrorObject(informationPageErrors?.[informationPage.clientId])}
                         lookForValue={projectDetailResponse?.project.lookFor}
                         tutorialId={tutorialIdFromParams}
+                        projectType={projectDetailResponse?.project.projectType}
                     />
                 ))}
             </Container>

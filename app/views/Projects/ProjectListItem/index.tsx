@@ -8,6 +8,7 @@ import {
     IoEye,
     IoPerson,
 } from 'react-icons/io5';
+import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
@@ -108,7 +109,7 @@ function ProjectListItem(props: Props) {
                     <Container
                         className={styles.details}
                         heading={value.name}
-                        headingLevel={3}
+                        headingLevel={5}
                         headerActions={(
                             <SmartLink
                                 route={routes.editProject}
@@ -153,11 +154,13 @@ function ProjectListItem(props: Props) {
                                 label="Look for"
                                 value={value.lookFor}
                             />
-                            <TextOutput
-                                icon={<IoPerson />}
-                                label="Team"
-                                value={value.team?.name}
-                            />
+                            {isDefined(value.team) && (
+                                <TextOutput
+                                    icon={<IoPerson />}
+                                    label="Team"
+                                    value={value.team.name}
+                                />
+                            )}
                         </ListLayout>
                         <div className={styles.description}>
                             {value.description}

@@ -73,14 +73,15 @@ function ValidateScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.validateScenarioPreview, className)}>
             <MobilePreview
-                heading={lookFor || '{look for}'}
-                headerDescription="You are looking for:"
+                heading={`Does the shape outline a ${lookFor}?`}
                 popupIcons={Icon && <Icon />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
+                    // NOTE tiles size must match css varialbe --size-tile-validate
+                    tileSize={320}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}

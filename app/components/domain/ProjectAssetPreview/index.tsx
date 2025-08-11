@@ -35,6 +35,7 @@ query ProjectAssetPreview($assetId: ID!) {
 
 interface Props {
     className?: string;
+    rendererClassName?: string;
     assetId: string | undefined;
     geoJsonTileServer?: PartialRasterTileServerInputFields;
 }
@@ -42,6 +43,7 @@ interface Props {
 function ProjectAssetPreview(props: Props) {
     const {
         className: classNameFromProps,
+        rendererClassName,
         assetId,
         geoJsonTileServer,
     } = props;
@@ -107,7 +109,7 @@ function ProjectAssetPreview(props: Props) {
         return (
             <div className={className}>
                 <img
-                    className={styles.image}
+                    className={_cs(styles.image, rendererClassName)}
                     src={url}
                     alt={name}
                 />
@@ -119,7 +121,7 @@ function ProjectAssetPreview(props: Props) {
         return (
             <div className={className}>
                 <GeoJsonPreview
-                    className={styles.geoJson}
+                    className={_cs(styles.geoJson, rendererClassName)}
                     // FIXME: We need to also add a validation
                     geoJson={geoJson as unknown as GeoJSON.FeatureCollection}
                     baseTileServer={geoJsonTileServer}

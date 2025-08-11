@@ -24,7 +24,10 @@ import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextInput from '#components/TextInput';
-import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
+import {
+    ProjectTypeEnum,
+    TutorialInformationPageBlockTypeEnum,
+} from '#generated/types/graphql';
 
 import { PartialBlockInputFields } from './BlockInput/schema';
 import BlockInput from './BlockInput';
@@ -44,7 +47,8 @@ interface Props {
     error: ObjectError<PartialInformationPageInputFields> | undefined;
     onRemove: (index: number) => void;
     lookForValue: string | undefined,
-    tutorialId: string,
+    tutorialId: string;
+    projectType: ProjectTypeEnum | undefined;
 }
 
 function InformationPageInput(props: Props) {
@@ -57,6 +61,7 @@ function InformationPageInput(props: Props) {
         onRemove,
         lookForValue,
         tutorialId,
+        projectType,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -225,6 +230,7 @@ function InformationPageInput(props: Props) {
                 <InformationPagePreview
                     value={value}
                     lookFor={lookForValue}
+                    projectType={projectType}
                 />
             </div>
         </Container>

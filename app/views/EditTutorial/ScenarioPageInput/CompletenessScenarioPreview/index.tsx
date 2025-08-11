@@ -60,8 +60,8 @@ function CompletenessScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.completenessScenarioPreview, className)}>
             <MobilePreview
-                heading={lookFor || '{look for}'}
-                headerDescription="You are looking for:"
+                heading="You are looking for:"
+                headerDescription={lookFor || '{look for}'}
                 popupIcons={Icon && <Icon />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
