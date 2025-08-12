@@ -10,6 +10,7 @@ import { ulid } from 'ulid';
 import NumberInput from '#components/NumberInput';
 import { ProjectTypeEnum } from '#generated/types/graphql';
 
+import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
 import ComparePropertyInput from './ComparePropertyInput';
 import CompletenessPropertyInput from './CompletenessPropertyInput';
@@ -18,6 +19,7 @@ import {
     PartialProjectTypeSpecifics,
     PartialTaskInputFields,
 } from './schema';
+import ValidateImagePropertyInput from './ValidateImagePropertyInput';
 import ValidatePropertyInput from './ValidatePropertyInput';
 
 import styles from './styles.module.css';
@@ -84,6 +86,12 @@ function TaskInput(props: Props) {
         {},
     );
 
+    const setValidateImageProjectSpecificsFieldValue = useFormObject<'validateImage', PartialValidateImagePropertyInputFields>(
+        'validateImage' as const,
+        setProjectSpecificFieldValue,
+        {},
+    );
+
     return (
         <div className={_cs(styles.taskInput, className)}>
             <div>
@@ -129,7 +137,14 @@ function TaskInput(props: Props) {
                     disabled
                 />
             )}
-            {/* FIXME: Implement ValidateImageProjectInput later */}
+            {projectType === ProjectTypeEnum.ValidateImage && (
+                <ValidateImagePropertyInput
+                    value={value.projectTypeSpecifics?.validateImage}
+                    setFieldValue={setValidateImageProjectSpecificsFieldValue}
+                    error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
+                    disabled
+                />
+            )}
         </div>
     );
 }

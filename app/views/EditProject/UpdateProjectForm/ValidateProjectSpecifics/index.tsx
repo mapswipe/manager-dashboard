@@ -88,7 +88,7 @@ function ValidateProjectSpecifics(props: Props) {
                 withBackground
                 withPadding
                 headingLevel={4}
-                heading="Result options"
+                heading="Custom options"
                 spacing="lg"
                 headerActions={(
                     <Button

@@ -82,6 +82,10 @@ query AllEnums {
             key
             label
         }
+        ValidateImageSourceTypeEnum {
+            key
+            label
+        }
         OverlayLayerTypeEnum {
             key
             label

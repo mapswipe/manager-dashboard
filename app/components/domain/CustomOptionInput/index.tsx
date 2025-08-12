@@ -38,7 +38,7 @@ interface Props {
     onRemove: (index: number) => void;
 }
 
-function CustomOption(props: Props) {
+function CustomOptionInput(props: Props) {
     const {
         className,
         index,
@@ -179,4 +179,4 @@ function CustomOption(props: Props) {
     );
 }
 
-export default CustomOption;
+export default CustomOptionInput;

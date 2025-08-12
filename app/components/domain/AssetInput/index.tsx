@@ -14,6 +14,7 @@ import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
     AssetMimetypeEnum,
+    ProjectAssetInputTypeEnum,
     useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
@@ -46,7 +47,7 @@ interface Props<NAME> extends Omit<InputContainerLayoutProps, 'children' | 'inpu
     selectFileButtonLabel?: React.ReactNode;
     className?: string;
     disabled?: boolean;
-    inputType?: 'geojson' | 'image';
+    inputType?: ProjectAssetInputTypeEnum;
     withoutPreview?: boolean;
 }
 
@@ -58,10 +59,10 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         value,
         onChange,
         disabled,
-        inputType = 'geojson',
-        selectFileButtonLabel = inputType === 'image'
-            ? 'Select an image'
-            : 'Select geojson',
+        inputType = ProjectAssetInputTypeEnum.AoiGeometry,
+        selectFileButtonLabel = inputType === ProjectAssetInputTypeEnum.AoiGeometry
+            ? 'Select geojson'
+            : 'Select an image',
         withoutPreview,
         ...inputLayoutContainerProps
     } = props;
@@ -94,6 +95,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 data: {
                     clientId: ulid(),
                     file,
+                    inputType: ProjectAssetInputTypeEnum.ObjectImage,
                     mimetype: selectedEnum,
                     project: projectId,
                 },
@@ -123,7 +125,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 type="file"
                 value={undefined}
                 onChange={handleFileInputChange}
-                accept={inputType === 'geojson' ? '.geojson' : 'image/png, image/gif, image/jpeg'}
+                accept={inputType === ProjectAssetInputTypeEnum.AoiGeometry ? '.geojson' : 'image/png, image/gif, image/jpeg'}
                 disabled={disabled || createProjectAssetPending}
                 selectButtonLabel={selectFileButtonLabel}
                 status={isDefined(value) ? '1 file selected' : 'No file selected'}

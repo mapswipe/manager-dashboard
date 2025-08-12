@@ -113,7 +113,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.ValidateImage) {
                     return {
-                        validateImage: { forceValue: validateImageSpecificFormSchema },
+                        validateImage: validateImageSpecificFormSchema,
                         completeness: { forceValue: undefinedValue },
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },

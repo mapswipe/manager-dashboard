@@ -1,6 +1,7 @@
 import {
     useCallback,
     useEffect,
+    useId,
     useMemo,
     useRef,
     useState,
@@ -33,6 +34,7 @@ import Button from '#components/Button';
 import Container from '#components/Container';
 import GeoJsonFileInput from '#components/domain/GeoJsonFileInput';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
+import FileInput from '#components/FileInput';
 import InlineLayout from '#components/InlineLayout';
 import Modal from '#components/Modal';
 import NonFieldError from '#components/NonFieldError';
@@ -50,11 +52,13 @@ import {
     useUpdateTutorialMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
+import { readFileAsText } from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
     transformErrors,
 } from '#utils/error';
+import { CocoType } from '#utils/validation';
 
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
 import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
@@ -70,6 +74,7 @@ import tutorialUpdate, {
 } from './schema';
 
 import styles from './styles.module.css';
+import { ValidateImagePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidateImagePropertyInput/schema';
 
 const PolygonType = type.object.as<GeoJSON.Polygon>();
 const MultiPolygonType = type.object.as<GeoJSON.MultiPolygon>();
@@ -118,6 +123,7 @@ const CompletenessFeaturePropertyType = type.merge(
         // task_id: 'string',
     },
 );
+
 /*
 const StreetFeaturePropertyType = type({
     '...': CommonFeaturePropertyType,
@@ -187,6 +193,8 @@ const CompletenessTutorialGeoJsonType = type({
     }).array(),
 });
 
+const ValidateImageJsonType = CocoType;
+
 function createMapping<T extends { clientId: string }>(items: T[]) {
     return listToMap(items, ({ clientId }) => clientId);
 }
@@ -242,6 +250,7 @@ function NewTutorial(props: Props) {
     const { className } = props;
     const { id: tutorialIdFromParams } = useParams<{ id: string }>();
     const [tutorialFormContext, setTutorialFormContext] = useState<TutorialFormContext>();
+    const inputId = useId();
 
     const alert = useAlert();
 
@@ -752,6 +761,53 @@ function NewTutorial(props: Props) {
         }
     }, [projectDetailResponse, setError, setFieldValue]);
 
+    const handleDatasetFileSelect = useCallback(async (file: File | undefined) => {
+        if (isDefined(file)) {
+            try {
+                const fileContentText = await readFileAsText(file);
+                const jsonContent = JSON.parse(fileContentText);
+
+                const result = ValidateImageJsonType(jsonContent);
+
+                if (result instanceof type.errors) {
+                    alert.show('Failed to validate the dataset', {
+                        variant: 'danger',
+                        description: result.summary,
+                    });
+                } else {
+                    const annotationsMapping = listToGroupList(
+                        result.annotations ?? [],
+                        ({ image_id }) => image_id,
+                    );
+                    const scenarioPages = result.images.map((image, i) => ({
+                        clientId: ulid(),
+                        scenarioPageNumber: i,
+                        tasks: [{
+                            clientId: ulid(),
+                            reference: 1,
+                            projectTypeSpecifics: {
+                                validateImage: {
+                                    fileName: image.file_name,
+                                    url: image.coco_url,
+                                    width: image.width,
+                                    height: image.height,
+                                } satisfies ValidateImagePropertyInputFields,
+                            },
+                        }],
+                    }), []);
+
+                    setFieldValue(scenarioPages, 'scenarios');
+                }
+            } catch (err) {
+                // eslint-disable-next-line no-console
+                console.error(err);
+                alert.show('Failed to read the file', {
+                    variant: 'danger',
+                });
+            }
+        }
+    }, [alert]);
+
     const handleStatusUpdateCancel = useCallback(() => {
         setNewStatus(undefined);
     }, []);
@@ -923,7 +979,7 @@ function NewTutorial(props: Props) {
                                     end={(
                                         <>
                                             {/* eslint-disable-next-line max-len */}
-                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && (
+                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && projectAsset.file && (
                                                 <a
                                                     className={styles.projectAssetDownloadLink}
                                                     href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
@@ -934,20 +990,22 @@ function NewTutorial(props: Props) {
                                                     <CgArrowTopRightR />
                                                 </a>
                                             )}
-                                            <a
-                                                className={styles.projectAssetDownloadLink}
-                                                href={projectAsset.file.url}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                title="Download"
-                                                download
-                                            >
-                                                <MdDownload />
-                                            </a>
+                                            {projectAsset.file && (
+                                                <a
+                                                    className={styles.projectAssetDownloadLink}
+                                                    href={projectAsset.file.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Download"
+                                                    download
+                                                >
+                                                    <MdDownload />
+                                                </a>
+                                            )}
                                         </>
                                     )}
                                 >
-                                    {projectAsset.file.name.replace(/^.*[\\/]/, '')}
+                                    {projectAsset.file?.name.replace(/^.*[\\/]/, '') ?? '??'}
                                 </InlineLayout>
                             ))}
                         </Container>
@@ -1012,15 +1070,27 @@ function NewTutorial(props: Props) {
                 )}
                 empty={isNotDefined(value.scenarios)
                     || value.scenarios.length === 0}
-                emptyMessage={(
-                    <GeoJsonFileInput
-                        name={undefined}
-                        label="Upload Scenarios as GeoJSON"
-                        onChange={handleGeoJsonFileChange}
-                        hint="It should end with .geojson or .geo.json"
-                        disabled={isNotDefined(projectDetailResponse?.project.projectType)}
-                    />
-                )}
+                // eslint-disable-next-line max-len
+                emptyMessage={projectDetailResponse?.project.projectType === ProjectTypeEnum.ValidateImage
+                    ? (
+                        <FileInput
+                            inputId={inputId}
+                            name={undefined}
+                            value={undefined}
+                            onChange={handleDatasetFileSelect}
+                            selectButtonLabel="Select a COCO file"
+                            withoutStatus
+                            accept=".json"
+                        />
+                    ) : (
+                        <GeoJsonFileInput
+                            name={undefined}
+                            label="Upload Scenarios as GeoJSON"
+                            onChange={handleGeoJsonFileChange}
+                            hint="It should end with .geojson or .geo.json"
+                            disabled={isNotDefined(projectDetailResponse?.project.projectType)}
+                        />
+                    )}
                 spacing="lg"
             >
                 {value.scenarios?.map((scenarioPage, scenarioPageIndex) => (

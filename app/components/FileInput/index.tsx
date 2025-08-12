@@ -1,6 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { MdAttachFile } from 'react-icons/md';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isNotDefined,
+} from '@togglecorp/fujs';
 
 import ButtonLayout from '#components/ButtonLayout';
 import ListLayout from '#components/ListLayout';
@@ -9,20 +12,33 @@ import RawInput, { Props as RawInputProps } from '#components/RawInput';
 
 import styles from './styles.module.css';
 
-export interface Props<NAME> extends Omit<RawInputProps<NAME>, 'value' | 'onChange'> {
+export type RawFileInputProps<NAME> = Omit<RawInputProps<NAME>, 'name' | 'value' | 'onChange' | 'multiple'>;
+export type FileInputAdditionalProps<NAME> = {
     accept?: string;
     className?: string;
     inputId: string;
     name: NAME;
-    onChange: (newValue: File | undefined, name: NAME) => void;
     selectButtonLabel?: React.ReactNode;
     showPreview?: boolean;
-    value: File | undefined;
     children?: React.ReactNode;
     status?: React.ReactNode;
+    withoutStatus?: boolean;
 }
 
-function FileInput<NAME>(props: Props<NAME>) {
+export type Props<NAME, OMISSION extends string> = Omit<
+RawFileInputProps<NAME> & FileInputAdditionalProps<NAME>,
+OMISSION
+> & ({
+    multiple?: false;
+    value: File | undefined;
+    onChange: (newValue: File | undefined, name: NAME) => void;
+} | {
+    value: File[] | undefined;
+    multiple: true;
+    onChange: (newValue: File[] | undefined, name: NAME) => void;
+});
+
+function FileInput<NAME>(props: Props<NAME, never>) {
     const {
         accept,
         className,
@@ -34,9 +50,23 @@ function FileInput<NAME>(props: Props<NAME>) {
         showPreview,
         value,
         children,
-        status = value?.name ?? 'No file selected',
+        status,
+        withoutStatus,
+        multiple,
         ...otherInputProps
     } = props;
+
+    const defaultStatus = useMemo(() => {
+        if (isNotDefined(value)) {
+            return 'No file selected';
+        }
+
+        if (multiple) {
+            return `${value.length} files selected`;
+        }
+
+        return value.name ?? '1 file selected';
+    }, [value, multiple]);
 
     const handleFiles = useCallback(
         (files: FileList | null) => {
@@ -45,11 +75,16 @@ function FileInput<NAME>(props: Props<NAME>) {
             }
 
             const fileList = Array.from(files);
-            const firstFile = fileList[0];
 
+            if (multiple) {
+                onChange(fileList, name);
+                return;
+            }
+
+            const firstFile = fileList[0];
             onChange(firstFile, name);
         },
-        [onChange, name],
+        [onChange, name, multiple],
     );
 
     const handleChange = useCallback((
@@ -80,6 +115,7 @@ function FileInput<NAME>(props: Props<NAME>) {
                 onChange={handleChange}
                 accept={accept}
                 disabled={disabled}
+                multiple={multiple}
             />
             <ListLayout
                 spacing="sm"
@@ -94,11 +130,13 @@ function FileInput<NAME>(props: Props<NAME>) {
                         {selectButtonLabel}
                     </ButtonLayout>
                 </label>
-                <div>
-                    {status}
-                </div>
+                {!withoutStatus && (
+                    <div>
+                        {status ?? defaultStatus}
+                    </div>
+                )}
             </ListLayout>
-            {showPreview && (
+            {showPreview && !multiple && (
                 <Preview
                     file={value}
                 />

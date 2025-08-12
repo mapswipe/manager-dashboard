@@ -3,6 +3,10 @@
     height: calc(100% - var(--spacing-md));
     overflow: auto;
 
+    .content {
+        overflow: auto;
+    }
+
     &.sm-size {
         max-width: calc(var(--width-page-content-max) * 0.4);
 

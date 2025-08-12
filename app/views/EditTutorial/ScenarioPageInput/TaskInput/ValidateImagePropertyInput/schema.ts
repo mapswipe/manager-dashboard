@@ -1,0 +1,26 @@
+import {
+    ObjectSchema,
+    PartialForm,
+} from '@togglecorp/toggle-form';
+
+import { ValidateImageTutorialTaskPropertyInput } from '#generated/types/graphql';
+import { DeepNonNullable } from '#utils/types';
+
+export type ValidateImagePropertyInputFields = DeepNonNullable<
+    ValidateImageTutorialTaskPropertyInput
+>;
+export type PartialValidateImagePropertyInputFields = PartialForm<ValidateImagePropertyInputFields>;
+
+type TaskSchema = ObjectSchema<PartialValidateImagePropertyInputFields>;
+
+const findPropertyInputSchema: TaskSchema = {
+    fields: (): ReturnType<TaskSchema['fields']> => ({
+        fileName: {},
+        width: {},
+        height: {},
+        url: {},
+        annotation: {},
+    }),
+};
+
+export default findPropertyInputSchema;

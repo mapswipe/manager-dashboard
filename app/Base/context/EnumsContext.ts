@@ -4,6 +4,7 @@ import { AllEnumsQuery } from '#generated/types/graphql';
 
 export const defaultAllEnumsValue: AllEnumsQuery['enums'] = {
     ValidateObjectSourceTypeEnum: [],
+    ValidateImageSourceTypeEnum: [],
     ProjectStatusEnum: [],
     ProjectTypeEnum: [],
     RasterTileServerNameEnum: [],

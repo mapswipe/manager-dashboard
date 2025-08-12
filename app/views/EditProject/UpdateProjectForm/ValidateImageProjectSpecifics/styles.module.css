@@ -1,0 +1,24 @@
+.uploaded-images {
+    .asset {
+        background-color: var(--color-background);
+
+        .file-name {
+            overflow-wrap: anywhere;
+            font-family: var(--font-family-monospace);
+            font-size: var(--font-size-sm);
+        }
+    }
+}
+
+.selected-files {
+    .file {
+        background-color: var(--color-background);
+
+        .file-name {
+            overflow-wrap: anywhere;
+            font-family: var(--font-family-monospace);
+            font-size: var(--font-size-sm);
+        }
+    }
+}
+

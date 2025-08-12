@@ -279,3 +279,24 @@ export const lineWidthOptions: NumericValueOption[] = [
         label: '5',
     },
 ];
+
+export function readFileAsText(inputFile: File): Promise<string> {
+    const temporaryFileReader = new FileReader();
+
+    return new Promise((resolve, reject) => {
+        temporaryFileReader.onerror = () => {
+            temporaryFileReader.abort();
+            reject(new DOMException('Problem parsing input file.'));
+        };
+
+        temporaryFileReader.onload = () => {
+            if (typeof temporaryFileReader.result === 'string') {
+                resolve(temporaryFileReader.result);
+            } else {
+                reject(new DOMException('Problem parsing input file as string.'));
+            }
+        };
+
+        temporaryFileReader.readAsText(inputFile);
+    });
+}
