@@ -42,6 +42,7 @@ jobs:
         run: pnpm build
         env:
           APP_ENVIRONMENT: 'ci'
-          APP_GRAPHQL_API_DOMAIN: 'https://random-graphql-api-endpoint.com'
           APP_SENTRY_DSN: 'https://random-token@sentry.io'
+          APP_GRAPHQL_API_DOMAIN: 'https://random-graphql-api-endpoint.com'
+          APP_REST_API_DOMAIN: 'https://random-graphql-api-endpoint.com'
           APP_SENTRY_TRACES_SAMPLE_RATE: 0.2

@@ -5,6 +5,10 @@ const looseValidation = import.meta.env.APP_ENVIRONMENT_LOOSE_VALIDATION;
 // TODO: Integrate .env for CI and remove optional() call on required fields
 export default defineConfig({
     APP_ENVIRONMENT: Schema.string.optional(),
+    APP_REST_API_DOMAIN: looseValidation
+        ? Schema.string()
+        : Schema.string({ format: 'url', protocol: true, tld: false }),
+
 
     APP_GRAPHQL_API_DOMAIN: looseValidation
         ? Schema.string()
@@ -12,6 +16,9 @@ export default defineConfig({
 
     APP_SENTRY_DSN: Schema.string.optional(),
     APP_SENTRY_TRACES_SAMPLE_RATE: Schema.string.optional(),
+    APP_FIREBASE_API_KEY: Schema.string.optional(),
+    APP_FIREBASE_AUTH_DOMAIN: Schema.string.optional(),
+    APP_FIREBASE_PROJECT_ID: Schema.string.optional(),
 
     // Used in application, automatically injected by vite
     APP_COMMIT_HASH: Schema.string.optional(),

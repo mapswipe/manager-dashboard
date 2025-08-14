@@ -6,9 +6,14 @@
     background-color: var(--color-background);
     padding: var(--spacing-md);
     height: 100%;
+    gap: var(--spacing-lg);
 
     .form {
         width: 100%;
         max-width: 30rem;
+    }
+
+    .link {
+        padding: var(--spacing-sm);
     }
 }

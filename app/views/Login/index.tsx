@@ -1,45 +1,131 @@
 import {
     useCallback,
-    useContext,
     useMemo,
+    useState,
 } from 'react';
-import { isNotDefined } from '@togglecorp/fujs';
+import { Cookies } from 'react-cookie';
+import { Link } from 'react-router';
+import { isDefined } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
     getErrorObject,
-    nonFieldError,
     ObjectSchema,
     requiredStringCondition,
     useForm,
 } from '@togglecorp/toggle-form';
 import {
-    CombinedError,
-    gql,
-} from 'urql';
+    FirebaseError,
+    initializeApp,
+} from 'firebase/app';
+import {
+    connectAuthEmulator,
+    getAuth,
+    signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 import Button from '#components/Button';
+import ButtonLayout from '#components/ButtonLayout';
 import Container from '#components/Container';
 import NonFieldError from '#components/NonFieldError';
 import TextInput from '#components/TextInput';
-import UserContext from '#contexts/UserContext';
-import { useLoginMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import {
-    alertCombinedError,
-    checkAndAlertGraphQLResultError,
-} from '#utils/error';
 
 import styles from './styles.module.css';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const LOGIN_MUTATION = gql`
-mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-        id
-        displayName
+const { APP_ENVIRONMENT } = import.meta.env;
+const COOKIE_NAME = `MAPSWIPE-${APP_ENVIRONMENT}-CSRFTOKEN`;
+const REST_ENDPOINT = import.meta.env.APP_REST_API_DOMAIN;
+const cookies = new Cookies();
+
+async function loginUsingFirebaseToken({ token }: { token: string }) {
+    try {
+        const response = await fetch(`${REST_ENDPOINT}/firebase-auth/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': cookies.get(COOKIE_NAME),
+            },
+            body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) {
+            let errorMsg = `Request failed with status ${response.status}`;
+            try {
+                const errorData = await response.json();
+
+                if (errorData?.non_field_errors?.length) {
+                    errorMsg = errorData.non_field_errors.join(', ');
+                } else if (typeof errorData === 'object') {
+                    errorMsg = Object.entries(errorData)
+                        .map(([field, messages]) => {
+                            if (Array.isArray(messages)) {
+                                return `${field}: ${messages.join(', ')}`;
+                            }
+                            return `${field}: ${messages}`;
+                        })
+                        .join(' | ');
+                }
+            } catch {
+                // ignore parse errors
+            }
+
+            return { error: errorMsg };
+        }
+
+        return { error: undefined };
+    } catch (err: unknown) {
+        return { error: String(err) || 'Unknown error' };
     }
 }
-`;
+
+// Your Firebase config
+const firebaseConfig = {
+    apiKey: import.meta.env.APP_FIREBASE_API_KEY,
+    authDomain: import.meta.env.APP_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.APP_FIREBASE_PROJECT_ID,
+};
+
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+if (APP_ENVIRONMENT === 'DEV') {
+    connectAuthEmulator(auth, 'http://localhost:9099');
+}
+
+async function loginWithEmailPassword(email: string, password: string) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        return { user: userCredential.user, error: null };
+    } catch (err: unknown) {
+        let errorMessage = 'Something went wrong, please try again.';
+
+        if (err instanceof FirebaseError) {
+            switch (err.code) {
+                case 'auth/invalid-email':
+                    errorMessage = 'Invalid email format.';
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage = 'This user account has been disabled.';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = 'No user found with this email.';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = 'Incorrect password.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = 'Too many failed attempts. Try again later.';
+                    break;
+                default:
+                    errorMessage = err.message; // fallback from Firebase
+            }
+        }
+
+        return { user: null, error: errorMessage };
+    }
+}
 
 interface LoginFormFields {
     email?: string | undefined;
@@ -64,7 +150,7 @@ const loginFormSchema: LoginFormSchema = {
 const defaultLoginFormValue: LoginFormFields = {};
 
 function Login() {
-    const { setUser } = useContext(UserContext);
+    const [loginPending, setLoginPending] = useState(false);
     const alert = useAlert();
 
     const {
@@ -76,11 +162,6 @@ function Login() {
     } = useForm(loginFormSchema, { value: defaultLoginFormValue });
 
     const error = getErrorObject(formError);
-
-    const [
-        { fetching: pending },
-        loginToGql,
-    ] = useLoginMutation();
 
     const handleFormSubmission = useCallback((finalValues: LoginFormFields) => {
         async function login() {
@@ -94,51 +175,58 @@ function Login() {
                 );
                 return;
             }
+            setLoginPending(true);
+            const userCredential = await loginWithEmailPassword(
+                finalValues.email,
+                finalValues.password,
+            );
+            const {
+                user,
+                error: errorMessage,
+            } = userCredential;
 
-            try {
-                const result = await loginToGql({
-                    username: finalValues.email,
-                    password: finalValues.password,
-                });
-
-                if (checkAndAlertGraphQLResultError(result, alert)) {
-                    return;
-                }
-
-                if (isNotDefined(result.data)) {
-                    alert.show(
-                        'Failed to login!',
-                        {
-                            description: 'Unexpectected response from the server!',
-                            variant: 'danger',
-                        },
-                    );
-
-                    return;
-                }
-
+            if (!user || errorMessage) {
+                setLoginPending(false);
                 alert.show(
-                    'Login successful!',
+                    'Failed to login!',
                     {
-                        description: 'Navigating to home page.',
-                        variant: 'success',
+                        description: errorMessage ?? 'Unexpected response from the server!',
+                        variant: 'danger',
                     },
                 );
-                setUser({
-                    id: result.data.login.id,
-                    displayName: result.data.login.displayName,
-                });
-            } catch (combinedError) {
-                alertCombinedError(combinedError, alert);
 
-                if (combinedError instanceof CombinedError) {
-                    setError({ [nonFieldError]: combinedError.message });
-                }
+                return;
             }
+
+            const token = await userCredential.user.getIdToken();
+            const result = await loginUsingFirebaseToken({ token });
+
+            setLoginPending(false);
+
+            if (isDefined(result.error)) {
+                alert.show(
+                    'Failed to login!',
+                    {
+                        description: result.error,
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
+            alert.show(
+                'Login successful!',
+                {
+                    description: 'Navigating to home page.',
+                    variant: 'success',
+                },
+            );
+            window.location.reload();
         }
 
         login();
-    }, [loginToGql, setError, setUser, alert]);
+    }, [alert]);
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
@@ -162,7 +250,7 @@ function Login() {
                         <Button
                             type="submit"
                             name={undefined}
-                            disabled={pending}
+                            disabled={loginPending}
                             colorVariant="accent"
                         >
                             Login
@@ -175,7 +263,7 @@ function Login() {
                         value={value?.email}
                         error={error?.email}
                         onChange={setFieldValue}
-                        disabled={pending}
+                        disabled={loginPending}
                         autoFocus
                     />
                     <TextInput
@@ -185,13 +273,24 @@ function Login() {
                         onChange={setFieldValue}
                         error={error?.password}
                         type="password"
-                        disabled={pending}
-                    />
-                    <NonFieldError
-                        error={error}
+                        disabled={loginPending}
                     />
                 </Container>
+                <NonFieldError
+                    error={error}
+                />
             </form>
+            {APP_ENVIRONMENT === 'DEV' && (
+                <Link
+                    to={`${import.meta.env.APP_REST_API_DOMAIN}/admin`}
+                >
+                    <ButtonLayout
+                        className={styles.link}
+                    >
+                        or Sign-in using Admin Panel
+                    </ButtonLayout>
+                </Link>
+            )}
         </div>
     );
 }
