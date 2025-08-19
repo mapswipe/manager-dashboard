@@ -18,6 +18,7 @@ import {
 import comparePropertyInputSchema from './ComparePropertyInput/schema';
 import completenessPropertyInputSchema from './CompletenessPropertyInput/schema';
 import findPropertyInputSchema from './FindPropertyInput/schema';
+import validateImagePropertyInputSchema from './ValidateImagePropertyInput/schema';
 import validatePropertyInputSchema from './ValidatePropertyInput/schema';
 
 export type TaskInputFields = DeepNonNullable<TutorialTaskCreateInput>;
@@ -84,9 +85,7 @@ const taskSchema: TaskSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.ValidateImage) {
                     return {
-                        // FIXME: Implement validate image task later
-                        validateImage: { forceValue: {} },
-                        // validateImage: { forceValue: validateImagePropertyInputSchema },
+                        validateImage: validateImagePropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },

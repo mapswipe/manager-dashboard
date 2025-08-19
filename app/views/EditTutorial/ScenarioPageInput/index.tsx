@@ -28,6 +28,7 @@ import CompletenessScenarioPreview from './CompletenessScenarioPreview';
 import FindScenarioPreview from './FindScenarioPreview';
 import { PartialScenarioPageInputFields } from './schema';
 import TaskInput from './TaskInput';
+import ValidateImageScenarioPreview from './ValidateImageScenarioPreview';
 import ValidateScenarioPreview from './ValidateScenarioPreview';
 
 import styles from './styles.module.css';
@@ -237,6 +238,13 @@ function ScenarioPageInput(props: Props) {
                 <ValidateScenarioPreview
                     scenario={value}
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                    lookFor={projectData.lookFor}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
+                <ValidateImageScenarioPreview
+                    scenario={value}
                     lookFor={projectData.lookFor}
                 />
             )}

@@ -5,8 +5,10 @@ import {
     ObjectError,
 } from '@togglecorp/toggle-form';
 
+import GridLayoutItem from '#components/GridLayoutItem';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
+import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 
 import { PartialValidateImagePropertyInputFields } from './schema';
@@ -34,19 +36,23 @@ function ValidateImagePropertyInput(props: Props) {
         <ListLayout
             className={className}
             layout="grid"
-            numPreferredGridColumns={3}
+            numPreferredGridColumns={2}
             minGridColumnSize="6rem"
         >
-            <TextInput
-                label="URL"
-                name="url"
-                value={value?.url}
-                onChange={setFieldValue}
-                error={error?.url}
-                disabled={disabled}
-            />
+            <GridLayoutItem
+                columnSpan={2}
+            >
+                <TextInput
+                    icons="URL:"
+                    name="url"
+                    value={value?.url}
+                    onChange={setFieldValue}
+                    error={error?.url}
+                    disabled={disabled}
+                />
+            </GridLayoutItem>
             <NumberInput
-                label="Width"
+                icons="Width:"
                 name="width"
                 value={value?.width}
                 onChange={setFieldValue}
@@ -54,13 +60,25 @@ function ValidateImagePropertyInput(props: Props) {
                 disabled={disabled}
             />
             <NumberInput
-                label="Height"
+                icons="Height:"
                 name="height"
                 value={value?.height}
                 onChange={setFieldValue}
                 error={error?.height}
                 disabled={disabled}
             />
+            <GridLayoutItem
+                columnSpan={2}
+            >
+                <TextArea
+                    label="Annotation"
+                    name="url"
+                    value={JSON.stringify(value?.annotation)}
+                    // onChange={setFieldValue}
+                    error={error?.url}
+                    disabled={disabled}
+                />
+            </GridLayoutItem>
         </ListLayout>
     );
 }

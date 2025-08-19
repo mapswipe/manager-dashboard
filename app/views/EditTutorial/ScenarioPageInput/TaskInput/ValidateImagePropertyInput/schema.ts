@@ -13,7 +13,7 @@ export type PartialValidateImagePropertyInputFields = PartialForm<ValidateImageP
 
 type TaskSchema = ObjectSchema<PartialValidateImagePropertyInputFields>;
 
-const findPropertyInputSchema: TaskSchema = {
+const validateImagePropertyInputSchema: TaskSchema = {
     fields: (): ReturnType<TaskSchema['fields']> => ({
         fileName: {},
         width: {},
@@ -23,4 +23,4 @@ const findPropertyInputSchema: TaskSchema = {
     }),
 };
 
-export default findPropertyInputSchema;
+export default validateImagePropertyInputSchema;
