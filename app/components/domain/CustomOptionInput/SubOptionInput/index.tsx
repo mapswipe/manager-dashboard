@@ -25,6 +25,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialCustomSubOptionInputFields> | undefined;
     onRemove: (index: number) => void;
+    disabled?: boolean;
 }
 
 function SubOptionInput(props: Props) {
@@ -35,6 +36,7 @@ function SubOptionInput(props: Props) {
         onChange,
         error,
         onRemove,
+        disabled,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -58,6 +60,7 @@ function SubOptionInput(props: Props) {
                     colorVariant="danger"
                     start={<IoTrashBin />}
                     withoutPadding
+                    disabled={disabled}
                 >
                     Remove
                 </Button>
@@ -75,6 +78,7 @@ function SubOptionInput(props: Props) {
                         value={value.value}
                         onChange={setFieldValue}
                         error={error?.value}
+                        disabled={disabled}
                     />
                 </GridLayoutItem>
                 <GridLayoutItem columnSpan={2}>
@@ -84,6 +88,7 @@ function SubOptionInput(props: Props) {
                         value={value.description}
                         onChange={setFieldValue}
                         error={error?.description}
+                        disabled={disabled}
                     />
                 </GridLayoutItem>
             </ListLayout>

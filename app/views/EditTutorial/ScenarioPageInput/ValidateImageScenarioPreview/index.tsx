@@ -14,7 +14,6 @@ import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import Icon from '#components/domain/Icon';
 import MobilePreview from '#components/MobilePreview';
 
-import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';

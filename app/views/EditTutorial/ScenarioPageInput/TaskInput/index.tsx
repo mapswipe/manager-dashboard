@@ -2,13 +2,18 @@ import { _cs } from '@togglecorp/fujs';
 import {
     getErrorObject,
     ObjectError,
+    removeNull,
     SetValueArg,
     useFormObject,
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
-import NumberInput from '#components/NumberInput';
-import { ProjectTypeEnum } from '#generated/types/graphql';
+import CustomOptionSelectInput from '#components/domain/CustomOptionSelectInput';
+import TileOptionSelectInput from '#components/domain/TileOptionSelectInput';
+import {
+    ProjectTypeEnum,
+    TutorialProjectDetailQuery,
+} from '#generated/types/graphql';
 
 import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
@@ -34,7 +39,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialTaskInputFields> | undefined;
     disabled?: boolean;
-    projectType: ProjectTypeEnum;
+    projectData: TutorialProjectDetailQuery['project'] | undefined;
 }
 
 function TaskInput(props: Props) {
@@ -45,7 +50,7 @@ function TaskInput(props: Props) {
         onChange,
         error,
         disabled,
-        projectType,
+        projectData,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -94,57 +99,77 @@ function TaskInput(props: Props) {
 
     return (
         <div className={_cs(styles.taskInput, className)}>
-            <div>
-                {`#${index + 1}`}
+            <div className={styles.content}>
+                <div>
+                    {`#${index + 1}`}
+                </div>
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {(projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType'
+                    // eslint-disable-next-line no-underscore-dangle
+                    || projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType')
+                    ? (
+                        <CustomOptionSelectInput
+                            placeholder="Reference"
+                            name="reference"
+                            value={value.reference}
+                            onChange={setFieldValue}
+                            error={error?.reference}
+                            disabled={disabled}
+                            options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
+                            nonClearable
+                        />
+                    ) : (
+                        <TileOptionSelectInput
+                            placeholder="Reference"
+                            name="reference"
+                            value={value.reference}
+                            onChange={setFieldValue}
+                            error={error?.reference}
+                            disabled={disabled}
+                            nonClearable
+                        />
+                    )}
+                {projectData?.projectType === ProjectTypeEnum.Find && (
+                    <FindPropertyInput
+                        value={value.projectTypeSpecifics?.find}
+                        setFieldValue={setFindProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.find}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Compare && (
+                    <ComparePropertyInput
+                        value={value.projectTypeSpecifics?.compare}
+                        setFieldValue={setCompareProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.compare}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Completeness && (
+                    <CompletenessPropertyInput
+                        value={value.projectTypeSpecifics?.completeness}
+                        setFieldValue={setCompletenessProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Validate && (
+                    <ValidatePropertyInput
+                        value={value.projectTypeSpecifics?.validate}
+                        setFieldValue={setValidateProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validate}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.ValidateImage && (
+                    <ValidateImagePropertyInput
+                        value={value.projectTypeSpecifics?.validateImage}
+                        setFieldValue={setValidateImageProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
+                        disabled
+                    />
+                )}
             </div>
-            <NumberInput
-                icons="Reference:"
-                name="reference"
-                value={value.reference}
-                onChange={setFieldValue}
-                error={error?.reference}
-                disabled={disabled}
-            />
-            {projectType === ProjectTypeEnum.Find && (
-                <FindPropertyInput
-                    value={value.projectTypeSpecifics?.find}
-                    setFieldValue={setFindProjectSpecificsFieldValue}
-                    error={getErrorObject(error?.projectTypeSpecifics)?.find}
-                    disabled
-                />
-            )}
-            {projectType === ProjectTypeEnum.Compare && (
-                <ComparePropertyInput
-                    value={value.projectTypeSpecifics?.compare}
-                    setFieldValue={setCompareProjectSpecificsFieldValue}
-                    error={getErrorObject(error?.projectTypeSpecifics)?.compare}
-                    disabled
-                />
-            )}
-            {projectType === ProjectTypeEnum.Completeness && (
-                <CompletenessPropertyInput
-                    value={value.projectTypeSpecifics?.completeness}
-                    setFieldValue={setCompletenessProjectSpecificsFieldValue}
-                    error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
-                    disabled
-                />
-            )}
-            {projectType === ProjectTypeEnum.Validate && (
-                <ValidatePropertyInput
-                    value={value.projectTypeSpecifics?.validate}
-                    setFieldValue={setValidateProjectSpecificsFieldValue}
-                    error={getErrorObject(error?.projectTypeSpecifics)?.validate}
-                    disabled
-                />
-            )}
-            {projectType === ProjectTypeEnum.ValidateImage && (
-                <ValidateImagePropertyInput
-                    value={value.projectTypeSpecifics?.validateImage}
-                    setFieldValue={setValidateImageProjectSpecificsFieldValue}
-                    error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
-                    disabled
-                />
-            )}
         </div>
     );
 }

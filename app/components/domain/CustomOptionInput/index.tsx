@@ -36,6 +36,7 @@ interface Props {
     ) => void;
     error: ObjectError<PartialCustomOptionInputFields> | undefined;
     onRemove: (index: number) => void;
+    disabled?: boolean,
 }
 
 function CustomOptionInput(props: Props) {
@@ -46,6 +47,7 @@ function CustomOptionInput(props: Props) {
         onChange,
         error,
         onRemove,
+        disabled,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -91,6 +93,7 @@ function CustomOptionInput(props: Props) {
                     colorVariant="danger"
                     start={<IoTrashBin />}
                     withoutPadding
+                    disabled={disabled}
                 >
                     Remove
                 </Button>
@@ -110,6 +113,7 @@ function CustomOptionInput(props: Props) {
                             onChange={setFieldValue}
                             error={error?.icon}
                             nonClearable
+                            disabled={disabled}
                         />
                         <TextInput
                             // TODO: use color input
@@ -118,6 +122,7 @@ function CustomOptionInput(props: Props) {
                             value={value.iconColor}
                             onChange={setFieldValue}
                             error={error?.iconColor}
+                            disabled={disabled}
                         />
                         <NumberInput
                             label="Value"
@@ -125,6 +130,7 @@ function CustomOptionInput(props: Props) {
                             value={value.value}
                             onChange={setFieldValue}
                             error={error?.value}
+                            disabled={disabled}
                         />
                     </ListLayout>
                     <TextInput
@@ -133,6 +139,7 @@ function CustomOptionInput(props: Props) {
                         value={value.title}
                         onChange={setFieldValue}
                         error={error?.title}
+                        disabled={disabled}
                     />
                     <TextArea
                         label="Description"
@@ -140,6 +147,7 @@ function CustomOptionInput(props: Props) {
                         value={value.description}
                         onChange={setFieldValue}
                         error={error?.description}
+                        disabled={disabled}
                     />
                 </ListLayout>
                 <Container
@@ -152,6 +160,7 @@ function CustomOptionInput(props: Props) {
                             styleVariant="transparent"
                             start={<IoAdd />}
                             withoutPadding
+                            disabled={disabled}
                         >
                             Add sub option
                         </Button>
@@ -171,6 +180,7 @@ function CustomOptionInput(props: Props) {
                                 getErrorObject(error?.subOptions)?.[subOption.clientId],
                             )}
                             onRemove={removeSubOption}
+                            disabled={disabled}
                         />
                     ))}
                 </Container>

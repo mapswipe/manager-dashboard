@@ -22,7 +22,10 @@ import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
-import { ProjectTypeEnum, TutorialProjectDetailQuery } from '#generated/types/graphql';
+import {
+    ProjectTypeEnum,
+    TutorialProjectDetailQuery,
+} from '#generated/types/graphql';
 
 import CompareScenarioPreview from './CompareScenarioPreview';
 import CompletenessScenarioPreview from './CompletenessScenarioPreview';
@@ -90,6 +93,7 @@ function ScenarioPageInput(props: Props) {
         <Container
             className={_cs(styles.scenarioPageInput, className)}
             heading={`Scenario #${index + 1}`}
+            headingLevel={4}
             headerActions={(
                 <Button
                     name={index}
@@ -239,7 +243,7 @@ function ScenarioPageInput(props: Props) {
                 {isDefined(projectData) && (
                     <Container
                         heading="Tasks"
-                        headingLevel={4}
+                        headingLevel={5}
                         withHeaderBorder
                         headerDescription={(
                             <NonFieldError
@@ -256,7 +260,7 @@ function ScenarioPageInput(props: Props) {
                                 onChange={setTasksFieldValue}
                                 error={getErrorObject(taskErrors?.[task.clientId])}
                                 disabled={disabled}
-                                projectType={projectData?.projectType}
+                                projectData={projectData}
                             />
                         ))}
                     </Container>

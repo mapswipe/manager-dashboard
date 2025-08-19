@@ -123,7 +123,9 @@ function ValidateProjectSpecifics(props: Props) {
     const [assetsPerPage, setAssetsPerPage] = useState(DEFAULT_PAGE_SIZE);
 
     const [
-        { fetching: createProjectAssetPending },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _,
+        // { fetching: createProjectAssetPending },
         createProjectAsset,
     ] = useCreateProjectAssetMutation();
 
@@ -377,6 +379,7 @@ function ValidateProjectSpecifics(props: Props) {
                             getErrorObject(error?.customOptions)?.[customOption.clientId],
                         )}
                         onRemove={removeCustomOption}
+                        disabled={disabled}
                     />
                 ))}
             </Container>
@@ -408,6 +411,7 @@ function ValidateProjectSpecifics(props: Props) {
                             onChange={handleImagesDirectorySelect}
                             selectButtonLabel="Select a folder"
                             multiple
+                            // @ts-expect-error typing not available due non-standard attribute
                             webkitdirectory="true"
                             disabled={isDefined(selectedImageFiles)}
                             withoutStatus
