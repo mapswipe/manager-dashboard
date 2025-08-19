@@ -8,6 +8,7 @@ import {
 import {
     getErrorObject,
     ObjectError,
+    removeNull,
     SetValueArg,
     useFormArray,
     useFormObject,
@@ -239,6 +240,7 @@ function ScenarioPageInput(props: Props) {
                     scenario={value}
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
                     lookFor={projectData.lookFor}
+                    customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
@@ -246,6 +248,7 @@ function ScenarioPageInput(props: Props) {
                 <ValidateImageScenarioPreview
                     scenario={value}
                     lookFor={projectData.lookFor}
+                    customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                 />
             )}
         </Container>

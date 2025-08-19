@@ -9,8 +9,10 @@ import {
     isNotDefined,
 } from '@togglecorp/fujs';
 
+import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
+import Icon from '#components/domain/Icon';
 import MobilePreview from '#components/MobilePreview';
-import { iconMapping } from '#utils/icon';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
@@ -21,6 +23,7 @@ interface Props {
     className?: string;
     lookFor: string | undefined;
     scenario: PartialScenarioPageInputFields | undefined;
+    customOptions: PartialCustomOptionInputFields[] | undefined;
 }
 
 function ValidateImageScenarioPreview(props: Props) {
@@ -28,6 +31,7 @@ function ValidateImageScenarioPreview(props: Props) {
         className,
         scenario,
         lookFor,
+        customOptions,
     } = props;
 
     const imgRef = useRef<HTMLImageElement>(null);
@@ -39,8 +43,6 @@ function ValidateImageScenarioPreview(props: Props) {
         width: number,
         height: number
     } | undefined>();
-
-    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
 
     useLayoutEffect(() => {
         if (isNotDefined(imgRef.current)) {
@@ -92,7 +94,7 @@ function ValidateImageScenarioPreview(props: Props) {
         <div className={_cs(styles.validateImageScenarioPreview, className)}>
             <MobilePreview
                 heading={`Does the shape outline a ${lookFor}?`}
-                popupIcons={Icon && <Icon />}
+                popupIcons={<Icon value={preview?.icon} />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
                 contentClassName={styles.content}
@@ -116,6 +118,9 @@ function ValidateImageScenarioPreview(props: Props) {
                         </svg>
                     )}
                 </div>
+                <CustomOptionPreview
+                    value={customOptions}
+                />
             </MobilePreview>
             <PreviewSegmentInput
                 scenario={scenario}

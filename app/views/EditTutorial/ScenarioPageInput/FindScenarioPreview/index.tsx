@@ -7,10 +7,10 @@ import { removeNull } from '@togglecorp/toggle-form';
 import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/domain/GeoJsonPreview';
+import Icon from '#components/domain/Icon';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
-import { iconMapping } from '#utils/icon';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
@@ -64,14 +64,12 @@ function FindScenarioPreview(props: Props) {
 
     const [preview, setPreview] = useState<PreviewItem | undefined>();
 
-    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
-
     return (
         <div className={_cs(styles.findScenarioPreview, className)}>
             <MobilePreview
                 heading="You are looking for:"
                 headerDescription={lookFor || '{look for}'}
-                popupIcons={Icon && <Icon />}
+                popupIcons={<Icon value={preview?.icon} />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
                 popupVariant={preview?.popupVariant}
