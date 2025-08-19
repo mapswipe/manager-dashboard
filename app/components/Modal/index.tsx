@@ -22,7 +22,7 @@ function Modal(props: Props) {
         onClose,
         headerActions,
         withoutCloseButton,
-        withAutoHeight,
+        withAutoHeight = false,
         contentClassName,
         size = 'md',
         ...otherProps

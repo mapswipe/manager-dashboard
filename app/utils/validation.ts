@@ -14,7 +14,7 @@ export const CocoObjectImage = type({
     date_captured: type.string.optional(),
 });
 
-export const CocoAnnotation = type({
+export const CocoAnnotationType = type({
     id: type.number,
     image_id: type.number,
     category_id: type.number.optional(),
@@ -29,7 +29,7 @@ export const CocoAnnotation = type({
     ],
 });
 
-export const CocoCategory = type({
+export const CocoCategoryType = type({
     supercategory: type.string.optional(),
     id: type.number,
     name: type.string,
@@ -37,6 +37,6 @@ export const CocoCategory = type({
 
 export const CocoType = type({
     images: CocoObjectImage.array(),
-    annotations: CocoAnnotation.array().optional(),
-    categories: CocoCategory.array().optional(),
+    annotations: CocoAnnotationType.array().optional(),
+    categories: CocoCategoryType.array().optional(),
 });

@@ -19,6 +19,7 @@ import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import GridLayoutItem from '#components/GridLayoutItem';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import MarkdownPreview from '#components/MarkdownPreview';
 import TextOutput from '#components/TextOutput';
 import {
     ProjectsListQuery,
@@ -29,7 +30,6 @@ import findIllustration from '#resources/images/find-illustration.svg';
 import validateIllustration from '#resources/images/validate-illustration.svg';
 
 import styles from './styles.module.css';
-import MarkdownPreview from '#components/MarkdownPreview';
 
 const projectTypeIllustrations: Record<ProjectTypeEnum, string> = {
     [ProjectTypeEnum.Find]: findIllustration,

@@ -14,6 +14,7 @@ import {
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
+import ColorSelectInput from '#components/ColorSelectInput';
 import Container from '#components/Container';
 import IconSelectInput from '#components/domain/IconSelectInput';
 import ListLayout from '#components/ListLayout';
@@ -115,8 +116,7 @@ function CustomOptionInput(props: Props) {
                             nonClearable
                             disabled={disabled}
                         />
-                        <TextInput
-                            // TODO: use color input
+                        <ColorSelectInput
                             label="Color"
                             name="iconColor"
                             value={value.iconColor}

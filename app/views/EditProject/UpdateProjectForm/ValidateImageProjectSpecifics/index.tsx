@@ -4,6 +4,14 @@ import {
     useId,
     useState,
 } from 'react';
+import { IconType } from 'react-icons';
+import { FaExternalLinkAlt } from 'react-icons/fa';
+import {
+    ImClock,
+    ImCloudCheck,
+    ImSpinner,
+    ImWarning,
+} from 'react-icons/im';
 import {
     IoAdd,
     IoClose,
@@ -11,9 +19,11 @@ import {
     IoImage,
 } from 'react-icons/io5';
 import {
+    _cs,
     isDefined,
     isNotDefined,
     listToGroupList,
+    listToMap,
 } from '@togglecorp/fujs';
 import {
     EntriesAsList,
@@ -55,6 +65,11 @@ import {
     readFileAsText,
 } from '#utils/common.ts';
 import {
+    getErrorMessageAndDescriptionForCombinedError,
+    getErrorMessageFromResult,
+} from '#utils/error.ts';
+import {
+    CocoAnnotationType,
     CocoObjectImage,
     CocoType,
 } from '#utils/validation.ts';
@@ -100,6 +115,49 @@ const imageMimeTypeEnumMap: Record<string, AssetMimetypeEnum> = {
     'image/gif': AssetMimetypeEnum.ImageGif,
 };
 
+type AssetUploadStatus = 'pending' | 'uploading' | 'success' | 'failed';
+
+const statusIconMap: Record<AssetUploadStatus, IconType> = {
+    pending: ImClock,
+    uploading: ImSpinner,
+    success: ImCloudCheck,
+    failed: ImWarning,
+};
+
+type AssetUpload = {
+    status: AssetUploadStatus;
+    error?: string;
+    assetId?: string;
+}
+
+type DirectImage = {
+    clientId: string;
+    file: File;
+}
+
+type CocoAnnotation = typeof CocoAnnotationType.infer;
+type CocoImage = typeof CocoObjectImage.infer;
+
+type Dataset = {
+    clientId: string;
+    image: {
+        id: CocoImage['id'];
+        cocoUrl: CocoImage['coco_url'];
+        fileName: CocoImage['file_name'];
+        width: CocoImage['width'];
+        height: CocoImage['height'];
+        dateCaptured: CocoImage['date_captured'];
+    };
+    annotations: {
+        id: CocoAnnotation['id'];
+        categoryId: CocoAnnotation['category_id'];
+        imageId: CocoAnnotation['image_id'];
+        iscrowd: CocoAnnotation['iscrowd'];
+        area: CocoAnnotation['area'];
+        bbox: CocoAnnotation['bbox'];
+    }[] | undefined;
+}
+
 interface Props {
     projectId: string;
     value: PartialValidateImageSpecificFields | undefined | null;
@@ -142,9 +200,19 @@ function ValidateProjectSpecifics(props: Props) {
     });
 
     const inputId = useId();
-    const [selectedImageFiles, setSelectedImageFiles] = useState<File[] | undefined>();
-    const [selectedDataset, setSelectedDataset] = useState<typeof CocoType.infer | undefined>();
-    const [uploadAssetMapping, setUploadAssetMapping] = useState<Record<string, string>>({});
+    const [
+        selectedImageFiles,
+        setSelectedImageFiles,
+    ] = useState<DirectImage[] | undefined>();
+    const [
+        selectedDataset,
+        setSelectedDataset,
+    ] = useState<Dataset[] | undefined>();
+
+    const [
+        uploadAssetMapping,
+        setUploadAssetMapping,
+    ] = useState<Record<string, AssetUpload>>({});
 
     const {
         setValue: setCustomOptionValue,
@@ -188,37 +256,67 @@ function ValidateProjectSpecifics(props: Props) {
                 return;
             }
 
-            const result = await createProjectAsset({
-                data: {
-                    clientId,
-                    file,
-                    mimetype: imgMimeType,
-                    inputType: ProjectAssetInputTypeEnum.ObjectImage,
-                    project: projectId,
-                },
-            });
+            try {
+                const result = await createProjectAsset({
+                    data: {
+                        clientId,
+                        file,
+                        mimetype: imgMimeType,
+                        inputType: ProjectAssetInputTypeEnum.ObjectImage,
+                        project: projectId,
+                    },
+                });
 
-            setUploadAssetMapping((prevMapping) => {
-                if (
-                    // eslint-disable-next-line no-underscore-dangle
-                    result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
-                    && result.data.createProjectAsset.ok
-                    && result.data.createProjectAsset.result
-                ) {
+                setUploadAssetMapping((prevMapping) => {
+                    const errorMessage = getErrorMessageFromResult(result);
+                    if (isDefined(errorMessage)) {
+                        return {
+                            ...prevMapping,
+                            [clientId]: {
+                                status: 'failed',
+                                error: errorMessage,
+                            } satisfies AssetUpload,
+                        };
+                    }
+
+                    if (
+                        // eslint-disable-next-line no-underscore-dangle
+                        result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
+                        && result.data.createProjectAsset.ok
+                        && result.data.createProjectAsset.result
+                    ) {
+                        return {
+                            ...prevMapping,
+                            [clientId]: {
+                                status: 'success',
+                                assetId: result.data.createProjectAsset.result.id,
+                            } satisfies AssetUpload,
+                        };
+                    }
+
                     return {
                         ...prevMapping,
-                        [clientId]: result.data.createProjectAsset.result.id,
+                        [clientId]: {
+                            status: 'failed',
+                            error: 'Unexpected response from the server',
+                        } satisfies AssetUpload,
                     };
-                }
+                });
+            } catch (combinedError) {
+                const { message } = getErrorMessageAndDescriptionForCombinedError(combinedError);
 
-                // TODO: show errors
-
-                return prevMapping;
-            });
+                setUploadAssetMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [clientId]: {
+                        status: 'failed',
+                        error: message,
+                    } satisfies AssetUpload,
+                }));
+            }
         }
 
-        selectedImageFiles.forEach(async (file) => {
-            await uploadFileAsset(file);
+        selectedImageFiles.forEach(async (imageFile) => {
+            await uploadFileAsset(imageFile.file);
         });
     }, [createProjectAsset, projectId, selectedImageFiles]);
 
@@ -227,10 +325,24 @@ function ValidateProjectSpecifics(props: Props) {
     }, []);
 
     const handleImagesDirectorySelect = useCallback((files: File[] | undefined) => {
-        setSelectedImageFiles(files?.filter((file) => !!imageMimeTypeEnumMap[file.type]));
+        const pendingFiles = files?.filter(
+            (file) => !!imageMimeTypeEnumMap[file.type],
+        ).map((file) => ({
+            clientId: ulid(),
+            file,
+        }));
+        setUploadAssetMapping(
+            listToMap(
+                pendingFiles ?? [],
+                ({ clientId }) => clientId,
+                () => ({ status: 'pending' }),
+            ),
+        );
+        setSelectedImageFiles(pendingFiles);
     }, []);
 
     const handleDatasetFileSelect = useCallback(async (file: File | undefined) => {
+        setUploadAssetMapping({});
         if (isDefined(file)) {
             try {
                 const fileContentText = await readFileAsText(file);
@@ -240,6 +352,7 @@ function ValidateProjectSpecifics(props: Props) {
 
                 if (result instanceof type.errors) {
                     setSelectedDataset(undefined);
+                    setUploadAssetMapping({});
                     alert.show('Failed to validate the dataset', {
                         variant: 'danger',
                         description: result.summary,
@@ -247,7 +360,62 @@ function ValidateProjectSpecifics(props: Props) {
                     return;
                 }
 
-                setSelectedDataset(result);
+                const annotationsMapping = listToGroupList(
+                    result.annotations ?? [],
+                    ({ image_id }) => image_id,
+                );
+
+                const pendingDatasets = result.images.map((image) => {
+                    const {
+                        id,
+                        coco_url,
+                        flickr_url,
+                        file_name,
+                        width,
+                        height,
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        date_captured,
+                    } = image;
+
+                    const url = coco_url ?? flickr_url;
+
+                    if (isNotDefined(url)) {
+                        return undefined;
+                    }
+
+                    const annotations = annotationsMapping[id]?.map((annotation) => ({
+                        id: annotation.id,
+                        categoryId: annotation.category_id,
+                        imageId: annotation.image_id,
+                        area: annotation.area,
+                        bbox: annotation.bbox,
+                        iscrowd: annotation.iscrowd,
+                    } satisfies NonNullable<Dataset['annotations']>[number]));
+
+                    return {
+                        clientId: ulid(),
+                        image: {
+                            id,
+                            cocoUrl: url,
+                            fileName: file_name,
+                            width,
+                            height,
+                            dateCaptured: undefined,
+                            // FIXME(frozenhelium): check proper type
+                            // dateCaptured: date_captured,
+                        },
+                        annotations,
+                    } satisfies Dataset;
+                }).filter(isDefined);
+
+                setSelectedDataset(pendingDatasets);
+                setUploadAssetMapping(
+                    listToMap(
+                        pendingDatasets,
+                        ({ clientId }) => clientId,
+                        () => ({ status: 'pending' }),
+                    ),
+                );
             } catch (err) {
                 // eslint-disable-next-line no-console
                 console.error(err);
@@ -255,12 +423,14 @@ function ValidateProjectSpecifics(props: Props) {
                     variant: 'danger',
                 });
                 setSelectedDataset(undefined);
+                setUploadAssetMapping({});
             }
         }
     }, [alert]);
 
     const handleUploadDatasetCancel = useCallback(() => {
         setSelectedDataset(undefined);
+        setUploadAssetMapping({});
     }, []);
 
     const handleStartDataseUpload = useCallback(async () => {
@@ -268,82 +438,87 @@ function ValidateProjectSpecifics(props: Props) {
             return;
         }
 
-        setUploadAssetMapping({});
-        const annotationsMapping = listToGroupList(
-            selectedDataset.annotations ?? [],
-            ({ image_id }) => image_id,
-        );
+        async function uploadDatasetAsset(dataset: Dataset) {
+            setUploadAssetMapping((prevMapping) => ({
+                ...prevMapping,
+                [dataset.clientId]: {
+                    status: 'uploading',
+                } satisfies AssetUpload,
+            }));
 
-        async function uploadObjectImageAsset(objectImage: typeof CocoObjectImage.infer) {
-            const clientId = ulid();
-
-            const result = await createProjectAsset({
-                data: {
-                    clientId,
-                    project: projectId,
-                    inputType: ProjectAssetInputTypeEnum.ObjectImage,
-                    externalUrl: objectImage.coco_url,
-                    mimetype: AssetMimetypeEnum.ImageJpeg,
-                    assetTypeSpecifics: {
-                        objectImage: {
-                            image: {
-                                id: objectImage.id,
-                                cocoUrl: objectImage.coco_url,
-                                fileName: objectImage.file_name,
+            try {
+                const result = await createProjectAsset({
+                    data: {
+                        clientId: dataset.clientId,
+                        project: projectId,
+                        inputType: ProjectAssetInputTypeEnum.ObjectImage,
+                        externalUrl: dataset.image.cocoUrl,
+                        mimetype: AssetMimetypeEnum.ImageJpeg,
+                        assetTypeSpecifics: {
+                            objectImage: {
+                                image: dataset.image,
+                                annotations: dataset.annotations,
                             },
-                            annotations: annotationsMapping[objectImage.id]?.map((annotation) => {
-                                const {
-                                    id,
-                                    category_id,
-                                    image_id,
-                                    iscrowd,
-                                    area,
-                                    bbox,
-                                    // segmentation,
-                                } = annotation;
-
-                                return {
-                                    id,
-                                    categoryId: category_id ?? 0,
-                                    imageId: image_id,
-                                    iscrowd,
-                                    area,
-                                    bbox,
-                                    // segmentation,
-                                };
-                            }),
                         },
                     },
-                },
-            });
+                });
 
-            setUploadAssetMapping((prevMapping) => {
-                if (
-                    // eslint-disable-next-line no-underscore-dangle
-                    result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
-                    && result.data.createProjectAsset.ok
-                    && result.data.createProjectAsset.result
-                ) {
+                setUploadAssetMapping((prevMapping) => {
+                    const errorMessage = getErrorMessageFromResult(result);
+                    if (isDefined(errorMessage)) {
+                        return {
+                            ...prevMapping,
+                            [dataset.clientId]: {
+                                status: 'failed',
+                                error: errorMessage,
+                            } satisfies AssetUpload,
+                        };
+                    }
+
+                    if (
+                        // eslint-disable-next-line no-underscore-dangle
+                        result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
+                        && result.data.createProjectAsset.ok
+                        && result.data.createProjectAsset.result
+                    ) {
+                        return {
+                            ...prevMapping,
+                            [dataset.clientId]: {
+                                status: 'success',
+                                assetId: result.data.createProjectAsset.result.id,
+                            } satisfies AssetUpload,
+                        };
+                    }
+
                     return {
                         ...prevMapping,
-                        [clientId]: result.data.createProjectAsset.result.id,
+                        [dataset.clientId]: {
+                            status: 'failed',
+                            error: 'Unexpected response from the server',
+                        } satisfies AssetUpload,
                     };
-                }
+                });
+            } catch (combinedError) {
+                const { message } = getErrorMessageAndDescriptionForCombinedError(combinedError);
 
-                // TODO: show errors
-
-                return prevMapping;
-            });
+                setUploadAssetMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [dataset.clientId]: {
+                        status: 'failed',
+                        error: message,
+                    } satisfies AssetUpload,
+                }));
+            }
         }
 
         // eslint-disable-next-line no-restricted-syntax
-        for (const objectImage of selectedDataset.images) {
+        for (const dataset of selectedDataset) {
             // eslint-disable-next-line no-await-in-loop
-            await uploadObjectImageAsset(objectImage);
+            await uploadDatasetAsset(dataset);
         }
     }, [createProjectAsset, projectId, selectedDataset]);
 
-    const numAssetsUploaded = Object.keys(uploadAssetMapping).length;
+    const numAssetsUploaded = Object.values(uploadAssetMapping).filter(({ status }) => status === 'success').length;
 
     return (
         <>
@@ -407,7 +582,7 @@ function ValidateProjectSpecifics(props: Props) {
                         <FileInput
                             inputId={inputId}
                             name={undefined}
-                            value={selectedImageFiles}
+                            value={undefined}
                             onChange={handleImagesDirectorySelect}
                             selectButtonLabel="Select a folder"
                             multiple
@@ -449,6 +624,8 @@ function ValidateProjectSpecifics(props: Props) {
                                 pagePerItemOptions={defaultPagePerItemOptions}
                             />
                         )}
+                        empty={objectImageAssetsResponse.projectAssets.totalCount === 0}
+                        emptyMessage="No images has been uploaded yet!"
                     >
                         <ListLayout
                             layout="block"
@@ -501,7 +678,7 @@ function ValidateProjectSpecifics(props: Props) {
                         >
                             {selectedImageFiles.map((selectedFile, selectedFileIndex) => (
                                 <InlineLayout
-                                    key={selectedFile.webkitRelativePath}
+                                    key={selectedFile.clientId}
                                     start={<IoImage />}
                                     end={(
                                         <Button
@@ -517,7 +694,7 @@ function ValidateProjectSpecifics(props: Props) {
                                     className={styles.file}
                                 >
                                     <div className={styles.fileName}>
-                                        {selectedFile.webkitRelativePath}
+                                        {selectedFile.file.webkitRelativePath}
                                     </div>
                                 </InlineLayout>
                             ))}
@@ -526,8 +703,9 @@ function ValidateProjectSpecifics(props: Props) {
                 )}
                 {isDefined(selectedDataset) && (
                     <Modal
+                        className={styles.uploadDataset}
                         heading="Upload dataset"
-                        headerDescription={`${selectedDataset.images.length} images selected, ${numAssetsUploaded} files uploaded`}
+                        headerDescription={`${selectedDataset.length} images selected, ${numAssetsUploaded} asset created`}
                         onClose={handleUploadDatasetCancel}
                         footerActions={(
                             <>
@@ -548,12 +726,55 @@ function ValidateProjectSpecifics(props: Props) {
                                 </Button>
                             </>
                         )}
+                        size="lg"
+                        withHeaderBorder
+                        withFooterBorder
                     >
-                        {selectedDataset.images.map((image) => (
-                            <div key={image.id}>
-                                {image.coco_url}
-                            </div>
-                        ))}
+                        <ListLayout
+                            spacing="xs"
+                            layout="block"
+                        >
+                            {selectedDataset.map((dataset) => {
+                                const uploadAsset = uploadAssetMapping[dataset.clientId];
+                                if (isNotDefined(uploadAsset)) {
+                                    return null;
+                                }
+
+                                const StatusIcon = statusIconMap[uploadAsset.status];
+
+                                return (
+                                    <InlineLayout
+                                        className={_cs(
+                                            styles.dataset,
+                                            uploadAsset.status === 'failed' && styles.failed,
+                                            uploadAsset.status === 'uploading' && styles.uploading,
+                                            uploadAsset.status === 'success' && styles.success,
+                                        )}
+                                        key={dataset.clientId}
+                                        start={<StatusIcon className={styles.statusIcon} />}
+                                        end={`${dataset.annotations?.length ?? 0} annotations`}
+                                        withPadding
+                                    >
+                                        <div className={styles.fileName}>
+                                            {dataset.image.fileName}
+                                        </div>
+                                        <div className={styles.url}>
+                                            {dataset.image.cocoUrl}
+                                            <a
+                                                href={dataset.image.cocoUrl}
+                                            >
+                                                <FaExternalLinkAlt />
+                                            </a>
+                                        </div>
+                                        {uploadAsset.status === 'failed' && (
+                                            <div className={styles.errorMessage}>
+                                                {uploadAssetMapping[dataset.clientId]?.error}
+                                            </div>
+                                        )}
+                                    </InlineLayout>
+                                );
+                            })}
+                        </ListLayout>
                     </Modal>
                 )}
             </Container>

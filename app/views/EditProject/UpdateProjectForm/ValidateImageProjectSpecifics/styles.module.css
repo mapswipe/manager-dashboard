@@ -22,3 +22,48 @@
     }
 }
 
+.upload-dataset {
+    .dataset {
+        border-left: var(--width-separator-medium) solid transparent;
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-background);
+
+        &.uploading {
+            .status-icon {
+                animation: spin 1s linear infinite;
+            }
+        }
+
+        &.success {
+            border-color: var(--color-success);
+        }
+
+        &.failed {
+            border-color: var(--color-danger);
+        }
+
+        .file-name {
+            font-family: var(--font-family-monospace);
+        }
+
+        .url {
+            display: flex;
+            gap: var(--spacing-xs);
+            font-size: var(--font-size-xs);
+        }
+    }
+}
+
+@keyframes spin {
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message {
+    color: var(--color-danger);
+    font-size: var(--font-size-sm);
+}

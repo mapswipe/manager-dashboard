@@ -70,9 +70,9 @@ function ValidateScenarioPreview(props: Props) {
         <div className={_cs(styles.validateScenarioPreview, className)}>
             <MobilePreview
                 heading={`Does the shape outline a ${lookFor}?`}
-                popupIcons={<Icon value={scenario?.hintIcon} />}
-                popupTitle={scenario?.hintTitle || '{title}'}
-                popupDescription={scenario?.hintDescription || '{description}'}
+                popupIcons={<Icon value={scenario?.instructionsIcon} />}
+                popupTitle={scenario?.instructionsTitle || '{title}'}
+                popupDescription={scenario?.instructionsDescription || '{description}'}
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview

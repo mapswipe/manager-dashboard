@@ -40,9 +40,9 @@ const scenarioPageSchema: ScenarioPageSchema = {
             scenarioPageNumber: {
                 required: true,
             },
-            hintDescription: {},
-            hintIcon: {},
-            hintTitle: {},
+            instructionsDescription: {},
+            instructionsIcon: {},
+            instructionsTitle: {},
             tasks: {
                 keySelector: (value) => value.clientId,
                 member: () => taskSchema,
@@ -55,9 +55,9 @@ const scenarioPageSchema: ScenarioPageSchema = {
         ) {
             return {
                 ...baseFields,
-                instructionsDescription: { forceValue: nullValue },
-                instructionsIcon: { forceValue: nullValue },
-                instructionsTitle: { forceValue: nullValue },
+                hintDescription: { forceValue: nullValue },
+                hintIcon: { forceValue: nullValue },
+                hintTitle: { forceValue: nullValue },
                 successDescription: { forceValue: nullValue },
                 successIcon: { forceValue: nullValue },
                 successTitle: { forceValue: nullValue },
@@ -66,9 +66,9 @@ const scenarioPageSchema: ScenarioPageSchema = {
 
         return {
             ...baseFields,
-            instructionsDescription: {},
-            instructionsIcon: {},
-            instructionsTitle: {},
+            hintDescription: {},
+            hintIcon: {},
+            hintTitle: {},
             successDescription: {},
             successIcon: {},
             successTitle: {},
