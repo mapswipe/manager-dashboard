@@ -35,7 +35,6 @@ function ValidateImageScenarioPreview(props: Props) {
     } = props;
 
     const imgRef = useRef<HTMLImageElement>(null);
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
     const task = scenario?.tasks?.[0]?.projectTypeSpecifics?.validateImage;
     const [bbox, setBbox] = useState<{
         x: number,
@@ -94,9 +93,9 @@ function ValidateImageScenarioPreview(props: Props) {
         <div className={_cs(styles.validateImageScenarioPreview, className)}>
             <MobilePreview
                 heading={`Does the shape outline a ${lookFor}?`}
-                popupIcons={<Icon value={preview?.icon} />}
-                popupTitle={preview?.title || '{title}'}
-                popupDescription={preview?.description || '{description}'}
+                popupIcons={<Icon value={scenario?.hintIcon} />}
+                popupTitle={scenario?.hintTitle || '{title}'}
+                popupDescription={scenario?.hintDescription || '{description}'}
                 contentClassName={styles.content}
             >
                 <div className={styles.imageWrapper}>
@@ -122,10 +121,6 @@ function ValidateImageScenarioPreview(props: Props) {
                     value={customOptions}
                 />
             </MobilePreview>
-            <PreviewSegmentInput
-                scenario={scenario}
-                onPreviewChange={setPreview}
-            />
         </div>
     );
 }

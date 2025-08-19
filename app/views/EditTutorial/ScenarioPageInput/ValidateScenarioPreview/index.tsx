@@ -1,7 +1,4 @@
-import {
-    useMemo,
-    useState,
-} from 'react';
+import { useMemo } from 'react';
 import {
     _cs,
     isDefined,
@@ -17,7 +14,6 @@ import Icon from '#components/domain/Icon';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
 
-import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
@@ -49,8 +45,6 @@ function ValidateScenarioPreview(props: Props) {
         customOptions,
     } = props;
 
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
-
     const generatedGeojson = useMemo<GeoJSON.FeatureCollection>(() => {
         const features: Array<GeoJSON.Feature> = scenario?.tasks?.map((task) => {
             if (isNotDefined(task.projectTypeSpecifics?.validate?.objectGeometry)) {
@@ -76,9 +70,9 @@ function ValidateScenarioPreview(props: Props) {
         <div className={_cs(styles.validateScenarioPreview, className)}>
             <MobilePreview
                 heading={`Does the shape outline a ${lookFor}?`}
-                popupIcons={<Icon value={preview?.icon} />}
-                popupTitle={preview?.title || '{title}'}
-                popupDescription={preview?.description || '{description}'}
+                popupIcons={<Icon value={scenario?.hintIcon} />}
+                popupTitle={scenario?.hintTitle || '{title}'}
+                popupDescription={scenario?.hintDescription || '{description}'}
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
@@ -94,10 +88,6 @@ function ValidateScenarioPreview(props: Props) {
                     value={customOptions}
                 />
             </MobilePreview>
-            <PreviewSegmentInput
-                scenario={scenario}
-                onPreviewChange={setPreview}
-            />
         </div>
     );
 }
