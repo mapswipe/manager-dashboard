@@ -29,6 +29,7 @@ import findIllustration from '#resources/images/find-illustration.svg';
 import validateIllustration from '#resources/images/validate-illustration.svg';
 
 import styles from './styles.module.css';
+import MarkdownPreview from '#components/MarkdownPreview';
 
 const projectTypeIllustrations: Record<ProjectTypeEnum, string> = {
     [ProjectTypeEnum.Find]: findIllustration,
@@ -162,9 +163,12 @@ function ProjectListItem(props: Props) {
                                 />
                             )}
                         </ListLayout>
-                        <div className={styles.description}>
-                            {value.description}
-                        </div>
+                        {isDefined(value.description) && (
+                            <MarkdownPreview
+                                className={styles.description}
+                                markdown={value.description}
+                            />
+                        )}
                     </Container>
                 </GridLayoutItem>
             </ListLayout>
