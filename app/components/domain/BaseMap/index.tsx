@@ -91,6 +91,7 @@ function BaseMap(props: Props) {
                     tiles: [standardizeQuadKey(url)],
                     tileSize,
                     attribution: credits ?? '',
+                    maxzoom: 18,
                 },
             },
             layers: [{

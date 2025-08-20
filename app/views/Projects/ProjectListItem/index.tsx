@@ -104,7 +104,7 @@ function ProjectListItem(props: Props) {
                 <img
                     className={styles.image}
                     alt=""
-                    src={value.image?.file.url ?? projectTypeIllustrations[value.projectType]}
+                    src={value.image?.file?.url ?? projectTypeIllustrations[value.projectType]}
                 />
                 <GridLayoutItem columnSpan={3}>
                     <Container

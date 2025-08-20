@@ -30,6 +30,7 @@ import PageLayout from '#components/PageLayout';
 import TutorialSelectInput from '#components/selections/TutorialSelectInput';
 import {
     ProcessedProjectUpdateInput,
+    ProjectAssetInputTypeEnum,
     ProjectDetailsQuery,
     ProjectStatusEnum,
     useUpdateProcessedProjectMutation,
@@ -343,7 +344,7 @@ function UpdateProcessedProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         label="Project cover image"
                         name="image"
-                        inputType="image"
+                        inputType={ProjectAssetInputTypeEnum.CoverImage}
                         value={value.image}
                         onChange={setFieldValue}
                         error={error?.image}

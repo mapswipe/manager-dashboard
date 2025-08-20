@@ -141,7 +141,7 @@ function CustomOptionSelectInput<const NAME>(props: Props<NAME>) {
             labelSelector={labelSelector}
             optionLabelSelector={iconOptionLabelSelector}
             icons={isDefined(value) && (
-                <ColorPreview value={optionToColorMapping[value]} />
+                <ColorPreview value={optionToColorMapping?.[value]} />
             )}
         />
     );

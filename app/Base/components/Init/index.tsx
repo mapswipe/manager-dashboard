@@ -25,6 +25,8 @@ query TileServers {
             type
             label
             credits
+            maxZoom
+            minZoom
         }
         vector {
             label

@@ -88,6 +88,8 @@ function OverlayTileServerPropertyInput(props: Props) {
                     setFieldValue={setRasterTileServerConfigFieldValue}
                     disabled={disabled}
                     aoiGeoJsonAssetId={aoiGeoJsonAssetId}
+                    baseTileServer={baseTileServer}
+                    zoomLevel={zoomLevel}
                 />
             )}
             {value?.type === OverlayLayerTypeEnum.VectorTile && (

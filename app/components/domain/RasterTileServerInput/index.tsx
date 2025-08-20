@@ -20,6 +20,7 @@ import TileServerContext from '#base/context/TileServerContext';
 import Container, { type Props as ContainerProps } from '#components/Container';
 import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import ListLayout from '#components/ListLayout';
+import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
@@ -47,6 +48,7 @@ interface Props {
     withContainerPadding?: ContainerProps['withPadding'];
     containerSpacing?: ContainerProps['spacing'];
     containerHeadingLevel?: ContainerProps['headingLevel'];
+    withoutPreview?: boolean;
 }
 
 function RasterTileServerInput(props: Props) {
@@ -61,6 +63,7 @@ function RasterTileServerInput(props: Props) {
         withContainerBackground,
         containerSpacing,
         containerHeadingLevel = 4,
+        withoutPreview = false,
     } = props;
 
     const error = getErrorObject(formError);
@@ -118,7 +121,7 @@ function RasterTileServerInput(props: Props) {
             spacing={containerSpacing}
         >
             <ListLayout
-                layout="grid"
+                layout={withoutPreview ? 'block' : 'grid'}
             >
                 <ListLayout layout="block">
                     <RadioInput
@@ -164,18 +167,38 @@ function RasterTileServerInput(props: Props) {
                                     name="credits"
                                     label="Imagery Credits"
                                     hint="Insert appropriate imagery credits"
-                                    value={value[fieldName]?.credits}
-                                    error={getErrorObject(error?.[fieldName])?.credits}
+                                    value={value.custom?.credits}
+                                    error={getErrorObject(error?.custom)?.credits}
                                     onChange={setCustomRasterTileServerFieldValue}
                                     disabled={disabled}
                                 />
+                                <ListLayout layout="grid">
+                                    <NumberInput
+                                        name="minZoom"
+                                        label="Min zoom"
+                                        value={value.custom?.minZoom}
+                                        onChange={setCustomRasterTileServerFieldValue}
+                                        disabled={disabled}
+                                        error={getErrorObject(error?.custom)?.minZoom}
+                                    />
+                                    <NumberInput
+                                        name="maxZoom"
+                                        label="Max zoom"
+                                        value={value.custom?.maxZoom}
+                                        onChange={setCustomRasterTileServerFieldValue}
+                                        disabled={disabled}
+                                        error={getErrorObject(error?.custom)?.maxZoom}
+                                    />
+                                </ListLayout>
                             </>
                         )}
                 </ListLayout>
-                <ProjectAssetPreview
-                    assetId={aoiGeoJsonAssetId}
-                    geoJsonTileServer={value}
-                />
+                {!withoutPreview && (
+                    <ProjectAssetPreview
+                        assetId={aoiGeoJsonAssetId}
+                        geoJsonTileServer={value}
+                    />
+                )}
             </ListLayout>
         </Container>
     );

@@ -50,6 +50,7 @@ import {
     useTutorialDetailsQuery,
     useTutorialProjectDetailQuery,
     useUpdateTutorialMutation,
+    ValidateImageTutorialTaskPropertyInput,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import { readFileAsText } from '#utils/common';
@@ -65,7 +66,6 @@ import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
 import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
 import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
 import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
-import { ValidateImagePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidateImagePropertyInput/schema';
 import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
@@ -796,12 +796,12 @@ function NewTutorial(props: Props) {
                                     reference: 1,
                                     projectTypeSpecifics: {
                                         validateImage: {
-                                            id: image.id,
+                                            // id: image.id,
                                             fileName: image.file_name,
                                             url,
                                             width: image.width,
                                             height: image.height,
-                                        } satisfies ValidateImagePropertyInputFields,
+                                        } satisfies ValidateImageTutorialTaskPropertyInput,
                                     },
                                 }],
                             }];
@@ -815,7 +815,7 @@ function NewTutorial(props: Props) {
                                 reference: 1,
                                 projectTypeSpecifics: {
                                     validateImage: {
-                                        id: image.id,
+                                        // id: image.id,
                                         fileName: image.file_name,
                                         url,
                                         width: image.width,
@@ -828,7 +828,7 @@ function NewTutorial(props: Props) {
                                             // categoryId: annotation.category_id,
                                             // iscrowd: annotation.iscrowd,
                                         },
-                                    } satisfies ValidateImagePropertyInputFields,
+                                    } satisfies ValidateImageTutorialTaskPropertyInput,
                                 },
                             }],
                         }));

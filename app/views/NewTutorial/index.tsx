@@ -273,7 +273,7 @@ function NewTutorial(props: Props) {
                                     end={(
                                         <>
                                             {/* eslint-disable-next-line max-len */}
-                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && (
+                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && isDefined(projectAsset.file) && (
                                                 <a
                                                     // className={styles.projectAssetDownloadLink}
                                                     href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
@@ -284,20 +284,22 @@ function NewTutorial(props: Props) {
                                                     <CgArrowTopRightR />
                                                 </a>
                                             )}
-                                            <a
-                                                // className={styles.projectAssetDownloadLink}
-                                                href={projectAsset.file.url}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                title="Download"
-                                                download
-                                            >
-                                                <MdDownload />
-                                            </a>
+                                            {isDefined(projectAsset.file) && (
+                                                <a
+                                                    // className={styles.projectAssetDownloadLink}
+                                                    href={projectAsset.file.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Download"
+                                                    download
+                                                >
+                                                    <MdDownload />
+                                                </a>
+                                            )}
                                         </>
                                     )}
                                 >
-                                    {projectAsset.file.name.replace(/^.*[\\/]/, '')}
+                                    {projectAsset.file?.name.replace(/^.*[\\/]/, '') ?? '??'}
                                 </InlineLayout>
                             ))}
                         </Container>

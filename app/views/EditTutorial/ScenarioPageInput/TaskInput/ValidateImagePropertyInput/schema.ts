@@ -6,7 +6,7 @@ import {
 import { ValidateImageTutorialTaskPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
-export type ValidateImagePropertyInputFields = DeepNonNullable<
+type ValidateImagePropertyInputFields = DeepNonNullable<
     ValidateImageTutorialTaskPropertyInput
 >;
 export type PartialValidateImagePropertyInputFields = PartialForm<ValidateImagePropertyInputFields>;

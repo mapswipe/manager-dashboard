@@ -75,9 +75,13 @@ function ProjectAssetPreview(props: Props) {
                 return;
             }
 
-            const geoJsonResponse = await fetch(
-                previewResponse.projectAsset.file.url,
-            );
+            const { file } = previewResponse.projectAsset;
+
+            if (isNotDefined(file)) {
+                return;
+            }
+
+            const geoJsonResponse = await fetch(file.url);
 
             const rawGeoJson = await geoJsonResponse.json();
 
@@ -92,7 +96,7 @@ function ProjectAssetPreview(props: Props) {
     const mimetype = projectAsset?.mimetype;
 
     if (
-        isDefined(projectAsset)
+        isDefined(projectAsset?.file)
             && (
                 mimetype === ImageGif
                     || mimetype === ImagePng

@@ -12,6 +12,7 @@ import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import {
     ProcessedProjectUpdateInput,
+    ProjectAssetInputTypeEnum,
     ProjectUpdateInput,
 } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
@@ -85,7 +86,7 @@ function ProjectAdditionalInputs(props: Props) {
                     projectId={projectId}
                     label="Project cover image"
                     name="image"
-                    inputType="image"
+                    inputType={ProjectAssetInputTypeEnum.CoverImage}
                     value={value?.image}
                     onChange={setFieldValue}
                     error={error?.image}

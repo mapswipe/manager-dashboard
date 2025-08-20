@@ -3,10 +3,9 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
+import vectorTileServerFormSchema from '#components/domain/VectorTileServerInput/schema';
 import { ProjectOverlayVectorTileServerConfigInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
-
-import vectorTileServerFormSchema from './VectorTileServerInput/schema';
 
 export type PartialOverlayVectorTileConfigInputFields = PartialForm<
     DeepNonNullable<ProjectOverlayVectorTileServerConfigInput>
