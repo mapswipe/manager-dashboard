@@ -790,7 +790,10 @@ function NewTutorial(props: Props) {
                         result.annotations ?? [],
                         ({ image_id }) => image_id,
                     );
-                    const scenarioPages = result.images.flatMap((image, i) => {
+
+                    let scenarioPageNumber = 0;
+
+                    const scenarioPages = result.images.flatMap((image) => {
                         const url = image.coco_url ?? image.flickr_url;
                         if (isNotDefined(url)) {
                             return undefined;
@@ -799,9 +802,11 @@ function NewTutorial(props: Props) {
                         const annotations = annotationsMapping[image.id];
 
                         if (isNotDefined(annotations)) {
+                            scenarioPageNumber += 1;
+
                             return [{
                                 clientId: ulid(),
-                                scenarioPageNumber: i,
+                                scenarioPageNumber,
                                 tasks: [{
                                     clientId: ulid(),
                                     reference: 1,
@@ -818,32 +823,36 @@ function NewTutorial(props: Props) {
                             }];
                         }
 
-                        return annotations.map((annotation) => ({
-                            clientId: ulid(),
-                            scenarioPageNumber: i,
-                            tasks: [{
+                        return annotations.map((annotation) => {
+                            scenarioPageNumber += 1;
+
+                            return {
                                 clientId: ulid(),
-                                // FIXME: This is not always correct
-                                reference: 1,
-                                projectTypeSpecifics: {
-                                    validateImage: {
-                                        // id: image.id,
-                                        fileName: image.file_name,
-                                        url,
-                                        width: image.width,
-                                        height: image.height,
-                                        annotation: {
-                                            id: stringifyId(annotation.id),
-                                            bbox: annotation.bbox,
-                                            imageId: stringifyId(annotation.image_id),
-                                            // area: annotation.area,
-                                            // categoryId: annotation.category_id,
-                                            // iscrowd: annotation.iscrowd,
-                                        },
-                                    } satisfies ValidateImageTutorialTaskPropertyInput,
-                                },
-                            }],
-                        }));
+                                scenarioPageNumber,
+                                tasks: [{
+                                    clientId: ulid(),
+                                    // FIXME: This is not always correct
+                                    reference: 1,
+                                    projectTypeSpecifics: {
+                                        validateImage: {
+                                            // id: image.id,
+                                            fileName: image.file_name,
+                                            url,
+                                            width: image.width,
+                                            height: image.height,
+                                            annotation: {
+                                                id: stringifyId(annotation.id),
+                                                bbox: annotation.bbox,
+                                                imageId: stringifyId(annotation.image_id),
+                                                // area: annotation.area,
+                                                // categoryId: annotation.category_id,
+                                                // iscrowd: annotation.iscrowd,
+                                            },
+                                        } satisfies ValidateImageTutorialTaskPropertyInput,
+                                    },
+                                }],
+                            };
+                        });
                     }).filter(isDefined);
 
                     setFieldValue(scenarioPages, 'scenarios');

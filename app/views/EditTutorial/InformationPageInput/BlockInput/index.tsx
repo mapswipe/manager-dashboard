@@ -12,8 +12,8 @@ import TutorialAssetInput from '#components/domain/TutorialAssetInput';
 import InlineLayout from '#components/InlineLayout';
 import TextArea from '#components/TextArea';
 import {
-    TutorialInformationPageBlockTypeEnum,
     TutorialAssetInputTypeEnum,
+    TutorialInformationPageBlockTypeEnum,
 } from '#generated/types/graphql';
 
 import { PartialBlockInputFields } from './schema';
