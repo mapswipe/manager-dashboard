@@ -453,7 +453,6 @@ function ValidateProjectSpecifics(props: Props) {
                         project: projectId,
                         inputType: ProjectAssetInputTypeEnum.ObjectImage,
                         externalUrl: dataset.image.cocoUrl,
-                        mimetype: AssetMimetypeEnum.ImageJpeg,
                         assetTypeSpecifics: {
                             objectImage: {
                                 image: dataset.image,

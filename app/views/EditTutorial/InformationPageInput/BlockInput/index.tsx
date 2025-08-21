@@ -11,7 +11,10 @@ import Button from '#components/Button';
 import TutorialAssetInput from '#components/domain/TutorialAssetInput';
 import InlineLayout from '#components/InlineLayout';
 import TextArea from '#components/TextArea';
-import { TutorialInformationPageBlockTypeEnum } from '#generated/types/graphql';
+import {
+    TutorialInformationPageBlockTypeEnum,
+    TutorialAssetInputTypeEnum,
+} from '#generated/types/graphql';
 
 import { PartialBlockInputFields } from './schema';
 
@@ -83,7 +86,7 @@ function BlockInput(props: Props) {
                     value={value.image}
                     onChange={setFieldValue}
                     error={error?.image}
-                    inputType="image"
+                    inputType={TutorialAssetInputTypeEnum.InformationBlockImage}
                 />
             )}
         </InlineLayout>

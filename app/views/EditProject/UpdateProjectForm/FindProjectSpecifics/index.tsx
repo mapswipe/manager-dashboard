@@ -13,6 +13,7 @@ import {
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
 import NumberInput from '#components/NumberInput';
+import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
 import { type PartialFindSpecificFields } from './schema';
 
@@ -50,6 +51,7 @@ function FindProjectSpecifics(props: Props) {
                 onChange={setFieldValue}
                 value={value?.aoiGeometry}
                 error={error?.aoiGeometry}
+                inputType={ProjectAssetInputTypeEnum.AoiGeometry}
                 hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
                 disabled={disabled}
                 withoutPreview
