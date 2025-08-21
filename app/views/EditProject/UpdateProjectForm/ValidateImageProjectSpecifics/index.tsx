@@ -78,6 +78,17 @@ import { type PartialValidateImageSpecificFields } from './schema.ts';
 
 import styles from './styles.module.css';
 
+// FIXME: move this to utils
+function stringifyId(value: undefined): undefined
+function stringifyId(value: number): string
+function stringifyId(value: number | undefined): string | undefined
+function stringifyId(value: number | undefined) {
+    if (isNotDefined(value)) {
+        return value;
+    }
+    return String(value);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_OBJECT_IMAGE_ASSETS_QUERY = gql`
 query ProjectObjectImageAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
@@ -141,7 +152,7 @@ type CocoImage = typeof CocoObjectImage.infer;
 type Dataset = {
     clientId: string;
     image: {
-        id: CocoImage['id'];
+        id: string;
         cocoUrl: CocoImage['coco_url'];
         fileName: CocoImage['file_name'];
         width: CocoImage['width'];
@@ -149,9 +160,9 @@ type Dataset = {
         dateCaptured: CocoImage['date_captured'];
     };
     annotations: {
-        id: CocoAnnotation['id'];
-        categoryId: CocoAnnotation['category_id'];
-        imageId: CocoAnnotation['image_id'];
+        id: string;
+        categoryId: string | undefined;
+        imageId: string;
         iscrowd: CocoAnnotation['iscrowd'];
         area: CocoAnnotation['area'];
         bbox: CocoAnnotation['bbox'];
@@ -260,10 +271,9 @@ function ValidateProjectSpecifics(props: Props) {
                 const result = await createProjectAsset({
                     data: {
                         clientId,
-                        file,
-                        mimetype: imgMimeType,
-                        inputType: ProjectAssetInputTypeEnum.ObjectImage,
                         project: projectId,
+                        inputType: ProjectAssetInputTypeEnum.ObjectImage,
+                        file,
                     },
                 });
 
@@ -384,9 +394,9 @@ function ValidateProjectSpecifics(props: Props) {
                     }
 
                     const annotations = annotationsMapping[id]?.map((annotation) => ({
-                        id: annotation.id,
-                        categoryId: annotation.category_id,
-                        imageId: annotation.image_id,
+                        id: stringifyId(annotation.id),
+                        categoryId: stringifyId(annotation.category_id),
+                        imageId: stringifyId(annotation.image_id),
                         area: annotation.area,
                         bbox: annotation.bbox,
                         iscrowd: annotation.iscrowd,
@@ -395,7 +405,7 @@ function ValidateProjectSpecifics(props: Props) {
                     return {
                         clientId: ulid(),
                         image: {
-                            id,
+                            id: stringifyId(id),
                             cocoUrl: url,
                             fileName: file_name,
                             width,

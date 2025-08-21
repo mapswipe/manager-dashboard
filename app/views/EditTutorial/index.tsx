@@ -76,6 +76,17 @@ import tutorialUpdate, {
 
 import styles from './styles.module.css';
 
+// FIXME: move this to utils
+function stringifyId(value: undefined): undefined
+function stringifyId(value: number): string
+function stringifyId(value: number | undefined): string | undefined
+function stringifyId(value: number | undefined) {
+    if (isNotDefined(value)) {
+        return value;
+    }
+    return String(value);
+}
+
 const PolygonType = type.object.as<GeoJSON.Polygon>();
 const MultiPolygonType = type.object.as<GeoJSON.MultiPolygon>();
 
@@ -812,6 +823,7 @@ function NewTutorial(props: Props) {
                             scenarioPageNumber: i,
                             tasks: [{
                                 clientId: ulid(),
+                                // FIXME: This is not always correct
                                 reference: 1,
                                 projectTypeSpecifics: {
                                     validateImage: {
@@ -821,9 +833,9 @@ function NewTutorial(props: Props) {
                                         width: image.width,
                                         height: image.height,
                                         annotation: {
-                                            id: annotation.id,
+                                            id: stringifyId(annotation.id),
                                             bbox: annotation.bbox,
-                                            imageId: annotation.image_id,
+                                            imageId: stringifyId(annotation.image_id),
                                             // area: annotation.area,
                                             // categoryId: annotation.category_id,
                                             // iscrowd: annotation.iscrowd,
