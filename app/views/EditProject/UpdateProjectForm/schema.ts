@@ -15,6 +15,7 @@ import { DeepNonNullable } from '#utils/types';
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
 import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
+import streetSpecificFormSchema from './StreetProjectSpecifics/schema.ts';
 import validateImageSpecificFormSchema from './ValidateImageProjectSpecifics/schema.ts';
 import validateSpecificFormSchema from './ValidateProjectSpecifics/schema';
 
@@ -77,6 +78,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
             fields: (): ProjectTypeSpecificFormFields => {
                 if (context?.projectType === ProjectTypeEnum.Find) {
                     return {
+                        street: { forceValue: undefinedValue },
                         find: findSpecificFormSchema,
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
@@ -87,6 +89,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.Compare) {
                     return {
+                        street: { forceValue: undefinedValue },
                         compare: compareSpecificFormSchema,
                         find: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
@@ -97,6 +100,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.Completeness) {
                     return {
+                        street: { forceValue: undefinedValue },
                         completeness: completenessSpecificFormSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
@@ -107,6 +111,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.Validate) {
                     return {
+                        street: { forceValue: undefinedValue },
                         validate: validateSpecificFormSchema,
                         completeness: { forceValue: undefinedValue },
                         find: { forceValue: undefinedValue },
@@ -117,6 +122,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
 
                 if (context?.projectType === ProjectTypeEnum.ValidateImage) {
                     return {
+                        street: { forceValue: undefinedValue },
                         validateImage: validateImageSpecificFormSchema,
                         completeness: { forceValue: undefinedValue },
                         find: { forceValue: undefinedValue },
@@ -125,7 +131,21 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                     };
                 }
 
+                if (context?.projectType === ProjectTypeEnum.Street) {
+                    return {
+                        street: streetSpecificFormSchema,
+                        validateImage: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
+                    };
+                }
+
+                // context?.projectType satisfies never;
+
                 return {
+                    street: { forceValue: undefinedValue },
                     find: { forceValue: undefinedValue },
                     compare: { forceValue: undefinedValue },
                     completeness: { forceValue: undefinedValue },
