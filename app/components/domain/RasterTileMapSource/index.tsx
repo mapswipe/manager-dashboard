@@ -77,8 +77,8 @@ function RasterTileMapSource(props: Props) {
             // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
             tiles: [standardizeQuadKey(url)],
             attribution: credits ?? '',
-            minzoom: minZoom,
-            maxzoom: maxZoom,
+            minzoom: minZoom ?? null,
+            maxzoom: maxZoom ?? null,
         });
     }, [url, credits, minZoom, maxZoom]);
 

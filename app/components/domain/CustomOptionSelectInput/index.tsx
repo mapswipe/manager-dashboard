@@ -58,15 +58,15 @@ NAME,
 Option,
 Def,
 'onSearchValueChange'
-| 'searchOptions'
-| 'onShowDropdownChange'
-| 'totalOptionsCount'
-| 'value'
-| 'options'
-| 'keySelector'
-| 'labelSelector'
-| 'optionLabelSelector'
-| 'icons'
+    | 'searchOptions'
+    | 'onShowDropdownChange'
+    | 'totalOptionsCount'
+    | 'value'
+    | 'options'
+    | 'keySelector'
+    | 'labelSelector'
+    | 'optionLabelSelector'
+    | 'icons'
 > & {
     value: number | undefined | null,
     options: PartialCustomOptionInputFields[] | undefined | null;

@@ -50,8 +50,10 @@ const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
         image: {},
         team: {},
         status: {},
-        // FIXME(frozenhelium): do not commit this
-        tutorial: { },
+        tutorial: {
+            // FIXME(frozenhelium): only make this required for publish project
+            required: true,
+        },
     }),
 };
 
