@@ -14,9 +14,24 @@ import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
     AssetMimetypeEnum,
+    ProjectAssetInputTypeEnum,
     useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
+
+function getAcceptForInputType(value: ProjectAssetInputTypeEnum): string | undefined {
+    if (value === ProjectAssetInputTypeEnum.AoiGeometry) {
+        return '.geojson';
+    }
+    if (value === ProjectAssetInputTypeEnum.CoverImage) {
+        return 'image/png, image/gif, image/jpeg';
+    }
+    if (value === ProjectAssetInputTypeEnum.ObjectImage) {
+        return 'image/png, image/gif, image/jpeg';
+    }
+    value satisfies never;
+    return undefined;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_ASSET_MUTATION = gql`
@@ -46,7 +61,7 @@ interface Props<NAME> extends Omit<InputContainerLayoutProps, 'children' | 'inpu
     selectFileButtonLabel?: React.ReactNode;
     className?: string;
     disabled?: boolean;
-    inputType?: 'geojson' | 'image';
+    inputType: ProjectAssetInputTypeEnum;
     withoutPreview?: boolean;
 }
 
@@ -58,10 +73,10 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         value,
         onChange,
         disabled,
-        inputType = 'geojson',
-        selectFileButtonLabel = inputType === 'image'
-            ? 'Select an image'
-            : 'Select geojson',
+        inputType,
+        selectFileButtonLabel = inputType === ProjectAssetInputTypeEnum.AoiGeometry
+            ? 'Select geojson'
+            : 'Select an image',
         withoutPreview,
         ...inputLayoutContainerProps
     } = props;
@@ -79,11 +94,10 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 'image/jpeg': AssetMimetypeEnum.ImageJpeg,
                 'image/png': AssetMimetypeEnum.ImagePng,
                 'image/gif': AssetMimetypeEnum.ImageGif,
+                'application/json': AssetMimetypeEnum.Json,
                 'application/geo+json': AssetMimetypeEnum.Geojson,
             };
-
             const selectedEnum = mimetypeEnumMap[type];
-
             if (isNotDefined(selectedEnum)) {
                 // eslint-disable-next-line no-console
                 console.error('Invalid file selected!');
@@ -94,7 +108,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 data: {
                     clientId: ulid(),
                     file,
-                    mimetype: selectedEnum,
+                    inputType,
                     project: projectId,
                 },
             });
@@ -108,7 +122,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 onChange(result.data.createProjectAsset.result.id, name);
             }
         }
-    }, [createProjectAsset, projectId, onChange, name]);
+    }, [createProjectAsset, projectId, onChange, name, inputType]);
 
     return (
         <InputContainerLayout
@@ -123,7 +137,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 type="file"
                 value={undefined}
                 onChange={handleFileInputChange}
-                accept={inputType === 'geojson' ? '.geojson' : 'image/png, image/gif, image/jpeg'}
+                accept={getAcceptForInputType(inputType)}
                 disabled={disabled || createProjectAssetPending}
                 selectButtonLabel={selectFileButtonLabel}
                 status={isDefined(value) ? '1 file selected' : 'No file selected'}

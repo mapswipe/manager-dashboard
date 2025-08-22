@@ -22,7 +22,8 @@ function Modal(props: Props) {
         onClose,
         headerActions,
         withoutCloseButton,
-        withAutoHeight,
+        withAutoHeight = false,
+        contentClassName,
         size = 'md',
         ...otherProps
     } = props;
@@ -38,6 +39,7 @@ function Modal(props: Props) {
                     withAutoHeight && styles.withAutoHeight,
                     className,
                 )}
+                contentClassName={_cs(styles.content, contentClassName)}
                 withBackground
                 withShadow
                 withPadding

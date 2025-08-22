@@ -1,7 +1,4 @@
-import {
-    useMemo,
-    useState,
-} from 'react';
+import { useMemo } from 'react';
 import {
     _cs,
     isDefined,
@@ -10,12 +7,13 @@ import {
 import { removeNull } from '@togglecorp/toggle-form';
 import { LineLayerSpecification } from 'maplibre-gl';
 
+import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import GeoJsonPreview from '#components/domain/GeoJsonPreview';
+import Icon from '#components/domain/Icon';
 import MobilePreview from '#components/MobilePreview';
 import { ProjectRasterTileServerConfig } from '#generated/types/graphql';
-import { iconMapping } from '#utils/icon';
 
-import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
 
 import styles from './styles.module.css';
@@ -35,6 +33,7 @@ interface Props {
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
     lookFor: string | undefined;
     scenario: PartialScenarioPageInputFields | undefined;
+    customOptions: PartialCustomOptionInputFields[] | undefined;
 }
 
 function ValidateScenarioPreview(props: Props) {
@@ -43,9 +42,8 @@ function ValidateScenarioPreview(props: Props) {
         scenario,
         tileServerProperty,
         lookFor,
+        customOptions,
     } = props;
-
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const generatedGeojson = useMemo<GeoJSON.FeatureCollection>(() => {
         const features: Array<GeoJSON.Feature> = scenario?.tasks?.map((task) => {
@@ -68,15 +66,13 @@ function ValidateScenarioPreview(props: Props) {
         };
     }, [scenario]);
 
-    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
-
     return (
         <div className={_cs(styles.validateScenarioPreview, className)}>
             <MobilePreview
                 heading={`Does the shape outline a ${lookFor}?`}
-                popupIcons={Icon && <Icon />}
-                popupTitle={preview?.title || '{title}'}
-                popupDescription={preview?.description || '{description}'}
+                popupIcons={<Icon value={scenario?.instructionsIcon} />}
+                popupTitle={scenario?.instructionsTitle || '{title}'}
+                popupDescription={scenario?.instructionsDescription || '{description}'}
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
@@ -88,11 +84,10 @@ function ValidateScenarioPreview(props: Props) {
                     geoJsonLayerOptions={layerOptions}
                     fitInSingleTile
                 />
+                <CustomOptionPreview
+                    value={customOptions}
+                />
             </MobilePreview>
-            <PreviewSegmentInput
-                scenario={scenario}
-                onPreviewChange={setPreview}
-            />
         </div>
     );
 }

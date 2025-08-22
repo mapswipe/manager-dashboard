@@ -97,6 +97,8 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
                                     validations: [imageryUrlCondition],
                                 },
                                 credits: {},
+                                minZoom: {},
+                                maxZoom: {},
                             }),
                         },
                     };

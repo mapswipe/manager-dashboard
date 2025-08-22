@@ -19,6 +19,7 @@ import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import GridLayoutItem from '#components/GridLayoutItem';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import MarkdownPreview from '#components/MarkdownPreview';
 import TextOutput from '#components/TextOutput';
 import {
     ProjectsListQuery,
@@ -103,7 +104,7 @@ function ProjectListItem(props: Props) {
                 <img
                     className={styles.image}
                     alt=""
-                    src={value.image?.file.url ?? projectTypeIllustrations[value.projectType]}
+                    src={value.image?.file?.url ?? projectTypeIllustrations[value.projectType]}
                 />
                 <GridLayoutItem columnSpan={3}>
                     <Container
@@ -162,9 +163,12 @@ function ProjectListItem(props: Props) {
                                 />
                             )}
                         </ListLayout>
-                        <div className={styles.description}>
-                            {value.description}
-                        </div>
+                        {isDefined(value.description) && (
+                            <MarkdownPreview
+                                className={styles.description}
+                                markdown={value.description}
+                            />
+                        )}
                     </Container>
                 </GridLayoutItem>
             </ListLayout>

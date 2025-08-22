@@ -1,5 +1,3 @@
-import { isDefined } from '@togglecorp/fujs';
-
 import InlineLayout from '#components/InlineLayout';
 import SelectInput from '#components/SelectInput';
 import { SearchSelectInputProps } from '#components/SelectInput/SearchSelectInput';
@@ -11,14 +9,15 @@ import {
 import {
     IconItem,
     iconList,
-    iconMapping,
 } from '#utils/icon';
 
+import Icon from '../Icon';
+
 function iconOptionLabelSelector(iconOption: IconItem) {
-    const Icon = iconOption.component;
+    const IconElement = iconOption.component;
     return (
         <InlineLayout
-            start={<Icon />}
+            start={<IconElement />}
         >
             {iconOption.label}
         </InlineLayout>
@@ -50,10 +49,6 @@ function IconSelectInput<const NAME>(props: Props<NAME>) {
         ...otherProps
     } = props;
 
-    const IconPreview = isDefined(value)
-        ? iconMapping[value]
-        : null;
-
     return (
         <SelectInput
             // eslint-disable-next-line react/jsx-props-no-spreading
@@ -63,7 +58,7 @@ function IconSelectInput<const NAME>(props: Props<NAME>) {
             keySelector={keySelector}
             labelSelector={labelSelector}
             optionLabelSelector={iconOptionLabelSelector}
-            icons={IconPreview && <IconPreview />}
+            icons={<Icon value={value} />}
         />
     );
 }

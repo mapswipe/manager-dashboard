@@ -10,6 +10,47 @@ export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
 export const DEFAULT_PAGE_SIZE = 5;
 export const DEFAULT_PAGE = 1;
 
+export const OPACITY_TILE_SELECTED = 0.2;
+
+export const COLOR_TILE_OPTION_NO = '';
+export const COLOR_TILE_OPTION_YES = 'green';
+export const COLOR_TILE_OPTION_MAYBE = 'orange';
+export const COLOR_TILE_OPTION_BAD_IMAGERY = 'red';
+
+export const VALUE_TILE_OPTION_NO = 0;
+export const VALUE_TILE_OPTION_YES = 1;
+export const VALUE_TILE_OPTION_MAYBE = 2;
+export const VALUE_TILE_OPTION_BAD_IMAGERY = 3;
+
+export interface TileSelectOption {
+    value: number,
+    label: string;
+    color: string;
+}
+
+export const defaultTileOptions: TileSelectOption[] = [
+    {
+        value: VALUE_TILE_OPTION_NO,
+        label: 'No',
+        color: COLOR_TILE_OPTION_NO,
+    },
+    {
+        value: VALUE_TILE_OPTION_YES,
+        label: 'Yes',
+        color: COLOR_TILE_OPTION_YES,
+    },
+    {
+        value: VALUE_TILE_OPTION_MAYBE,
+        label: 'Maybe',
+        color: COLOR_TILE_OPTION_MAYBE,
+    },
+    {
+        value: VALUE_TILE_OPTION_BAD_IMAGERY,
+        label: 'Bad Imagery',
+        color: COLOR_TILE_OPTION_BAD_IMAGERY,
+    },
+];
+
 export const defaultMarkdownPreviewOptions: MarkdownViewProps['options'] = {
     simpleLineBreaks: true,
     headerLevelStart: 3,
@@ -279,3 +320,24 @@ export const lineWidthOptions: NumericValueOption[] = [
         label: '5',
     },
 ];
+
+export function readFileAsText(inputFile: File): Promise<string> {
+    const temporaryFileReader = new FileReader();
+
+    return new Promise((resolve, reject) => {
+        temporaryFileReader.onerror = () => {
+            temporaryFileReader.abort();
+            reject(new DOMException('Problem parsing input file.'));
+        };
+
+        temporaryFileReader.onload = () => {
+            if (typeof temporaryFileReader.result === 'string') {
+                resolve(temporaryFileReader.result);
+            } else {
+                reject(new DOMException('Problem parsing input file as string.'));
+            }
+        };
+
+        temporaryFileReader.readAsText(inputFile);
+    });
+}

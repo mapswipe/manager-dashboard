@@ -11,7 +11,10 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
-import { ValidateObjectSourceTypeEnum } from '#generated/types/graphql';
+import {
+    ProjectAssetInputTypeEnum,
+    ValidateObjectSourceTypeEnum,
+} from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
@@ -78,6 +81,7 @@ function ObjectSourceInput(props: Props) {
                     onChange={setFieldValue}
                     value={value.aoiGeometry}
                     error={error?.aoiGeometry}
+                    inputType={ProjectAssetInputTypeEnum.AoiGeometry}
                     // TODO(frozenhelium): add proper hint
                     // hint="Upload your project area as GeoJSON File (max. 1MB)
                     disabled={disabled}

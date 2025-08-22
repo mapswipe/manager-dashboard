@@ -138,6 +138,7 @@ p {
     --size-tile-find: var(--size-tile);
     --size-tile-compare: calc(var(--size-tile) * 2);
     --size-tile-validate: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
+    --size-tile-validate-image: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
     --size-tile-completeness: var(--size-tile-find);
 
     --width-mobile-preview: calc(var(--size-tile) * 2);

@@ -1,12 +1,20 @@
 .scenario-page-input {
+    container-type: inline-size;
+
     .content {
         display: grid;
         grid-template-columns: 1fr auto;
+
+        .scenario-inputs {
+            display: grid;
+            grid-template-columns: 10rem 1fr 1fr;
+            gap: var(--spacing-md);
+        }
     }
 
-    .scenario-inputs {
-        display: grid;
-        grid-template-columns: 10rem 1fr 1fr;
-        gap: var(--spacing-md);
+    @container (max-width: 40rem) {
+        .content {
+            grid-template-columns: 1fr;
+        }
     }
 }

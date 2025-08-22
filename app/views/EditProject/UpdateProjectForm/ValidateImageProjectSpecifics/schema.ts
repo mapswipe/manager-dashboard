@@ -3,6 +3,7 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
+import customOptionSchema from '#components/domain/CustomOptionInput/schema';
 import { ValidateImageProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -12,7 +13,8 @@ import {
 } from '../schema';
 
 export type PartialValidateImageSpecificFields = PartialForm<
-    DeepNonNullable<ValidateImageProjectPropertyInput>
+    DeepNonNullable<ValidateImageProjectPropertyInput>,
+    'clientId'
 >;
 type ValidateImageSpecificFormSchema = ObjectSchema<
     PartialValidateImageSpecificFields,
@@ -25,7 +27,13 @@ export const defaultValidateImageSpecificFormValue: PartialValidateImageSpecific
 
 const validateSpecificFormSchema: ValidateImageSpecificFormSchema = {
     fields: (): ReturnType<ValidateImageSpecificFormSchema['fields']> => ({
-        annotationsFile: {},
+        customOptions: {
+            keySelector: (value) => value.clientId,
+            member: () => customOptionSchema,
+        },
+        sourceType: {
+            required: true,
+        },
     }),
 };
 

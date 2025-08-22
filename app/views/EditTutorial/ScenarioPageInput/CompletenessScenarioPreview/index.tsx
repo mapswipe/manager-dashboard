@@ -8,17 +8,21 @@ import {
     PartialForm,
     removeNull,
 } from '@togglecorp/toggle-form';
+import { type } from 'arktype';
 
 import BaseMap from '#components/domain/BaseMap';
 import GeoJsonMapSource from '#components/domain/GeoJsonMapSource';
+import Icon from '#components/domain/Icon';
+import RasterTileMapSource from '#components/domain/RasterTileMapSource';
 import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 import MobilePreview from '#components/MobilePreview';
 import {
+    ProjectOverlayRasterTileServerConfig,
     ProjectOverlayTileServerConfig,
+    ProjectOverlayVectorTileServerConfig,
     ProjectRasterTileServerConfig,
 } from '#generated/types/graphql';
 import { createGeoJsonFromTiles } from '#utils/geo';
-import { iconMapping } from '#utils/icon';
 
 import PreviewSegmentInput, { PreviewItem } from '../PreviewSegmentInput';
 import { PartialScenarioPageInputFields } from '../schema';
@@ -55,14 +59,20 @@ function CompletenessScenarioPreview(props: Props) {
         return createGeoJsonFromTiles(tiles);
     }, [scenario]);
 
-    const Icon = preview?.icon ? iconMapping[preview.icon] : undefined;
+    const rasterTileConfigValue = type.object.as<ProjectOverlayRasterTileServerConfig>()(
+        overlayTileServerProperty?.raster,
+    );
+
+    const vectorTileConfigValue = type.object.as<ProjectOverlayVectorTileServerConfig>()(
+        overlayTileServerProperty?.vector,
+    );
 
     return (
         <div className={_cs(styles.completenessScenarioPreview, className)}>
             <MobilePreview
                 heading="You are looking for:"
                 headerDescription={lookFor || '{look for}'}
-                popupIcons={Icon && <Icon />}
+                popupIcons={<Icon value={preview?.icon} />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
                 contentClassName={styles.content}
@@ -76,10 +86,16 @@ function CompletenessScenarioPreview(props: Props) {
                         sourceKey="completeness-geojson-source"
                         layerKey="completeness-geojson-layer"
                     />
-                    <VectorTileMapSource
-                        tileConfig={removeNull(overlayTileServerProperty?.vector)}
-                    />
-                    {/* TODO: overlay for raster */}
+                    {!(vectorTileConfigValue instanceof type.errors) && (
+                        <VectorTileMapSource
+                            tileConfig={vectorTileConfigValue}
+                        />
+                    )}
+                    {!(rasterTileConfigValue instanceof type.errors) && (
+                        <RasterTileMapSource
+                            tileConfig={rasterTileConfigValue}
+                        />
+                    )}
                 </BaseMap>
             </MobilePreview>
             <PreviewSegmentInput

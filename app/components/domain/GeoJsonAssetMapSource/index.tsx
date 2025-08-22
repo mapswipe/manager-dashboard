@@ -53,8 +53,18 @@ function GeoJsonAssetMapSource(props: Props) {
                 return;
             }
 
+            const {
+                projectAsset: {
+                    file,
+                },
+            } = geometryAssetResponse;
+
+            if (isNotDefined(file)) {
+                return;
+            }
+
             const geoJsonResponse = await fetch(
-                geometryAssetResponse.projectAsset.file.url,
+                file.url,
             );
 
             const rawGeoJson = await geoJsonResponse.json();

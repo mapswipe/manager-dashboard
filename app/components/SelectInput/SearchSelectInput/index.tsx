@@ -138,7 +138,7 @@ function SearchSelectInput<
         [options, keySelector, labelSelector],
     );
 
-    const valueDisplay = isDefined(value) ? optionsLabelMap[value] ?? '?' : '';
+    const valueDisplay = isDefined(value) ? optionsLabelMap[value] ?? '?' : undefined;
 
     // NOTE: we can skip this calculation if optionsShowInitially is false
     const selectedOptions = useMemo(

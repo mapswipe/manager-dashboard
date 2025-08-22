@@ -25,6 +25,8 @@ query TileServers {
             type
             label
             credits
+            maxZoom
+            minZoom
         }
         vector {
             label
@@ -79,6 +81,10 @@ query AllEnums {
             label
         }
         ValidateObjectSourceTypeEnum {
+            key
+            label
+        }
+        ValidateImageSourceTypeEnum {
             key
             label
         }

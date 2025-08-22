@@ -1,5 +1,6 @@
 import {
     isDefined,
+    isNotDefined,
     listToMap,
 } from '@togglecorp/fujs';
 import { nonFieldError } from '@togglecorp/toggle-form';
@@ -65,53 +66,79 @@ export function transformErrors(errors: Error[]) {
     return mappedErrors;
 }
 
-function getGraphQLErrorsFromResult<T>(result: OperationResult<T>) {
+export function getGraphQLErrorsFromResult<T>(result: OperationResult<T>) {
     return result?.error?.graphQLErrors;
+}
+
+export function getErrorMessageFromResult<T>(result: OperationResult<T>) {
+    const gqlErrors = getGraphQLErrorsFromResult(result);
+
+    if (isNotDefined(gqlErrors) || gqlErrors.length === 0) {
+        return undefined;
+    }
+
+    const errorMessage = gqlErrors.map((gqlError) => gqlError.message).join(', ');
+
+    return errorMessage;
+}
+
+export function getErrorMessageAndDescriptionForCombinedError(
+    combinedError: unknown,
+) {
+    if (!(combinedError instanceof CombinedError)) {
+        // eslint-disable-next-line no-console
+        console.error(combinedError);
+
+        return {
+            message: 'Unkown error!',
+            description: 'Please see developer console for more info!',
+            debugMessage: undefined,
+        };
+    }
+
+    if (combinedError.graphQLErrors.length !== 0) {
+        return {
+            message: 'Request failed!',
+            description: combinedError.graphQLErrors.map((error) => error.message).join(', '),
+            debugMessage: JSON.stringify(combinedError.graphQLErrors, null, 2),
+        };
+    }
+
+    if (combinedError.networkError) {
+        return {
+            message: 'Network error!',
+            description: 'Please make sure that you have an active internet connection!',
+            debugMessage: JSON.stringify(combinedError.networkError, null, 2),
+        };
+    }
+
+    // eslint-disable-next-line no-console
+    console.error(combinedError);
+    return {
+        message: 'Unkown error!',
+        description: 'Please see developer console for more info!',
+        debugMessage: undefined,
+    };
 }
 
 export function alertCombinedError(
     combinedError: unknown,
     alert: ReturnType<typeof useAlert>,
 ) {
-    if (!(combinedError instanceof CombinedError)) {
-        alert.show(
-            'Unkown error!',
-            {
-                description: 'Please see developer console for more info!',
-                variant: 'danger',
-                // debugMessage: JSON.stringify(apolloError, null, 2),
-            },
-        );
+    const {
+        message,
+        description,
+        debugMessage,
+    } = getErrorMessageAndDescriptionForCombinedError(combinedError);
 
-        // eslint-disable-next-line no-console
-        console.error(combinedError);
-
-        return;
-    }
-
-    if (combinedError.graphQLErrors.length !== 0) {
-        alert.show(
-            'Request failed!',
-            {
-                description: combinedError.graphQLErrors.map((error) => error.message).join(', '),
-                // eslint-disable-next-line max-len
-                // description: 'There\'s an error with the query, please copy the error message and contact the developer!',
-                variant: 'danger',
-                debugMessage: JSON.stringify(combinedError.graphQLErrors, null, 2),
-            },
-        );
-    }
-
-    if (combinedError.networkError) {
-        alert.show(
-            'Network error!',
-            {
-                description: 'Please make sure that you have an active internet connection!',
-                variant: 'danger',
-                debugMessage: JSON.stringify(combinedError.networkError, null, 2),
-            },
-        );
-    }
+    alert.show(
+        message,
+        {
+            description,
+            variant: 'danger',
+            debugMessage,
+        },
+    );
 }
 
 export function checkAndAlertGraphQLResultError<T>(

@@ -14,6 +14,7 @@ import {
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
+import ColorSelectInput from '#components/ColorSelectInput';
 import Container from '#components/Container';
 import IconSelectInput from '#components/domain/IconSelectInput';
 import ListLayout from '#components/ListLayout';
@@ -36,9 +37,10 @@ interface Props {
     ) => void;
     error: ObjectError<PartialCustomOptionInputFields> | undefined;
     onRemove: (index: number) => void;
+    disabled?: boolean,
 }
 
-function CustomOption(props: Props) {
+function CustomOptionInput(props: Props) {
     const {
         className,
         index,
@@ -46,6 +48,7 @@ function CustomOption(props: Props) {
         onChange,
         error,
         onRemove,
+        disabled,
     } = props;
 
     const setFieldValue = useFormObject(
@@ -91,6 +94,7 @@ function CustomOption(props: Props) {
                     colorVariant="danger"
                     start={<IoTrashBin />}
                     withoutPadding
+                    disabled={disabled}
                 >
                     Remove
                 </Button>
@@ -110,14 +114,15 @@ function CustomOption(props: Props) {
                             onChange={setFieldValue}
                             error={error?.icon}
                             nonClearable
+                            disabled={disabled}
                         />
-                        <TextInput
-                            // TODO: use color input
+                        <ColorSelectInput
                             label="Color"
                             name="iconColor"
                             value={value.iconColor}
                             onChange={setFieldValue}
                             error={error?.iconColor}
+                            disabled={disabled}
                         />
                         <NumberInput
                             label="Value"
@@ -125,6 +130,7 @@ function CustomOption(props: Props) {
                             value={value.value}
                             onChange={setFieldValue}
                             error={error?.value}
+                            disabled={disabled}
                         />
                     </ListLayout>
                     <TextInput
@@ -133,6 +139,7 @@ function CustomOption(props: Props) {
                         value={value.title}
                         onChange={setFieldValue}
                         error={error?.title}
+                        disabled={disabled}
                     />
                     <TextArea
                         label="Description"
@@ -140,6 +147,7 @@ function CustomOption(props: Props) {
                         value={value.description}
                         onChange={setFieldValue}
                         error={error?.description}
+                        disabled={disabled}
                     />
                 </ListLayout>
                 <Container
@@ -152,6 +160,7 @@ function CustomOption(props: Props) {
                             styleVariant="transparent"
                             start={<IoAdd />}
                             withoutPadding
+                            disabled={disabled}
                         >
                             Add sub option
                         </Button>
@@ -171,6 +180,7 @@ function CustomOption(props: Props) {
                                 getErrorObject(error?.subOptions)?.[subOption.clientId],
                             )}
                             onRemove={removeSubOption}
+                            disabled={disabled}
                         />
                     ))}
                 </Container>
@@ -179,4 +189,4 @@ function CustomOption(props: Props) {
     );
 }
 
-export default CustomOption;
+export default CustomOptionInput;

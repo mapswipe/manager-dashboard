@@ -157,19 +157,18 @@ function Container(props: Props) {
             )}
             withStartSeparator={withHeaderBorder}
             withEndSeparator={withFooterBorder}
+            childrenContainerClassName={_cs(
+                styles.content,
+                contentSpacingClassName,
+                contentLayout === 'inline' && styles.inlineContent,
+                contentLayout === 'block' && styles.blockContent,
+                overlayPending && styles.pendingOverlaid,
+                withContentBackgroundAndPadding && styles.withBackground,
+                contentClassName,
+            )}
         >
             {(children || empty || pending || errored || filtered) && (
-                <div
-                    className={_cs(
-                        styles.content,
-                        contentSpacingClassName,
-                        contentLayout === 'inline' && styles.inlineContent,
-                        contentLayout === 'block' && styles.blockContent,
-                        overlayPending && styles.pendingOverlaid,
-                        withContentBackgroundAndPadding && styles.withBackground,
-                        contentClassName,
-                    )}
-                >
+                <>
                     <Message
                         className={styles.message}
                         pending={pending}
@@ -184,7 +183,7 @@ function Container(props: Props) {
                         withoutIcon={withoutMessageIcon}
                     />
                     {!empty && !errored && (!pending || overlayPending) && children}
-                </div>
+                </>
             )}
         </BlockLayout>
     );

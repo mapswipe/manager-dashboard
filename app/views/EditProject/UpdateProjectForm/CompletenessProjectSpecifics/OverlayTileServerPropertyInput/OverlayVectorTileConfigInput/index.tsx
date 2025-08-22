@@ -9,6 +9,11 @@ import {
 import ColorSelectInput from '#components/ColorSelectInput';
 import Container from '#components/Container';
 import { PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
+import VectorTileServerInput from '#components/domain/VectorTileServerInput';
+import {
+    defaultVectorTileServerInputValue,
+    PartialVectorTileServerInputFields,
+} from '#components/domain/VectorTileServerInput/schema';
 import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
@@ -18,13 +23,8 @@ import {
     valueSelector,
 } from '#utils/common';
 
-import {
-    defaultVectorTileServerInputValue,
-    PartialVectorTileServerInputFields,
-} from './VectorTileServerInput/schema';
 import { PartialOverlayVectorTileConfigInputFields } from './schema';
 import VectorTilePreview from './VectorTilePreview';
-import VectorTileServerInput from './VectorTileServerInput';
 
 interface Props {
     label?: React.ReactNode;

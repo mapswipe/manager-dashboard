@@ -12,21 +12,17 @@ import {
     MapLayer,
     MapSource,
 } from '@togglecorp/re-map';
-import {
-    PartialForm,
-    removeNull,
-} from '@togglecorp/toggle-form';
+import { removeNull } from '@togglecorp/toggle-form';
 
 import TileServerContext from '#base/context/TileServerContext';
+import { vectorTileServerNameToTileInputKey } from '#components/domain/VectorTileServerInput/schema';
 import {
     ProjectOverlayVectorTileServerConfig,
     VectorTileServerNameEnum,
 } from '#generated/types/graphql';
-import { DeepNonNullable } from '#utils/types';
-import { vectorTileServerNameToTileInputKey } from '#views/EditProject/UpdateProjectForm/CompletenessProjectSpecifics/OverlayTileServerPropertyInput/OverlayVectorTileConfigInput/VectorTileServerInput/schema';
 
 interface Props {
-    tileConfig: PartialForm<DeepNonNullable<ProjectOverlayVectorTileServerConfig>> | undefined;
+    tileConfig: ProjectOverlayVectorTileServerConfig | undefined;
 }
 
 function VectorTileMapSource(props: Props) {

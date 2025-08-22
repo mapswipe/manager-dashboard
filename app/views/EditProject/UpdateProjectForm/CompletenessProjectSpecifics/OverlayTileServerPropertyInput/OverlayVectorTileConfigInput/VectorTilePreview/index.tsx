@@ -8,14 +8,16 @@ import {
     MapContainer,
     MapOrder,
 } from '@togglecorp/re-map';
+import { type } from 'arktype';
 
 import BaseMap from '#components/domain/BaseMap';
 import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import VectorTileMapSource from '#components/domain/VectorTileMapSource';
+import { vectorTileServerNameToTileInputKey } from '#components/domain/VectorTileServerInput/schema';
+import { ProjectOverlayVectorTileServerConfig } from '#generated/types/graphql';
 
 import { PartialOverlayVectorTileConfigInputFields } from '../schema';
-import { vectorTileServerNameToTileInputKey } from '../VectorTileServerInput/schema';
 
 import styles from './styles.module.css';
 
@@ -54,14 +56,20 @@ function VectorTilePreview(props: Props) {
         return tileServer?.sourceLayer;
     }, [vectorTileConfig]);
 
+    const vectorTileConfigValue = type.object.as<ProjectOverlayVectorTileServerConfig>()(
+        vectorTileConfig,
+    );
+
     return (
         <BaseMap baseTileServer={baseTileServer}>
             <MapContainer
                 className={_cs(styles.vectorTilePreview, className)}
             />
-            <VectorTileMapSource
-                tileConfig={vectorTileConfig}
-            />
+            {!(vectorTileConfigValue instanceof type.errors) && (
+                <VectorTileMapSource
+                    tileConfig={vectorTileConfigValue}
+                />
+            )}
             <GeoJsonAssetMapSource
                 geoJsonAssetId={aoiGeometryAssetId}
                 zoomLevel={zoomLevel}

@@ -1,0 +1,9 @@
+.markdown-preview {
+    p:not(:last-child) {
+        margin-bottom: var(--spacing-xs);
+    }
+
+    a {
+        text-decoration: underline;
+    }
+}

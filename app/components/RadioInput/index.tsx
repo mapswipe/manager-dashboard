@@ -108,6 +108,7 @@ function RadioInput<
                                 onClick={handleRadioClick}
                                 inputName={typeof name === 'string' ? name : undefined}
                                 label={radioLabel}
+                                disabled={disabled}
                             />
                         );
                     })}

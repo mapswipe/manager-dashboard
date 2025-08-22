@@ -7,6 +7,7 @@ import {
     listToMap,
 } from '@togglecorp/fujs';
 import Map from '@togglecorp/re-map';
+import { removeNull } from '@togglecorp/toggle-form';
 
 import TileServerContext from '#base/context/TileServerContext';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
@@ -42,6 +43,8 @@ function BaseMap(props: Props) {
     const {
         url,
         credits,
+        minzoom,
+        maxzoom,
     } = useMemo(() => {
         const rasterTileServerMapping = listToMap(
             rasterTileServers,
@@ -52,6 +55,8 @@ function BaseMap(props: Props) {
             return {
                 url: FALLBACK_TILE_URL,
                 credits: FALLBACK_TILE_CREDITS,
+                minzoom: undefined,
+                maxzoom: undefined,
             };
         }
 
@@ -61,6 +66,8 @@ function BaseMap(props: Props) {
             return {
                 url: FALLBACK_TILE_URL,
                 credits: FALLBACK_TILE_CREDITS,
+                minzoom: undefined,
+                maxzoom: undefined,
             };
         }
 
@@ -68,12 +75,16 @@ function BaseMap(props: Props) {
             return {
                 url: baseTileServer.custom?.url,
                 credits: baseTileServer.custom?.credits,
+                minzoom: baseTileServer.custom?.minZoom,
+                maxzoom: baseTileServer.custom?.maxZoom,
             };
         }
 
         return {
             url: rasterTileServerMapping[name]?.url,
             credits: rasterTileServerMapping[name]?.credits,
+            minzoom: baseTileServer.custom?.minZoom,
+            maxzoom: baseTileServer.custom?.maxZoom,
         };
     }, [baseTileServer, rasterTileServers]);
 
@@ -85,13 +96,15 @@ function BaseMap(props: Props) {
         return {
             version: 8,
             sources: {
-                'base-tile-source': {
+                'base-tile-source': removeNull({
                     type: 'raster',
                     // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
                     tiles: [standardizeQuadKey(url)],
                     tileSize,
                     attribution: credits ?? '',
-                },
+                    minzoom: minzoom ?? null,
+                    maxzoom: maxzoom ?? null,
+                }),
             },
             layers: [{
                 id: 'base-tile-layer',
@@ -99,7 +112,7 @@ function BaseMap(props: Props) {
                 source: 'base-tile-source',
             }],
         };
-    }, [url, tileSize, credits]);
+    }, [url, tileSize, credits, minzoom, maxzoom]);
 
     if (isNotDefined(mapStyle)) {
         return null;

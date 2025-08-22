@@ -77,7 +77,19 @@ query TutorialDetails($id: ID!) {
                     }
                     ... on ValidateImageTutorialTaskPropertyType {
                         __typename
-                        question
+                        fileName
+                        height
+                        url
+                        width
+                        annotation {
+                            bbox
+                            id
+                            imageId
+                            iscrowd
+                            segmentation
+                            area
+                            categoryId
+                        }
                     }
                 }
             }

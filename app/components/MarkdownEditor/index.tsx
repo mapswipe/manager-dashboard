@@ -18,7 +18,7 @@ interface MarkdownEditorProps<NAME extends string> {
     onChange?:(newVal: string | undefined, name: NAME) => void;
 }
 
-export type Props<NAME extends string> = Omit<InputContainerProps, 'input'> & MarkdownEditorProps<NAME>;
+export type Props<NAME extends string> = Omit<InputContainerProps, 'input' | 'inputId'> & MarkdownEditorProps<NAME>;
 
 function MarkdownEditor<NAME extends string>(props: Props<NAME>) {
     const {

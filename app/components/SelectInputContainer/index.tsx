@@ -83,7 +83,7 @@ export type SelectInputContainerProps<
     optionsPopupClassName?: string;
     persistentOptionPopup?: boolean;
     placeholder?: string;
-    valueDisplay: string;
+    valueDisplay: string | undefined;
 
     hasValue: boolean;
     nonClearable?: boolean;
@@ -126,7 +126,7 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         persistentOptionPopup,
         readOnly,
         placeholder,
-        valueDisplay = '',
+        valueDisplay,
         nonClearable,
         onClear,
         optionsPending,

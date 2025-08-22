@@ -119,11 +119,33 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         tileServerProperty {
             ...RasterTileServerPropertyFields
         }
+        customOptions {
+            ...ProjectCustomOptionFragment
+        }
     }
     ... on ValidateImageProjectPropertyType {
         __typename
-        annotationsFile
+        sourceType
+        customOptions {
+            ...ProjectCustomOptionFragment
+        }
     }
+}
+`;
+
+export const CUSTOM_OPTION_FRAGMENT = gql`
+fragment ProjectCustomOptionFragment on ProjectCustomOption {
+    clientId
+    description
+    icon
+    iconColor
+    subOptions {
+        clientId
+        description
+        value
+    }
+    title
+    value
 }
 `;
 

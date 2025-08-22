@@ -1,13 +1,17 @@
 .modal {
-    width: calc(100% - var(--spacing-md));
-    height: calc(100% - var(--spacing-md));
+    width: calc(100% - 2 * var(--spacing-md));
+    height: calc(100% - 2 * var(--spacing-md));
     overflow: auto;
+
+    .content {
+        overflow: auto;
+    }
 
     &.sm-size {
         max-width: calc(var(--width-page-content-max) * 0.4);
 
         &:not(.with-auto-height) {
-            max-height: min(20rem, 100%);
+            max-height: min(20rem, 100% - 2 * var(--spacing-md));
         }
     }
 
@@ -15,7 +19,7 @@
         max-width: calc(var(--width-page-content-max) * 0.6);
 
         &:not(.with-auto-height) {
-            max-height: min(30rem, 100%);
+            max-height: min(40rem, 100% - 2 * var(--spacing-md));
         }
     }
 
@@ -23,12 +27,12 @@
         max-width: var(--width-page-content-max);
 
         &:not(.with-auto-height) {
-            max-height: min(40rem, 100%);
+            max-height: min(60rem, 100% - 2 * var(--spacing-md));
         }
     }
 
     &.with-auto-height {
         height: auto;
-        max-height: calc(100% - var(--spacing-md));
+        max-height: calc(100% - 2 * var(--spacing-md));
     }
 }

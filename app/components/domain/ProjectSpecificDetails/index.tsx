@@ -9,6 +9,7 @@ import CompareDetails from './CompareDetails';
 import CompletenessDetails from './CompletenessDetails';
 import FindDetails from './FindDetails';
 import ValidateDetails from './ValidateDetails';
+import ValidateImageDetails from './ValidateImageDetails';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_SPECIFIC_DETAILS_QUERY = gql`
@@ -76,6 +77,12 @@ function ProjectSpecificDetails(props: Props) {
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType' && (
                 <ValidateDetails
+                    data={projectData.project.projectTypeSpecifics}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.project.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
+                <ValidateImageDetails
                     data={projectData.project.projectTypeSpecifics}
                 />
             )}
