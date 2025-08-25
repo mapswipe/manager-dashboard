@@ -85,9 +85,7 @@ function TutorialSelectInput<K extends string>(props: SelectInputProps<K>) {
                             exact: projectType,
                         },
                     },
-                    name: {
-                        iContains: debouncedSearchText,
-                    },
+                    name: debouncedSearchText,
                 },
             } : {
                 filters: {

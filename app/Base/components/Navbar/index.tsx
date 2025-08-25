@@ -2,7 +2,7 @@ import {
     useCallback,
     useContext,
 } from 'react';
-import { IoInformationCircleOutline } from 'react-icons/io5';
+import { MdOutlineHealthAndSafety } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
@@ -99,16 +99,23 @@ function Navbar(props: Props) {
                                 withoutPadding
                                 onClick={setShowModalTrue}
                             >
-                                <IoInformationCircleOutline />
+                                <MdOutlineHealthAndSafety />
                             </Button>
                         </div>
                         {showModal && (
                             <Modal
-                                heading="System Status"
+                                heading="System health"
                                 onClose={setShowModalFalse}
                                 size="sm"
-                                withAutoHeight
                                 withHeaderBorder
+                                footerActions={(
+                                    <Button
+                                        name={undefined}
+                                        onClick={setShowModalFalse}
+                                    >
+                                        Done
+                                    </Button>
+                                )}
                             >
                                 {healthCheckData && (
                                     Object.entries(healthCheckData).map(([key, value]) => {
@@ -116,7 +123,8 @@ function Navbar(props: Props) {
                                             return (
                                                 <div key={key}>
                                                     <TextOutput
-                                                        label={`${value === 'working' ? '✅ ' : '❌ '} ${key}`}
+                                                        icon={value === 'working' ? '✅ ' : '❌ '}
+                                                        label={key}
                                                         value={value}
                                                     />
                                                 </div>

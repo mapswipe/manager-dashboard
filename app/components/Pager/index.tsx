@@ -166,6 +166,7 @@ function Pager(props: Props) {
                 {pageItems}
             </div>
             <SelectInput
+                spacing="sm"
                 className={styles.itemsPerPage}
                 name="pagePerItem"
                 value={pagePerItem}

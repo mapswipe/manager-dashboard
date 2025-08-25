@@ -71,9 +71,7 @@ function TeamSelectInput<K extends string>(props: SelectInputProps<K>) {
         (): GetTeamQueryVariables => (
             debouncedSearchText ? {
                 filters: {
-                    name: {
-                        iContains: debouncedSearchText,
-                    },
+                    name: debouncedSearchText,
                 },
             } : {
                 order: {

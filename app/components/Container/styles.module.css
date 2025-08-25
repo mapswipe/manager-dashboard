@@ -29,6 +29,7 @@
             border-radius: var(--radius-card-border);
             background-color: var(--color-foreground);
         }
+
     }
 
     .description:empty {
@@ -38,6 +39,10 @@
     &.with-background {
         border-radius: var(--radius-card-border);
         background-color: var(--color-foreground);
+    }
+
+    &.with-min-height {
+        min-height: min(10rem, 30vh);
     }
 
     &.with-shadow {

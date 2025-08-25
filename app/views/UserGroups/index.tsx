@@ -65,8 +65,8 @@ query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit
 `;
 
 const statusOptions = [
-    { key: true, label: 'Archive' },
-    { key: false, label: 'Unarchive' },
+    { key: true, label: 'Archived' },
+    { key: false, label: 'Active' },
 ];
 
 interface Props {
@@ -103,7 +103,7 @@ function UserGroups(props: Props) {
     ] = useUserGroupsListQuery({
         variables: {
             filters: {
-                name: { iContains: debouncedSearchText },
+                name: debouncedSearchText,
                 isArchived: { exact: archivedStatus },
             },
             includeAll: true,
@@ -170,6 +170,8 @@ function UserGroups(props: Props) {
                     <Button
                         name={undefined}
                         onClick={handleClearFilterButtonClick}
+                        spacing="sm"
+                        colorVariant="danger"
                     >
                         Clear filters
                     </Button>
@@ -183,6 +185,9 @@ function UserGroups(props: Props) {
                 empty={totalCount === 0}
                 emptyMessage="No User Group found!"
                 filteredEmptyMessage="No matching user group found!"
+                withBackground={totalCount === 0}
+                withPadding={totalCount === 0}
+                withMinHeight={totalCount === 0}
                 spacing="lg"
                 footerActions={(
                     <Pager

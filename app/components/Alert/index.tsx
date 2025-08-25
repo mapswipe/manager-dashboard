@@ -102,6 +102,7 @@ function Alert<N extends string>(props: Props<N>) {
                 >
                     <Heading
                         className={styles.title}
+                        level={4}
                     >
                         {title}
                     </Heading>
