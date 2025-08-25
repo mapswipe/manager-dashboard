@@ -2,17 +2,22 @@ import {
     useCallback,
     useContext,
 } from 'react';
+import { IoInformationCircleOutline } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import SmartNavLink from '#base/components/SmartNavLink';
 import route from '#base/configs/routes';
+import HealthCheckContext from '#base/context/HealthCheckContext';
 import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import Modal from '#components/Modal';
+import TextOutput from '#components/TextOutput';
 import { useLogoutMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
+import useBooleanState from '#hooks/useBooleanState';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 import {
     alertCombinedError,
@@ -38,12 +43,19 @@ function Navbar(props: Props) {
         user,
         setUser,
     } = useContext(UserContext);
+    const healthCheckData = useContext(HealthCheckContext);
     const alert = useAlert();
 
     const [
         { fetching: logoutPending },
         logout,
     ] = useLogoutMutation();
+
+    const [
+        showModal,
+        setShowModalTrue,
+        setShowModalFalse,
+    ] = useBooleanState(false);
 
     const handleLogoutClick = useCallback(async () => {
         try {
@@ -79,6 +91,42 @@ function Navbar(props: Props) {
                 )}
                 end={user && (
                     <ListLayout>
+                        <div className={styles.icon}>
+                            <Button
+                                name={undefined}
+                                styleVariant="transparent"
+                                colorVariant="text-on-dark"
+                                withoutPadding
+                                onClick={setShowModalTrue}
+                            >
+                                <IoInformationCircleOutline />
+                            </Button>
+                        </div>
+                        {showModal && (
+                            <Modal
+                                heading="System Status"
+                                onClose={setShowModalFalse}
+                                size="sm"
+                                withAutoHeight
+                                withHeaderBorder
+                            >
+                                {healthCheckData && (
+                                    Object.entries(healthCheckData).map(([key, value]) => {
+                                        if (typeof value === 'string') {
+                                            return (
+                                                <div key={key}>
+                                                    <TextOutput
+                                                        label={`${value === 'working' ? '✅ ' : '❌ '} ${key}`}
+                                                        value={value}
+                                                    />
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })
+                                )}
+                            </Modal>
+                        )}
                         <div>
                             {user.displayName}
                         </div>

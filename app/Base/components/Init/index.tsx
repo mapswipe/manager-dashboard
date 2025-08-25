@@ -4,10 +4,12 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { isDefined } from '@togglecorp/fujs';
+import { type } from 'arktype';
 import { gql } from 'urql';
 
 import PreloadMessage from '#base/components/PreloadMessage';
 import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';
+import HealthCheckContext, { HealthCheckData } from '#base/context/HealthCheckContext';
 import TileServerContext, { defaultTileServersValue } from '#base/context/TileServerContext';
 import UserContext from '#base/context/UserContext';
 import {
@@ -110,21 +112,34 @@ function Init(props: Props) {
         children,
     } = props;
 
-    const [csrfReady, setCsrfReady] = React.useState(false);
     const { authenticated, setUser } = React.useContext(UserContext);
-    const [ready, setReady] = useState(authenticated);
+    const [healthCheckData, setHealthCheckData] = useState<HealthCheckData>();
+
+    const [csrfReady, setCsrfReady] = React.useState(false);
+    const [useDetailsReady, setUserDetailsReady] = useState(authenticated);
 
     useEffect(() => {
         async function healthCheck() {
             try {
-                await fetch(
+                const res = await fetch(
                     `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/health-check/?format=json`,
                     { credentials: 'include' },
                 );
+                const serverResponse = await res.json();
+
+                const healthData = type.object.as<HealthCheckData>()(serverResponse);
+
+                if (healthData instanceof type.errors) {
+                    // eslint-disable-next-line no-console
+                    console.error(healthData.summary);
+                } else {
+                    setHealthCheckData(healthData);
+                }
             } catch (ex) {
                 // eslint-disable-next-line no-console
                 console.error('Error getting health check', ex);
             }
+
             setCsrfReady(true);
         }
         healthCheck();
@@ -152,7 +167,7 @@ function Init(props: Props) {
                 setUser(undefined);
             }
 
-            setReady(true);
+            setUserDetailsReady(true);
         });
     }, [csrfReady, authenticated, meResponseLoading, meResponseData, setUser]);
 
@@ -167,7 +182,7 @@ function Init(props: Props) {
         pause: !csrfReady,
     });
 
-    if (!ready || !csrfReady || tileServersLoading) {
+    if (!useDetailsReady || !csrfReady || tileServersLoading) {
         return (
             <PreloadMessage
                 className={preloadClassName}
@@ -177,15 +192,17 @@ function Init(props: Props) {
     }
 
     return (
-        <TileServerContext.Provider
-            value={tileServersResponse?.tileServers ?? defaultTileServersValue}
-        >
-            <EnumsContext.Provider
-                value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+        <HealthCheckContext.Provider value={healthCheckData}>
+            <TileServerContext.Provider
+                value={tileServersResponse?.tileServers ?? defaultTileServersValue}
             >
-                {children}
-            </EnumsContext.Provider>
-        </TileServerContext.Provider>
+                <EnumsContext.Provider
+                    value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+                >
+                    {children}
+                </EnumsContext.Provider>
+            </TileServerContext.Provider>
+        </HealthCheckContext.Provider>
     );
 }
 export default Init;
