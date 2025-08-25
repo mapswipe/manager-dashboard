@@ -52,6 +52,7 @@ export interface Props {
     withContentBackgroundAndPadding?: boolean;
     withBackground?: boolean;
     withShadow?: boolean;
+    withMinHeight?: boolean;
 }
 
 function Container(props: Props) {
@@ -89,6 +90,7 @@ function Container(props: Props) {
         withPadding,
         withBackground,
         withShadow,
+        withMinHeight,
         withContentBackgroundAndPadding,
     } = props;
 
@@ -115,6 +117,7 @@ function Container(props: Props) {
                 styles.container,
                 withBackground && styles.withBackground,
                 withShadow && styles.withShadow,
+                withMinHeight && styles.withMinHeight,
                 className,
             )}
             spacing={spacing}

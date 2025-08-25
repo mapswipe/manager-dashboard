@@ -75,9 +75,7 @@ function UserSelectInput<K extends string>(props: SelectInputProps<K>) {
         (): GetUserQueryVariables => (
             debouncedSearchText ? {
                 filters: {
-                    displayName: {
-                        iContains: debouncedSearchText,
-                    },
+                    displayName: debouncedSearchText,
                 },
             } : {
                 order: {

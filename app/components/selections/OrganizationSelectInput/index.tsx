@@ -75,9 +75,7 @@ function OrganizationSelectInput<K extends string>(props: SelectInputProps<K>) {
         (): GetOrganizationQueryVariables => (
             debouncedSearchText ? {
                 filters: {
-                    name: {
-                        iContains: debouncedSearchText,
-                    },
+                    name: debouncedSearchText,
                 },
             } : {
                 order: {

@@ -20,6 +20,7 @@ import Popup from '#components/Popup';
 import RawInput from '#components/RawInput';
 import useBlurEffect from '#hooks/useBlurEffect';
 import useKeyboard from '#hooks/useKeyboard';
+import { SpacingType } from '#utils/styles';
 
 import List from '../List';
 import EmptyOptions from './EmptyOptions';
@@ -84,6 +85,7 @@ export type SelectInputContainerProps<
     persistentOptionPopup?: boolean;
     placeholder?: string;
     valueDisplay: string | undefined;
+    spacing?: SpacingType;
 
     hasValue: boolean;
     nonClearable?: boolean;
@@ -139,6 +141,7 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         onDropdownShownChange,
         totalOptionsCount,
         hasValue,
+        spacing,
     } = props;
 
     const inputId = useId();
@@ -359,6 +362,7 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
                 label={label}
                 readOnly={readOnly}
                 inputId={inputId}
+                spacing={spacing}
                 input={(
                     <RawInput
                         id={inputId}

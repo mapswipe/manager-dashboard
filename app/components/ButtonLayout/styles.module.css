@@ -9,7 +9,6 @@
     background-color: var(--background-color);
     width: fit-content;
     line-height: 1;
-
     color: var(--text-color);
 
     &.color-variant-text {

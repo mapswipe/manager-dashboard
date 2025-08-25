@@ -49,6 +49,7 @@ interface Props {
     name: string;
     createdAt: string;
     createdBy: string;
+    membersCount: number;
 }
 
 const keySelector = (item: ContibutorTeamMemberType) => item.id;
@@ -59,6 +60,7 @@ function TeamListItem(props: Props) {
         name,
         createdAt,
         createdBy,
+        membersCount: membersCountFromProps,
     } = props;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
@@ -97,7 +99,8 @@ function TeamListItem(props: Props) {
         },
     ], []);
 
-    const membersCount = userMemberResponse?.contributorTeam.membersCount ?? 0;
+    const membersCount = userMemberResponse?.contributorTeam.membersCount
+        ?? membersCountFromProps;
 
     return (
         <ExpandableContainer

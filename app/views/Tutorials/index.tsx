@@ -93,7 +93,7 @@ function Tutorials(props: Props) {
     }] = useTutorialsListQuery({
         variables: {
             filters: {
-                name: { iContains: debouncedSearchText },
+                name: debouncedSearchText,
                 status: { exact: selectedTutorialStat },
             },
             pagination: {
@@ -156,6 +156,8 @@ function Tutorials(props: Props) {
                     <Button
                         name={undefined}
                         onClick={handleClearFilterButtonClick}
+                        colorVariant="danger"
+                        spacing="sm"
                     >
                         Clear filters
                     </Button>
@@ -163,13 +165,16 @@ function Tutorials(props: Props) {
             )}
         >
             <Container
-                footer={`Showing ${totalItems} of ${tutorialResponse?.tutorials.totalCount} tutorial`}
+                footer={`Showing ${totalItems} of ${totalCount} tutorial`}
                 pending={pending}
                 filtered={filtersApplied}
+                spacing="lg"
                 empty={totalCount === 0}
                 emptyMessage="No tutorial found!"
                 filteredEmptyMessage="No matching tutorial found!"
-                spacing="lg"
+                withBackground={totalCount === 0}
+                withPadding={totalCount === 0}
+                withMinHeight={totalCount === 0}
                 footerActions={(
                     <Pager
                         pagePerItem={pagePerItem}

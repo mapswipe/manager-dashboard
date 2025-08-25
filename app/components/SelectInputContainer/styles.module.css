@@ -1,6 +1,5 @@
 .popup {
-    padding-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
 
     .popup-content {
         display: flex;

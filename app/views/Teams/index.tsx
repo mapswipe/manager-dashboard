@@ -63,7 +63,7 @@ function Teams(props: Props) {
     }] = useTeamsListQuery({
         variables: {
             filters: {
-                name: { iContains: debouncedSearchText },
+                name: debouncedSearchText,
             },
             offset: (activePage - 1) * pagePerItem,
             limit: pagePerItem,
@@ -93,6 +93,8 @@ function Teams(props: Props) {
                     <Button
                         name={undefined}
                         onClick={setSearchText}
+                        colorVariant="danger"
+                        spacing="sm"
                     >
                         Clear filters
                     </Button>
@@ -100,13 +102,16 @@ function Teams(props: Props) {
             )}
         >
             <Container
-                footer={`Showing ${totalItems} of ${teamsResponse?.contributorTeams.totalCount} teams`}
+                footer={`Showing ${totalItems} of ${totalCount} teams`}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}
                 emptyMessage="No team found!"
                 filteredEmptyMessage="No matching team found!"
                 spacing="lg"
+                withBackground={totalCount === 0}
+                withPadding={totalCount === 0}
+                withMinHeight={totalCount === 0}
                 footerActions={(
                     <Pager
                         pagePerItem={pagePerItem}
@@ -122,6 +127,7 @@ function Teams(props: Props) {
                     <TeamListItem
                         key={team.id}
                         id={team.id}
+                        membersCount={team.membersCount}
                         name={team.name}
                         createdAt={team.createdAt}
                         createdBy={team.createdBy.displayName}

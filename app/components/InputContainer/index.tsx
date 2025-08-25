@@ -2,6 +2,7 @@ import { _cs } from '@togglecorp/fujs';
 
 import InlineLayout from '#components/InlineLayout';
 import InputContainerLayout, { type Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
+import { SpacingType } from '#utils/styles';
 
 import styles from './styles.module.css';
 
@@ -10,6 +11,7 @@ export interface Props extends Omit<InputContainerLayoutProps, 'children'> {
     actions?: React.ReactNode;
     input: React.ReactNode;
     inputSectionRef?: React.RefObject<HTMLDivElement>;
+    spacing?: SpacingType;
 }
 
 function InputContainer(props: Props) {
@@ -19,6 +21,7 @@ function InputContainer(props: Props) {
         actions,
         input,
         inputSectionRef,
+        spacing,
         ...inputContainerLayoutProps
     } = props;
 
@@ -34,7 +37,8 @@ function InputContainer(props: Props) {
                 start={icons}
                 end={actions}
                 withPadding
-                spacing="sm"
+                spacing={spacing}
+                spacingOffset={-1}
             >
                 {input}
             </InlineLayout>

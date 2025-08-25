@@ -203,6 +203,8 @@ function Projects(props: Props) {
                     <Button
                         name={undefined}
                         onClick={handleClearFilterButtonClick}
+                        colorVariant="danger"
+                        spacing="sm"
                     >
                         Clear filters
                     </Button>
@@ -214,6 +216,9 @@ function Projects(props: Props) {
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}
+                withBackground={totalCount === 0}
+                withPadding={totalCount === 0}
+                withMinHeight={totalCount === 0}
                 emptyMessage="No projects found!"
                 filteredEmptyMessage="No matching projects found!"
                 spacing="lg"

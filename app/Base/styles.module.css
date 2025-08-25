@@ -110,19 +110,21 @@ p {
     --color-input-border: rgba(0, 0, 0, 0.1);
     --color-active-input-border: var(--color-accent);
 
-    --font-size-2xs: 0.625rem;
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-md: 1rem;
-    --font-size-lg: 1.25rem;
-    --font-size-xl: 1.5rem;
-    --font-size-2xl: 1.75rem;
-    --font-size-3xl: 2rem;
-    --font-size-4xl: 2.25rem;
+    --font-size-base: 1rem;
+
+    --font-size-2xs: calc(var(--font-size-base) * 0.625);
+    --font-size-xs: calc(var(--font-size-base) * 0.75);
+    --font-size-sm: calc(var(--font-size-base) * 0.875);
+    --font-size-md: calc(var(--font-size-base) * 1);
+    --font-size-lg: calc(var(--font-size-base) * 1.25);
+    --font-size-xl: calc(var(--font-size-base) * 1.5);
+    --font-size-2xl: calc(var(--font-size-base) * 1.75);
+    --font-size-3xl: calc(var(--font-size-base) * 2);
+    --font-size-4xl: calc(var(--font-size-base) * 2.25);
 
     --font-weight-light: 350;
     --font-weight-medium: 400;
-    --font-weight-bold: 700;
+    --font-weight-bold: 600;
 
     --opacity-disabled-element: 0.5;
 
@@ -166,4 +168,8 @@ p {
 
     --opacity-watermark: 0.3;
     --color-text-disabled: rgba(0, 0, 0, .3);
+}
+
+body {
+    font-size: var(--font-size-md);
 }
