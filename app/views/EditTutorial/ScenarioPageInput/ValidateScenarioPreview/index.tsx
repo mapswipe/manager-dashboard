@@ -31,7 +31,7 @@ const layerOptions: Omit<LineLayerSpecification, 'id' | 'source'> = {
 interface Props {
     className?: string;
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
-    lookFor: string | undefined;
+    projectInstruction: string | undefined | null;
     scenario: PartialScenarioPageInputFields | undefined;
     customOptions: PartialCustomOptionInputFields[] | undefined;
 }
@@ -41,7 +41,7 @@ function ValidateScenarioPreview(props: Props) {
         className,
         scenario,
         tileServerProperty,
-        lookFor,
+        projectInstruction,
         customOptions,
     } = props;
 
@@ -69,7 +69,7 @@ function ValidateScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.validateScenarioPreview, className)}>
             <MobilePreview
-                heading={`Does the shape outline a ${lookFor}?`}
+                heading={projectInstruction}
                 popupIcons={<Icon value={scenario?.instructionsIcon} />}
                 popupTitle={scenario?.instructionsTitle || '{title}'}
                 popupDescription={scenario?.instructionsDescription || '{description}'}

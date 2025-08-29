@@ -50,6 +50,7 @@ import {
     useTutorialDetailsQuery,
     useTutorialProjectDetailQuery,
     useUpdateTutorialMutation,
+    useUpdateTutorialStatusMutation,
     ValidateImageTutorialTaskPropertyInput,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
@@ -69,7 +70,7 @@ import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPrope
 import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
-import tutorialUpdate, {
+import tutorialUpdateSchema, {
     PartialTutorialUpdateInputFields,
     TutorialFormContext,
 } from './schema';
@@ -272,6 +273,11 @@ function NewTutorial(props: Props) {
         updateTutorial,
     ] = useUpdateTutorialMutation();
 
+    const [
+        { fetching: updateTutorialStatusPending },
+        updateTutorialStatus,
+    ] = useUpdateTutorialStatusMutation();
+
     const [{
         // fetching: tutorialDataPending,
         data: tutorialData,
@@ -294,7 +300,7 @@ function NewTutorial(props: Props) {
         validate,
         setError,
     } = useForm(
-        tutorialUpdate,
+        tutorialUpdateSchema,
         { value: defaultTutorialCreateFormValue },
         tutorialFormContext,
     );
@@ -877,7 +883,7 @@ function NewTutorial(props: Props) {
         }
 
         try {
-            const result = await updateTutorial({
+            const result = await updateTutorialStatus({
                 data: {
                     clientId: tutorialData.tutorial.clientId,
                     status: newStatus,
@@ -891,7 +897,7 @@ function NewTutorial(props: Props) {
 
             if (isNotDefined(result.data)
                 // eslint-disable-next-line no-underscore-dangle
-                || result.data.updateTutorial.__typename !== 'TutorialTypeMutationResponseType'
+                || result.data.updateTutorialStatus.__typename !== 'TutorialTypeMutationResponseType'
             ) {
                 alert.show(
                     'Failed to create the Tutorial!',
@@ -908,7 +914,7 @@ function NewTutorial(props: Props) {
                 ok,
                 errors,
                 result: updateTutorialResult,
-            } = result.data.updateTutorial;
+            } = result.data.updateTutorialStatus;
 
             if (!ok || !updateTutorialResult) {
                 alert.show(
@@ -928,9 +934,9 @@ function NewTutorial(props: Props) {
         }
 
         setNewStatus(undefined);
-    }, [alert, setError, newStatus, updateTutorial, tutorialData]);
+    }, [tutorialData, updateTutorialStatus, newStatus, alert, setError]);
 
-    const inputsDisabled = updateTutorialPending;
+    const inputsDisabled = updateTutorialPending || updateTutorialStatusPending;
     const actionsDisabled = inputsDisabled;
 
     if (isNotDefined(tutorialIdFromParams)) {
@@ -1013,7 +1019,11 @@ function NewTutorial(props: Props) {
                             spacing="sm"
                         >
                             <TextOutput
-                                label="Look for"
+                                label="Instruction"
+                                value={projectDetailResponse.project.projectInstruction}
+                            />
+                            <TextOutput
+                                label="Look for (legacy)"
                                 value={projectDetailResponse.project.lookFor}
                             />
                             <TextOutput
@@ -1105,9 +1115,8 @@ function NewTutorial(props: Props) {
                         onChange={setInformationPageFieldValue}
                         onRemove={removeInformationPage}
                         error={getErrorObject(informationPageErrors?.[informationPage.clientId])}
-                        lookForValue={projectDetailResponse?.project.lookFor}
+                        projectInstruction={projectDetailResponse?.project.projectInstruction}
                         tutorialId={tutorialIdFromParams}
-                        projectType={projectDetailResponse?.project.projectType}
                     />
                 ))}
             </Container>

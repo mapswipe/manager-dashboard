@@ -23,10 +23,6 @@ function NonFieldError<T>(props: Props<T>) {
         error,
     } = props;
 
-    if (!error) {
-        return null;
-    }
-
     const errorMessage = getErrorObject(error)?.[nonFieldError];
 
     if (isNotDefined(errorMessage)) {

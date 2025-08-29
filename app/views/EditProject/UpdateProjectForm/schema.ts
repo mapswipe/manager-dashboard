@@ -43,8 +43,13 @@ type ProjectTypeSpecificFormFields = ReturnType<ProjectSpecificFieldsFormSchema[
 const projectUpdateFormSchema: ProjectUpdateFormSchema = {
     fields: (_, __, context): ProjectUpdateFormFields => ({
         clientId: {},
+        projectInstruction: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
         lookFor: {
             required: true,
+            requiredValidation: requiredStringCondition,
         },
         projectNumber: {
             required: true,
@@ -66,7 +71,6 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
         groupSize: {},
         maxTasksPerUser: {},
         team: {},
-        status: {},
         description: {},
         image: {},
         projectTypeSpecifics: {

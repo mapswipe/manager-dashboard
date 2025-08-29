@@ -151,8 +151,12 @@ function ProjectListItem(props: Props) {
                                 value={value.createdBy.displayName}
                             />
                             <TextOutput
+                                label="Instruction"
+                                value={value.projectInstruction}
+                            />
+                            <TextOutput
                                 icon={<IoEye />}
-                                label="Look for"
+                                label="Look for (legacy)"
                                 value={value.lookFor}
                             />
                             {isDefined(value.team) && (

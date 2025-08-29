@@ -33,7 +33,7 @@ interface Props {
     className?: string;
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
     overlayTileServerProperty: PartialForm<ProjectOverlayTileServerConfig> | undefined;
-    lookFor: string | undefined;
+    projectInstruction: string | undefined | null;
     scenario: PartialScenarioPageInputFields | undefined;
 }
 
@@ -41,7 +41,7 @@ function CompletenessScenarioPreview(props: Props) {
     const {
         className,
         scenario,
-        lookFor,
+        projectInstruction,
         tileServerProperty,
         overlayTileServerProperty,
     } = props;
@@ -70,8 +70,7 @@ function CompletenessScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.completenessScenarioPreview, className)}>
             <MobilePreview
-                heading="You are looking for:"
-                headerDescription={lookFor || '{look for}'}
+                heading={projectInstruction}
                 popupIcons={<Icon value={preview?.icon} />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}

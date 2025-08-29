@@ -110,7 +110,7 @@ p {
     --color-input-border: rgba(0, 0, 0, 0.1);
     --color-active-input-border: var(--color-accent);
 
-    --font-size-base: 1rem;
+    --font-size-base: 0.875rem;
 
     --font-size-2xs: calc(var(--font-size-base) * 0.625);
     --font-size-xs: calc(var(--font-size-base) * 0.75);

@@ -48,8 +48,8 @@ function Checkbox<N>(props: Props<N>) {
     const className = _cs(
         styles.checkbox,
         classNameFromProps,
-        // indeterminate && styles.indeterminate,
-        // !indeterminate && value && styles.checked,
+        indeterminate && styles.indeterminate,
+        !indeterminate && value && styles.checked,
         disabled && styles.disabled,
         readOnly && styles.readOnly,
     );

@@ -39,7 +39,7 @@ const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
 interface Props {
     className?: string;
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
-    lookFor: string | undefined;
+    projectInstruction: string | undefined | null;
     scenario: PartialScenarioPageInputFields | undefined;
 }
 
@@ -47,7 +47,7 @@ function FindScenarioPreview(props: Props) {
     const {
         className,
         scenario,
-        lookFor,
+        projectInstruction,
         tileServerProperty,
     } = props;
 
@@ -67,8 +67,7 @@ function FindScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.findScenarioPreview, className)}>
             <MobilePreview
-                heading="You are looking for:"
-                headerDescription={lookFor || '{look for}'}
+                heading={projectInstruction}
                 popupIcons={<Icon value={preview?.icon} />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}

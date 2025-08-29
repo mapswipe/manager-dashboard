@@ -14,10 +14,10 @@ import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
+import Checklist from '#components/Checklist';
 import Container from '#components/Container';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
-import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import {
     ProjectStatusEnum,
@@ -68,6 +68,7 @@ query ProjectsList($filters: ProjectFilter, $offset: Int!, $limit: Int) {
             groupSize
             isFeatured
             lookFor
+            projectInstruction
             maxTasksPerUser
             name
             topic
@@ -110,11 +111,11 @@ function Projects(props: Props) {
         className,
     } = props;
 
-    const [selectedProjectStat, setSelectedProjectStat] = useInputState<
-        ProjectStatusEnum | undefined
+    const [selectedProjectStats, setSelectedProjectStats] = useInputState<
+        ProjectStatusEnum[] | undefined
     >(undefined);
-    const [selectedProjectType, setSelectedProjectType] = useInputState<
-        ProjectTypeEnum | undefined
+    const [selectedProjectTypes, setSelectedProjectTypes] = useInputState<
+        ProjectTypeEnum[] | undefined
     >(undefined);
     const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
 
@@ -127,21 +128,21 @@ function Projects(props: Props) {
         fetching: pending,
     }] = useProjectsListQuery({
         variables: {
-            filters: {
-                name: debouncedSearchText,
-                status: { exact: selectedProjectStat },
-                projectType: { exact: selectedProjectType },
-            },
             offset: (activePage - 1) * pagePerItem,
             limit: pagePerItem,
+            filters: {
+                name: debouncedSearchText,
+                status: { inList: selectedProjectStats },
+                projectType: { inList: selectedProjectTypes },
+            },
         },
     });
 
     const handleClearFilterButtonClick = useCallback(() => {
-        setSelectedProjectStat(undefined);
-        setSelectedProjectType(undefined);
+        setSelectedProjectStats(undefined);
+        setSelectedProjectTypes(undefined);
         setSearchText(undefined);
-    }, [setSearchText, setSelectedProjectType, setSelectedProjectStat]);
+    }, [setSearchText, setSelectedProjectTypes, setSelectedProjectStats]);
 
     const totalItems = projectsResponse?.projects.results.length ?? 0;
 
@@ -154,8 +155,8 @@ function Projects(props: Props) {
     const totalCount = projectsResponse?.projects.totalCount ?? 0;
 
     const filtersApplied = isTruthyString(debouncedSearchText)
-        || isDefined(selectedProjectStat)
-        || isDefined(selectedProjectType);
+        || (isDefined(selectedProjectStats) && selectedProjectStats.length !== 0)
+        || (isDefined(selectedProjectTypes) && selectedProjectTypes.length !== 0);
 
     return (
         <PageLayout
@@ -180,25 +181,23 @@ function Projects(props: Props) {
                         onChange={setSearchText}
                         placeholder="Search by title"
                     />
-                    <RadioInput
+                    <Checklist
                         label="Project type"
                         name={undefined}
                         options={projectTypeOptions ?? []}
-                        value={selectedProjectType}
-                        onChange={setSelectedProjectType}
+                        value={selectedProjectTypes}
+                        onChange={setSelectedProjectTypes}
                         keySelector={keySelector}
                         labelSelector={labelSelector}
-                        radioListLayout="block"
                     />
-                    <RadioInput
+                    <Checklist
                         label="Project status"
                         name={undefined}
                         options={projectStatusOptions ?? []}
-                        value={selectedProjectStat}
-                        onChange={setSelectedProjectStat}
+                        value={selectedProjectStats}
+                        onChange={setSelectedProjectStats}
                         keySelector={keySelector}
                         labelSelector={labelSelector}
-                        radioListLayout="block"
                     />
                     <Button
                         name={undefined}

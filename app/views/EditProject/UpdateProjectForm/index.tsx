@@ -33,6 +33,7 @@ import {
     ProjectUpdateInput,
     useProjectStatusQuery,
     useUpdateProjectMutation,
+    useUpdateProjectStatusMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert.ts';
 import useOptions from '#hooks/useOptions';
@@ -119,6 +120,11 @@ function UpdateProjectForm(props: Props) {
     ]);
 
     const [
+        { fetching: updateProjectStatusPending },
+        updateProjectStatus,
+    ] = useUpdateProjectStatusMutation();
+
+    const [
         { fetching: updateProjectPending },
         updateProject,
     ] = useUpdateProjectMutation();
@@ -187,11 +193,13 @@ function UpdateProjectForm(props: Props) {
         const {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             id,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            status,
+
             projectType,
             requestingOrganization,
             projectTypeSpecifics,
             image,
-            status,
             team,
             tutorial,
             ...other
@@ -211,7 +219,7 @@ function UpdateProjectForm(props: Props) {
             image: image?.id,
             team: team?.id,
             tutorial: tutorial?.id,
-            status,
+            // status,
             projectTypeSpecifics: {
                 // TODO: replace with the default value
                 [projectTypeToKeyMap[projectType]]: projectTypeSpecifics
@@ -298,19 +306,70 @@ function UpdateProjectForm(props: Props) {
         [validate, setError, handleUpdateDraft],
     );
 
-    const handleStartProcessing = useCallback((
-        submittedFormValues: PartialProjectUpdateInput,
-    ) => {
-        const finalValues = { ...submittedFormValues } as ProjectUpdateInput;
-        finalValues.status = ProjectStatusEnum.MarkedAsReady;
+    const handleSubmitForProcessingClick = useCallback(async () => {
+        try {
+            const result = await updateProjectStatus({
+                id: projectData.project.id,
+                data: {
+                    status: ProjectStatusEnum.MarkedAsReady,
+                    clientId: projectData.project.clientId,
+                },
+            });
 
-        submitUpdateForm(finalValues);
-    }, [submitUpdateForm]);
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
 
-    const handleStartProcessingButtonClick = useMemo(
-        () => createSubmitHandler(validate, setError, handleStartProcessing),
-        [validate, setError, handleStartProcessing],
-    );
+            if (
+                isNotDefined(result.data)
+                // eslint-disable-next-line no-underscore-dangle
+                || result.data.updateProjectStatus.__typename !== 'ProjectTypeMutationResponseType'
+            ) {
+                alert.show(
+                    'Failed to update the Project status!',
+                    {
+                        description: 'Unexpectected response from the server!',
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
+            const {
+                ok,
+                errors,
+                // result,
+            } = result.data.updateProjectStatus;
+
+            if (!ok) {
+                alert.show(
+                    'Failed to update the Project status!',
+                    {
+                        description: 'Please fix the errors and try again!',
+                        variant: 'danger',
+                    },
+                );
+
+                setError(transformErrors(errors));
+
+                return;
+            }
+
+            alert.show(
+                'Project status updated successfully!',
+                { variant: 'success' },
+            );
+        } catch (apolloError) {
+            alertCombinedError(apolloError, alert);
+        }
+    }, [
+        alert,
+        projectData.project.clientId,
+        projectData.project.id,
+        setError,
+        updateProjectStatus,
+    ]);
 
     const setProjectSpecificFieldValue = useFormObject<'projectTypeSpecifics', PartialProjectTypeSpecificInput>(
         'projectTypeSpecifics',
@@ -348,7 +407,7 @@ function UpdateProjectForm(props: Props) {
         defaultCompletenessSpecificFormValue,
     );
 
-    const pending = updateProjectPending;
+    const pending = updateProjectPending || updateProjectStatusPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
         || projectData.project.status === ProjectStatusEnum.Failed
@@ -396,13 +455,13 @@ function UpdateProjectForm(props: Props) {
                     </Button>
                     <Button
                         name={undefined}
-                        onClick={handleStartProcessingButtonClick}
+                        onClick={handleSubmitForProcessingClick}
                         disabled={baseInputsDisabled}
                         colorVariant="accent"
                         styleVariant="filled"
                         end={<MdArrowForward />}
                     >
-                        Save & Process Project
+                        Submit for Processing
                     </Button>
                 </>
             )}

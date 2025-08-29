@@ -31,6 +31,7 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
                 id
                 isFeatured
                 lookFor
+                projectInstruction
                 maxTasksPerUser
                 name
                 processingStatus
@@ -57,8 +58,28 @@ mutation UpdateProject($id: ID!, $data: ProjectUpdateInput!) {
                     id
                     name
                 }
-                status
                 verificationNumber
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
+
+export const UPDATE_STATUS_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
+mutation UpdateProjectStatus($id: ID!, $data: ProjectStatusUpdateInput!) {
+    updateProjectStatus(data: $data, pk: $id) {
+        ... on ProjectTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                clientId
+                id
+                status
             }
         }
         ... on OperationInfo {

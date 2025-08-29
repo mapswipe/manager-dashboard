@@ -81,6 +81,10 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         },
         requestingOrganization: {
         },
+        projectInstruction: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
         lookFor: {
             required: true,
             requiredValidation: requiredStringCondition,

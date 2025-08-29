@@ -248,7 +248,11 @@ function NewTutorial(props: Props) {
                             spacing="sm"
                         >
                             <TextOutput
-                                label="Look for"
+                                label="Instruction"
+                                value={projectDetailResponse.project.projectInstruction}
+                            />
+                            <TextOutput
+                                label="Look for (legacy)"
                                 value={projectDetailResponse.project.lookFor}
                             />
                             <TextOutput
