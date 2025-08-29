@@ -11,11 +11,11 @@ import {
 
 import useAlert from '#hooks/useAlert';
 
-interface Error {
+interface ServerError {
     array_errors: unknown[] | null,
     client_id: string | null,
     field: string,
-    messages: unknown[] | null,
+    messages: string | string[] | null,
     object_errors: unknown[] | null,
     pydantic_errors: {
         input: unknown;
@@ -25,10 +25,10 @@ interface Error {
     }[],
 }
 
-export function transformErrors(errors: Error[]) {
+export function transformErrors(errors: ServerError[]) {
     const mappedErrors = listToMap(
         errors,
-        ({ field }) => field ?? nonFieldError,
+        ({ field }) => field,
         ({
             messages,
             pydantic_errors,
@@ -36,6 +36,10 @@ export function transformErrors(errors: Error[]) {
             object_errors,
         }) => {
             if (isDefined(messages)) {
+                if (Array.isArray(messages)) {
+                    return messages.join(', ');
+                }
+
                 return messages;
             }
 
@@ -62,6 +66,11 @@ export function transformErrors(errors: Error[]) {
             };
         },
     );
+
+    if (isDefined(mappedErrors.nonFieldErrors)) {
+        // @ts-expect-error fix typing
+        mappedErrors[nonFieldError] = mappedErrors.nonFieldErrors;
+    }
 
     return mappedErrors;
 }

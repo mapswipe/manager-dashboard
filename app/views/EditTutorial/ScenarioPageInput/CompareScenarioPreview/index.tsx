@@ -40,7 +40,7 @@ interface Props {
     className?: string;
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
     tileServerBProperty: ProjectRasterTileServerConfig | undefined;
-    lookFor: string | undefined;
+    projectInstruction: string | undefined | null;
     scenario: PartialScenarioPageInputFields | undefined;
 }
 
@@ -48,7 +48,7 @@ function CompareScenarioPreview(props: Props) {
     const {
         className,
         scenario,
-        lookFor,
+        projectInstruction,
         tileServerProperty,
         tileServerBProperty,
     } = props;
@@ -69,8 +69,7 @@ function CompareScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.compareScenarioPreview, className)}>
             <MobilePreview
-                heading="You are looking for:"
-                headerDescription={lookFor || '{look for}'}
+                heading={projectInstruction}
                 popupIcons={<Icon value={preview?.icon} />}
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}

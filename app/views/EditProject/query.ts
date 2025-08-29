@@ -14,6 +14,7 @@ query ProjectDetails($id: ID!) {
         id
         isFeatured
         lookFor
+        projectInstruction
         maxTasksPerUser
         name
         topic

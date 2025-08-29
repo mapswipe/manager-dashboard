@@ -20,7 +20,7 @@ import styles from './styles.module.css';
 
 interface Props {
     className?: string;
-    lookFor: string | undefined;
+    projectInstruction: string | undefined | null;
     scenario: PartialScenarioPageInputFields | undefined;
     customOptions: PartialCustomOptionInputFields[] | undefined;
 }
@@ -29,7 +29,7 @@ function ValidateImageScenarioPreview(props: Props) {
     const {
         className,
         scenario,
-        lookFor,
+        projectInstruction,
         customOptions,
     } = props;
 
@@ -91,7 +91,7 @@ function ValidateImageScenarioPreview(props: Props) {
     return (
         <div className={_cs(styles.validateImageScenarioPreview, className)}>
             <MobilePreview
-                heading={`Does the shape outline a ${lookFor}?`}
+                heading={projectInstruction}
                 popupIcons={<Icon value={scenario?.instructionsIcon} />}
                 popupTitle={scenario?.instructionsTitle || '{title}'}
                 popupDescription={scenario?.instructionsDescription || '{description}'}

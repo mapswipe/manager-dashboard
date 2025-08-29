@@ -23,6 +23,7 @@ type ProjectGeneralInputFields = Pick<
 ProjectCreateInput | ProjectUpdateInput,
 'description'
 | 'topic'
+| 'projectInstruction'
 | 'lookFor'
 | 'additionalInfoUrl'
 | 'projectNumber'
@@ -115,11 +116,20 @@ function ProjectGeneralInputs(props: Props) {
                     disabled={disabled}
                 />
                 <TextInput
-                    label="Look for"
+                    label="Instruction"
+                    name="projectInstruction"
+                    value={value?.projectInstruction}
+                    onChange={setFieldValue}
+                    error={error?.projectInstruction}
+                    disabled={disabled}
+                />
+                <TextInput
+                    label="Look for (legacy)"
                     name="lookFor"
                     value={value?.lookFor}
                     onChange={setFieldValue}
                     error={error?.lookFor}
+                    hint="This field is used only for legacy app"
                     disabled={disabled}
                 />
                 <TeamSelectInput

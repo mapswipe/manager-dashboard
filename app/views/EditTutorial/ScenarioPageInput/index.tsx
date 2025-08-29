@@ -271,7 +271,7 @@ function ScenarioPageInput(props: Props) {
                 <FindScenarioPreview
                     scenario={value}
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    lookFor={projectData.lookFor}
+                    projectInstruction={projectData.projectInstruction}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
@@ -280,7 +280,7 @@ function ScenarioPageInput(props: Props) {
                     scenario={value}
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
                     tileServerBProperty={projectData.projectTypeSpecifics?.tileServerBProperty}
-                    lookFor={projectData.lookFor}
+                    projectInstruction={projectData.projectInstruction}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
@@ -290,7 +290,7 @@ function ScenarioPageInput(props: Props) {
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
                     overlayTileServerProperty={projectData
                         .projectTypeSpecifics?.overlayTileServerProperty}
-                    lookFor={projectData.lookFor}
+                    projectInstruction={projectData.projectInstruction}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
@@ -298,7 +298,7 @@ function ScenarioPageInput(props: Props) {
                 <ValidateScenarioPreview
                     scenario={value}
                     tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    lookFor={projectData.lookFor}
+                    projectInstruction={projectData.projectInstruction}
                     customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                 />
             )}
@@ -306,7 +306,7 @@ function ScenarioPageInput(props: Props) {
             {projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
                 <ValidateImageScenarioPreview
                     scenario={value}
-                    lookFor={projectData.lookFor}
+                    projectInstruction={projectData.projectInstruction}
                     customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                 />
             )}

@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import TutorialAssetPreview from '#components/domain/TutorialAssetPreview';
 import Heading from '#components/Heading';
 import InlineLayout from '#components/InlineLayout';
@@ -7,7 +5,6 @@ import MarkdownPreview from '#components/MarkdownPreview';
 import MobilePreview from '#components/MobilePreview';
 import {
     IconEnum,
-    ProjectTypeEnum,
     TutorialInformationPageBlockTypeEnum,
 } from '#generated/types/graphql';
 import { iconMapping } from '#utils/icon';
@@ -18,40 +15,23 @@ import styles from './styles.module.css';
 
 interface Props {
     value: PartialInformationPageInputFields;
-    lookFor: string | undefined;
-    projectType: ProjectTypeEnum | undefined;
+    projectInstruction: string | undefined | null;
+    // projectType: ProjectTypeEnum | undefined;
 }
 
 export default function InformationPagePreview(props: Props) {
     const {
         value,
-        lookFor,
-        projectType,
+        projectInstruction,
     } = props;
 
-    const heading = useMemo(() => {
-        if (projectType === ProjectTypeEnum.Validate) {
-            return `Does the shape outline a ${lookFor}?`;
-        }
-
-        return 'You are looking for:';
-    }, [lookFor, projectType]);
-
-    const description = useMemo(() => {
-        if (projectType === ProjectTypeEnum.Validate) {
-            return null;
-        }
-
-        return lookFor;
-    }, [lookFor, projectType]);
-
+    const heading = projectInstruction;
     const SwipeLeftIcon = iconMapping[IconEnum.SwipeLeft];
 
     return (
         <MobilePreview
             className={styles.informationPreview}
             heading={heading}
-            headerDescription={description}
             contentClassName={styles.content}
         >
             <Heading

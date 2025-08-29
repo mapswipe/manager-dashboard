@@ -31,14 +31,13 @@ export type TutorialUpdateFormSchema = ObjectSchema<
     TutorialFormContext
 >;
 
-const tutorialUpdate: TutorialUpdateFormSchema = {
+const tutorialUpdateSchema: TutorialUpdateFormSchema = {
     fields: (): ReturnType<TutorialUpdateFormSchema['fields']> => ({
         clientId: {},
         name: {
             required: true,
             requiredValidation: requiredStringCondition,
         },
-        status: {},
         informationPages: {
             keySelector: (informationPage) => informationPage.clientId,
             member: () => informationPageSchema,
@@ -50,4 +49,4 @@ const tutorialUpdate: TutorialUpdateFormSchema = {
     }),
 };
 
-export default tutorialUpdate;
+export default tutorialUpdateSchema;

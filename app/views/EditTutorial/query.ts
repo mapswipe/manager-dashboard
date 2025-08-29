@@ -124,6 +124,7 @@ query TutorialProjectDetail($projectId: ID!) {
     project(id: $projectId) {
         id
         lookFor
+        projectInstruction
         name
         projectType
         requestingOrganization {
@@ -150,6 +151,26 @@ mutation UpdateTutorial($id: ID!, $data: TutorialUpdateInput!) {
             ok
             result {
                 id
+                status
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
+
+export const UPDATE_TUTORIAL_STATUS_MUTATION = gql`
+mutation UpdateTutorialStatus($id: ID!, $data: TutorialStatusUpdateInput!) {
+    updateTutorialStatus(data: $data, pk: "") {
+        ... on TutorialTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                id
+                clientId
                 status
             }
         }

@@ -12,7 +12,7 @@ import Modal from '#components/Modal';
 import {
     ProjectStatusEnum,
     useUpdateProcessedProjectMutation,
-    useUpdateProjectMutation,
+    useUpdateProjectStatusMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
@@ -37,9 +37,9 @@ function ProjectActions(props: Props) {
     const alert = useAlert();
 
     const [
-        { fetching: updateProjectPending },
-        updateProject,
-    ] = useUpdateProjectMutation();
+        { fetching: updateProjectStatusPending },
+        updateProjectStatus,
+    ] = useUpdateProjectStatusMutation();
 
     const [
         { fetching: updateProcessedProjectPending },
@@ -56,7 +56,7 @@ function ProjectActions(props: Props) {
             || status === ProjectStatusEnum.MarkedAsReady
             || status === ProjectStatusEnum.Failed) {
             try {
-                const result = await updateProject({
+                const result = await updateProjectStatus({
                     id: projectId,
                     data: {
                         clientId,
@@ -71,10 +71,10 @@ function ProjectActions(props: Props) {
                 if (
                     isNotDefined(result.data)
                     // eslint-disable-next-line no-underscore-dangle
-                    || result.data.updateProject.__typename !== 'ProjectTypeMutationResponseType'
+                    || result.data.updateProjectStatus.__typename !== 'ProjectTypeMutationResponseType'
                 ) {
                     alert.show(
-                        'Failed to update the Project!',
+                        'Failed to update the Project status!',
                         {
                             description: 'Unexpectected response from the server!',
                             variant: 'danger',
@@ -88,7 +88,7 @@ function ProjectActions(props: Props) {
                     ok,
                     // errors,
                     // result,
-                } = result.data.updateProject;
+                } = result.data.updateProjectStatus;
 
                 if (!ok) {
                     alert.show(
@@ -153,7 +153,7 @@ function ProjectActions(props: Props) {
                 }
 
                 alert.show(
-                    'Project updated successfully!',
+                    'Project status updated successfully!',
                     { variant: 'success' },
                 );
             } catch (apolloError) {
@@ -162,9 +162,17 @@ function ProjectActions(props: Props) {
         }
 
         setNewStatus(undefined);
-    }, [alert, clientId, newStatus, projectId, status, updateProcessedProject, updateProject]);
+    }, [
+        alert,
+        clientId,
+        newStatus,
+        projectId,
+        status,
+        updateProcessedProject,
+        updateProjectStatus,
+    ]);
 
-    const actionsDisabled = updateProjectPending || updateProcessedProjectPending;
+    const actionsDisabled = updateProjectStatusPending || updateProcessedProjectPending;
 
     return (
         <>

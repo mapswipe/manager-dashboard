@@ -26,6 +26,7 @@ import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
 import InputError from '#components/InputError';
 import ListLayout from '#components/ListLayout';
+import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import TutorialSelectInput from '#components/selections/TutorialSelectInput';
 import {
@@ -34,6 +35,7 @@ import {
     ProjectDetailsQuery,
     ProjectStatusEnum,
     useUpdateProcessedProjectMutation,
+    useUpdateProjectStatusMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import useOptions from '#hooks/useOptions';
@@ -95,7 +97,6 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
                     id
                     name
                 }
-                status
                 verificationNumber
             }
         }
@@ -130,6 +131,11 @@ function UpdateProcessedProjectForm(props: Props) {
         updateProcessedProject,
     ] = useUpdateProcessedProjectMutation();
 
+    const [
+        { fetching: updateProjectStatusPending },
+        updateProjectStatus,
+    ] = useUpdateProjectStatusMutation();
+
     const projectContext = useMemo(() => ({
         projectType: projectData?.project.projectType,
     }), [projectData]);
@@ -157,9 +163,10 @@ function UpdateProcessedProjectForm(props: Props) {
             id,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectType,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            status,
             image,
             team,
-            status,
             requestingOrganization,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             projectTypeSpecifics,
@@ -181,7 +188,6 @@ function UpdateProcessedProjectForm(props: Props) {
             image: image?.id,
             tutorial: tutorial?.id,
             team: team?.id,
-            status,
             requestingOrganization: requestingOrganization.id,
         });
     }, [
@@ -250,16 +256,70 @@ function UpdateProcessedProjectForm(props: Props) {
         }
     }, [projectData.project.id, updateProcessedProject, setError, alert]);
 
-    const handlePublish = useCallback((submittedValue: PartialProcessedProjectUpdateInput) => {
-        const finalValues = { ...submittedValue } as ProcessedProjectUpdateInput;
-        finalValues.status = ProjectStatusEnum.Published;
-        submitUpdateProcessedForm(finalValues);
-    }, [submitUpdateProcessedForm]);
+    const handlePublishButtonClick = useCallback(async () => {
+        try {
+            const result = await updateProjectStatus({
+                id: projectData.project.id,
+                data: {
+                    status: ProjectStatusEnum.Published,
+                    clientId: projectData.project.clientId,
+                },
+            });
 
-    const handlePublishButtonClick = useMemo(
-        () => createSubmitHandler(validate, setError, handlePublish),
-        [validate, setError, handlePublish],
-    );
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            if (
+                isNotDefined(result.data)
+                // eslint-disable-next-line no-underscore-dangle
+                || result.data.updateProjectStatus.__typename !== 'ProjectTypeMutationResponseType'
+            ) {
+                alert.show(
+                    'Failed to update the Project status!',
+                    {
+                        description: 'Unexpectected response from the server!',
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
+            const {
+                ok,
+                errors,
+                // result,
+            } = result.data.updateProjectStatus;
+
+            if (!ok) {
+                alert.show(
+                    'Failed to update the Project status!',
+                    {
+                        description: 'Please fix the errors and try again!',
+                        variant: 'danger',
+                    },
+                );
+
+                setError(transformErrors(errors));
+
+                return;
+            }
+
+            alert.show(
+                'Project status updated successfully!',
+                { variant: 'success' },
+            );
+        } catch (apolloError) {
+            alertCombinedError(apolloError, alert);
+        }
+    }, [
+        updateProjectStatus,
+        projectData.project.id,
+        projectData.project.clientId,
+        alert,
+        setError,
+    ]);
 
     const handleUpdateBasicDetails = useCallback((
         submittedValue: PartialProcessedProjectUpdateInput,
@@ -273,7 +333,7 @@ function UpdateProcessedProjectForm(props: Props) {
         [validate, setError, handleUpdateBasicDetails],
     );
 
-    const pending = updateProcessedProjectPending;
+    const pending = updateProcessedProjectPending || updateProjectStatusPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
         || projectData.project.status === ProjectStatusEnum.Failed
@@ -311,7 +371,7 @@ function UpdateProcessedProjectForm(props: Props) {
                         styleVariant="filled"
                         end={<MdArrowForward />}
                     >
-                        Save & Publish Project
+                        Publish Project
                     </Button>
                 </>
             )}
@@ -321,6 +381,7 @@ function UpdateProcessedProjectForm(props: Props) {
                 />
             )}
         >
+            <NonFieldError error={error} />
             {projectData?.project.status === ProjectStatusEnum.Failed && (
                 <InputError>
                     There was an error while processing the project.
