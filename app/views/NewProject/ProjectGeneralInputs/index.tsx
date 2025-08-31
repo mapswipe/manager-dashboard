@@ -8,10 +8,10 @@ import {
 
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
+import MarkdownEditor from '#components/MarkdownEditor';
 import NumberInput from '#components/NumberInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
-import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
 import {
     ProjectCreateInput,
@@ -57,7 +57,6 @@ function ProjectGeneralInputs(props: Props) {
         <Container
             heading="General"
             withContentBackgroundAndPadding
-            withHeaderBorder
             spacing="lg"
         >
             <TextInput
@@ -86,13 +85,12 @@ function ProjectGeneralInputs(props: Props) {
                     disabled={disabled}
                 />
             </ListLayout>
-            <TextArea
+            <MarkdownEditor
                 label="Project description"
                 name="description"
                 value={value?.description}
                 onChange={setFieldValue}
                 error={error?.description}
-                rows={4}
                 disabled={disabled}
             />
             <ListLayout

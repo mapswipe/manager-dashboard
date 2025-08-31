@@ -17,7 +17,12 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container';
+import CompareScenarioPreview from '#components/domain/CompareScenarioPreview';
+import CompletenessScenarioPreview from '#components/domain/CompletenessScenarioPreview';
+import FindScenarioPreview from '#components/domain/FindScenarioPreview';
 import IconSelectInput from '#components/domain/IconSelectInput';
+import ValidateImageScenarioPreview from '#components/domain/ValidateImageScenarioPreview';
+import ValidateScenarioPreview from '#components/domain/ValidateScenarioPreview';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';
@@ -27,13 +32,8 @@ import {
     TutorialProjectDetailQuery,
 } from '#generated/types/graphql';
 
-import CompareScenarioPreview from './CompareScenarioPreview';
-import CompletenessScenarioPreview from './CompletenessScenarioPreview';
-import FindScenarioPreview from './FindScenarioPreview';
 import { PartialScenarioPageInputFields } from './schema';
 import TaskInput from './TaskInput';
-import ValidateImageScenarioPreview from './ValidateImageScenarioPreview';
-import ValidateScenarioPreview from './ValidateScenarioPreview';
 
 import styles from './styles.module.css';
 

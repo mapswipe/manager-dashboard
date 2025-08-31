@@ -12,7 +12,7 @@ import {
     defaultRasterTileServerInputValue,
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
-import NumberInput from '#components/NumberInput';
+import ZoomLevelSelectInput from '#components/ZoomLevelSelectInput';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
 import { PartialOverlayTileServerPropertyInputFields } from './OverlayTileServerPropertyInput/schema';
@@ -64,8 +64,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 disabled={disabled}
                 withoutPreview
             />
-            <NumberInput
-                label="Zoom level"
+            <ZoomLevelSelectInput
                 name="zoomLevel"
                 value={value?.zoomLevel}
                 onChange={setFieldValue}
@@ -78,6 +77,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
+                zoomLevel={value?.zoomLevel}
             />
             <OverlayTileServerPropertyInput
                 value={value?.overlayTileServerProperty}

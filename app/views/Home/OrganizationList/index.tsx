@@ -2,17 +2,14 @@ import {
     useCallback,
     useState,
 } from 'react';
-import { CgOrganisation } from 'react-icons/cg';
-import { FaEdit } from 'react-icons/fa';
 import {
-    IoAdd,
-    IoArchive,
-    IoCheckmark,
-} from 'react-icons/io5';
-import {
-    _cs,
-    isDefined,
-} from '@togglecorp/fujs';
+    PiArchive,
+    PiCheck,
+    PiFlagBold,
+    PiPencil,
+    PiPlus,
+} from 'react-icons/pi';
+import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
@@ -21,6 +18,7 @@ import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import OverflowMenu from '#components/OverflowMenu';
 import Pager from '#components/Pager';
+import Tag from '#components/Tag';
 import {
     useOrganizationListQuery,
     useUpdateOrganizationMutation,
@@ -39,8 +37,6 @@ import {
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 
 import OrganizationFormModal from './OrganizationFormModal';
-
-import styles from './styles.module.css';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ORGANIZATION_LIST_QUERY = gql`
@@ -106,7 +102,6 @@ function OrganizationList(props: Props) {
     ] = useBooleanState(false);
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
-    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
     const [editOrganizationId, setEditOrganizationId] = useState<string | undefined>();
 
     const alert = useAlert();
@@ -125,8 +120,8 @@ function OrganizationList(props: Props) {
     ] = useOrganizationListQuery({
         variables: {
             pagination: {
-                offset: (activePage - 1) * pagePerItem,
-                limit: pagePerItem,
+                offset: (activePage - 1) * DEFAULT_PAGE_SIZE,
+                limit: DEFAULT_PAGE_SIZE,
             },
         },
     });
@@ -177,29 +172,27 @@ function OrganizationList(props: Props) {
     return (
         <>
             <Container
-                className={_cs(styles.organizationList, className)}
+                className={className}
                 heading="Organizations"
                 headingLevel={2}
                 pending={organizationListPending}
                 empty={organizationList.length === 0}
-                withHeaderBorder
                 spacing="lg"
                 headerActions={(
                     <Button
                         name={undefined}
                         styleVariant="transparent"
                         colorVariant="accent"
-                        start={<IoAdd />}
+                        start={<PiPlus />}
                         onClick={setShowAddModalTrue}
                         withoutPadding
                     >
-                        Add
+                        New Organization
                     </Button>
                 )}
                 footerActions={(
                     <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
+                        pagePerItem={DEFAULT_PAGE_SIZE}
                         activePage={activePage}
                         onActivePageChange={setActivePage}
                         totalItems={totalItems}
@@ -214,9 +207,8 @@ function OrganizationList(props: Props) {
                     {organizationList.map((organization) => (
                         <Container
                             key={organization.id}
-                            className={styles.organizationItem}
                             heading={organization.name}
-                            headerIcons={<CgOrganisation className={styles.orgIcon} />}
+                            headerIcons={<PiFlagBold />}
                             headingLevel={5}
                             withBackground
                             withPadding
@@ -227,35 +219,35 @@ function OrganizationList(props: Props) {
                                         name={organization}
                                         styleVariant="transparent"
                                         onClick={handleOrganizationStatusChange}
-                                        withoutPadding
                                         disabled={updateOrganizationPending}
-                                        start={<IoArchive />}
+                                        start={<PiArchive />}
+                                        withFullWidth
                                     >
                                         {organization.isArchived ? 'Unarchive' : 'Archive'}
                                     </Button>
                                     <Button
                                         name={organization.id}
                                         styleVariant="transparent"
-                                        withoutPadding
                                         onClick={setEditOrganizationId}
-                                        start={<FaEdit />}
+                                        start={<PiPencil />}
+                                        withFullWidth
                                     >
                                         Edit
                                     </Button>
                                 </OverflowMenu>
                             )}
                         >
-                            <InlineLayout
-                                className={_cs(
-                                    styles.organizationStatus,
-                                    organization.isArchived && styles.archived,
-                                )}
-                                withPadding
-                                spacing="xs"
-                                start={organization.isArchived ? <IoArchive /> : <IoCheckmark />}
-                            >
-                                {organization.isArchived ? 'Archived' : 'Active'}
-                            </InlineLayout>
+                            <Tag>
+                                <InlineLayout
+                                    spacingOffset={-1}
+                                    withCenterAlign
+                                    start={organization.isArchived
+                                        ? <PiArchive />
+                                        : <PiCheck />}
+                                >
+                                    {organization.isArchived ? 'Archived' : 'Active'}
+                                </InlineLayout>
+                            </Tag>
                         </Container>
                     ))}
                 </ListLayout>

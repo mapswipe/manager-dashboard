@@ -27,7 +27,11 @@ function InputContainer(props: Props) {
 
     return (
         <InputContainerLayout
-            className={_cs(styles.inputContainer, className)}
+            className={_cs(
+                styles.inputContainer,
+                className,
+            )}
+            focusedClassName={styles.focused}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...inputContainerLayoutProps}
         >

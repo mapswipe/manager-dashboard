@@ -4,7 +4,7 @@ import { ProjectTypeEnum } from '#generated/types/graphql';
 
 import styles from './styles.module.css';
 
-type SizeTypes = 'small' | 'medium' | 'large';
+type SizeTypes = 'default' | 'small' | 'medium' | 'large';
 
 const sizeToStyleMap: {
     [key in SizeTypes]: string;
@@ -12,6 +12,7 @@ const sizeToStyleMap: {
     small: styles.small,
     medium: styles.medium,
     large: styles.large,
+    default: styles.default,
 };
 
 export interface Props {
@@ -23,7 +24,7 @@ function ProjectTypeIcon(props: Props) {
     const {
         className: classNameFromProps,
         type,
-        size = 'medium',
+        size = 'default',
     } = props;
 
     const className = _cs(
@@ -56,7 +57,6 @@ function ProjectTypeIcon(props: Props) {
                     </g>
                 </svg>
             )}
-            {/* FIXME: this is for validate */}
             {type === ProjectTypeEnum.Validate && (
                 <svg
                     className={className}

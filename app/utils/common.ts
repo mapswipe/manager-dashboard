@@ -1,5 +1,10 @@
 import { MarkdownViewProps } from 'react-showdown';
-import { isDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    isFalsyString,
+    isNotDefined,
+    isTruthyString,
+} from '@togglecorp/fujs';
 
 import {
     ProjectTypeEnum,
@@ -119,12 +124,10 @@ export function dateStringToDate(value: string) {
 }
 
 export const defaultPagePerItemOptions = [
-    { value: 2, label: '2 items / page' },
-    { value: 5, label: '5 items / page' },
-    { value: 10, label: '10 items / page' },
-    { value: 20, label: '20 items / page' },
-    { value: 50, label: '50 items / page' },
-    { value: 100, label: '100 items / page' },
+    // { value: 2, label: '2 items/page' },
+    { value: 5, label: '5 items/page' },
+    { value: 10, label: '10 items/page' },
+    { value: 20, label: '20 items/page' },
 ];
 
 export function imageryUrlCondition(value: string | null | undefined) {
@@ -340,4 +343,198 @@ export function readFileAsText(inputFile: File): Promise<string> {
 
         temporaryFileReader.readAsText(inputFile);
     });
+}
+
+function getMaximumFractionDigits(value: number) {
+    if (value < 1000) {
+        return 2;
+    }
+
+    const formatter = new Intl.NumberFormat('default', { notation: 'compact' });
+    const formattedParts = formatter.formatToParts(value);
+    const fraction = formattedParts.find(({ type }) => type === 'fraction');
+
+    if (isNotDefined(fraction) || isFalsyString(fraction.value)) {
+        return 0;
+    }
+
+    if (Number(fraction.value) > 0.1) {
+        return 1;
+    }
+
+    return 0;
+}
+
+export interface FormatNumberOptions {
+    currency?: boolean;
+    unit?: Intl.NumberFormatOptions['unit'];
+    maximumFractionDigits?: Intl.NumberFormatOptions['maximumFractionDigits'];
+    compact?: boolean;
+    separatorHidden?: boolean,
+    language?: string,
+    prefix?: string,
+    suffix?: string,
+}
+
+export function formatNumber(
+    value: null | undefined,
+    options?: FormatNumberOptions,
+): undefined
+export function formatNumber(
+    value: number | null | undefined,
+    options?: FormatNumberOptions,
+): undefined
+export function formatNumber(
+    value: number,
+    options?: FormatNumberOptions,
+): string
+export function formatNumber(
+    value: number | null | undefined,
+    options?: FormatNumberOptions,
+) {
+    if (isNotDefined(value)) {
+        return undefined;
+    }
+
+    const formattingOptions: Intl.NumberFormatOptions = {};
+
+    if (isNotDefined(options)) {
+        formattingOptions.maximumFractionDigits = getMaximumFractionDigits(value);
+        return new Intl.NumberFormat('default', formattingOptions).format(value);
+    }
+
+    const {
+        currency,
+        unit,
+        maximumFractionDigits,
+        compact,
+        separatorHidden,
+        language,
+        suffix,
+        prefix,
+    } = options;
+
+    if (isTruthyString(unit)) {
+        if (unit in Intl.supportedValuesOf('unit')) {
+            formattingOptions.unit = unit;
+            formattingOptions.unitDisplay = 'short';
+            formattingOptions.style = 'unit';
+        } else {
+            // eslint-disable-next-line no-console
+            console.error('Unsupported unit', unit);
+        }
+    }
+    if (currency) {
+        formattingOptions.currencyDisplay = 'narrowSymbol';
+        formattingOptions.style = 'currency';
+    }
+    if (compact) {
+        formattingOptions.notation = 'compact';
+        formattingOptions.compactDisplay = 'short';
+    }
+
+    formattingOptions.useGrouping = !separatorHidden;
+
+    if (isDefined(maximumFractionDigits)) {
+        formattingOptions.maximumFractionDigits = maximumFractionDigits;
+    } else {
+        formattingOptions.maximumFractionDigits = getMaximumFractionDigits(value);
+    }
+
+    const newValue = new Intl.NumberFormat(language, formattingOptions)
+        .format(value);
+
+    return [
+        prefix,
+        newValue,
+        suffix,
+    ].filter(isDefined).join('');
+}
+
+export type ZoomLeveOption = {
+    value: number;
+    label: string;
+    description: string;
+    // Meter per pixel
+    scale: number;
+    // Single tile sqkm
+    area: number;
+};
+
+export const zoomLevelOptions: ZoomLeveOption[] = [
+    {
+        value: 10, label: 'Town View', description: 'Towns, small cities', scale: 152, area: 1500,
+    },
+    {
+        value: 11, label: 'Neighborhood View', description: 'Urban neighborhoods', scale: 76, area: 400,
+    },
+    {
+        value: 12, label: 'Street View', description: 'Street-level navigation', scale: 38, area: 100,
+    },
+    {
+        value: 13, label: 'Local Street View', description: 'Blocks, parks, schools', scale: 19, area: 25,
+    },
+    {
+        value: 14, label: 'Sub-Street View', description: 'Individual buildings', scale: 9.5, area: 5,
+    },
+    {
+        value: 15, label: 'Block View', description: 'Detailed house blocks, parking lots', scale: 4.8, area: 1.5,
+    },
+    {
+        value: 16, label: 'Building View', description: 'Houses, small buildings', scale: 2.4, area: 0.4,
+    },
+    {
+        value: 17, label: 'Property View', description: 'Property boundaries, driveways, fences', scale: 1.2, area: 0.1,
+    },
+    {
+        value: 18, label: 'Pedestrian View', description: 'Sidewalks, individual trees, cars', scale: 0.6, area: 0.025,
+    },
+    {
+        value: 19, label: 'Front Door View', description: 'Doors, benches, small features', scale: 0.3, area: 0.0064,
+    },
+    {
+        value: 20, label: 'Close-up View', description: 'People, signs, textures', scale: 0.15, area: 0.0016,
+    },
+    {
+        value: 21, label: 'Detailed Ground View', description: 'Pavement cracks, survey markers', scale: 0.075, area: 0.0004,
+    },
+    {
+        value: 22, label: 'Surveying View', description: 'Ultra-fine — blueprints, floorplans', scale: 0.037, area: 0.0001,
+    },
+];
+
+export function hasSomeDefinedValue(item: unknown) {
+    if (isNotDefined(item)) {
+        return false;
+    }
+
+    if (typeof item === 'boolean') {
+        return true;
+    }
+
+    if (typeof item === 'number') {
+        return !Number.isNaN(item);
+    }
+
+    if (typeof item === 'string') {
+        return isTruthyString(item.trim());
+    }
+
+    if (Array.isArray(item)) {
+        if (item.length === 0) {
+            return false;
+        }
+
+        return item.some(hasSomeDefinedValue);
+    }
+
+    if (typeof item === 'object') {
+        if (!item) {
+            return false;
+        }
+
+        return Object.values(item).some(hasSomeDefinedValue);
+    }
+
+    return false;
 }

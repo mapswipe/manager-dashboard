@@ -3,97 +3,14 @@ import { gql } from 'urql';
 import {
     OPERATION_INFO_FRAGMENT,
     PROJECT_TYPE_SPECIFIC_FRAGMENT,
+    TUTORIAL_DETAILS_FRAGMENT,
 } from '#utils/query';
 
 export const TUTORIAL_QUERY = gql`
+${TUTORIAL_DETAILS_FRAGMENT}
 query TutorialDetails($id: ID!) {
     tutorial(id: $id) {
-        id
-        name
-        clientId
-        status
-        informationPages {
-            id
-            clientId
-            pageNumber
-            title
-            tutorialId
-            blocks {
-                id
-                clientId
-                blockNumber
-                blockType
-                pageId
-                text
-                imageId
-                image {
-                    id
-                }
-            }
-        }
-        projectId
-        scenarios {
-            id
-            clientId
-            hintDescription
-            hintIcon
-            hintTitle
-            instructionsDescription
-            instructionsIcon
-            instructionsTitle
-            scenarioPageNumber
-            successDescription
-            successIcon
-            successTitle
-            tutorialId
-            tasks {
-                id
-                clientId
-                reference
-                scenarioId
-                projectTypeSpecifics {
-                    ... on FindTutorialTaskPropertyType {
-                        __typename
-                        tileX
-                        tileY
-                        tileZ
-                    }
-                    ... on CompareTutorialTaskPropertyType {
-                        __typename
-                        tileX
-                        tileY
-                        tileZ
-                    }
-                    ... on CompletenessTutorialTaskPropertyType {
-                        __typename
-                        tileX
-                        tileY
-                        tileZ
-                    }
-                    ... on ValidateTutorialTaskPropertyType {
-                        __typename
-                        identifier
-                        objectGeometry
-                    }
-                    ... on ValidateImageTutorialTaskPropertyType {
-                        __typename
-                        fileName
-                        height
-                        url
-                        width
-                        annotation {
-                            bbox
-                            id
-                            imageId
-                            iscrowd
-                            segmentation
-                            area
-                            categoryId
-                        }
-                    }
-                }
-            }
-        }
+        ...TutorialDetailFields
     }
 }
 `;
@@ -142,6 +59,7 @@ query TutorialProjectDetail($projectId: ID!) {
 `;
 
 export const UPDATE_TUTORIAL_MUTATION = gql`
+${TUTORIAL_DETAILS_FRAGMENT}
 ${OPERATION_INFO_FRAGMENT}
 mutation UpdateTutorial($id: ID!, $data: TutorialUpdateInput!) {
     updateTutorial(pk: $id, data: $data) {
@@ -150,8 +68,7 @@ mutation UpdateTutorial($id: ID!, $data: TutorialUpdateInput!) {
             errors
             ok
             result {
-                id
-                status
+                ...TutorialDetailFields
             }
         }
         ... on OperationInfo {
@@ -163,7 +80,7 @@ mutation UpdateTutorial($id: ID!, $data: TutorialUpdateInput!) {
 
 export const UPDATE_TUTORIAL_STATUS_MUTATION = gql`
 mutation UpdateTutorialStatus($id: ID!, $data: TutorialStatusUpdateInput!) {
-    updateTutorialStatus(data: $data, pk: "") {
+    updateTutorialStatus(data: $data, pk: $id) {
         ... on TutorialTypeMutationResponseType {
             __typename
             errors

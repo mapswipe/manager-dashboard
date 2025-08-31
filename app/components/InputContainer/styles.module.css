@@ -4,4 +4,10 @@
         border-radius: var(--radius-input-border);
         background-color: var(--color-background-input);
     }
+
+    &.focused {
+        .input-section {
+            background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+        }
+    }
 }

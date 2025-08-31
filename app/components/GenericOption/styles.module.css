@@ -1,4 +1,3 @@
 .generic-option {
-    padding: var(--spacing-small);
-    text-align: left;
+    display: contents;
 }

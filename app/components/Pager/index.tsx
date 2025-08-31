@@ -1,8 +1,12 @@
 import { useMemo } from 'react';
 import { IoEllipsisHorizontal } from 'react-icons/io5';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 
 import Button from '#components/Button';
+import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
     labelSelector,
@@ -61,7 +65,7 @@ class Side {
 interface Props {
     className?: string;
     pagePerItemOptions: LabelValue[];
-    onPagePerItemChange: (newValue: number) => void;
+    onPagePerItemChange?: (newValue: number) => void;
     pagePerItem: number,
     activePage: number,
     onActivePageChange: (newPage: number) => void;
@@ -87,9 +91,9 @@ function Pager(props: Props) {
                     key={i}
                     name={i}
                     onClick={onActivePageChange}
-                    className={_cs(styles.page, i === activePage && styles.active)}
                     styleVariant={i === activePage ? 'filled' : 'outline'}
                     colorVariant={i === activePage ? 'accent' : 'text'}
+                    spacing="sm"
                 >
                     {i}
                 </Button>
@@ -161,22 +165,27 @@ function Pager(props: Props) {
     );
 
     return (
-        <div className={_cs(styles.pager, className)}>
-            <div className={styles.pageList}>
+        <ListLayout
+            className={_cs(styles.pager, className)}
+            withWrap
+        >
+            <ListLayout spacing="sm">
                 {pageItems}
-            </div>
-            <SelectInput
-                spacing="sm"
-                className={styles.itemsPerPage}
-                name="pagePerItem"
-                value={pagePerItem}
-                onChange={onPagePerItemChange}
-                options={pagePerItemOptions}
-                keySelector={valueSelector}
-                labelSelector={labelSelector}
-                nonClearable
-            />
-        </div>
+            </ListLayout>
+            {isDefined(onPagePerItemChange) && (
+                <SelectInput
+                    spacing="sm"
+                    className={styles.itemsPerPage}
+                    name="pagePerItem"
+                    value={pagePerItem}
+                    onChange={onPagePerItemChange}
+                    options={pagePerItemOptions}
+                    keySelector={valueSelector}
+                    labelSelector={labelSelector}
+                    nonClearable
+                />
+            )}
+        </ListLayout>
     );
 }
 

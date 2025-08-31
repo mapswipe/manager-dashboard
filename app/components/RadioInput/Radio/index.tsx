@@ -5,6 +5,9 @@ import {
 } from 'react-icons/io5';
 import { _cs } from '@togglecorp/fujs';
 
+import ButtonLayout from '#components/ButtonLayout';
+import { SpacingType } from '#utils/styles';
+
 import styles from './styles.module.css';
 
 export interface Props<N> {
@@ -16,6 +19,7 @@ export interface Props<N> {
     value: boolean;
     disabled?: boolean;
     readOnly?: boolean;
+    spacing?: SpacingType;
 }
 
 function Radio<N>(props: Props<N>) {
@@ -28,6 +32,7 @@ function Radio<N>(props: Props<N>) {
         onClick,
         disabled,
         readOnly,
+        spacing,
     } = props;
 
     const handleClick = useCallback(() => {
@@ -38,31 +43,35 @@ function Radio<N>(props: Props<N>) {
 
     return (
         // eslint-disable-next-line jsx-a11y/label-has-associated-control
-        <label
-            className={_cs(
-                styles.radio,
-                value && styles.active,
-                className,
-                disabled && styles.disabled,
-                readOnly && styles.readOnly,
-            )}
-        >
-            {value ? (
-                <IoRadioButtonOn className={styles.icon} />
-            ) : (
-                <IoRadioButtonOff className={styles.icon} />
-            )}
-            <div>
-                {label}
-            </div>
-            <input
-                className={styles.input}
-                type="radio"
-                name={inputName}
-                defaultChecked={value}
-                onClick={handleClick}
+        <label className={styles.radio}>
+            <ButtonLayout
+                className={_cs(
+                    styles.radioContent,
+                    value && styles.active,
+                    className,
+                    readOnly && styles.readOnly,
+                )}
+                start={value ? (
+                    <IoRadioButtonOn className={styles.icon} />
+                ) : (
+                    <IoRadioButtonOff className={styles.icon} />
+                )}
+                spacingOffset={-2}
+                withoutPadding
                 disabled={disabled}
-            />
+                styleVariant="transparent"
+                spacing={spacing}
+            >
+                {label}
+                <input
+                    className={styles.input}
+                    type="radio"
+                    name={inputName}
+                    defaultChecked={value}
+                    onClick={handleClick}
+                    disabled={disabled}
+                />
+            </ButtonLayout>
         </label>
     );
 }

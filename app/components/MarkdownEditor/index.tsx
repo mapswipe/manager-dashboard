@@ -20,7 +20,7 @@ interface MarkdownEditorProps<NAME extends string> {
 
 export type Props<NAME extends string> = Omit<InputContainerProps, 'input' | 'inputId'> & MarkdownEditorProps<NAME>;
 
-function MarkdownEditor<NAME extends string>(props: Props<NAME>) {
+function MarkdownEditor<const NAME extends string>(props: Props<NAME>) {
     const {
         name,
         value,

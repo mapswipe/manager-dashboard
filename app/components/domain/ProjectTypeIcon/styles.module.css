@@ -1,11 +1,15 @@
 .project-type-icon {
-    display: block;
-    --height: 1rem;
+    display: inline-block;
+    --height: 1em;
     width: var(--height);
     height: var(--height);
 
     path {
         fill: currentColor;
+    }
+
+    &.default {
+        --height: 1em;
     }
 
     &.small {

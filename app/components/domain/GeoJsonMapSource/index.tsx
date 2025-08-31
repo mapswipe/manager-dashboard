@@ -82,16 +82,14 @@ function GeoJsonMapSource(props: Props) {
                     center={center}
                     centerOptions={{
                         zoom: zoomLevel,
-                        // FIXME: use constants
-                        duration: 1000,
+                        duration: 0,
                     }}
                 />
             )}
             {isNotDefined(center) && isDefined(bounds) && (
                 <MapBounds
                     bounds={bounds}
-                    // FIXME: use constants
-                    duration={1000}
+                    duration={0}
                 />
             )}
         </>

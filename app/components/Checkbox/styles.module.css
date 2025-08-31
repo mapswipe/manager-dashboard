@@ -1,19 +1,7 @@
 .checkbox {
-    display: flex;
-    position: relative;
-    gap: var(--spacing-small);
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
+    display: contents;
 
-    .checkmark {
-        flex-shrink: 0;
-        color: var(--color-text);
-        /* color: var(--color-checkmark); */
-        font-size: 1.12em;
-    }
-
-    &.checked {
+    .checked {
         .checkmark {
             color: var(--color-accent);
         }
@@ -26,10 +14,5 @@
     &.read-only {
         cursor: default;
         user-select: initial;
-    }
-
-    &.disabled {
-        opacity: var(--opacity-disabled-element);
-        cursor: not-allowed;
     }
 }

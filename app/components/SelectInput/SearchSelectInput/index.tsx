@@ -3,7 +3,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { IoCheckmark } from 'react-icons/io5';
+import { FaCheck } from 'react-icons/fa6';
 import {
     _cs,
     isDefined,
@@ -11,34 +11,38 @@ import {
     unique,
 } from '@togglecorp/fujs';
 
+import ButtonLayout from '#components/ButtonLayout';
 import SelectInputContainer, { SelectInputContainerProps } from '#components/SelectInputContainer';
 
-import { rankedSearchOnList } from '../utils';
+import {
+    OptionKey,
+    rankedSearchOnList,
+} from '../utils';
 
 import styles from './styles.module.css';
 
 interface OptionProps {
     children: React.ReactNode;
 }
+
 function Option(props: OptionProps) {
-    const {
-        children,
-    } = props;
+    const { children } = props;
 
     return (
-        <>
-            <div className={styles.icon}>
-                <IoCheckmark />
-            </div>
-            <div className={styles.label}>
-                { children }
-            </div>
-        </>
+        <ButtonLayout
+            className={styles.optionLayout}
+            start={<FaCheck className={styles.icon} />}
+            styleVariant="transparent"
+            withFullWidth
+            childrenContainerClassName={styles.label}
+            withoutPadding
+        >
+            { children }
+        </ButtonLayout>
     );
 }
 
 type Def = { containerClassName?: string, title?: string; };
-type OptionKey = string | number;
 
 export type SearchSelectInputProps<
     T extends OptionKey,
@@ -133,12 +137,12 @@ function SearchSelectInput<
 
     const optionsLabelMap = useMemo(
         () => (
-            listToMap(options, keySelector, labelSelector)
+            listToMap(options, (...p) => String(keySelector(...p)), labelSelector)
         ),
         [options, keySelector, labelSelector],
     );
 
-    const valueDisplay = isDefined(value) ? optionsLabelMap[value] ?? '?' : undefined;
+    const valueDisplay = isDefined(value) ? optionsLabelMap[String(value)] ?? '?' : undefined;
 
     // NOTE: we can skip this calculation if optionsShowInitially is false
     const selectedOptions = useMemo(
@@ -153,13 +157,13 @@ function SearchSelectInput<
         () => {
             const allOptions = unique(
                 [...searchOptions, ...selectedOptions],
-                keySelector,
+                (...p) => String(keySelector(...p)),
             );
 
             const initiallySelected = allOptions
-                .filter((item) => selectedKeys[keySelector(item)]);
+                .filter((item) => selectedKeys[String(keySelector(item))]);
             const initiallyNotSelected = allOptions
-                .filter((item) => !selectedKeys[keySelector(item)]);
+                .filter((item) => !selectedKeys[String(keySelector(item))]);
 
             if (sortFunction) {
                 return [
@@ -204,7 +208,7 @@ function SearchSelectInput<
                 setSelectedKeys(
                     listToMap(
                         value ? [value] : [],
-                        (item) => item,
+                        (item) => String(item),
                         () => true,
                     ),
                 );

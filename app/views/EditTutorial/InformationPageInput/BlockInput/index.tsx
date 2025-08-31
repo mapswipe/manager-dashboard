@@ -10,7 +10,7 @@ import { ulid } from 'ulid';
 import Button from '#components/Button';
 import TutorialAssetInput from '#components/domain/TutorialAssetInput';
 import InlineLayout from '#components/InlineLayout';
-import TextArea from '#components/TextArea';
+import MarkdownEditor from '#components/MarkdownEditor';
 import {
     TutorialAssetInputTypeEnum,
     TutorialInformationPageBlockTypeEnum,
@@ -67,11 +67,12 @@ function BlockInput(props: Props) {
                     <IoTrashBin />
                 </Button>
             )}
+            withFullWidth
         >
             {value.blockType === TutorialInformationPageBlockTypeEnum.Text && (
-                <TextArea
+                <MarkdownEditor
                     label={`#${value.blockNumber ?? (index + 1)} Text block`}
-                    placeholder="Enter block text"
+                    // placeholder="Enter block text"
                     name="text"
                     value={value.text}
                     onChange={setFieldValue}

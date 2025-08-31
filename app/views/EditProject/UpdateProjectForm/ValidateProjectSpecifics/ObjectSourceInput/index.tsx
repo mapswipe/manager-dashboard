@@ -44,7 +44,7 @@ function ObjectSourceInput(props: Props) {
     const error = getErrorObject(formError);
 
     const {
-        ValidateObjectSourceTypeEnum: validateObjectSourceTypeOptions,
+        validateObjectSourceTypeOptions,
     } = useContext(EnumsContext);
 
     const {

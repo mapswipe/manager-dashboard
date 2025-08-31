@@ -3,7 +3,7 @@ import { _cs } from '@togglecorp/fujs';
 
 import BodyBackdrop from '#components/BodyBackdrop';
 import Button from '#components/Button';
-import Container, { Props as ContainerProps } from '#components/Container';
+import Container, { type ContainerProps } from '#components/Container';
 
 import styles from './styles.module.css';
 

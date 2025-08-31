@@ -1,29 +1,24 @@
 .option {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-small);
-    overflow: auto;
+    .option-layout {
+        .icon {
+            opacity: 0;
+        }
 
-    .icon {
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        opacity: 0;
-        font-size: 1.2em;
-    }
-
-    .label {
-        flex-grow: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        .label {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     &.active {
-        color: var(--color-accent);
+        .option-layout {
+            color: var(--color-accent);
 
-        .icon {
-            opacity: 1;
+            .icon {
+                opacity: 1;
+            }
         }
     }
 }

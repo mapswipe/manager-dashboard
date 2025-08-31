@@ -52,7 +52,6 @@ function ProjectAdditionalInputs(props: Props) {
         <Container
             heading="Additional"
             withContentBackgroundAndPadding
-            withHeaderBorder
             spacing="lg"
         >
             <ListLayout layout="grid">

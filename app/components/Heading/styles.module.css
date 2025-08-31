@@ -31,5 +31,7 @@
 
     &.level6 {
         --font-size: var(--font-size-md);
+        color: color-mix(in srgb, var(--color-primary) 80%, transparent);
+        font-weight: var(--font-weight-bold);
     }
 }

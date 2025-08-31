@@ -16,7 +16,7 @@ import useBlurEffect from '#hooks/useBlurEffect';
 
 import styles from './styles.module.css';
 
-export interface PopupButtonProps<NAME extends number | string | undefined> extends Omit<ButtonProps<NAME>, 'label' | 'elementRef'> {
+export interface PopupButtonProps extends Omit<ButtonProps<undefined>, 'name' | 'onClick' | 'label' | 'elementRef'> {
     popupClassName?: string;
     popupContentClassName?: string;
     label: React.ReactNode;
@@ -24,18 +24,18 @@ export interface PopupButtonProps<NAME extends number | string | undefined> exte
         setPopupVisibility: React.Dispatch<React.SetStateAction<boolean>>;
     } | null>;
     persistent?: boolean;
-    arrowHidden?: boolean;
+    withoutDropdownIcon?: boolean;
     defaultShown?: boolean;
 }
 
-function PopupButton<NAME extends number | string | undefined>(props: PopupButtonProps<NAME>) {
+function PopupButton(props: PopupButtonProps) {
     const {
         popupClassName,
         children,
         label,
         end,
         componentRef,
-        arrowHidden,
+        withoutDropdownIcon,
         persistent = false,
         defaultShown,
         ...otherProps
@@ -95,11 +95,11 @@ function PopupButton<NAME extends number | string | undefined>(props: PopupButto
                 name={undefined}
                 layoutElementRef={buttonRef}
                 onClick={handleShowPopup}
-                end={(
+                end={(end || !withoutDropdownIcon) && (
                     <>
                         {end}
-                        {!arrowHidden && popupShown && <IoIosArrowUp />}
-                        {!arrowHidden && !popupShown && <IoIosArrowDown />}
+                        {!withoutDropdownIcon && popupShown && <IoIosArrowUp />}
+                        {!withoutDropdownIcon && !popupShown && <IoIosArrowDown />}
                     </>
                 )}
             >

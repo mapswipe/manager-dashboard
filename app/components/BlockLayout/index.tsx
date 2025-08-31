@@ -1,4 +1,7 @@
-import { useMemo } from 'react';
+import {
+    RefObject,
+    useMemo,
+} from 'react';
 import {
     _cs,
     isDefined,
@@ -26,6 +29,8 @@ export interface Props {
     withPadding?: boolean;
     withStartSeparator?: boolean;
     withEndSeparator?: boolean;
+
+    elementRef?: RefObject<HTMLDivElement>;
 }
 
 function BlockLayout(props: Props) {
@@ -41,6 +46,8 @@ function BlockLayout(props: Props) {
         withPadding,
         withStartSeparator,
         withEndSeparator,
+
+        elementRef,
     } = props;
 
     const spacingModes = useMemo<SpacingMode[]>(() => {
@@ -68,6 +75,7 @@ function BlockLayout(props: Props) {
                 spacingClassName,
                 className,
             )}
+            ref={elementRef}
         >
             {start && (
                 <div

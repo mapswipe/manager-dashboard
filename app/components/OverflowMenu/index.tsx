@@ -4,18 +4,22 @@ import PopupButton from '#components/PopupButton';
 
 interface Props {
     children: React.ReactNode;
+    persistent?: boolean;
 }
 
 function OverflowMenu(props: Props) {
-    const { children } = props;
+    const {
+        children,
+        persistent,
+    } = props;
 
     return (
         <PopupButton
-            name={undefined}
             label={<IoEllipsisVertical />}
-            arrowHidden
+            withoutDropdownIcon
             spacing="none"
             styleVariant="action"
+            persistent={persistent}
         >
             {children}
         </PopupButton>

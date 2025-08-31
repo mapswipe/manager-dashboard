@@ -1,6 +1,4 @@
 .popup {
-    padding: var(--spacing-sm);
-
     .popup-content {
         display: flex;
         flex-direction: column;
@@ -11,7 +9,6 @@
             flex-grow: 1;
 
             .group-header {
-                padding: var(--spacing-small);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;

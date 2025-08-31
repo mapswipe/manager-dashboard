@@ -152,9 +152,11 @@ function Navbar(props: Props) {
                 )}
                 spacing="lg"
                 withPadding
+                withWrap
             >
                 <ListLayout
                     spacing="lg"
+                    withWrap
                 >
                     <SmartNavLink
                         route={route.home}
@@ -178,6 +180,11 @@ function Navbar(props: Props) {
                     />
                     <SmartNavLink
                         route={route.userGroups}
+                        className={styles.link}
+                        activeClassName={styles.active}
+                    />
+                    <SmartNavLink
+                        route={route.contributors}
                         className={styles.link}
                         activeClassName={styles.active}
                     />

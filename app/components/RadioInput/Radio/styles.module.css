@@ -1,35 +1,15 @@
 .radio {
-    --cursor: default;
-    display: flex;
-    gap: var(--spacing-extra-small);
-    align-items: center;
-    cursor: var(--cursor);
+    display: contents;
 
-    &:not(.disabled) {
-        &:hover {
-            background-color: var(--color-background-hover-light);
+    .radio-content {
+        .input {
+            display: none;
         }
 
-        &:not(.read-only) {
-            --cursor: pointer;
+        &.active {
+            .icon {
+                color: var(--color-accent);
+            }
         }
-    }
-
-    .icon {
-        font-size: 1.2em;
-    }
-
-    .input {
-        display: none;
-    }
-
-    &.active {
-        .icon {
-            color: var(--color-accent);
-        }
-    }
-
-    &.disabled {
-        opacity: var(--opacity-disabled-element);
     }
 }

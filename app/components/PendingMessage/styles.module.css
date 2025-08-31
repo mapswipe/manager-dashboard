@@ -1,6 +1,6 @@
 .pending-message {
     display: flex;
-    gap: var(--spacing-medium);
+    gap: var(--spacing-md);
     align-items: center;
 
     .icon {

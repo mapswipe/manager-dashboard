@@ -1,0 +1,67 @@
+.project-status-output {
+    .status {
+        .icon-container {
+            align-items: center;
+            align-self: stretch;
+            flex-shrink: 0;
+
+            .icon {
+                font-size: var(--font-size-lg);
+            }
+
+            .line {
+                flex-grow: 1;
+                background-color: var(--color-text);
+                width: 1pt;
+            }
+        }
+
+        .details {
+            .label {
+                font-size: var(--font-size-md);
+            }
+
+            .description {
+                color: var(--color-text-light);
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        &.pending {
+            opacity: 0.5;
+        }
+
+        &.in-progress {
+            .label,
+            .icon {
+                color: var(--color-accent);
+            }
+        }
+
+        &.completed {
+            .icon {
+                color: var(--color-success);
+            }
+        }
+
+        &.processing {
+            .icon {
+                animation: rotate 1s linear infinite;
+                color: var(--color-accent);
+            }
+        }
+
+        &:last-child {
+            .icon-container {
+                .line {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg) }
+    to { transform: rotate(360deg) }
+}

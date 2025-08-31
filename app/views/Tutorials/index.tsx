@@ -53,6 +53,8 @@ query TutorialsList($filters: TutorialFilter, $pagination: OffsetPaginationInput
         totalCount
         results {
             id
+            clientId
+            firebaseId
             createdBy {
                 id
                 displayName
@@ -60,6 +62,18 @@ query TutorialsList($filters: TutorialFilter, $pagination: OffsetPaginationInput
             createdAt
             name
             status
+            projectId
+            project {
+                id
+                clientId
+                projectType
+                projectInstruction
+                region
+                requestingOrganization {
+                    id
+                    name
+                }
+            }
         }
         pageInfo {
             limit
@@ -110,9 +124,7 @@ function Tutorials(props: Props) {
 
     const totalItems = tutorialResponse?.tutorials.results.length ?? 0;
 
-    const {
-        TutorialStatusEnum: tutorialStatusOptions,
-    } = useContext(EnumsContext);
+    const { tutorialStatusOptions } = useContext(EnumsContext);
 
     const filteredTutorialList = tutorialResponse?.tutorials.results ?? [];
     const totalCount = tutorialResponse?.tutorials.totalCount ?? 0;
@@ -127,9 +139,8 @@ function Tutorials(props: Props) {
             headerActions={(
                 <SmartLink
                     route={routes.newTutorial}
-                    colorVariant="accent"
-                    styleVariant="filled"
                     spacing="md"
+                    withLinkIcon
                 >
                     New Tutorial
                 </SmartLink>
@@ -157,7 +168,7 @@ function Tutorials(props: Props) {
                         name={undefined}
                         onClick={handleClearFilterButtonClick}
                         colorVariant="danger"
-                        spacing="sm"
+                        styleVariant="translucent"
                     >
                         Clear filters
                     </Button>
@@ -189,11 +200,7 @@ function Tutorials(props: Props) {
                 {!pending && filteredTutorialList.map((tutorial) => (
                     <TutorialListItem
                         key={tutorial.id}
-                        id={tutorial.id}
-                        status={tutorial.status}
-                        name={tutorial.name}
-                        createdAt={tutorial.createdAt}
-                        createdBy={tutorial.createdBy.displayName}
+                        value={tutorial}
                     />
                 ))}
             </Container>

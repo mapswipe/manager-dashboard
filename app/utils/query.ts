@@ -120,21 +120,21 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
             ...RasterTileServerPropertyFields
         }
         customOptions {
-            ...ProjectCustomOptionFragment
+            ...ProjectCustomOptionFields
         }
     }
     ... on ValidateImageProjectPropertyType {
         __typename
         sourceType
         customOptions {
-            ...ProjectCustomOptionFragment
+            ...ProjectCustomOptionFields
         }
     }
 }
 `;
 
 export const CUSTOM_OPTION_FRAGMENT = gql`
-fragment ProjectCustomOptionFragment on ProjectCustomOption {
+fragment ProjectCustomOptionFields on ProjectCustomOption {
     clientId
     description
     icon
@@ -157,6 +157,142 @@ fragment OperationInfoFields on OperationInfo {
         field
         kind
         message
+    }
+}
+`;
+
+export const PROJECT_DETAILS_FRAGMENT = gql`
+${PROJECT_TYPE_SPECIFIC_FRAGMENT}
+fragment ProjectDetailFields on ProjectType {
+    additionalInfoUrl
+    clientId
+    description
+    groupSize
+    id
+    isFeatured
+    lookFor
+    projectInstruction
+    maxTasksPerUser
+    name
+    topic
+    projectNumber
+    region
+    processingStatus
+    progress
+    projectType
+    image {
+        id
+        file {
+            url
+        }
+    }
+    projectTypeSpecifics {
+        ...ProjectTypeSpecificFields
+    }
+    requestingOrganization {
+        id
+        name
+    }
+    team {
+        id
+        name
+    }
+    tutorial {
+        id
+        name
+    }
+    status
+    verificationNumber
+}
+`;
+
+export const TUTORIAL_DETAILS_FRAGMENT = gql`
+fragment TutorialDetailFields on TutorialType {
+    id
+    name
+    clientId
+    status
+    informationPages {
+        id
+        clientId
+        pageNumber
+        title
+        tutorialId
+        blocks {
+            id
+            clientId
+            blockNumber
+            blockType
+            pageId
+            text
+            imageId
+            image {
+                id
+            }
+        }
+    }
+    projectId
+    scenarios {
+        id
+        clientId
+        hintDescription
+        hintIcon
+        hintTitle
+        instructionsDescription
+        instructionsIcon
+        instructionsTitle
+        scenarioPageNumber
+        successDescription
+        successIcon
+        successTitle
+        tutorialId
+        tasks {
+            id
+            clientId
+            reference
+            scenarioId
+            projectTypeSpecifics {
+                ... on FindTutorialTaskPropertyType {
+                    __typename
+                    tileX
+                    tileY
+                    tileZ
+                }
+                ... on CompareTutorialTaskPropertyType {
+                    __typename
+                    tileX
+                    tileY
+                    tileZ
+                }
+                ... on CompletenessTutorialTaskPropertyType {
+                    __typename
+                    tileX
+                    tileY
+                    tileZ
+                }
+                ... on ValidateTutorialTaskPropertyType {
+                    __typename
+                    identifier
+                    objectGeometry
+                }
+                ... on ValidateImageTutorialTaskPropertyType {
+                    __typename
+                    fileName
+                    height
+                    url
+                    width
+                    annotation {
+                        bbox
+                        id
+                        imageId
+                        iscrowd
+                        segmentation
+                        area
+                        categoryId
+                    }
+                }
+            }
+        }
     }
 }
 `;

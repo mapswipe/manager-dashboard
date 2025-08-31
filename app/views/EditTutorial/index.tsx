@@ -9,6 +9,7 @@ import {
 import { CgArrowTopRightR } from 'react-icons/cg';
 import { IoAdd } from 'react-icons/io5';
 import { MdDownload } from 'react-icons/md';
+import { PiFloppyDisk } from 'react-icons/pi';
 import { useParams } from 'react-router';
 import {
     _cs,
@@ -987,8 +988,9 @@ function NewTutorial(props: Props) {
                     styleVariant="filled"
                     onClick={handleSubmitButtonClick}
                     disabled={actionsDisabled}
+                    start={<PiFloppyDisk />}
                 >
-                    Update
+                    Update tutorial
                 </Button>
             )}
         >

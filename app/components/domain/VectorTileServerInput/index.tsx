@@ -57,7 +57,7 @@ function VectorTileServerInput(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const { VectorTileServerNameEnum: vectorTileServerNameOptions } = useContext(EnumsContext);
+    const { vectorTileServerNameOptions } = useContext(EnumsContext);
 
     const fieldName = (isDefined(value)
         && isDefined(value.name)

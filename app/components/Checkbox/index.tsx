@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import ButtonLayout from '#components/ButtonLayout';
 import DefaultCheckmark, { Props as CheckmarkProps } from '#components/Checkmark';
 
 import styles from './styles.module.css';
 
-export interface Props<N> {
+export interface Props<NAME> {
     className?: string;
     labelClassName?: string;
     checkmark?: (p: CheckmarkProps) => React.ReactElement;
@@ -16,11 +17,11 @@ export interface Props<N> {
     indeterminate?: boolean;
     tooltip?: string;
     value: boolean | undefined | null;
-    onChange: (value: boolean, name: N) => void;
-    name: N;
+    onChange: (value: boolean, name: NAME) => void;
+    name: NAME;
 }
 
-function Checkbox<N>(props: Props<N>) {
+function Checkbox<const NAME>(props: Props<NAME>) {
     const {
         label,
         tooltip,
@@ -46,41 +47,49 @@ function Checkbox<N>(props: Props<N>) {
     );
 
     const className = _cs(
-        styles.checkbox,
         classNameFromProps,
         indeterminate && styles.indeterminate,
         !indeterminate && value && styles.checked,
-        disabled && styles.disabled,
         readOnly && styles.readOnly,
     );
 
     return (
         <label // eslint-disable-line jsx-a11y/label-has-associated-control
-            className={className}
+            className={styles.checkbox}
             title={tooltip}
         >
-            <Checkmark
-                className={_cs(checkmarkClassName, styles.checkmark)}
-                value={value ?? false}
-                indeterminate={indeterminate}
-            />
-            <input
-                onChange={handleChange}
-                className={styles.input}
-                type="checkbox"
-                checked={value ?? false}
-                disabled={disabled || readOnly}
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...otherProps}
-            />
-            <div
-                className={_cs(
-                    // styles.label,
-                    labelClassName,
+            <ButtonLayout
+                className={className}
+                start={(
+                    <Checkmark
+                        className={_cs(checkmarkClassName, styles.checkmark)}
+                        value={value ?? false}
+                        indeterminate={indeterminate}
+                    />
                 )}
+                spacingOffset={-2}
+                withoutPadding
+                disabled={disabled}
+                styleVariant="transparent"
             >
-                { label }
-            </div>
+                <input
+                    onChange={handleChange}
+                    className={styles.input}
+                    type="checkbox"
+                    checked={value ?? false}
+                    disabled={disabled || readOnly}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...otherProps}
+                />
+                <div
+                    className={_cs(
+                        // styles.label,
+                        labelClassName,
+                    )}
+                >
+                    { label }
+                </div>
+            </ButtonLayout>
         </label>
     );
 }

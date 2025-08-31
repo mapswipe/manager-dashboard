@@ -27,7 +27,7 @@ import routes from '#base/configs/routes';
 import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Container from '#components/Container';
-import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
+import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import InlineLayout from '#components/InlineLayout';
 import PageLayout from '#components/PageLayout';
@@ -140,7 +140,7 @@ function NewProject(props: Props) {
         createNewProject,
     ] = useNewProjectMutation();
 
-    const { ProjectTypeEnum: projectTypeOptions } = useContext(EnumsContext);
+    const { projectTypeOptions } = useContext(EnumsContext);
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),
@@ -251,7 +251,7 @@ function NewProject(props: Props) {
                 </Button>
             )}
             aside={(
-                <ProjectStatusOutput
+                <ProjectStatusTimeline
                     value={undefined}
                 />
             )}
