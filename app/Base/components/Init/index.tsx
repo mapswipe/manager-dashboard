@@ -1,14 +1,18 @@
 import React, {
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import { isDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    listToMap,
+} from '@togglecorp/fujs';
 import { type } from 'arktype';
 import { gql } from 'urql';
 
 import PreloadMessage from '#base/components/PreloadMessage';
-import EnumsContext, { defaultAllEnumsValue } from '#base/context/EnumsContext';
+import EnumsContext, { EnumsContextProps } from '#base/context/EnumsContext';
 import HealthCheckContext, { HealthCheckData } from '#base/context/HealthCheckContext';
 import TileServerContext, { defaultTileServersValue } from '#base/context/TileServerContext';
 import UserContext from '#base/context/UserContext';
@@ -175,6 +179,60 @@ function Init(props: Props) {
         pause: !csrfReady,
     });
 
+    const enumContextValue = useMemo(() => ({
+        validateObjectSourceTypeOptions: allEnumsResponse?.enums.ValidateObjectSourceTypeEnum ?? [],
+        validateImageSourceTypeOptions: allEnumsResponse?.enums.ValidateImageSourceTypeEnum ?? [],
+        projectStatusOptions: allEnumsResponse?.enums.ProjectStatusEnum ?? [],
+        projectTypeOptions: allEnumsResponse?.enums.ProjectTypeEnum ?? [],
+        rasterTileServerNameOptions: allEnumsResponse?.enums.RasterTileServerNameEnum ?? [],
+        vectorTileServerNameOptions: allEnumsResponse?.enums.VectorTileServerNameEnum ?? [],
+        tutorialInformationPageBlockTypeOptions: allEnumsResponse
+            ?.enums.TutorialInformationPageBlockTypeEnum ?? [],
+        iconOptions: allEnumsResponse?.enums.IconEnum ?? [],
+        overlayLayerTypeOptions: allEnumsResponse?.enums.OverlayLayerTypeEnum ?? [],
+        tutorialStatusOptions: allEnumsResponse?.enums.TutorialStatusEnum ?? [],
+        validateObjectSourceTypeMapping: listToMap(
+            allEnumsResponse?.enums.ValidateObjectSourceTypeEnum,
+            ({ key }) => key,
+        ),
+        validateImageSourceTypeMapping: listToMap(
+            allEnumsResponse?.enums.ValidateImageSourceTypeEnum,
+            ({ key }) => key,
+        ),
+        projectStatusMapping: listToMap(
+            allEnumsResponse?.enums.ProjectStatusEnum,
+            ({ key }) => key,
+        ),
+        projectTypeMapping: listToMap(
+            allEnumsResponse?.enums.ProjectTypeEnum,
+            ({ key }) => key,
+        ),
+        rasterTileServerNameMapping: listToMap(
+            allEnumsResponse?.enums.RasterTileServerNameEnum,
+            ({ key }) => key,
+        ),
+        vectorTileServerNameMapping: listToMap(
+            allEnumsResponse?.enums.VectorTileServerNameEnum,
+            ({ key }) => key,
+        ),
+        tutorialInformationPageBlockTypeMapping: listToMap(
+            allEnumsResponse?.enums.TutorialInformationPageBlockTypeEnum,
+            ({ key }) => key,
+        ),
+        iconMapping: listToMap(
+            allEnumsResponse?.enums.IconEnum,
+            ({ key }) => key,
+        ),
+        overlayLayerTypeMapping: listToMap(
+            allEnumsResponse?.enums.OverlayLayerTypeEnum,
+            ({ key }) => key,
+        ),
+        tutorialStatusMapping: listToMap(
+            allEnumsResponse?.enums.TutorialStatusEnum,
+            ({ key }) => key,
+        ),
+    } satisfies EnumsContextProps), [allEnumsResponse]);
+
     const [{
         fetching: tileServersLoading,
         data: tileServersResponse,
@@ -197,7 +255,7 @@ function Init(props: Props) {
                 value={tileServersResponse?.tileServers ?? defaultTileServersValue}
             >
                 <EnumsContext.Provider
-                    value={allEnumsResponse?.enums ?? defaultAllEnumsValue}
+                    value={enumContextValue}
                 >
                     {children}
                 </EnumsContext.Provider>

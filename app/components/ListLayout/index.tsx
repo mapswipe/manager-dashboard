@@ -14,15 +14,18 @@ import {
 
 import styles from './styles.module.css';
 
-interface Props {
+export type ListLayoutType = 'inline' | 'block' | 'grid';
+
+interface Props extends React.HTMLProps<HTMLDivElement> {
     className?: string;
-    layout?: 'block' | 'inline' | 'grid';
+    layout?: ListLayoutType;
     spacing?: SpacingType;
     children: React.ReactNode;
     withPadding?: boolean;
     withWrap?: boolean;
     numPreferredGridColumns?: number;
     minGridColumnSize?: string;
+    spacingOffset?: number;
 }
 
 function ListLayout(props: Props) {
@@ -35,6 +38,8 @@ function ListLayout(props: Props) {
         children,
         numPreferredGridColumns = 2,
         minGridColumnSize = '12rem',
+        spacingOffset,
+        ...divElementProps
     } = props;
 
     const elementRef = useRef<HTMLDivElement>(null);
@@ -63,11 +68,14 @@ function ListLayout(props: Props) {
 
     const spacingClassName = useSpacingToken({
         spacing,
+        offset: spacingOffset,
         modes: withPadding ? fullSpacings : gapSpacings,
     });
 
     return (
         <div
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...divElementProps}
             ref={elementRef}
             className={_cs(
                 styles.listLayout,

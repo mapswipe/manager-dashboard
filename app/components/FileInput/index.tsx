@@ -127,8 +127,8 @@ function FileInput<NAME>(props: Props<NAME, never>) {
                 <label htmlFor={inputId}>
                     <ButtonLayout
                         start={<MdAttachFile />}
-                        spacing="sm"
                         disabled={disabled}
+                        styleVariant="translucent"
                     >
                         {selectButtonLabel}
                     </ButtonLayout>

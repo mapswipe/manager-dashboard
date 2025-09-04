@@ -4,17 +4,16 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { _cs } from '@togglecorp/fujs';
 
 import InputInteractivityContext, { InputInteractivityContextProps } from '#base/context/InputInteractivityContext';
 import InputError from '#components/InputError';
 import InputHint from '#components/InputHint';
 import InputLabel from '#components/InputLabel';
+import ListLayout, { ListLayoutType } from '#components/ListLayout';
+import { SpacingType } from '#utils/styles';
 
 import { Props as InputContainerProps } from '../InputContainer';
 import Radio from './Radio';
-
-import styles from './styles.module.css';
 
 export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'input' | 'actions' | 'icons' | 'inputId'> {
     options: Option[];
@@ -24,7 +23,9 @@ export interface Props<Name, Option, Value> extends Omit<InputContainerProps, 'i
     name: Name;
     onChange: (newValue: Value, name: Name) => void;
     className?: string;
-    radioListLayout?: 'inline' | 'block';
+    radioListLayout?: ListLayoutType;
+    radioListNumPreferredGridColumn?: number;
+    spacing?: SpacingType;
 }
 
 function RadioInput<
@@ -45,7 +46,9 @@ function RadioInput<
         hint,
         label,
         readOnly,
-        radioListLayout = 'inline',
+        radioListLayout,
+        radioListNumPreferredGridColumn,
+        spacing,
     } = props;
 
     const inputId = useId();
@@ -77,24 +80,27 @@ function RadioInput<
 
     return (
         <InputInteractivityContext.Provider value={interactivityContextValue}>
-            <div
-                className={_cs(styles.radioInput, className)}
+            <ListLayout
+                className={className}
                 onFocus={handleMouseOver}
                 onBlur={handleMouseOut}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
+                spacing={spacing}
+                spacingOffset={-1}
+                layout="block"
             >
                 {label && (
                     <InputLabel inputId={inputId}>
                         {label}
                     </InputLabel>
                 )}
-                <div
-                    className={_cs(
-                        styles.radioList,
-                        radioListLayout === 'block' && styles.blockLayout,
-                        radioListLayout === 'inline' && styles.inlineLayout,
-                    )}
+                <ListLayout
+                    layout={radioListLayout}
+                    numPreferredGridColumns={radioListNumPreferredGridColumn}
+                    spacing={spacing}
+                    spacingOffset={-2}
+                    withWrap
                 >
                     {options?.map((option, i) => {
                         const key = keySelector(option, i, options);
@@ -109,10 +115,11 @@ function RadioInput<
                                 inputName={typeof name === 'string' ? name : undefined}
                                 label={radioLabel}
                                 disabled={disabled}
+                                spacing={spacing}
                             />
                         );
                     })}
-                </div>
+                </ListLayout>
                 {error && (
                     <InputError>
                         {error}
@@ -123,7 +130,7 @@ function RadioInput<
                         {hint}
                     </InputHint>
                 )}
-            </div>
+            </ListLayout>
         </InputInteractivityContext.Provider>
     );
 }

@@ -4,4 +4,8 @@
     padding: var(--spacing-sm);
     width: 100%;
     height: 20rem;
+
+    &.compact {
+        height: 14rem;
+    }
 }

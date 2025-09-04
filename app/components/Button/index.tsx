@@ -1,4 +1,4 @@
-import ButtonLayout, { Props as ButtonLayoutProps } from '#components/ButtonLayout';
+import ButtonLayout, { ButtonLayoutProps } from '#components/ButtonLayout';
 import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.module.css';
@@ -23,6 +23,7 @@ function Button<NAME>(props: Props<NAME>) {
         disabled,
         withoutPadding,
         layoutElementRef,
+        withFullWidth,
         ...buttonProps
     } = props;
 
@@ -47,6 +48,7 @@ function Button<NAME>(props: Props<NAME>) {
                 styleVariant={styleVariant}
                 withoutPadding={withoutPadding}
                 disabled={disabled}
+                withFullWidth={withFullWidth}
             >
                 {children}
             </ButtonLayout>

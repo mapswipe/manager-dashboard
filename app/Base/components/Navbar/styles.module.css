@@ -11,7 +11,7 @@
         grid-column: content;
 
         .logo {
-            height: 2.6rem;
+            height: var(--font-size-3xl);
         }
 
         .icon {
@@ -22,10 +22,9 @@
 
         .link {
             opacity: 0.6;
+            border-top: var(--width-separator-thin) solid transparent;
             border-bottom: var(--width-separator-thin) solid transparent;
             color: var(--color-text-on-dark);
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-medium);
 
             &.active {
                 opacity: 1;

@@ -4,7 +4,7 @@ import {
     listToGroupList,
 } from '@togglecorp/fujs';
 
-type OptionKey = string | number;
+type OptionKey = string | number | boolean;
 
 const emptyList: unknown[] = [];
 
@@ -73,7 +73,7 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
 
         return (
             <Renderer
-                key={key}
+                key={String(key)}
                 className={rendererClassName}
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...extraProps}
@@ -97,7 +97,7 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
 
         return (
             <GroupRenderer
-                key={groupKey}
+                key={String(groupKey)}
                 // FIXME: currently typescript is not smart enough to join Omit
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...finalProps as GP}
@@ -106,7 +106,7 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
     };
 
     const groups = useMemo(
-        () => listToGroupList(data, groupKeySelector),
+        () => listToGroupList(data, (...p) => String(groupKeySelector(...p))),
         [data, groupKeySelector],
     );
 
@@ -119,7 +119,12 @@ function GroupedList<D, P, K extends OptionKey, GP extends GroupCommonProps, GK 
     );
 
     const children: React.ReactNode[] = sortedGroupKeys.map((groupKey, i) => (
-        renderGroup(groupKey, i, groups[groupKey], groups[groupKey].map(renderListItem))
+        renderGroup(
+            groupKey,
+            i,
+            groups[String(groupKey)],
+            groups[String(groupKey)].map(renderListItem),
+        )
     ));
 
     return children;
@@ -146,7 +151,7 @@ function List<D, P, K extends OptionKey, GP extends GroupCommonProps, GK extends
 
         return (
             <Renderer
-                key={key}
+                key={String(key)}
                 className={rendererClassName}
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...extraProps}

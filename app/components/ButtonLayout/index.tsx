@@ -4,8 +4,8 @@ import InlineLayout, { type Props as InlineLayoutProps } from '#components/Inlin
 
 import styles from './styles.module.css';
 
-type ButtonColorVariant = 'text' | 'text-on-dark' | 'primary' | 'accent' | 'success' | 'danger';
-type ButtonStyleVariant = 'outline' | 'filled' | 'transparent' | 'action';
+export type ButtonColorVariant = 'text' | 'text-on-dark' | 'primary' | 'accent' | 'success' | 'danger';
+export type ButtonStyleVariant = 'outline' | 'filled' | 'transparent' | 'action' | 'translucent';
 
 const colorVariantToClassName: Record<ButtonColorVariant, string> = {
     text: styles.colorVariantText,
@@ -20,24 +20,27 @@ const styleVariantToClassName: Record<ButtonStyleVariant, string> = {
     outline: styles.styleVariantOutline,
     filled: styles.styleVariantFilled,
     transparent: styles.styleVariantTransparent,
+    translucent: styles.styleVariantTranslucent,
     action: styles.styleVariantAction,
 };
 
-export interface Props extends Omit<InlineLayoutProps, 'withPadding'> {
+export interface ButtonLayoutProps extends Omit<InlineLayoutProps, 'withPadding'> {
     colorVariant?: ButtonColorVariant;
     styleVariant?: ButtonStyleVariant;
     withoutPadding?: boolean;
     disabled?: boolean;
 }
 
-function ButtonLayout(props: Props) {
+function ButtonLayout(props: ButtonLayoutProps) {
     const {
         colorVariant = 'text',
         styleVariant = 'outline',
         spacingOffset = -1,
         className,
-        withoutPadding = false,
         disabled,
+        children,
+        withoutPadding = false,
+        withFullWidth,
         ...inlineLayoutProps
     } = props;
 
@@ -49,12 +52,17 @@ function ButtonLayout(props: Props) {
                 colorVariantToClassName[colorVariant],
                 styleVariantToClassName[styleVariant],
                 disabled && styles.disabled,
+                withFullWidth && styles.withFullWidth,
                 className,
             )}
+            withFullWidth={withFullWidth}
             spacingOffset={spacingOffset}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...inlineLayoutProps}
-        />
+        >
+            {children}
+            <span className={styles.visualFeedback} />
+        </InlineLayout>
     );
 }
 

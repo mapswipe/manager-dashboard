@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 import {
     _cs,
     isDefined,
@@ -17,7 +18,7 @@ import {
 
 import styles from './styles.module.css';
 
-export interface Props {
+export interface ContainerProps {
     className?: string;
 
     heading?: React.ReactNode;
@@ -53,9 +54,12 @@ export interface Props {
     withBackground?: boolean;
     withShadow?: boolean;
     withMinHeight?: boolean;
+    withWelledContent?: boolean;
+
+    elementRef?: RefObject<HTMLDivElement>;
 }
 
-function Container(props: Props) {
+function Container(props: ContainerProps) {
     const {
         className,
 
@@ -92,6 +96,9 @@ function Container(props: Props) {
         withShadow,
         withMinHeight,
         withContentBackgroundAndPadding,
+        withWelledContent,
+
+        elementRef,
     } = props;
 
     const shouldShowHeadingRow = isDefined(heading)
@@ -106,18 +113,20 @@ function Container(props: Props) {
 
     const contentSpacingClassName = useSpacingToken({
         spacing,
-        modes: withContentBackgroundAndPadding
+        modes: (withContentBackgroundAndPadding || withWelledContent)
             ? fullSpacings
             : gapSpacings,
     });
 
     return (
         <BlockLayout
+            elementRef={elementRef}
             className={_cs(
                 styles.container,
                 withBackground && styles.withBackground,
                 withShadow && styles.withShadow,
                 withMinHeight && styles.withMinHeight,
+                withWelledContent && styles.withWelledContent,
                 className,
             )}
             spacing={spacing}

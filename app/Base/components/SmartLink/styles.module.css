@@ -1,0 +1,25 @@
+.smart-link {
+    display: contents;
+
+    .button-layout {
+        &:hover {
+            text-decoration: underline;
+
+            .link-icon {
+                animation: wiggle 1s ease-in forwards;
+            }
+        }
+    }
+}
+
+@keyframes wiggle {
+    20% {
+        transform: translateX(10%);
+    }
+    60% {
+        transform: translateX(-5%);
+    }
+    100% {
+        transform: none;
+    }
+}

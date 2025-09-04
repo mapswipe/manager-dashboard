@@ -4,12 +4,20 @@
     --outline-color: var(--variant-color);
     --background-color: var(--variant-color);
     --text-color: var(--variant-color);
-    border: var(--width-separator-thin) solid var(--outline-color);
+    display: inline-flex;
+    position: relative;
+    border: var(--width-separator-thin) solid color-mix(in srgb, var(--outline-color) 10%, transparent);
     border-radius: var(--radius-button-border);
     background-color: var(--background-color);
     width: fit-content;
     line-height: 1;
     color: var(--text-color);
+    user-select: none;
+
+    &.with-full-width {
+        display: flex;
+        width: 100%;
+    }
 
     &.color-variant-text {
         --variant-color: var(--color-text);
@@ -46,20 +54,67 @@
     &.style-variant-transparent {
         --outline-color: transparent;
         --background-color: transparent;
+        --text-color: var(--variant-color);
+    }
+
+    &.style-variant-translucent {
+        --outline-color: transparent;
+        --background-color: color-mix(in srgb, var(--variant-color) 6%, transparent);;
+        --text-color: var(--variant-color);
     }
 
     &.style-variant-action {
         --outline-color: transparent;
         --background-color: transparent;
         padding: 0;
-        font-size: 1.1em;
     }
 
     &.disabled {
         opacity: var(--opacity-disabled-element);
     }
 
+    .visual-feedback {
+        --visual-feedback-offset: 0.25rem;
+        --du: var(--duration-transition-medium);
+        --de: calc(var(--du) / 4);
+        position: absolute;
+        top: 0%;
+        left: 10%;
+        transition: var(--du) var(--de) background-color ease-in-out,
+            var(--du) var(--de) width ease-in-out,
+            var(--du) var(--de) height ease-in-out,
+            var(--du) var(--de) top ease-in-out,
+            var(--du) var(--de) left ease-in-out,
+            var(--du) box-shadow ease-in-out;
+        background-color: transparent;
+        width: 90%;
+        height: 90%;
+
+        user-select: none;
+        pointer-events: none;
+
+    }
+
     &:not(.disabled) {
         cursor: pointer;
+
+        &:hover {
+            .visual-feedback {
+                --visual-feedback-color: color-mix(in srgb, var(--variant-color) 4%, transparent);
+                top: 0%;
+                left: 0%;
+                transition: var(--du) background-color ease-in-out,
+                    var(--du) width ease-in-out,
+                    var(--du) height ease-in-out,
+                    var(--du) left ease-in-out,
+                    var(--du) top ease-in-out,
+                    var(--du) var(--de) box-shadow ease-in-out;
+                border-radius: 0.125rem;
+                box-shadow: 0 0 0 var(--visual-feedback-offset) var(--visual-feedback-color);
+                background-color: var(--visual-feedback-color);
+                width: 100%;
+                height: 100%;
+            }
+        }
     }
 }

@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { isDefined } from '@togglecorp/fujs';
 import {
     getLayerName,
     MapOrder,
@@ -14,12 +16,14 @@ import { type } from 'arktype';
 import DefaultMapContainer from '#components/DefaultMapContainer';
 import BaseMap from '#components/domain/BaseMap';
 import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import MapZoomViewSelectInput, { MapZoomViewType } from '#components/domain/MapZoomViewSelectInput';
 import RasterTileMapSource from '#components/domain/RasterTileMapSource';
 import RasterTileServerInput from '#components/domain/RasterTileServerInput';
 import {
     defaultRasterTileServerInputValue,
     PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import { ProjectOverlayRasterTileServerConfig } from '#generated/types/graphql';
@@ -46,6 +50,8 @@ function OverlayRasterTileConfigInput(props: Props) {
         baseTileServer,
         zoomLevel,
     } = props;
+
+    const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     const error = getErrorObject(formError);
 
@@ -79,28 +85,38 @@ function OverlayRasterTileConfigInput(props: Props) {
                     aoiGeoJsonAssetId={aoiGeoJsonAssetId}
                     withoutPreview
                 />
-                <BaseMap baseTileServer={baseTileServer}>
-                    <DefaultMapContainer />
-                    <GeoJsonAssetMapSource
-                        geoJsonAssetId={aoiGeoJsonAssetId}
-                        zoomLevel={zoomLevel}
-                    />
-                    {!(tileConfigValue instanceof type.errors) && (
-                        <RasterTileMapSource
-                            tileConfig={tileConfigValue}
+                <ListLayout layout="block">
+                    <BaseMap baseTileServer={baseTileServer}>
+                        <DefaultMapContainer />
+                        <GeoJsonAssetMapSource
+                            geoJsonAssetId={aoiGeoJsonAssetId}
+                            zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
                         />
+                        {!(tileConfigValue instanceof type.errors) && (
+                            <RasterTileMapSource
+                                tileConfig={tileConfigValue}
+                            />
+                        )}
+                        <MapOrder
+                            ordering={[
+                                getLayerName('base-tile-source', 'base-tile-layer', true),
+                                getLayerName(
+                                    `overlay-raster-source-${value?.tileServer?.name}`,
+                                    `overlay-raster-layer-${value?.tileServer?.name}`,
+                                    true,
+                                ),
+                            ]}
+                        />
+                    </BaseMap>
+                    {isDefined(zoomLevel) && (
+                        <InlineLayout withCenteredContent>
+                            <MapZoomViewSelectInput
+                                value={zoomView}
+                                onChange={setZoomView}
+                            />
+                        </InlineLayout>
                     )}
-                    <MapOrder
-                        ordering={[
-                            getLayerName('base-tile-source', 'base-tile-layer', true),
-                            getLayerName(
-                                `overlay-raster-source-${value?.tileServer?.name}`,
-                                `overlay-raster-layer-${value?.tileServer?.name}`,
-                                true,
-                            ),
-                        ]}
-                    />
-                </BaseMap>
+                </ListLayout>
             </ListLayout>
         </>
     );

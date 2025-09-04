@@ -68,6 +68,7 @@ function CompareProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
+                zoomLevel={value?.zoomLevel}
             />
             <RasterTileServerInput
                 label="Tile server B"
@@ -76,6 +77,7 @@ function CompareProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerBInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
+                zoomLevel={value?.zoomLevel}
             />
             <NumberInput
                 label="Zoom level"

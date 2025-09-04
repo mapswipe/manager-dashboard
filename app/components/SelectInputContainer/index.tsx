@@ -27,34 +27,6 @@ import EmptyOptions from './EmptyOptions';
 
 import styles from './styles.module.css';
 
-interface GroupProps {
-    title: string;
-    children: React.ReactNode;
-    className?: string;
-    headerContainerClassName?: string;
-    childrenContainerClassName?: string;
-}
-function Group({
-    className,
-    title,
-    children,
-    headerContainerClassName,
-    childrenContainerClassName,
-}: GroupProps) {
-    return (
-        <div className={_cs(className, styles.group)}>
-            <header
-                className={_cs(headerContainerClassName, styles.groupHeader)}
-                title={title}
-            >
-                {title}
-            </header>
-            <div className={_cs(childrenContainerClassName, styles.groupChildren)}>
-                { children }
-            </div>
-        </div>
-    );
-}
 export type SelectInputContainerProps<
     OK extends OptionKey,
     N,
@@ -90,15 +62,7 @@ export type SelectInputContainerProps<
     hasValue: boolean;
     nonClearable?: boolean;
     onClear: () => void;
-}, OMISSION> & Omit<InputContainerProps, 'input' | 'inputId'> & ({
-    grouped: true;
-    groupLabelSelector: (option: O) => string;
-    groupKeySelector: (option: O) => string | number;
-} | {
-    grouped?: false;
-    groupLabelSelector?: undefined;
-    groupKeySelector?: undefined;
-});
+}, OMISSION> & Omit<InputContainerProps, 'input' | 'inputId'>;
 
 const emptyList: unknown[] = [];
 
@@ -118,7 +82,7 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         onOptionClick,
         searchText,
         onSearchTextChange,
-        optionContainerClassName,
+        // optionContainerClassName,
         optionKeySelector,
         optionRenderer,
         optionRendererParams,
@@ -255,26 +219,8 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
             contentRenderer: optionRenderer,
             onClick: handleOptionClick,
             onFocus: onFocusedKeyChange,
-            optionContainerClassName: _cs(optionContainerClassName, styles.listItem),
         }),
-        [
-            focusedKey,
-            handleOptionClick,
-            onFocusedKeyChange,
-            optionContainerClassName,
-            optionRenderer,
-            optionRendererParams,
-        ],
-    );
-
-    const groupRendererParams = useCallback(
-        (_: string | number, __: number, values: O[]) => ({
-            // eslint-disable-next-line react/destructuring-assignment
-            title: props.grouped ? props.groupLabelSelector(values[0]) : '?',
-        }),
-        // FIXME: disabling because linter is not smart enough
-        // eslint-disable-next-line react-hooks/exhaustive-deps, react/destructuring-assignment
-        [props.grouped, props.groupLabelSelector],
+        [focusedKey, handleOptionClick, onFocusedKeyChange, optionRenderer, optionRendererParams],
     );
 
     useBlurEffect(
@@ -295,33 +241,6 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         handleShowDropdown,
         handleOptionClick,
     );
-
-    let popup: React.ReactNode | null;
-    // eslint-disable-next-line react/destructuring-assignment
-    if (props.grouped) {
-        popup = (
-            <List
-                data={options}
-                keySelector={optionKeySelector}
-                renderer={GenericOption}
-                rendererParams={optionListRendererParams}
-                grouped
-                groupRenderer={Group}
-                groupRendererParams={groupRendererParams}
-                // eslint-disable-next-line react/destructuring-assignment
-                groupKeySelector={props.groupKeySelector}
-            />
-        );
-    } else {
-        popup = (
-            <List
-                data={options}
-                keySelector={optionKeySelector}
-                renderer={GenericOption}
-                rendererParams={optionListRendererParams}
-            />
-        );
-    }
 
     return (
         <>
@@ -391,7 +310,12 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
                         optionsPopupContentClassName,
                     )}
                 >
-                    {popup}
+                    <List
+                        data={options}
+                        keySelector={optionKeySelector}
+                        renderer={GenericOption}
+                        rendererParams={optionListRendererParams}
+                    />
                     <EmptyOptions
                         filtered={optionsFiltered}
                         pending={optionsPending}

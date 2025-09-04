@@ -32,8 +32,8 @@ import UserListItem from './UserListItem';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_GROUPS_LIST_QUERY = gql`
-query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit: Int, $pagination: OffsetPaginationInput, $includeAll: Boolean!= false) {
-    contributorUserGroups(pagination: {offset: $offset, limit: $limit}, filters: $filters, includeAll: $includeAll) {
+query UserGroupsList($filters: ContributorUserGroupFilter, $pagination: OffsetPaginationInput, $includeAll: Boolean!= false) {
+    contributorUserGroups(pagination: $pagination, filters: $filters, includeAll: $includeAll) {
         totalCount
         results {
             id
@@ -42,23 +42,6 @@ query UserGroupsList($filters: ContributorUserGroupFilter, $offset: Int!, $limit
             name
             membersCount
             description
-            userMemberships(pagination: $pagination) {
-                results {
-                    id
-                    user {
-                        username
-                        id
-                    }
-                }
-                pageInfo {
-                    limit
-                    offset
-                }
-            }
-        }
-        pageInfo {
-            limit
-            offset
         }
     }
 }
@@ -108,11 +91,9 @@ function UserGroups(props: Props) {
             },
             includeAll: true,
             pagination: {
-                offset: 0,
-                limit: 5,
+                offset: (activePage - 1) * pagePerItem,
+                limit: pagePerItem,
             },
-            offset: (activePage - 1) * pagePerItem,
-            limit: pagePerItem,
         },
     });
 
@@ -141,11 +122,11 @@ function UserGroups(props: Props) {
             headerActions={(
                 <Button
                     name={undefined}
-                    styleVariant="filled"
+                    styleVariant="translucent"
                     colorVariant="accent"
                     onClick={setShowAddModalTrue}
                 >
-                    Add User Group
+                    New User Group
                 </Button>
             )}
             aside={(
@@ -170,8 +151,8 @@ function UserGroups(props: Props) {
                     <Button
                         name={undefined}
                         onClick={handleClearFilterButtonClick}
-                        spacing="sm"
                         colorVariant="danger"
+                        styleVariant="translucent"
                     >
                         Clear filters
                     </Button>

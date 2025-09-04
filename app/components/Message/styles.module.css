@@ -3,7 +3,7 @@
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    padding: var(--spacing-medium);
+    padding: var(--spacing-md);
     color: var(--color-text-faint);
 
     .icon {

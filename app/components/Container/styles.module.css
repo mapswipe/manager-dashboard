@@ -32,6 +32,14 @@
 
     }
 
+    &.with-welled-content {
+        >.content {
+            border-radius: var(--radius-card-border);
+            box-shadow: 0 0 var(--radius-blur-shadow) var(--color-shadow) inset;
+            background-color: var(--color-background);
+        }
+    }
+
     .description:empty {
         display: none;
     }

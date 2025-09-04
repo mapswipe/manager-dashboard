@@ -6,18 +6,11 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import ListLayout from '#components/ListLayout';
 import Portal from '#components/Portal';
+import { SpacingType } from '#utils/styles';
 
 import styles from './styles.module.css';
-
-export interface PopupProps {
-    className?: string;
-    contentClassName?: string;
-    parentRef: React.RefObject<HTMLElement>;
-    elementRef?: React.RefObject<HTMLDivElement>;
-    children: React.ReactNode;
-    freeWidth?: boolean;
-}
 
 const defaultPlacement = {
     top: 'unset',
@@ -122,6 +115,16 @@ function useAttachedFloatingPlacement(parentRef: React.RefObject<HTMLElement>) {
     return placement;
 }
 
+export interface PopupProps {
+    className?: string;
+    contentClassName?: string;
+    parentRef: React.RefObject<HTMLElement>;
+    elementRef?: React.RefObject<HTMLDivElement>;
+    children: React.ReactNode;
+    freeWidth?: boolean;
+    spacing?: SpacingType;
+}
+
 function Popup(props: PopupProps) {
     const {
         parentRef,
@@ -130,6 +133,7 @@ function Popup(props: PopupProps) {
         contentClassName,
         freeWidth,
         elementRef,
+        spacing,
     } = props;
 
     const {
@@ -153,15 +157,18 @@ function Popup(props: PopupProps) {
                 )}
             >
                 <div className={styles.tip} />
-                <div
+                <ListLayout
                     className={_cs(styles.content, contentClassName)}
                     style={{
                         minWidth: !freeWidth ? width : undefined,
                         maxHeight,
                     }}
+                    layout="block"
+                    spacing={spacing}
+                    withPadding
                 >
                     { children }
-                </div>
+                </ListLayout>
             </div>
         </Portal>
     );

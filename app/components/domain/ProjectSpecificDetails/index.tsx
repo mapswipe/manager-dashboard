@@ -1,10 +1,12 @@
 import { isNotDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
-import Container from '#components/Container';
+import Container, { ContainerProps } from '#components/Container';
 import { useProjectSpecificDetailsQuery } from '#generated/types/graphql';
 import { PROJECT_TYPE_SPECIFIC_FRAGMENT } from '#utils/query';
+import { SpacingType } from '#utils/styles';
 
+import ProjectTypeOutput from '../ProjectTypeOutput';
 import CompareDetails from './CompareDetails';
 import CompletenessDetails from './CompletenessDetails';
 import FindDetails from './FindDetails';
@@ -29,10 +31,22 @@ ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 
 interface Props {
     projectId: string;
+    headingLevel?: ContainerProps['headingLevel'];
+    withContentBackgroundAndPadding?: boolean;
+    withWelledContent?: boolean;
+    withHeaderBorder?: boolean;
+    spacing?: SpacingType;
 }
 
 function ProjectSpecificDetails(props: Props) {
-    const { projectId } = props;
+    const {
+        projectId,
+        headingLevel = 4,
+        withContentBackgroundAndPadding,
+        withHeaderBorder,
+        spacing,
+        withWelledContent,
+    } = props;
 
     const [{
         data: projectData,
@@ -52,9 +66,12 @@ function ProjectSpecificDetails(props: Props) {
             errored={!!projectDataError}
             errorMessage={projectDataError?.message}
             pending={projectDataPending}
-            heading={`${projectData.project.projectType.replace('_', ' ')} specific details`}
-            headingLevel={4}
-            withHeaderBorder
+            heading={<ProjectTypeOutput value={projectData.project.projectType} />}
+            headingLevel={headingLevel}
+            withHeaderBorder={withHeaderBorder}
+            withContentBackgroundAndPadding={withContentBackgroundAndPadding}
+            spacing={spacing}
+            withWelledContent={withWelledContent}
         >
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (

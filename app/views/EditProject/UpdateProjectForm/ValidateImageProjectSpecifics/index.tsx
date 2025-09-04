@@ -186,7 +186,7 @@ function ValidateProjectSpecifics(props: Props) {
         disabled,
     } = props;
 
-    const { ValidateImageSourceTypeEnum: sourceTypeOptions } = useContext(EnumsContext);
+    const { validateImageSourceTypeOptions: sourceTypeOptions } = useContext(EnumsContext);
     const alert = useAlert();
     const [activeAssetsPage, setActiveAssetsPage] = useState(DEFAULT_PAGE);
     const [assetsPerPage, setAssetsPerPage] = useState(DEFAULT_PAGE_SIZE);

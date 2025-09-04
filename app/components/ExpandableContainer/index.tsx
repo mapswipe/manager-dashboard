@@ -1,26 +1,28 @@
 import { useCallback } from 'react';
 import {
-    IoIosArrowDown,
-    IoIosArrowUp,
-} from 'react-icons/io';
+    PiCaretDown,
+    PiCaretUp,
+} from 'react-icons/pi';
 
 import Button from '#components/Button';
-import Container, { type Props as ContainerProps } from '#components/Container';
+import Container, { type ContainerProps } from '#components/Container';
 
 interface Props<NAME> extends ContainerProps {
     name: NAME,
-    initallyExpanded?: boolean;
     isExpanded?: boolean;
     onExpansionChange?: (v: boolean, name: NAME) => void;
+    alwaysVisibleContent?: React.ReactNode;
+    className?: string;
 }
 
 function ExpandableContainer<NAME>(props: Props<NAME>) {
     const {
         children,
         isExpanded,
-        headerActions,
+        footerActions,
         onExpansionChange,
         name,
+        alwaysVisibleContent,
         ...containerProps
     } = props;
 
@@ -32,24 +34,21 @@ function ExpandableContainer<NAME>(props: Props<NAME>) {
         <Container
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...containerProps}
-            headerActions={(
+            footerActions={(
                 <>
-                    {headerActions}
+                    {footerActions}
                     <Button
                         name={!isExpanded}
                         onClick={handleExpandButtonClick}
                         styleVariant="action"
-                        title={isExpanded ? 'Collapse' : 'Expand'}
+                        start={isExpanded ? <PiCaretUp /> : <PiCaretDown />}
                     >
-                        {isExpanded ? (
-                            <IoIosArrowUp />
-                        ) : (
-                            <IoIosArrowDown />
-                        )}
+                        {isExpanded ? 'Hide details' : 'Show details'}
                     </Button>
                 </>
             )}
         >
+            {alwaysVisibleContent}
             {isExpanded && children}
         </Container>
     );

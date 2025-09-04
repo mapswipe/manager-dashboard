@@ -3,10 +3,7 @@ import {
     useEffect,
     useMemo,
 } from 'react';
-import {
-    MdArrowForward,
-    MdSave,
-} from 'react-icons/md';
+import { PiFloppyDisk } from 'react-icons/pi';
 import {
     isDefined,
     isNotDefined,
@@ -22,7 +19,8 @@ import { ulid } from 'ulid';
 
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
-import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
+import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
+import ProjectTypeOutput from '#components/domain/ProjectTypeOutput/index.tsx';
 import InputError from '#components/InputError/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
@@ -33,7 +31,6 @@ import {
     ProjectUpdateInput,
     useProjectStatusQuery,
     useUpdateProjectMutation,
-    useUpdateProjectStatusMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert.ts';
 import useOptions from '#hooks/useOptions';
@@ -118,11 +115,6 @@ function UpdateProjectForm(props: Props) {
         projectData.project.status,
         execProjectStatusQuery,
     ]);
-
-    const [
-        { fetching: updateProjectStatusPending },
-        updateProjectStatus,
-    ] = useUpdateProjectStatusMutation();
 
     const [
         { fetching: updateProjectPending },
@@ -306,71 +298,6 @@ function UpdateProjectForm(props: Props) {
         [validate, setError, handleUpdateDraft],
     );
 
-    const handleSubmitForProcessingClick = useCallback(async () => {
-        try {
-            const result = await updateProjectStatus({
-                id: projectData.project.id,
-                data: {
-                    status: ProjectStatusEnum.MarkedAsReady,
-                    clientId: projectData.project.clientId,
-                },
-            });
-
-            if (checkAndAlertGraphQLResultError(result, alert)) {
-                return;
-            }
-
-            if (
-                isNotDefined(result.data)
-                // eslint-disable-next-line no-underscore-dangle
-                || result.data.updateProjectStatus.__typename !== 'ProjectTypeMutationResponseType'
-            ) {
-                alert.show(
-                    'Failed to update the Project status!',
-                    {
-                        description: 'Unexpectected response from the server!',
-                        variant: 'danger',
-                    },
-                );
-
-                return;
-            }
-
-            const {
-                ok,
-                errors,
-                // result,
-            } = result.data.updateProjectStatus;
-
-            if (!ok) {
-                alert.show(
-                    'Failed to update the Project status!',
-                    {
-                        description: 'Please fix the errors and try again!',
-                        variant: 'danger',
-                    },
-                );
-
-                setError(transformErrors(errors));
-
-                return;
-            }
-
-            alert.show(
-                'Project status updated successfully!',
-                { variant: 'success' },
-            );
-        } catch (apolloError) {
-            alertCombinedError(apolloError, alert);
-        }
-    }, [
-        alert,
-        projectData.project.clientId,
-        projectData.project.id,
-        setError,
-        updateProjectStatus,
-    ]);
-
     const setProjectSpecificFieldValue = useFormObject<'projectTypeSpecifics', PartialProjectTypeSpecificInput>(
         'projectTypeSpecifics',
         setFieldValue,
@@ -407,7 +334,7 @@ function UpdateProjectForm(props: Props) {
         defaultCompletenessSpecificFormValue,
     );
 
-    const pending = updateProjectPending || updateProjectStatusPending;
+    const pending = updateProjectPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
         || projectData.project.status === ProjectStatusEnum.Failed
@@ -444,29 +371,19 @@ function UpdateProjectForm(props: Props) {
                 />
             ))}
             footerActions={(
-                <>
-                    <Button
-                        name={undefined}
-                        onClick={handleUpdateDraftButtonClick}
-                        disabled={baseInputsDisabled}
-                        start={<MdSave />}
-                    >
-                        Save Project
-                    </Button>
-                    <Button
-                        name={undefined}
-                        onClick={handleSubmitForProcessingClick}
-                        disabled={baseInputsDisabled}
-                        colorVariant="accent"
-                        styleVariant="filled"
-                        end={<MdArrowForward />}
-                    >
-                        Submit for Processing
-                    </Button>
-                </>
+                <Button
+                    name={undefined}
+                    colorVariant="accent"
+                    styleVariant="filled"
+                    onClick={handleUpdateDraftButtonClick}
+                    disabled={baseInputsDisabled}
+                    start={<PiFloppyDisk />}
+                >
+                    Update draft
+                </Button>
             )}
             aside={(
-                <ProjectStatusOutput
+                <ProjectStatusTimeline
                     value={projectData?.project.status}
                 />
             )}
@@ -491,14 +408,14 @@ function UpdateProjectForm(props: Props) {
                 disabled={baseInputsDisabled}
             />
             <Container
-                withHeaderBorder
                 spacing="lg"
-                heading={`${projectContext.projectType.replace('_', ' ')} specific details`}
+                heading={<ProjectTypeOutput value={projectData.project.projectType} />}
                 headerDescription={(
                     <NonFieldError
                         error={error?.projectTypeSpecifics}
                     />
                 )}
+                withContentBackgroundAndPadding
             >
                 {projectContext.projectType === ProjectTypeEnum.Find && (
                     <FindProjectSpecifics

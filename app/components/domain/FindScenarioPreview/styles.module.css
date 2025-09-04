@@ -1,0 +1,13 @@
+.find-scenario-preview {
+    isolation: isolate;
+
+    .content {
+        padding-top: var(--spacing-lg);
+
+        .map-container {
+            z-index: 0;
+            width: calc(var(--size-tile-find) * 2);
+            height: calc(var(--size-tile-find) * 3);
+        }
+    }
+}

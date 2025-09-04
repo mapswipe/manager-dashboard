@@ -1,8 +1,15 @@
+import { useState } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
-import TextOutput from '#components/TextOutput';
+import DefaultMapContainer from '#components/DefaultMapContainer';
+import BaseMap from '#components/domain/BaseMap';
+import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import MapZoomViewSelectInput, { MapZoomViewType } from '#components/domain/MapZoomViewSelectInput';
+import RasterTileServerOutput from '#components/domain/RasterTileServerOutput';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
+import ZoomLevelOutput from '#components/ZoomLevelOutput';
 import { CompareProjectPropertyType } from '#generated/types/graphql';
 
 interface Props {
@@ -11,6 +18,7 @@ interface Props {
 
 function CompareDetails(props: Props) {
     const { data } = props;
+    const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     if (isNotDefined(data)) {
         return null;
@@ -18,14 +26,47 @@ function CompareDetails(props: Props) {
 
     return (
         <>
-            <TextOutput
-                label="Zoom level"
-                value={data?.zoomLevel}
+            <ZoomLevelOutput
+                value={data.zoomLevel}
             />
-            <ProjectAssetPreview
-                assetId={data?.aoiGeometry}
-                geoJsonTileServer={removeNull(data?.tileServerProperty)}
-            />
+            <ListLayout layout="grid">
+                <BaseMap baseTileServer={removeNull(data.tileServerProperty)}>
+                    <DefaultMapContainer compact />
+                    <GeoJsonAssetMapSource
+                        geoJsonAssetId={data.aoiGeometry}
+                        zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                    />
+                </BaseMap>
+                <RasterTileServerOutput
+                    value={data.tileServerProperty}
+                    withPadding
+                    withHeaderBorder
+                />
+            </ListLayout>
+            <ListLayout layout="grid">
+                <BaseMap baseTileServer={removeNull(data.tileServerBProperty)}>
+                    <DefaultMapContainer compact />
+                    <GeoJsonAssetMapSource
+                        geoJsonAssetId={data.aoiGeometry}
+                        zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                    />
+                </BaseMap>
+                <RasterTileServerOutput
+                    value={data.tileServerBProperty}
+                    heading="Tile Server B"
+                    withPadding
+                    withHeaderBorder
+                />
+            </ListLayout>
+            <ListLayout layout="grid">
+                <InlineLayout withCenteredContent>
+                    <MapZoomViewSelectInput
+                        value={zoomView}
+                        onChange={setZoomView}
+                    />
+                </InlineLayout>
+                <div />
+            </ListLayout>
         </>
     );
 }

@@ -1,8 +1,8 @@
 .preview {
     background-color: var(--color-background-input);
     width: 100%;
-    max-width: 20rem;
-    height: 16rem;
+    max-width: 16rem;
+    height: 14rem;
     object-fit: contain;
     object-position: center center;
 }
@@ -14,6 +14,6 @@
     background-color: var(--color-background-input);
     padding: var(--spacing-sm);
     width: 100%;
-    max-width: 20rem;
-    height: 16rem;
+    max-width: 16rem;
+    height: 14rem;
 }

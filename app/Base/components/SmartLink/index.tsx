@@ -1,21 +1,27 @@
+import { IoChevronForward } from 'react-icons/io5';
 import {
     Link,
     LinkProps,
 } from 'react-router';
+import { _cs } from '@togglecorp/fujs';
 
 import useRouteMatching, {
     Attrs,
     RouteData,
 } from '#base/hooks/useRouteMatching';
-import ButtonLayout, { type Props as ButtonLayoutProps } from '#components/ButtonLayout';
+import ButtonLayout, { ButtonLayoutProps } from '#components/ButtonLayout';
+
+import styles from './styles.module.css';
 
 export type Props = Omit<LinkProps, 'to'> & ButtonLayoutProps & {
     route: RouteData;
     attrs?: Attrs;
+    withLinkIcon?: boolean,
 };
 
 function SmartLink(props: Props) {
     const {
+        withLinkIcon,
         route,
         attrs,
         className,
@@ -41,12 +47,18 @@ function SmartLink(props: Props) {
         <Link
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
+            className={styles.smartLink}
             to={routeData.to}
         >
             <ButtonLayout
-                className={className}
+                className={_cs(className, styles.buttonLayout)}
                 start={start}
-                end={end}
+                end={(
+                    <>
+                        {withLinkIcon && <IoChevronForward className={styles.linkIcon} />}
+                        {end}
+                    </>
+                )}
                 startContainerClassName={startContainerClassName}
                 endContainerClassName={endContainerClassName}
                 childrenContainerClassName={childrenContainerClassName}

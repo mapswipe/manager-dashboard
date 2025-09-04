@@ -1,25 +1,29 @@
-import { useMemo } from 'react';
 import {
-    _cs,
+    useMemo,
+    useState,
+} from 'react';
+import {
+    isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
     getLayerName,
-    MapContainer,
     MapOrder,
 } from '@togglecorp/re-map';
 import { type } from 'arktype';
 
+import DefaultMapContainer from '#components/DefaultMapContainer';
 import BaseMap from '#components/domain/BaseMap';
 import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import MapZoomViewSelectInput, { MapZoomViewType } from '#components/domain/MapZoomViewSelectInput';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 import { vectorTileServerNameToTileInputKey } from '#components/domain/VectorTileServerInput/schema';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import { ProjectOverlayVectorTileServerConfig } from '#generated/types/graphql';
 
 import { PartialOverlayVectorTileConfigInputFields } from '../schema';
-
-import styles from './styles.module.css';
 
 interface Props {
     className?: string;
@@ -37,6 +41,8 @@ function VectorTilePreview(props: Props) {
         aoiGeometryAssetId,
         zoomLevel,
     } = props;
+
+    const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     const sourceLayer = useMemo(() => {
         if (isNotDefined(vectorTileConfig) || isNotDefined(vectorTileConfig.tileServer)) {
@@ -61,35 +67,46 @@ function VectorTilePreview(props: Props) {
     );
 
     return (
-        <BaseMap baseTileServer={baseTileServer}>
-            <MapContainer
-                className={_cs(styles.vectorTilePreview, className)}
-            />
-            {!(vectorTileConfigValue instanceof type.errors) && (
-                <VectorTileMapSource
-                    tileConfig={vectorTileConfigValue}
+        <ListLayout
+            layout="block"
+            className={className}
+        >
+            <BaseMap baseTileServer={baseTileServer}>
+                <DefaultMapContainer compact />
+                {!(vectorTileConfigValue instanceof type.errors) && (
+                    <VectorTileMapSource
+                        tileConfig={vectorTileConfigValue}
+                    />
+                )}
+                <GeoJsonAssetMapSource
+                    geoJsonAssetId={aoiGeometryAssetId}
+                    zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
                 />
+                <MapOrder
+                    ordering={[
+                        getLayerName('base-tile-source', 'base-tile-layer', true),
+                        getLayerName(
+                            `overlay-source-${vectorTileConfig?.tileServer?.name}`,
+                            `overlay-fill-layer-${sourceLayer}`,
+                            true,
+                        ),
+                        getLayerName(
+                            `overlay-source-${vectorTileConfig?.tileServer?.name}`,
+                            `overlay-line-layer-${sourceLayer}`,
+                            true,
+                        ),
+                    ]}
+                />
+            </BaseMap>
+            {isDefined(zoomLevel) && (
+                <InlineLayout withCenteredContent>
+                    <MapZoomViewSelectInput
+                        value={zoomView}
+                        onChange={setZoomView}
+                    />
+                </InlineLayout>
             )}
-            <GeoJsonAssetMapSource
-                geoJsonAssetId={aoiGeometryAssetId}
-                zoomLevel={zoomLevel}
-            />
-            <MapOrder
-                ordering={[
-                    getLayerName('base-tile-source', 'base-tile-layer', true),
-                    getLayerName(
-                        `overlay-source-${vectorTileConfig?.tileServer?.name}`,
-                        `overlay-fill-layer-${sourceLayer}`,
-                        true,
-                    ),
-                    getLayerName(
-                        `overlay-source-${vectorTileConfig?.tileServer?.name}`,
-                        `overlay-line-layer-${sourceLayer}`,
-                        true,
-                    ),
-                ]}
-            />
-        </BaseMap>
+        </ListLayout>
     );
 }
 

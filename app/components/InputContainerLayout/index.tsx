@@ -15,6 +15,8 @@ import styles from './styles.module.css';
 export interface Props {
     inputId: string;
     className?: string;
+    focusedClassName?: string;
+    hoveredClassName?: string;
     children: React.ReactNode;
     label?: React.ReactNode;
     hint?: React.ReactNode;
@@ -35,6 +37,8 @@ function InputContainerLayout(props: Props) {
         children,
         label,
         readOnly,
+        focusedClassName,
+        hoveredClassName,
     } = props;
 
     const [focused, setFocused] = useState<boolean>(false);
@@ -58,6 +62,7 @@ function InputContainerLayout(props: Props) {
 
     return (
         <InputInteractivityContext.Provider value={interactivityContextValue}>
+            {/* FIXME: use ListLayout */}
             <div
                 ref={elementRef}
                 className={_cs(
@@ -65,6 +70,8 @@ function InputContainerLayout(props: Props) {
                     styles.inputContainerLayout,
                     disabled && styles.disabled,
                     readOnly && styles.readOnly,
+                    focused && focusedClassName,
+                    hovered && hoveredClassName,
                 )}
                 onFocus={handleMouseOver}
                 onBlur={handleMouseOut}

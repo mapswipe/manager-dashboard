@@ -1,0 +1,14 @@
+.option {
+    width: 100%;
+    text-align: start;
+
+    .area {
+        color: var(--color-text-light);
+        font-size: var(--font-size-xs);
+    }
+
+    .description {
+        opacity: 0.6;
+        font-size: var(--font-size-sm);
+    }
+}

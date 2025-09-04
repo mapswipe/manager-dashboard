@@ -13,7 +13,7 @@ export interface ContentBaseProps {
     containerClassName?: string;
     title?: string;
 }
-export type OptionKey = string | number;
+export type OptionKey = string | number | boolean;
 
 export interface GenericOptionParams<P extends ContentBaseProps, OK extends OptionKey, O> {
     optionContainerClassName?: string;

@@ -50,7 +50,7 @@ function OverlayTileServerPropertyInput(props: Props) {
         zoomLevel,
     } = props;
 
-    const { OverlayLayerTypeEnum: overlayLayerTypeOptions } = useContext(EnumsContext);
+    const { overlayLayerTypeOptions } = useContext(EnumsContext);
 
     const error = getErrorObject(formError);
 

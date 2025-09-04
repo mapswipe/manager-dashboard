@@ -2,6 +2,7 @@ import {
     useCallback,
     useContext,
     useMemo,
+    useState,
 } from 'react';
 import {
     isDefined,
@@ -17,8 +18,9 @@ import {
 
 import EnumsContext from '#base/context/EnumsContext';
 import TileServerContext from '#base/context/TileServerContext';
-import Container, { type Props as ContainerProps } from '#components/Container';
-import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
+import Container, { type ContainerProps } from '#components/Container';
+import DefaultMapContainer from '#components/DefaultMapContainer';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
@@ -29,6 +31,9 @@ import {
     labelSelector,
 } from '#utils/common';
 
+import BaseMap from '../BaseMap';
+import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
+import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
 import {
     PartialCommonRasterTileServerConfigFields,
     PartialCustomRasterTileServerConfigFields,
@@ -49,6 +54,7 @@ interface Props {
     containerSpacing?: ContainerProps['spacing'];
     containerHeadingLevel?: ContainerProps['headingLevel'];
     withoutPreview?: boolean;
+    zoomLevel?: number;
 }
 
 function RasterTileServerInput(props: Props) {
@@ -64,13 +70,13 @@ function RasterTileServerInput(props: Props) {
         containerSpacing,
         containerHeadingLevel = 4,
         withoutPreview = false,
+        zoomLevel,
     } = props;
 
     const error = getErrorObject(formError);
 
-    const {
-        RasterTileServerNameEnum: rasterTileServerNameOptions,
-    } = useContext(EnumsContext);
+    const { rasterTileServerNameOptions } = useContext(EnumsContext);
+    const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     const fieldName = (isDefined(value)
         && isDefined(value.name)
@@ -125,7 +131,7 @@ function RasterTileServerInput(props: Props) {
             >
                 <ListLayout layout="block">
                     <RadioInput
-                        label="Imagery Server"
+                        label="Imagery server"
                         name="name"
                         options={rasterTileServerNameOptions ?? []}
                         value={value?.name}
@@ -142,7 +148,7 @@ function RasterTileServerInput(props: Props) {
                         && (
                             <TextInput
                                 name="credits"
-                                label="Imagery Credits"
+                                label="Imagery credits"
                                 value={value[fieldName]?.credits}
                                 error={getErrorObject(error?.[fieldName])?.credits}
                                 onChange={setCommonRasterTileServerFieldValue}
@@ -194,10 +200,23 @@ function RasterTileServerInput(props: Props) {
                         )}
                 </ListLayout>
                 {!withoutPreview && (
-                    <ProjectAssetPreview
-                        assetId={aoiGeoJsonAssetId}
-                        geoJsonTileServer={value}
-                    />
+                    <ListLayout layout="block">
+                        <BaseMap baseTileServer={value}>
+                            <DefaultMapContainer compact />
+                            <GeoJsonAssetMapSource
+                                geoJsonAssetId={aoiGeoJsonAssetId}
+                                zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
+                            />
+                        </BaseMap>
+                        {isDefined(zoomLevel) && (
+                            <InlineLayout withCenteredContent>
+                                <MapZoomViewSelectInput
+                                    value={zoomView}
+                                    onChange={setZoomView}
+                                />
+                            </InlineLayout>
+                        )}
+                    </ListLayout>
                 )}
             </ListLayout>
         </Container>

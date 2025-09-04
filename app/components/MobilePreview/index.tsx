@@ -101,12 +101,14 @@ function MobilePreview(props: Props) {
                         withPadding
                         spacing="sm"
                     >
-                        <div className={styles.title}>
-                            {popupTitle}
-                        </div>
-                        <div className={styles.description}>
-                            {popupDescription}
-                        </div>
+                        <BlockLayout>
+                            <div className={styles.title}>
+                                {popupTitle}
+                            </div>
+                            <div className={styles.description}>
+                                {popupDescription}
+                            </div>
+                        </BlockLayout>
                     </InlineLayout>
                 )}
                 {children}

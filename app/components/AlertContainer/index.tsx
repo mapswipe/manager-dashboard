@@ -8,6 +8,7 @@ import { _cs } from '@togglecorp/fujs';
 
 import AlertContext from '#base/context/AlertContext';
 import Alert from '#components/Alert';
+import ListLayout from '#components/ListLayout';
 import Portal from '#components/Portal';
 import { DEFAULT_ALERT_DISMISS_DURATION } from '#utils/common';
 
@@ -63,7 +64,11 @@ function AlertContainer(props: Props) {
 
     return (
         <Portal>
-            <div className={_cs(styles.alertContainer, className)}>
+            <ListLayout
+                className={_cs(styles.alertContainer, className)}
+                layout="block"
+                spacing="sm"
+            >
                 {alerts.map((alert) => (
                     <Alert
                         key={alert.name}
@@ -78,7 +83,7 @@ function AlertContainer(props: Props) {
                     />
                 ))}
                 {children}
-            </div>
+            </ListLayout>
         </Portal>
     );
 }

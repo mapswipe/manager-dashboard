@@ -12,7 +12,7 @@ import {
     defaultRasterTileServerInputValue,
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
-import NumberInput from '#components/NumberInput';
+import ZoomLevelSelectInput from '#components/ZoomLevelSelectInput';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
 import { type PartialFindSpecificFields } from './schema';
@@ -52,7 +52,9 @@ function FindProjectSpecifics(props: Props) {
                 value={value?.aoiGeometry}
                 error={error?.aoiGeometry}
                 inputType={ProjectAssetInputTypeEnum.AoiGeometry}
-                hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
+                // FIXME: add appropriate hint and validation
+                // hint="Upload your project area as GeoJSON File (max. 1MB).
+                // Make sure that you provide a single polygon geometry."
                 disabled={disabled}
                 withoutPreview
             />
@@ -62,9 +64,9 @@ function FindProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
+                zoomLevel={value?.zoomLevel}
             />
-            <NumberInput
-                label="Zoom level"
+            <ZoomLevelSelectInput
                 name="zoomLevel"
                 value={value?.zoomLevel}
                 onChange={setFieldValue}

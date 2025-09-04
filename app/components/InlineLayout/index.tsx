@@ -23,6 +23,11 @@ export interface Props {
     spacing?: SpacingType;
     spacingOffset?: number;
     withPadding?: boolean;
+    withWrap?: boolean;
+    withCenteredContent?: boolean;
+    withCenterAlign?: boolean;
+    withEndAlign?: boolean;
+    withFullWidth?: boolean;
 }
 
 function InlineLayout(props: Props) {
@@ -38,6 +43,11 @@ function InlineLayout(props: Props) {
         spacing,
         spacingOffset,
         withPadding,
+        withWrap,
+        withCenteredContent,
+        withCenterAlign,
+        withEndAlign,
+        withFullWidth,
     } = props;
 
     const spacingModes = useMemo<SpacingMode[]>(() => {
@@ -65,6 +75,11 @@ function InlineLayout(props: Props) {
             className={_cs(
                 styles.inlineLayout,
                 spacingClassName,
+                withWrap && styles.withWrap,
+                withCenteredContent && styles.withCenteredContent,
+                withCenterAlign && styles.withCenterAlign,
+                withEndAlign && styles.withEndAlign,
+                withFullWidth && styles.withFullWidth,
                 className,
             )}
         >

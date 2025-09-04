@@ -11,7 +11,7 @@
 
     .header-row {
         .header-cell {
-            padding: var(--spacing-medium);
+            padding: var(--spacing-md);
             text-align: left;
         }
     }
@@ -19,7 +19,7 @@
     .row {
         .cell {
             border-top: 1px solid rgba(0, 0, 0, .1);
-            padding: var(--spacing-medium);
+            padding: var(--spacing-md);
             overflow: hidden;
         }
     }

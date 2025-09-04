@@ -10,6 +10,7 @@ import {
 import Checkbox from '#components/Checkbox';
 import InputLabel from '#components/InputLabel';
 import ListLayout from '#components/ListLayout';
+import { SpacingType } from '#utils/styles';
 
 type Key = string | number;
 
@@ -22,6 +23,7 @@ interface Props<NAME, VALUE, OPTION> {
     labelSelector: (option: OPTION) => React.ReactNode;
     disabled?: boolean;
     label?: React.ReactNode;
+    spacing?: SpacingType;
 }
 
 function Checklist<const NAME, VALUE extends Key, OPTION>(props: Props<NAME, VALUE, OPTION>) {
@@ -34,6 +36,7 @@ function Checklist<const NAME, VALUE extends Key, OPTION>(props: Props<NAME, VAL
         labelSelector,
         label,
         disabled,
+        spacing,
     } = props;
 
     const inputId = useId();
@@ -64,7 +67,8 @@ function Checklist<const NAME, VALUE extends Key, OPTION>(props: Props<NAME, VAL
     return (
         <ListLayout
             layout="block"
-            spacing="sm"
+            spacingOffset={-1}
+            spacing={spacing}
         >
             <InputLabel inputId={inputId}>
                 {label}

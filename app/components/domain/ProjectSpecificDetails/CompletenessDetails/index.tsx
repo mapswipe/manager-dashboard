@@ -1,18 +1,19 @@
+import { useState } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import Container from '#components/Container';
 import DefaultMapContainer from '#components/DefaultMapContainer';
 import BaseMap from '#components/domain/BaseMap';
 import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import MapZoomViewSelectInput, { MapZoomViewType } from '#components/domain/MapZoomViewSelectInput';
+import OverlayTileServerConfigOutput from '#components/domain/OverlayTileServerConfigOutput';
+import RasterTileMapSource from '#components/domain/RasterTileMapSource';
+import RasterTileServerOutput from '#components/domain/RasterTileServerOutput';
 import VectorTileMapSource from '#components/domain/VectorTileMapSource';
-import GridLayoutItem from '#components/GridLayoutItem';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
-import TextOutput from '#components/TextOutput';
-import {
-    ProjectSpecificDetailsQuery,
-    RasterTileServerNameEnum,
-} from '#generated/types/graphql';
+import ZoomLevelOutput from '#components/ZoomLevelOutput';
+import { ProjectSpecificDetailsQuery } from '#generated/types/graphql';
 
 interface Props {
     data: ProjectSpecificDetailsQuery['project']['projectTypeSpecifics'];
@@ -20,6 +21,7 @@ interface Props {
 
 function CompletenessDetails(props: Props) {
     const { data } = props;
+    const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     // eslint-disable-next-line no-underscore-dangle
     if (isNotDefined(data) || data.__typename !== 'CompletenessProjectPropertyType') {
@@ -27,58 +29,47 @@ function CompletenessDetails(props: Props) {
     }
 
     return (
-        <ListLayout
-            layout="grid"
-            numPreferredGridColumns={4}
-            minGridColumnSize="9rem"
-        >
-            <ListLayout
-                layout="block"
-            >
-                <TextOutput
-                    label="Zoom level"
-                    value={data?.zoomLevel}
-                />
-                <Container
-                    heading="Base tile"
-                    headingLevel={6}
-                    spacing="sm"
-                >
-                    <TextOutput
-                        label="Tile Server"
-                        value={data?.tileServerProperty.name}
-                    />
-                    {data.tileServerProperty.name === RasterTileServerNameEnum.Custom && (
-                        <TextOutput
-                            label="Custom URL"
-                            value={data?.tileServerProperty.custom?.url}
+        <>
+            <ZoomLevelOutput
+                value={data.zoomLevel}
+            />
+            <ListLayout layout="grid">
+                <ListLayout layout="block">
+                    <BaseMap baseTileServer={removeNull(data.tileServerProperty)}>
+                        <DefaultMapContainer />
+                        <VectorTileMapSource
+                            tileConfig={removeNull(data.overlayTileServerProperty.vector)}
                         />
-                    )}
-                </Container>
-                <Container
-                    heading="Overlay tile"
-                    headingLevel={6}
-                    spacing="sm"
-                >
-                    <TextOutput
-                        label="Type"
-                        value={data?.overlayTileServerProperty.type}
+                        <RasterTileMapSource
+                            tileConfig={removeNull(data.overlayTileServerProperty.raster)}
+                        />
+                        <GeoJsonAssetMapSource
+                            geoJsonAssetId={data.aoiGeometry}
+                            zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                        />
+                    </BaseMap>
+                    <InlineLayout withCenteredContent>
+                        <MapZoomViewSelectInput
+                            value={zoomView}
+                            onChange={setZoomView}
+                        />
+                    </InlineLayout>
+                </ListLayout>
+                <ListLayout layout="block">
+                    <RasterTileServerOutput
+                        heading="Base tile server"
+                        value={data.tileServerProperty}
+                        withPadding
+                        withHeaderBorder
                     />
-                </Container>
+                    <OverlayTileServerConfigOutput
+                        value={data.overlayTileServerProperty}
+                        withPadding
+                        withHeaderBorder
+                    />
+                </ListLayout>
             </ListLayout>
-            <GridLayoutItem columnSpan={3}>
-                <BaseMap baseTileServer={removeNull(data.tileServerProperty)}>
-                    <DefaultMapContainer />
-                    <VectorTileMapSource
-                        tileConfig={removeNull(data.overlayTileServerProperty.vector)}
-                    />
-                    <GeoJsonAssetMapSource
-                        geoJsonAssetId={data.aoiGeometry}
-                        zoomLevel={data.zoomLevel}
-                    />
-                </BaseMap>
-            </GridLayoutItem>
-        </ListLayout>
+        </>
     );
 }
 

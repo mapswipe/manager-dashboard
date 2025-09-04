@@ -1,0 +1,125 @@
+import {
+    useCallback,
+    useContext,
+    useMemo,
+} from 'react';
+import { PiCopy } from 'react-icons/pi';
+import {
+    isDefined,
+    listToMap,
+} from '@togglecorp/fujs';
+
+import EnumsContext from '#base/context/EnumsContext';
+import TileServerContext from '#base/context/TileServerContext';
+import Button from '#components/Button';
+import Container, { ContainerProps } from '#components/Container';
+import TextOutput from '#components/TextOutput';
+import {
+    ProjectRasterTileServerConfig,
+    RasterTileServerNameEnum,
+} from '#generated/types/graphql';
+
+interface Props extends Omit<ContainerProps, 'children'> {
+    className?: string;
+    value: ProjectRasterTileServerConfig;
+}
+
+function RasterTileServerOutput(props: Props) {
+    const {
+        heading = 'Tile server',
+        className,
+        value,
+
+        headingLevel = 5,
+        spacing = 'sm',
+
+        ...containerProps
+    } = props;
+
+    const { rasterTileServerNameMapping } = useContext(EnumsContext);
+    const { raster: rasterTileServers } = useContext(TileServerContext);
+
+    const {
+        url,
+        credits,
+        minZoom,
+        maxZoom,
+    } = useMemo(() => {
+        const rasterTileServerMapping = listToMap(
+            rasterTileServers,
+            ({ type }) => type,
+        );
+
+        const { name } = value;
+
+        if (name === RasterTileServerNameEnum.Custom) {
+            return {
+                url: value.custom?.url,
+                credits: value.custom?.credits,
+                minZoom: value.custom?.minZoom,
+                maxZoom: value.custom?.maxZoom,
+            };
+        }
+
+        return {
+            url: rasterTileServerMapping[name]?.url,
+            credits: rasterTileServerMapping[name]?.credits,
+            minZoom: rasterTileServerMapping[name]?.minZoom,
+            maxZoom: rasterTileServerMapping[name]?.maxZoom,
+        };
+    }, [rasterTileServers, value]);
+
+    const handleCopyUrlClick = useCallback((urlToCopy: string) => {
+        navigator.clipboard.writeText(urlToCopy);
+    }, []);
+
+    return (
+        <Container
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...containerProps}
+            className={className}
+            heading={heading}
+            headingLevel={headingLevel}
+            spacing={spacing}
+        >
+            <TextOutput
+                label="Imagery server"
+                value={rasterTileServerNameMapping?.[value.name].label}
+                description={isDefined(url) && value.name === RasterTileServerNameEnum.Custom && (
+                    <Button
+                        name={url}
+                        styleVariant="action"
+                        spacing="sm"
+                        title="Copy URL"
+                        onClick={handleCopyUrlClick}
+                    >
+                        <PiCopy />
+                    </Button>
+                )}
+            />
+            {/*
+            <TextOutput
+                label="Url"
+                value={url}
+            />
+            */}
+            <TextOutput
+                label="Min zoom"
+                value={minZoom}
+                valueType="number"
+            />
+            <TextOutput
+                label="Max zoom"
+                value={maxZoom}
+                valueType="number"
+            />
+            <TextOutput
+                label="Credits"
+                value={credits}
+                withWrap
+            />
+        </Container>
+    );
+}
+
+export default RasterTileServerOutput;

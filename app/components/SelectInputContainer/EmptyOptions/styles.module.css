@@ -1,4 +1,4 @@
 .empty {
-    padding: var(--spacing-large);
-    color: var(--color-text-watermark);
+    padding: var(--spacing-md);
+    color: var(--color-text-faint);
 }

@@ -22,4 +22,4 @@ export function rankedSearchOnList<T>(
         ));
 }
 
-export type OptionKey = string | number;
+export type OptionKey = string | number | boolean;

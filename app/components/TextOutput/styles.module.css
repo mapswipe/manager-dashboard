@@ -1,18 +1,29 @@
 .text-output {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-xs) var(--spacing-sm);
+    align-items: start;
+
+    &.with-wrap {
+        flex-wrap: wrap;
+    }
+
+    &.with-center-align {
+        align-items: center;
+    }
 
     .icon {
         display: flex;
         align-items: center;
         line-height: 1;
-        color: var(--color-text-light);
+        color: var(--color-text-faint);
+    }
+
+    .value {
+        overflow-wrap: anywhere;
     }
 
     .label {
-        color: var(--color-text-light);
-        font-weight: var(--font-weight-light);
+        color: var(--color-text-faint);
+        font-weight: var(--font-weight-bold);
 
         &.with-colon:after {
             content: ':';

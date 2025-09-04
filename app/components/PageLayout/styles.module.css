@@ -1,5 +1,6 @@
 .page-layout {
     --main-spacing: var(--spacing-lg);
+    --aside-size: minmax(12rem, 20%);
 
     display: grid;
     grid-template-columns:
@@ -14,7 +15,7 @@
     grid-template-rows: auto 1fr auto;
     background-color: var(--color-background);
     padding: var(--spacing-xl) 0;
-    gap: var(--spacing-lg) var(--main-spacing);
+    gap: var(--spacing-xl) var(--main-spacing);
 
     .page-header {
         grid-column: page-content;
@@ -24,22 +25,19 @@
         grid-column: page-content;
         display: grid;
         grid-template-columns: 1fr;
+        grid-template-rows: max-content;
         gap: var(--spacing-lg);
 
         &.with-aside {
-            grid-template-columns: minmax(10rem, 20%) 1fr;
+            grid-template-columns: var(--aside-size) 1fr;
         }
 
         .aside {
+            position: sticky;
+            top: 0;
             border-radius: var(--radius-card-border);
             background-color: var(--color-foreground);
-            padding: var(--spacing-lg);
             height: max-content;
-
-            .aside-content {
-                position: sticky;
-                top: 0;
-            }
         }
 
         .main {
@@ -52,9 +50,14 @@
             }
 
             .aside {
+                position: initial;
                 width: 100%;
             }
         }
+    }
+
+    &.with-large-aside {
+        --aside-size: minmax(30rem, 40%);
     }
 
     .footer-actions {

@@ -1,10 +1,14 @@
+import { useContext } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
+import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
+import DefaultMapContainer from '#components/DefaultMapContainer';
+import BaseMap from '#components/domain/BaseMap';
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
-import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
-import GridLayoutItem from '#components/GridLayoutItem';
+import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
+import RasterTileServerOutput from '#components/domain/RasterTileServerOutput';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
 import { ValidateProjectPropertyType } from '#generated/types/graphql';
@@ -16,38 +20,42 @@ interface Props {
 function ValidateDetails(props: Props) {
     const { data } = props;
 
+    const { validateObjectSourceTypeMapping } = useContext(EnumsContext);
+
     if (isNotDefined(data) || isNotDefined(data.objectSource)) {
         return null;
     }
 
     return (
-        <ListLayout
-            layout="grid"
-            numPreferredGridColumns={4}
-            minGridColumnSize="9rem"
-        >
-            <ListLayout layout="block">
-                <TextOutput
-                    label="Source type"
-                    value={data?.objectSource.sourceType}
-                />
-                <Container
-                    headingLevel={6}
-                    heading="Custom options"
-                >
-                    <CustomOptionPreview
-                        value={removeNull(data?.customOptions)}
-                        variant="info"
+        <>
+            <TextOutput
+                label="Source type"
+                value={validateObjectSourceTypeMapping?.[data.objectSource.sourceType].label}
+            />
+            <ListLayout layout="grid">
+                <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
+                    <DefaultMapContainer />
+                    <GeoJsonAssetMapSource
+                        // FIXME: show AOI for other types as well
+                        geoJsonAssetId={removeNull(data?.objectSource.aoiGeometry)}
                     />
-                </Container>
-            </ListLayout>
-            <GridLayoutItem columnSpan={3}>
-                <ProjectAssetPreview
-                    assetId={removeNull(data?.objectSource.aoiGeometry)}
-                    geoJsonTileServer={removeNull(data?.tileServerProperty)}
+                </BaseMap>
+                <RasterTileServerOutput
+                    value={data.tileServerProperty}
+                    withPadding
+                    withHeaderBorder
                 />
-            </GridLayoutItem>
-        </ListLayout>
+            </ListLayout>
+            <Container
+                headingLevel={5}
+                heading="Custom options"
+            >
+                <CustomOptionPreview
+                    value={removeNull(data?.customOptions)}
+                    variant="info"
+                />
+            </Container>
+        </>
     );
 }
 

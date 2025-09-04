@@ -2,13 +2,12 @@ import {
     useCallback,
     useId,
 } from 'react';
-import { _cs } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
+import { ButtonStyleVariant } from '#components/ButtonLayout';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
 import ListLayout from '#components/ListLayout';
-
-import styles from './styles.module.css';
+import { SpacingType } from '#utils/styles';
 
 interface Props<Value extends string | number | boolean, Option, Name> extends Omit<InputContainerProps, 'input' | 'inputId'> {
     options: Option[];
@@ -18,6 +17,8 @@ interface Props<Value extends string | number | boolean, Option, Name> extends O
     name: Name;
     onChange: (newValue: Value, name: Name) => void;
     className?: string;
+    spacing?: SpacingType;
+    activeSegmentStyleVariant?: ButtonStyleVariant;
 }
 
 function SegmentInput<
@@ -40,6 +41,8 @@ function SegmentInput<
         icons,
         label,
         readOnly,
+        spacing,
+        activeSegmentStyleVariant = 'filled',
     } = props;
 
     const inputId = useId();
@@ -52,7 +55,7 @@ function SegmentInput<
         <InputContainer
             inputId={inputId}
             actions={actions}
-            className={_cs(styles.segmentInput, className)}
+            className={className}
             disabled={disabled}
             error={error}
             hint={hint}
@@ -61,7 +64,9 @@ function SegmentInput<
             readOnly={readOnly}
             input={(
                 <ListLayout
-                    spacing="sm"
+                    spacingOffset={-1}
+                    spacing={spacing}
+                    withWrap
                 >
                     {options.map((option, i) => {
                         const key = keySelector(option, i, options);
@@ -70,12 +75,13 @@ function SegmentInput<
                         return (
                             <Button
                                 id={inputId}
-                                styleVariant={key === value ? 'filled' : 'transparent'}
+                                styleVariant={key === value ? activeSegmentStyleVariant : 'transparent'}
                                 colorVariant={key === value ? 'accent' : 'text'}
                                 name={key}
                                 key={String(key)}
                                 onClick={handleSegmentClick}
-                                spacing="sm"
+                                spacingOffset={-1}
+                                spacing={spacing}
                             >
                                 {optionLabel}
                             </Button>

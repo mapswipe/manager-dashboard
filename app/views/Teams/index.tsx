@@ -94,7 +94,7 @@ function Teams(props: Props) {
                         name={undefined}
                         onClick={setSearchText}
                         colorVariant="danger"
-                        spacing="sm"
+                        styleVariant="translucent"
                     >
                         Clear filters
                     </Button>

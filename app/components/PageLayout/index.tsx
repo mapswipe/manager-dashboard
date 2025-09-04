@@ -18,6 +18,7 @@ interface Props {
     aside?: React.ReactNode;
     children: React.ReactNode;
     footerActions?: React.ReactNode;
+    withLargeAside?: boolean;
 }
 
 function PageLayout(props: Props) {
@@ -30,10 +31,17 @@ function PageLayout(props: Props) {
         aside,
         children,
         footerActions,
+        withLargeAside,
     } = props;
 
     return (
-        <div className={_cs(styles.pageLayout, className)}>
+        <div
+            className={_cs(
+                styles.pageLayout,
+                withLargeAside && styles.withLargeAside,
+                className,
+            )}
+        >
             <ListLayout
                 layout="block"
                 className={styles.pageHeader}
@@ -41,6 +49,7 @@ function PageLayout(props: Props) {
                 <InlineLayout
                     start={headerIcons}
                     end={headerActions}
+                    withEndAlign
                 >
                     <Heading
                         level={1}
@@ -66,7 +75,7 @@ function PageLayout(props: Props) {
                         <ListLayout
                             layout="block"
                             spacing="lg"
-                            className={styles.asideContent}
+                            withPadding
                         >
                             {aside}
                         </ListLayout>

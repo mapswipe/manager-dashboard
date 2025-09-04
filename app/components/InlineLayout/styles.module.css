@@ -1,14 +1,38 @@
 .inline-layout {
-    display: inline-flex;
-    width: 100%;
+    display: flex;
+    align-items: start;
+
+    &.with-full-width {
+        width: 100%;
+    }
+
+    &.with-wrap {
+        flex-wrap: wrap;
+    }
+
+    &.with-center-align {
+        align-items: center;
+    }
+
+    &.with-end-align {
+        align-items: end;
+    }
 
     .children {
+        display: flex;
         flex-grow: 1;
     }
 
     .start-content {
         display: flex;
     }
+
+    &.with-centered-content {
+        .children {
+            justify-content: center;
+        }
+    }
+
 
     .end-content {
         display: flex;

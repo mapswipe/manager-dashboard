@@ -2,16 +2,46 @@ import { useMemo } from 'react';
 import {
     _cs,
     breakFormat,
-    isDefined,
-    isFalsyString,
     isNotDefined,
-    isTruthyString,
     populateFormat,
 } from '@togglecorp/fujs';
+
+import useSpacingToken from '#hooks/useSpacingToken';
+import { formatNumber } from '#utils/common';
+import {
+    gapSpacings,
+    SpacingType,
+} from '#utils/styles';
 
 import styles from './styles.module.css';
 
 export type DateLike = string | number | Date;
+
+const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
+
+function formatDate(
+    value: DateLike | null | undefined,
+    format = DEFAULT_DATE_FORMAT,
+) {
+    if (isNotDefined(value)) {
+        return undefined;
+    }
+
+    const date = new Date(value);
+
+    // Check if valid date
+    if (Number.isNaN(date.getTime())) {
+        return undefined;
+    }
+
+    const formattedValueList = populateFormat(breakFormat(format), date);
+    // const formattedDate = formattedValueList.find((d) => d.type === 'date');
+
+    const formattedDate = formattedValueList.map((valueItem) => valueItem.value).join('');
+
+    // return formattedDate?.value;
+    return formattedDate;
+}
 
 interface BaseProps {
     className?: string;
@@ -20,6 +50,9 @@ interface BaseProps {
     value: React.ReactNode;
     description?: React.ReactNode;
     withoutLabelColon?: boolean;
+    withWrap?: boolean;
+    spacing?: SpacingType;
+    withCenterAlign?: boolean;
 }
 
 interface BooleanProps {
@@ -51,124 +84,6 @@ type Props = BaseProps & (
     NodeProps | TextProps | DateProps | NumberProps | BooleanProps
 );
 
-function getMaximumFractionDigits(value: number) {
-    if (value < 1000) {
-        return 2;
-    }
-
-    const formatter = new Intl.NumberFormat('default', { notation: 'compact' });
-    const formattedParts = formatter.formatToParts(value);
-    const fraction = formattedParts.find(({ type }) => type === 'fraction');
-
-    if (isNotDefined(fraction) || isFalsyString(fraction.value)) {
-        return 0;
-    }
-
-    if (Number(fraction.value) > 0.1) {
-        return 1;
-    }
-
-    return 0;
-}
-
-interface FormatNumberOptions {
-    currency?: boolean;
-    unit?: Intl.NumberFormatOptions['unit'];
-    maximumFractionDigits?: Intl.NumberFormatOptions['maximumFractionDigits'];
-    compact?: boolean;
-    separatorHidden?: boolean,
-    language?: string,
-}
-
-function formatNumber(
-    value: null | undefined,
-    options?: FormatNumberOptions,
-): undefined
-function formatNumber(
-    value: number | null | undefined,
-    options?: FormatNumberOptions,
-): undefined
-function formatNumber(
-    value: number,
-    options?: FormatNumberOptions,
-): string
-function formatNumber(
-    value: number | null | undefined,
-    options?: FormatNumberOptions,
-) {
-    if (isNotDefined(value)) {
-        return undefined;
-    }
-
-    const formattingOptions: Intl.NumberFormatOptions = {};
-
-    if (isNotDefined(options)) {
-        formattingOptions.maximumFractionDigits = getMaximumFractionDigits(value);
-        return new Intl.NumberFormat('default', formattingOptions).format(value);
-    }
-
-    const {
-        currency,
-        unit,
-        maximumFractionDigits,
-        compact,
-        separatorHidden,
-        language,
-    } = options;
-
-    if (isTruthyString(unit)) {
-        formattingOptions.unit = unit;
-        formattingOptions.unitDisplay = 'short';
-    }
-    if (currency) {
-        formattingOptions.currencyDisplay = 'narrowSymbol';
-        formattingOptions.style = 'currency';
-    }
-    if (compact) {
-        formattingOptions.notation = 'compact';
-        formattingOptions.compactDisplay = 'short';
-    }
-
-    formattingOptions.useGrouping = !separatorHidden;
-
-    if (isDefined(maximumFractionDigits)) {
-        formattingOptions.maximumFractionDigits = maximumFractionDigits;
-    } else {
-        formattingOptions.maximumFractionDigits = getMaximumFractionDigits(value);
-    }
-
-    const newValue = new Intl.NumberFormat(language, formattingOptions)
-        .format(value);
-
-    return newValue;
-}
-
-const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
-
-function formatDate(
-    value: DateLike | null | undefined,
-    format = DEFAULT_DATE_FORMAT,
-) {
-    if (isNotDefined(value)) {
-        return undefined;
-    }
-
-    const date = new Date(value);
-
-    // Check if valid date
-    if (Number.isNaN(date.getTime())) {
-        return undefined;
-    }
-
-    const formattedValueList = populateFormat(breakFormat(format), date);
-    // const formattedDate = formattedValueList.find((d) => d.type === 'date');
-
-    const formattedDate = formattedValueList.map((valueItem) => valueItem.value).join('');
-
-    // return formattedDate?.value;
-    return formattedDate;
-}
-
 function TextOutput(props: Props) {
     const {
         className,
@@ -178,7 +93,16 @@ function TextOutput(props: Props) {
         description,
         withoutLabelColon,
         valueType,
+        spacing,
+        withWrap,
+        withCenterAlign,
     } = props;
+
+    const spacingClassName = useSpacingToken({
+        spacing,
+        modes: gapSpacings,
+        offset: -2,
+    });
 
     const formattedValue = useMemo(() => {
         if (valueType === 'number') {
@@ -196,6 +120,9 @@ function TextOutput(props: Props) {
         <div
             className={_cs(
                 styles.textOutput,
+                withWrap && styles.withWrap,
+                withCenterAlign && styles.withCenterAlign,
+                spacingClassName,
                 className,
             )}
         >

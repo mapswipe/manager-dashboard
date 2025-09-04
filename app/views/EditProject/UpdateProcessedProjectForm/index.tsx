@@ -3,10 +3,7 @@ import {
     useEffect,
     useMemo,
 } from 'react';
-import {
-    MdArrowForward,
-    MdSave,
-} from 'react-icons/md';
+import { PiFloppyDisk } from 'react-icons/pi';
 import {
     isDefined,
     isNotDefined,
@@ -23,7 +20,7 @@ import Button from '#components/Button';
 import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
-import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
+import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import InputError from '#components/InputError';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
@@ -35,7 +32,6 @@ import {
     ProjectDetailsQuery,
     ProjectStatusEnum,
     useUpdateProcessedProjectMutation,
-    useUpdateProjectStatusMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import useOptions from '#hooks/useOptions';
@@ -46,7 +42,7 @@ import {
 } from '#utils/error';
 import {
     OPERATION_INFO_FRAGMENT,
-    PROJECT_TYPE_SPECIFIC_FRAGMENT,
+    PROJECT_DETAILS_FRAGMENT,
 } from '#utils/query';
 import ProjectGeneralInputs from '#views/NewProject/ProjectGeneralInputs';
 
@@ -56,7 +52,7 @@ import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInp
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UPDATE_PROCESSED_PROJECT_MUTATION = gql`
 mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
-    ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
+    ${PROJECT_DETAILS_FRAGMENT}
     ${OPERATION_INFO_FRAGMENT}
     updateProcessedProject(data: $data, pk: $id) {
         ... on ProjectTypeMutationResponseType {
@@ -64,40 +60,7 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
             errors
             ok
             result {
-                additionalInfoUrl
-                clientId
-                description
-                groupSize
-                id
-                isFeatured
-                lookFor
-                maxTasksPerUser
-                name
-                processingStatus
-                progress
-                projectType
-                image {
-                    id
-                    file {
-                        url
-                    }
-                }
-                projectTypeSpecifics {
-                    ...ProjectTypeSpecificFields
-                }
-                requestingOrganization {
-                    id
-                    name
-                }
-                tutorial {
-                    id
-                    name
-                }
-                team {
-                    id
-                    name
-                }
-                verificationNumber
+                ...ProjectDetailFields
             }
         }
         ... on OperationInfo {
@@ -130,11 +93,6 @@ function UpdateProcessedProjectForm(props: Props) {
         { fetching: updateProcessedProjectPending },
         updateProcessedProject,
     ] = useUpdateProcessedProjectMutation();
-
-    const [
-        { fetching: updateProjectStatusPending },
-        updateProjectStatus,
-    ] = useUpdateProjectStatusMutation();
 
     const projectContext = useMemo(() => ({
         projectType: projectData?.project.projectType,
@@ -256,71 +214,6 @@ function UpdateProcessedProjectForm(props: Props) {
         }
     }, [projectData.project.id, updateProcessedProject, setError, alert]);
 
-    const handlePublishButtonClick = useCallback(async () => {
-        try {
-            const result = await updateProjectStatus({
-                id: projectData.project.id,
-                data: {
-                    status: ProjectStatusEnum.Published,
-                    clientId: projectData.project.clientId,
-                },
-            });
-
-            if (checkAndAlertGraphQLResultError(result, alert)) {
-                return;
-            }
-
-            if (
-                isNotDefined(result.data)
-                // eslint-disable-next-line no-underscore-dangle
-                || result.data.updateProjectStatus.__typename !== 'ProjectTypeMutationResponseType'
-            ) {
-                alert.show(
-                    'Failed to update the Project status!',
-                    {
-                        description: 'Unexpectected response from the server!',
-                        variant: 'danger',
-                    },
-                );
-
-                return;
-            }
-
-            const {
-                ok,
-                errors,
-                // result,
-            } = result.data.updateProjectStatus;
-
-            if (!ok) {
-                alert.show(
-                    'Failed to update the Project status!',
-                    {
-                        description: 'Please fix the errors and try again!',
-                        variant: 'danger',
-                    },
-                );
-
-                setError(transformErrors(errors));
-
-                return;
-            }
-
-            alert.show(
-                'Project status updated successfully!',
-                { variant: 'success' },
-            );
-        } catch (apolloError) {
-            alertCombinedError(apolloError, alert);
-        }
-    }, [
-        updateProjectStatus,
-        projectData.project.id,
-        projectData.project.clientId,
-        alert,
-        setError,
-    ]);
-
     const handleUpdateBasicDetails = useCallback((
         submittedValue: PartialProcessedProjectUpdateInput,
     ) => {
@@ -333,7 +226,7 @@ function UpdateProcessedProjectForm(props: Props) {
         [validate, setError, handleUpdateBasicDetails],
     );
 
-    const pending = updateProcessedProjectPending || updateProjectStatusPending;
+    const pending = updateProcessedProjectPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
         || projectData.project.status === ProjectStatusEnum.Failed
@@ -354,29 +247,19 @@ function UpdateProcessedProjectForm(props: Props) {
                 />
             )}
             footerActions={(
-                <>
-                    <Button
-                        name={undefined}
-                        onClick={handleUpdateBasicDetailsButtonClick}
-                        disabled={baseInputsDisabled}
-                        start={<MdSave />}
-                    >
-                        Save Project
-                    </Button>
-                    <Button
-                        name={undefined}
-                        onClick={handlePublishButtonClick}
-                        disabled={baseInputsDisabled}
-                        colorVariant="accent"
-                        styleVariant="filled"
-                        end={<MdArrowForward />}
-                    >
-                        Publish Project
-                    </Button>
-                </>
+                <Button
+                    name={undefined}
+                    onClick={handleUpdateBasicDetailsButtonClick}
+                    colorVariant="accent"
+                    styleVariant="filled"
+                    disabled={baseInputsDisabled}
+                    start={<PiFloppyDisk />}
+                >
+                    Update project
+                </Button>
             )}
             aside={(
-                <ProjectStatusOutput
+                <ProjectStatusTimeline
                     value={projectData?.project.status}
                 />
             )}
@@ -397,7 +280,6 @@ function UpdateProcessedProjectForm(props: Props) {
             <Container
                 heading="Additional"
                 withContentBackgroundAndPadding
-                withHeaderBorder
                 spacing="lg"
             >
                 <ListLayout layout="grid">
@@ -415,9 +297,12 @@ function UpdateProcessedProjectForm(props: Props) {
             </Container>
             <ProjectSpecificDetails
                 projectId={projectData.project.id}
+                headingLevel={3}
+                withContentBackgroundAndPadding
             />
             <Container
                 heading="Tutorial"
+                withContentBackgroundAndPadding
             >
                 <TutorialSelectInput
                     label="Select a tutorial for this project"
