@@ -56,7 +56,7 @@ fragment VectorTileServerPropertyFields on ProjectVectorTileServerConfig {
 export const PROJECT_TYPE_SPECIFIC_FRAGMENT = gql`
 ${TILE_SERVER_PROPERTY_FRAGMENT}
 ${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
-fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyType {
+fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyTypeStreetProjectPropertyType {
     ... on CompareProjectPropertyType {
         __typename
         aoiGeometry
@@ -128,6 +128,22 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         sourceType
         customOptions {
             ...ProjectCustomOptionFields
+        }
+    }
+    ... on StreetProjectPropertyType {
+        __typename
+        aoiGeometry
+        customOptions {
+            ...ProjectCustomOptionFields
+        }
+        mapillaryImageFilters {
+            creatorId
+            endTime
+            isPano
+            organizationId
+            randomizeOrder
+            samplingThreshold
+            startTime
         }
     }
 }
@@ -290,6 +306,9 @@ fragment TutorialDetailFields on TutorialType {
                         area
                         categoryId
                     }
+                }
+                ... on StreetTutorialTaskPropertyType {
+                    __typename
                 }
             }
         }

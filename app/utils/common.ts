@@ -155,6 +155,7 @@ export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpeci
     [ProjectTypeEnum.Completeness]: 'completeness',
     [ProjectTypeEnum.Validate]: 'validate',
     [ProjectTypeEnum.ValidateImage]: 'validateImage',
+    [ProjectTypeEnum.Street]: 'street',
 };
 
 interface NumericValueOption {

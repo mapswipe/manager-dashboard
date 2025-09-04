@@ -56,6 +56,11 @@ import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
 } from './FindProjectSpecifics/schema';
+import StreetProjectSpecifics from './StreetProjectSpecifics/index.tsx';
+import {
+    defaultStreetSpecificFormValue,
+    PartialStreetSpecificFields,
+} from './StreetProjectSpecifics/schema.ts';
 import ValidateImageProjectSpecifics from './ValidateImageProjectSpecifics/index.tsx';
 import {
     defaultValidateImageSpecificFormValue,
@@ -154,6 +159,18 @@ function UpdateProjectForm(props: Props) {
                 ),
             };
         }
+        if (projectData.project.projectType === ProjectTypeEnum.Street) {
+            return {
+                ...defaultStreetSpecificFormValue,
+                // FIXME: use custom options from street project
+                customOptions: projectData.defaultValidateCustomOptions.map((customOption) => ({
+                    clientId: ulid(),
+                    ...customOption,
+                })),
+            };
+        }
+
+        projectData.project.projectType satisfies never;
 
         return {};
     }, [projectData]);
@@ -334,6 +351,12 @@ function UpdateProjectForm(props: Props) {
         defaultCompletenessSpecificFormValue,
     );
 
+    const setStreetProjectSpecificsFieldValue = useFormObject<'street', PartialStreetSpecificFields>(
+        'street',
+        setProjectSpecificFieldValue,
+        defaultValidateSpecificFormValue,
+    );
+
     const pending = updateProjectPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
@@ -358,6 +381,8 @@ function UpdateProjectForm(props: Props) {
         ?.completeness as PartialCompletenessSpecificFields | undefined;
     const validateImageProjectTypeSpecifics = value.projectTypeSpecifics
         ?.validateImage as PartialValidateSpecificFields | undefined;
+    const streetProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.street as PartialStreetSpecificFields | undefined;
 
     return (
         <PageLayout
@@ -459,6 +484,15 @@ function UpdateProjectForm(props: Props) {
                         value={validateImageProjectTypeSpecifics}
                         setFieldValue={setValidateImageProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
+                        disabled={projectTypeSpecificInputsDisabled}
+                    />
+                )}
+                {projectContext.projectType === ProjectTypeEnum.Street && (
+                    <StreetProjectSpecifics
+                        projectId={projectData.project.id}
+                        value={streetProjectTypeSpecifics}
+                        setFieldValue={setStreetProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.street}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
