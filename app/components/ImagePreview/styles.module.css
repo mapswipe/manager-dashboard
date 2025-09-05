@@ -1,4 +1,4 @@
-.project-list-item {
+.image-preview {
     .image {
         border-radius: var(--radius-card-border);
         background-color: var(--color-background);
@@ -21,23 +21,6 @@
             /* FIXME: use variable */
             color: #c2c2c0;
             font-size: 6rem;
-        }
-    }
-
-    .description {
-        color: var(--color-text-light);
-    }
-
-    .details {
-        max-height: 0;
-        overflow: hidden;
-
-        &.visible {
-            animation: expand var(--duration-transition-medium) ease-in forwards;
-        }
-
-        &.collapsing {
-            animation: collapse var(--duration-transition-medium) ease-in forwards;
         }
     }
 }

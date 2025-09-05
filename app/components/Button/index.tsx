@@ -24,6 +24,7 @@ function Button<NAME>(props: Props<NAME>) {
         withoutPadding,
         layoutElementRef,
         withFullWidth,
+        spacingOffset,
         ...buttonProps
     } = props;
 
@@ -44,6 +45,7 @@ function Button<NAME>(props: Props<NAME>) {
                 endContainerClassName={endContainerClassName}
                 childrenContainerClassName={childrenContainerClassName}
                 spacing={spacing}
+                spacingOffset={spacingOffset}
                 colorVariant={colorVariant}
                 styleVariant={styleVariant}
                 withoutPadding={withoutPadding}

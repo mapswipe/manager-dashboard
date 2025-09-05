@@ -1,0 +1,13 @@
+.color-preview {
+    width: 1em;
+    height: 1em;
+
+    &.rounded {
+        border-radius: 50%;
+    }
+
+    &.compact {
+        width: .6em;
+        height: .6em;
+    }
+}

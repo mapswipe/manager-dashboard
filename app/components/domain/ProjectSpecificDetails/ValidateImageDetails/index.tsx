@@ -1,6 +1,8 @@
+import { useContext } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
+import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import ListLayout from '#components/ListLayout';
@@ -14,6 +16,8 @@ interface Props {
 function ValidateImageDetails(props: Props) {
     const { data } = props;
 
+    const { validateImageSourceTypeMapping } = useContext(EnumsContext);
+
     if (isNotDefined(data) || isNotDefined(data.sourceType)) {
         return null;
     }
@@ -22,7 +26,7 @@ function ValidateImageDetails(props: Props) {
         <ListLayout layout="block">
             <TextOutput
                 label="Source type"
-                value={data?.sourceType}
+                value={validateImageSourceTypeMapping?.[data.sourceType].label}
             />
             <Container
                 headingLevel={6}

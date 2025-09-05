@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { IoCopyOutline } from 'react-icons/io5';
+import { PiCross } from 'react-icons/pi';
 import {
     RiCheckboxCircleLine,
-    RiCloseLargeLine,
     RiErrorWarningLine,
     RiInformationLine,
     RiQuestionLine,
@@ -96,13 +96,13 @@ function Alert<N extends string>(props: Props<N>) {
                             styleVariant="action"
                             title="Close"
                         >
-                            <RiCloseLargeLine className={styles.closeIcon} />
+                            <PiCross />
                         </Button>
                     )}
                 >
                     <Heading
                         className={styles.title}
-                        level={4}
+                        level={5}
                     >
                         {title}
                     </Heading>

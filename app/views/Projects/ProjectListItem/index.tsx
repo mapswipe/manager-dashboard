@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
     PiCalendar,
     PiFlag,
-    PiImageThin,
     PiInfo,
     PiLock,
     PiMapPin,
@@ -10,19 +9,18 @@ import {
     PiUser,
     PiUsersThree,
 } from 'react-icons/pi';
-import {
-    isDefined,
-    isNotDefined,
-} from '@togglecorp/fujs';
+import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import Container from '#components/Container';
+import Description from '#components/Description';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
 import ProjectTypeOutput from '#components/domain/ProjectTypeOutput';
 import ExpandableContainer from '#components/ExpandableContainer';
 import GridLayoutItem from '#components/GridLayoutItem';
+import ImagePreview from '#components/ImagePreview';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import MarkdownPreview from '#components/MarkdownPreview';
@@ -33,32 +31,9 @@ import TextOutput from '#components/TextOutput';
 import {
     ProjectsListQuery,
     ProjectStatusEnum,
-    ProjectTypeEnum,
 } from '#generated/types/graphql';
+import { getInstruction } from '#utils/common';
 import ProjectActions from '#views/EditProject/ProjectActions';
-
-import styles from './styles.module.css';
-
-function getInstruction(
-    instruction: string | null | undefined,
-    lookFor: string | null | undefined,
-    projectType: ProjectTypeEnum | null | undefined,
-) {
-    if (isNotDefined(instruction) && isNotDefined(lookFor)) {
-        return '??';
-    }
-
-    if (isDefined(instruction)) {
-        return instruction;
-    }
-
-    const fallbackInstruction = (projectType === ProjectTypeEnum.Validate
-        || projectType === ProjectTypeEnum.ValidateImage)
-        ? `Does the shape outline ${lookFor}?`
-        : `You are looking for ${lookFor}`;
-
-    return fallbackInstruction;
-}
 
 interface Props {
     value: ProjectsListQuery['projects']['results'][number];
@@ -73,7 +48,6 @@ function ProjectListItem(props: Props) {
             name={undefined}
             isExpanded={showDetails}
             onExpansionChange={setShowDetails}
-            className={styles.projectListItem}
             contentLayout="block"
             withBackground
             withPadding
@@ -81,22 +55,14 @@ function ProjectListItem(props: Props) {
             spacing="lg"
             alwaysVisibleContent={(
                 <ListLayout
-                    className={styles.basicDetails}
                     layout="grid"
                     numPreferredGridColumns={4}
                     minGridColumnSize="9rem"
                 >
-                    {isDefined(value.image?.file?.url) ? (
-                        <img
-                            className={styles.image}
-                            alt=""
-                            src={value.image?.file?.url}
-                        />
-                    ) : (
-                        <div className={styles.fallbackImage}>
-                            <PiImageThin className={styles.icon} />
-                        </div>
-                    )}
+                    <ImagePreview
+                        src={value.image?.file?.url}
+                        alt=""
+                    />
                     <GridLayoutItem columnSpan={3}>
                         <Container
                             headingLevel={4}
@@ -153,7 +119,8 @@ function ProjectListItem(props: Props) {
                                 </ListLayout>
                             )}
                             contentLayout="block"
-                            headerActions={(
+                            headerActions={(value.status !== ProjectStatusEnum.Discarded
+                                && value.status !== ProjectStatusEnum.Archived) && (
                                 <OverflowMenu persistent>
                                     <ProjectActions
                                         clientId={value.clientId}
@@ -254,10 +221,9 @@ function ProjectListItem(props: Props) {
                                         </GridLayoutItem>
                                     </ListLayout>
                                     {isDefined(value.description) && (
-                                        <MarkdownPreview
-                                            className={styles.description}
-                                            markdown={value.description}
-                                        />
+                                        <Description>
+                                            <MarkdownPreview markdown={value.description} />
+                                        </Description>
                                     )}
                                 </>
                             )}

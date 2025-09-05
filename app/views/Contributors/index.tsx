@@ -1,19 +1,52 @@
 import {
-    PiArrowSquareOut,
-    PiUser,
+    PiMagnifyingGlass,
+    PiUsersThree,
 } from 'react-icons/pi';
+import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
+import Button from '#components/Button';
 import Container from '#components/Container';
+import ContributorUserCard from '#components/domain/ContributorUserCard';
+import OrderingInput from '#components/domain/OrderingInput';
+import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import ListLayout from '#components/ListLayout';
 import PageLayout from '#components/PageLayout';
-import TextOutput from '#components/TextOutput';
-import { useContributorUserListQuery } from '#generated/types/graphql';
+import Pager from '#components/Pager';
+import TeamSelectInput from '#components/selections/TeamSelectInput';
+import TextInput from '#components/TextInput';
+import {
+    ContributorUserFilter,
+    ContributorUserOrder,
+    Ordering,
+    useContributorUserListQuery,
+} from '#generated/types/graphql';
+import useListManagement, {
+    ExactFilter,
+    SearchFilter,
+} from '#hooks/useListManagement';
+import { defaultPagePerItemOptions } from '#utils/common';
+
+const sortKeyOptions: SortByOption<keyof ContributorUserOrder>[] = [
+    {
+        key: 'id',
+        label: 'Created',
+    },
+    {
+        key: 'username',
+        label: 'Name',
+    },
+];
+
+type ContributorUserFilterValue = {
+    username: SearchFilter<ContributorUserFilter, 'username'>;
+    team: ExactFilter<ContributorUserFilter, 'teamId'>;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CONTRIBUTOR_USER_QUERY = gql`
-query ContributorUserList($filters: ContributorUserFilter, $pagination: OffsetPaginationInput) {
-    contributorUsers(pagination: $pagination, filters: $filters) {
+query ContributorUserList($filters: ContributorUserFilter, $order: ContributorUserOrder, $pagination: OffsetPaginationInput) {
+    contributorUsers(pagination: $pagination, order: $order, filters: $filters) {
         totalCount
         results {
             firebaseId
@@ -36,76 +69,128 @@ interface Props {
 function Contributors(props: Props) {
     const { className } = props;
 
+    const {
+        filters,
+        rawFilters,
+        sort,
+        setSortKey,
+        setSortOrdering,
+        page,
+        setPage,
+        pageSize,
+        offset,
+        limit,
+        filtersApplied,
+        setFilterField,
+        resetFilters,
+    } = useListManagement<ContributorUserFilterValue, keyof ContributorUserOrder>({
+        pageSize: 10,
+        defaultFilters: {
+            username: undefined,
+            team: undefined,
+        },
+        defaultSort: {
+            key: 'id',
+            ordering: Ordering.Desc,
+        },
+    });
+
     const [{
+        fetching: pending,
         data: contributorUsersResponse,
     }] = useContributorUserListQuery({
         variables: {
+            filters: {
+                username: { iContains: filters.username },
+                teamId: { exact: filters.team },
+            },
+            order: isDefined(sort) ? ({
+                [sort.key]: sort.ordering,
+            }) : undefined,
             pagination: {
-                offset: 0,
-                limit: 5,
+                limit,
+                offset,
             },
         },
     });
+
+    const totalItems = contributorUsersResponse?.contributorUsers.results.length ?? 0;
+    const totalCount = contributorUsersResponse?.contributorUsers.totalCount ?? 0;
 
     return (
         <PageLayout
             heading="Contributors"
             className={className}
-        >
-            <ListLayout
-                layout="grid"
-                numPreferredGridColumns={3}
-            >
-                {contributorUsersResponse?.contributorUsers.results.map((contributor) => (
-                    <Container
-                        heading={contributor.username}
-                        withShadow
-                        withBackground
-                        withPadding
-                        headingLevel={5}
-                        headerIcons={<PiUser />}
-                        contentLayout="block"
-                        headerActions={(
-                            <a href={contributor.communityDashboardUrl}>
-                                <PiArrowSquareOut />
-                            </a>
-                        )}
+            aside={(
+                <>
+                    <TextInput
+                        name="username"
+                        icons={<PiMagnifyingGlass />}
+                        value={rawFilters.username}
+                        onChange={setFilterField}
+                        placeholder="Search by name"
+                    />
+                    <TeamSelectInput
+                        name="team"
+                        icons={<PiUsersThree />}
+                        placeholder="Team"
+                        onChange={setFilterField}
+                        value={rawFilters.team}
+                    />
+                    <Button
+                        name={undefined}
+                        onClick={resetFilters}
+                        colorVariant="danger"
+                        styleVariant="translucent"
                     >
-                        <ListLayout layout="block" spacing="xs">
-                            <TextOutput
-                                label="Created on"
-                                value={contributor.createdAt}
-                                valueType="date"
-                            />
-                            <TextOutput
-                                label="Firebase ID"
-                                value={contributor.firebaseId}
-                            />
-                        </ListLayout>
-                        <ListLayout
-                            layout="grid"
-                            minGridColumnSize="10rem"
-                            spacing="sm"
-                        >
-                            <TextOutput
-                                label="Total swipes"
-                                value={contributor.totalSwipes}
-                                valueType="number"
-                            />
-                            <TextOutput
-                                label="Time spent"
-                                value={contributor.totalSwipeTime}
-                                valueType="number"
-                            />
-                            <TextOutput
-                                label="Projects contributed"
-                                value={contributor.totalMappingProjects}
-                                valueType="number"
-                            />
-                        </ListLayout>
-                    </Container>
-                ))}
-            </ListLayout>
+                        Clear filters
+                    </Button>
+                </>
+            )}
+        >
+            <Container
+                heading={`Showing ${totalItems} of ${totalCount} users`}
+                headingLevel={6}
+                headerActions={(
+                    <>
+                        <SortByInput
+                            name={undefined}
+                            value={sort?.key}
+                            options={sortKeyOptions}
+                            onChange={setSortKey}
+                        />
+                        <OrderingInput
+                            name={undefined}
+                            value={sort?.ordering}
+                            onChange={setSortOrdering}
+                        />
+                    </>
+                )}
+                pending={pending}
+                filtered={filtersApplied}
+                empty={totalCount === 0}
+                emptyMessage="No contributor found!"
+                filteredEmptyMessage="No matching contributor found!"
+                spacing="lg"
+                withBackground={totalCount === 0}
+                withPadding={totalCount === 0}
+                withMinHeight={totalCount === 0}
+                footerActions={(
+                    <Pager
+                        pagePerItem={pageSize}
+                        activePage={page}
+                        onActivePageChange={setPage}
+                        totalItems={totalCount}
+                        pagePerItemOptions={defaultPagePerItemOptions}
+                    />
+                )}
+            >
+                <ListLayout layout="grid">
+                    {contributorUsersResponse?.contributorUsers.results.map((contributor) => (
+                        <ContributorUserCard value={contributor} />
+                    ))}
+                </ListLayout>
+            </Container>
         </PageLayout>
     );
 }

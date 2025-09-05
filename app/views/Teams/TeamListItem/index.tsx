@@ -1,25 +1,25 @@
+import { useState } from 'react';
 import {
-    useMemo,
-    useState,
-} from 'react';
-import {
-    IoCalendar,
-    IoPerson,
-} from 'react-icons/io5';
+    PiArchive,
+    PiCalendar,
+    PiUser,
+} from 'react-icons/pi';
 import { gql } from 'urql';
 
+import ColorPreview from '#components/ColorSelectInput/ColorPreview';
+import ContributorUserCard from '#components/domain/ContributorUserCard';
 import ExpandableContainer from '#components/ExpandableContainer';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import Pager from '#components/Pager';
-import Table, { Column } from '#components/Table';
+import Tag from '#components/Tag';
 import TextOutput from '#components/TextOutput';
 import {
-    ContributorTeamMemberListQuery,
+    TeamsListQuery,
     useContributorTeamMemberListQuery,
 } from '#generated/types/graphql';
 import {
     DEFAULT_PAGE,
-    DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
 } from '#utils/common';
 
@@ -33,8 +33,13 @@ query ContributorTeamMemberList($id: ID!, $pagination: OffsetPaginationInput) {
         members(pagination: $pagination) {
             totalCount
             results {
-                id
                 firebaseId
+                id
+                createdAt
+                communityDashboardUrl
+                totalMappingProjects
+                totalSwipeTime
+                totalSwipes
                 username
             }
         }
@@ -42,110 +47,123 @@ query ContributorTeamMemberList($id: ID!, $pagination: OffsetPaginationInput) {
 }
 `;
 
-type ContibutorTeamMemberType = ContributorTeamMemberListQuery['contributorTeam']['members']['results'][number];
-
 interface Props {
-    id: string;
-    name: string;
-    createdAt: string;
-    createdBy: string;
+    value: TeamsListQuery['contributorTeams']['results'][number];
     membersCount: number;
 }
 
-const keySelector = (item: ContibutorTeamMemberType) => item.id;
-
 function TeamListItem(props: Props) {
+    const { value } = props;
+
     const {
         id,
         name,
         createdAt,
         createdBy,
         membersCount: membersCountFromProps,
-    } = props;
+        isArchived,
+    } = value;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
-    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
     const [expanded, setExpanded] = useState(false);
 
+    const pageSize = 4;
+
     const [{
-        data: userMemberResponse,
-        fetching: pending,
+        data: teamMembersResponse,
+        fetching: teamMembersPending,
     }] = useContributorTeamMemberListQuery({
         pause: !expanded,
         variables: {
             id,
             pagination: {
-                offset: (activePage - 1) * pagePerItem,
-                limit: pagePerItem,
+                offset: (activePage - 1) * pageSize,
+                limit: pageSize,
             },
         },
     });
 
-    const columns = useMemo<Column<ContibutorTeamMemberType>[]>(() => [
-        {
-            id: 'id',
-            title: 'User Id',
-            cellRenderer: (item) => item.id,
-        },
-        {
-            id: 'username',
-            title: 'User Name',
-            cellRenderer: (item) => item.username,
-        },
-        {
-            id: 'firebaseId',
-            title: 'Firebase Id',
-            cellRenderer: (item) => item.firebaseId,
-        },
-    ], []);
-
-    const membersCount = userMemberResponse?.contributorTeam.membersCount
+    const membersCount = teamMembersResponse?.contributorTeam.membersCount
         ?? membersCountFromProps;
 
     return (
         <ExpandableContainer
             name={undefined}
+            isExpanded={expanded}
             onExpansionChange={setExpanded}
-            heading={`${name} (${membersCount} members)`}
+            heading={name}
             headingLevel={5}
             headerDescription={(
                 <ListLayout>
+                    <Tag>
+                        <InlineLayout
+                            spacing="sm"
+                            start={isArchived ? (
+                                <PiArchive />
+                            ) : (
+                                <ColorPreview
+                                    value="var(--color-success)"
+                                    compact
+                                    rounded
+                                />
+                            )}
+                            withCenterAlign
+                        >
+                            {isArchived ? 'Archived' : 'Active'}
+                        </InlineLayout>
+                    </Tag>
                     <TextOutput
-                        icon={<IoCalendar />}
-                        label="Created on"
+                        icon={<PiCalendar />}
+                        label="Create on"
                         value={createdAt}
                         valueType="date"
+                        withCenterAlign
                     />
                     <TextOutput
-                        icon={<IoPerson />}
+                        icon={<PiUser />}
                         label="Created by"
-                        value={createdBy}
+                        value={createdBy.displayName}
+                        withCenterAlign
                     />
                 </ListLayout>
             )}
-            isExpanded={expanded}
             withPadding
             withBackground
-            footerActions={expanded ? (
-                <Pager
-                    pagePerItem={pagePerItem}
-                    onPagePerItemChange={setPagePerItem}
-                    activePage={activePage}
-                    onActivePageChange={setActivePage}
-                    totalItems={membersCount}
-                    pagePerItemOptions={defaultPagePerItemOptions}
-                />
-            ) : null}
-            spacing="lg"
-            pending={pending}
+            pending={teamMembersPending}
             empty={expanded && membersCount === 0}
             emptyMessage="No member found!"
             filteredEmptyMessage="No matching member found!"
+            withWelledContent
+            showDetailsButtonLabel="Show members"
+            hideDetailsButtonLabel="Hide members"
+            footer={(
+                <TextOutput
+                    value={membersCount}
+                    description="members"
+                />
+            )}
         >
-            <Table
-                keySelector={keySelector}
-                columns={columns}
-                data={userMemberResponse?.contributorTeam.members.results}
+            <ListLayout
+                layout="grid"
+            >
+                {teamMembersResponse?.contributorTeam.members.results.map((contributor) => (
+                    <ContributorUserCard
+                        key={contributor.id}
+                        value={contributor}
+                        compact
+                    />
+                ))}
+            </ListLayout>
+            <InlineLayout
+                end={(
+                    <Pager
+                        pagePerItem={pageSize}
+                        activePage={activePage}
+                        onActivePageChange={setActivePage}
+                        totalItems={membersCount}
+                        pagePerItemOptions={defaultPagePerItemOptions}
+                    />
+                )}
             />
         </ExpandableContainer>
     );

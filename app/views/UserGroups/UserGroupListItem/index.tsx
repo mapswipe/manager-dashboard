@@ -4,22 +4,32 @@ import {
 } from 'react';
 import { FaEdit } from 'react-icons/fa';
 import { IoArchive } from 'react-icons/io5';
+import {
+    PiArchive,
+    PiCalendar,
+    PiUser,
+} from 'react-icons/pi';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
+import ColorPreview from '#components/ColorSelectInput/ColorPreview';
 import ExpandableContainer from '#components/ExpandableContainer';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import OverflowMenu from '#components/OverflowMenu';
 import Pager from '#components/Pager';
 import Table, { Column } from '#components/Table';
+import Tag from '#components/Tag';
+import TextOutput from '#components/TextOutput';
 import {
     UserGroupMemberListQuery,
+    UserGroupsListQuery,
     useUpdateUserGroupMutation,
     useUserGroupMemberListQuery,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
     DEFAULT_PAGE,
-    DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
 } from '#utils/common';
 import {
@@ -79,32 +89,34 @@ mutation UpdateUserGroup($id: ID!, $data: ContributorUserGroupUpdateInput!) {
 type UserMemberTye = UserGroupMemberListQuery['contributorUserGroupMembers']['results'][number];
 
 interface Props {
-    id: string;
-    name: string;
-    description: string;
-    membersCount: number;
+    value: UserGroupsListQuery['contributorUserGroups']['results'][number];
     onEdit: (id: string) => void;
-    isArchived: boolean;
-    clientId: string;
     refetchUserGroup: () => void;
 }
 
 const keySelector = (item: UserMemberTye) => item.user.id;
 
-function UserListItem(props: Props) {
+function UserGroupListItem(props: Props) {
+    const {
+        onEdit,
+        value,
+        refetchUserGroup,
+    } = props;
+
     const {
         id,
         name,
         description,
         membersCount,
-        onEdit,
         isArchived,
         clientId,
-        refetchUserGroup,
-    } = props;
+        createdAt,
+        createdBy,
+    } = value;
+
+    const pageSize = 4;
 
     const [activePage, setActivePage] = useState(DEFAULT_PAGE);
-    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
     const [expanded, setExpanded] = useState(false);
     const alert = useAlert();
 
@@ -125,8 +137,8 @@ function UserListItem(props: Props) {
                 },
             },
             pagination: {
-                offset: (activePage - 1) * pagePerItem,
-                limit: pagePerItem,
+                offset: (activePage - 1) * pageSize,
+                limit: pageSize,
             },
         },
     });
@@ -195,61 +207,103 @@ function UserListItem(props: Props) {
             name={undefined}
             isExpanded={expanded}
             onExpansionChange={setExpanded}
+            heading={name}
             headingLevel={5}
-            withBackground
-            withPadding
             headerActions={(
-                <>
-                    {isArchived ? 'Archived' : 'Active'}
-                    <OverflowMenu>
-                        <Button
-                            name={!isArchived}
-                            styleVariant="transparent"
-                            onClick={handleStatusUpdate}
-                            withoutPadding
-                            disabled={updateUserGroupPending}
-                            start={<IoArchive />}
-                        >
-                            {isArchived ? 'Unarchive' : 'Archive'}
-                        </Button>
-                        <Button
-                            name={id}
-                            onClick={onEdit}
-                            styleVariant="transparent"
-                            withoutPadding
-                            start={<FaEdit />}
-                        >
-                            Edit
-                        </Button>
-                    </OverflowMenu>
-                </>
+                <OverflowMenu>
+                    <Button
+                        name={!isArchived}
+                        styleVariant="transparent"
+                        onClick={handleStatusUpdate}
+                        withoutPadding
+                        disabled={updateUserGroupPending}
+                        start={<IoArchive />}
+                    >
+                        {isArchived ? 'Unarchive' : 'Archive'}
+                    </Button>
+                    <Button
+                        name={id}
+                        onClick={onEdit}
+                        styleVariant="transparent"
+                        withoutPadding
+                        start={<FaEdit />}
+                    >
+                        Edit
+                    </Button>
+                </OverflowMenu>
             )}
-            heading={`${name} (${membersCount} members)`}
-            headerDescription={description}
-            contentLayout="block"
+            headerDescription={(
+                <ListLayout spacing="sm" layout="block">
+                    <ListLayout>
+                        <Tag>
+                            <InlineLayout
+                                spacing="sm"
+                                start={isArchived ? (
+                                    <PiArchive />
+                                ) : (
+                                    <ColorPreview
+                                        value="var(--color-success)"
+                                        compact
+                                        rounded
+                                    />
+                                )}
+                                withCenterAlign
+                            >
+                                {isArchived ? 'Archived' : 'Active'}
+                            </InlineLayout>
+                        </Tag>
+                        <TextOutput
+                            icon={<PiCalendar />}
+                            label="Create on"
+                            value={createdAt}
+                            valueType="date"
+                            withCenterAlign
+                        />
+                        <TextOutput
+                            icon={<PiUser />}
+                            label="Created by"
+                            value={createdBy.displayName}
+                            withCenterAlign
+                        />
+                    </ListLayout>
+                    {description}
+                </ListLayout>
+            )}
+            withPadding
+            withBackground
             spacing="lg"
             pending={pending}
             empty={expanded && membersCount === 0}
             emptyMessage="No member found!"
             filteredEmptyMessage="No matching member found!"
-            footerActions={expanded ? (
-                <Pager
-                    pagePerItem={pagePerItem}
-                    onPagePerItemChange={setPagePerItem}
-                    activePage={activePage}
-                    onActivePageChange={setActivePage}
-                    totalItems={membersCount}
-                    pagePerItemOptions={defaultPagePerItemOptions}
+            withWelledContent
+            showDetailsButtonLabel="Show members"
+            hideDetailsButtonLabel="Hide members"
+            footer={(
+                <TextOutput
+                    value={membersCount}
+                    description="members"
                 />
-            ) : null}
+            )}
         >
             <Table
                 keySelector={keySelector}
                 columns={columns}
                 data={userMemberResponse?.contributorUserGroupMembers?.results}
             />
+            <InlineLayout
+                end={(
+                    <Pager
+                        pagePerItem={pageSize}
+                        activePage={activePage}
+                        onActivePageChange={setActivePage}
+                        totalItems={membersCount}
+                        pagePerItemOptions={defaultPagePerItemOptions}
+                    />
+                )}
+            />
         </ExpandableContainer>
     );
 }
 
-export default UserListItem;
+export default UserGroupListItem;

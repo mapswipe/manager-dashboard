@@ -1,39 +1,63 @@
+import { useContext } from 'react';
 import {
-    useCallback,
-    useContext,
-    useState,
-} from 'react';
-import { FaSearch } from 'react-icons/fa';
-import {
-    isDefined,
-    isTruthyString,
-} from '@togglecorp/fujs';
+    PiFlag,
+    PiMagnifyingGlass,
+    PiMapPin,
+} from 'react-icons/pi';
+import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
 import routes from '#base/configs/routes';
 import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
+import Checklist from '#components/Checklist';
 import Container from '#components/Container';
+import OrderingInput from '#components/domain/OrderingInput';
+import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
-import RadioInput from '#components/RadioInput';
+import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TextInput from '#components/TextInput';
 import {
-    TutorialStatusEnum,
+    Ordering,
+    ProjectFilter,
+    TutorialFilter,
+    TutorialOrder,
     useTutorialsListQuery,
 } from '#generated/types/graphql';
-import useDebouncedValue from '#hooks/useDebouncedValue';
-import useInputState from '#hooks/useInputState';
+import useListManagement, {
+    ExactFilter,
+    ListFilter,
+} from '#hooks/useListManagement';
 import {
-    DEFAULT_PAGE,
-    DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
     keySelector,
     labelSelector,
+    removeEmptyList,
 } from '#utils/common';
 
 import TutorialListItem from './TutorialListItem';
+
+type TutorialFilterValue = {
+    name: TutorialFilter['name'];
+    status: ListFilter<TutorialFilter, 'status'>;
+    organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
+    region: ProjectFilter['region'];
+    projectType: ListFilter<ProjectFilter, 'projectType'>;
+
+}
+
+const sortKeyOptions: SortByOption<keyof TutorialOrder>[] = [
+    {
+        key: 'id',
+        label: 'Created',
+    },
+    {
+        key: 'name',
+        label: 'Title',
+    },
+];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ENUM_QUERY = gql`
@@ -48,8 +72,8 @@ query TutorialFilterEnums {
 `;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TUTORIALS_LIST_QUERY = gql`
-query TutorialsList($filters: TutorialFilter, $pagination: OffsetPaginationInput!) {
-    tutorials(pagination: $pagination, filters: $filters, includeAll: true) {
+query TutorialsList($filters: TutorialFilter, $order: TutorialOrder, $pagination: OffsetPaginationInput!) {
+    tutorials(pagination: $pagination, order: $order, filters: $filters, includeAll: true) {
         totalCount
         results {
             id
@@ -68,16 +92,13 @@ query TutorialsList($filters: TutorialFilter, $pagination: OffsetPaginationInput
                 clientId
                 projectType
                 projectInstruction
+                lookFor
                 region
                 requestingOrganization {
                     id
                     name
                 }
             }
-        }
-        pageInfo {
-            limit
-            offset
         }
     }
 }
@@ -88,49 +109,68 @@ interface Props {
 }
 
 function Tutorials(props: Props) {
+    const { className } = props;
+
     const {
-        className,
-    } = props;
-
-    const [selectedTutorialStat, setSelectedTutorialStat] = useInputState<
-        TutorialStatusEnum | undefined
-    >(undefined);
-    const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
-
-    const debouncedSearchText = useDebouncedValue(searchText?.trim());
-    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
-    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+        filters,
+        rawFilters,
+        sort,
+        setSortKey,
+        setSortOrdering,
+        page,
+        setPage,
+        pageSize,
+        offset,
+        limit,
+        filtersApplied,
+        setFilterField,
+        resetFilters,
+    } = useListManagement<TutorialFilterValue, keyof TutorialOrder>({
+        defaultFilters: {
+            name: undefined,
+            status: undefined,
+            organization: undefined,
+            region: undefined,
+            projectType: undefined,
+        },
+        defaultSort: {
+            key: 'id',
+            ordering: Ordering.Desc,
+        },
+    });
 
     const [{
         data: tutorialResponse,
         fetching: pending,
     }] = useTutorialsListQuery({
         variables: {
+            order: isDefined(sort) ? ({
+                [sort.key]: sort.ordering,
+            }) : undefined,
             filters: {
-                name: debouncedSearchText,
-                status: { exact: selectedTutorialStat },
+                name: filters.name,
+                status: { inList: removeEmptyList(filters.status) },
+                project: {
+                    requestingOrganizationId: { exact: filters.organization },
+                    region: filters.region,
+                    projectType: { inList: removeEmptyList(filters.projectType) },
+                },
             },
             pagination: {
-                offset: (activePage - 1) * pagePerItem,
-                limit: pagePerItem,
+                limit,
+                offset,
             },
         },
     });
 
-    const handleClearFilterButtonClick = useCallback(() => {
-        setSelectedTutorialStat(undefined);
-        setSearchText(undefined);
-    }, [setSearchText, setSelectedTutorialStat]);
-
     const totalItems = tutorialResponse?.tutorials.results.length ?? 0;
-
-    const { tutorialStatusOptions } = useContext(EnumsContext);
+    const {
+        tutorialStatusOptions,
+        projectTypeOptions,
+    } = useContext(EnumsContext);
 
     const filteredTutorialList = tutorialResponse?.tutorials.results ?? [];
     const totalCount = tutorialResponse?.tutorials.totalCount ?? 0;
-
-    const filtersApplied = isTruthyString(debouncedSearchText)
-        || isDefined(selectedTutorialStat);
 
     return (
         <PageLayout
@@ -148,25 +188,48 @@ function Tutorials(props: Props) {
             aside={(
                 <>
                     <TextInput
-                        icons={<FaSearch />}
-                        name={undefined}
-                        value={searchText}
-                        onChange={setSearchText}
+                        name="name"
+                        icons={<PiMagnifyingGlass />}
+                        value={rawFilters.name}
+                        onChange={setFilterField}
                         placeholder="Search by title"
                     />
-                    <RadioInput
-                        label="Tutorial status"
-                        name={undefined}
-                        options={tutorialStatusOptions ?? []}
-                        value={selectedTutorialStat}
-                        onChange={setSelectedTutorialStat}
+                    <TextInput
+                        name="region"
+                        icons={<PiMapPin />}
+                        value={rawFilters.region}
+                        onChange={setFilterField}
+                        placeholder="Search by region"
+                    />
+                    <OrganizationSelectInput
+                        name="organization"
+                        icons={<PiFlag />}
+                        label="Organization"
+                        placeholder="All"
+                        value={rawFilters.organization}
+                        onChange={setFilterField}
+                    />
+                    <Checklist
+                        label="Project type"
+                        name="projectType"
+                        options={projectTypeOptions}
+                        value={rawFilters.projectType}
+                        onChange={setFilterField}
                         keySelector={keySelector}
                         labelSelector={labelSelector}
-                        radioListLayout="block"
+                    />
+                    <Checklist
+                        label="Tutorial status"
+                        name="status"
+                        options={tutorialStatusOptions}
+                        value={rawFilters.status}
+                        onChange={setFilterField}
+                        keySelector={keySelector}
+                        labelSelector={labelSelector}
                     />
                     <Button
                         name={undefined}
-                        onClick={handleClearFilterButtonClick}
+                        onClick={resetFilters}
                         colorVariant="danger"
                         styleVariant="translucent"
                     >
@@ -176,23 +239,35 @@ function Tutorials(props: Props) {
             )}
         >
             <Container
-                footer={`Showing ${totalItems} of ${totalCount} tutorial`}
+                heading={`Showing ${totalItems} of ${totalCount} tutorial`}
+                headingLevel={6}
+                headerActions={(
+                    <>
+                        <SortByInput
+                            name={undefined}
+                            value={sort?.key}
+                            options={sortKeyOptions}
+                            onChange={setSortKey}
+                        />
+                        <OrderingInput
+                            name={undefined}
+                            value={sort?.ordering}
+                            onChange={setSortOrdering}
+                        />
+                    </>
+                )}
                 pending={pending}
                 filtered={filtersApplied}
                 spacing="lg"
                 empty={totalCount === 0}
                 emptyMessage="No tutorial found!"
                 filteredEmptyMessage="No matching tutorial found!"
-                withBackground={totalCount === 0}
-                withPadding={totalCount === 0}
-                withMinHeight={totalCount === 0}
                 footerActions={(
                     <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
-                        activePage={activePage}
-                        onActivePageChange={setActivePage}
-                        totalItems={tutorialResponse?.tutorials.totalCount ?? 0}
+                        pagePerItem={pageSize}
+                        activePage={page}
+                        onActivePageChange={setPage}
+                        totalItems={totalCount}
                         pagePerItemOptions={defaultPagePerItemOptions}
                     />
                 )}

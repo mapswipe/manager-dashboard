@@ -12,6 +12,7 @@ export interface Props extends Omit<InputContainerLayoutProps, 'children'> {
     input: React.ReactNode;
     inputSectionRef?: React.RefObject<HTMLDivElement>;
     spacing?: SpacingType;
+    spacingOffset?: number;
 }
 
 function InputContainer(props: Props) {
@@ -22,6 +23,7 @@ function InputContainer(props: Props) {
         input,
         inputSectionRef,
         spacing,
+        spacingOffset = -1,
         ...inputContainerLayoutProps
     } = props;
 
@@ -42,7 +44,7 @@ function InputContainer(props: Props) {
                 end={actions}
                 withPadding
                 spacing={spacing}
-                spacingOffset={-1}
+                spacingOffset={spacingOffset}
             >
                 {input}
             </InlineLayout>

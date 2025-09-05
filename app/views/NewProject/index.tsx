@@ -274,6 +274,7 @@ function NewProject(props: Props) {
                     labelSelector={projectTypeLabelSelector}
                     error={error?.projectType}
                     disabled={inputsDisabled}
+                    spacing="lg"
                 />
                 {isDefined(value.projectType) && (
                     <div>

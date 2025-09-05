@@ -2,7 +2,7 @@
     border-radius: var(--radius-card-border);
     box-shadow: 0 3px 7px -2px rgba(0, 0, 0, .5);
     width: calc(14rem + 16vw);
-    animation: slide-down .3s ease-in forwards;
+    animation: slide-down var(--duration-transition-medium) ease-in forwards;
     color: var(--color-text-on-dark);
 
     .title {

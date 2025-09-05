@@ -539,3 +539,32 @@ export function hasSomeDefinedValue(item: unknown) {
 
     return false;
 }
+
+export function removeEmptyList<T>(list: T[] | undefined | null) {
+    if (isDefined(list) && list.length === 0) {
+        return undefined;
+    }
+    return list;
+}
+
+export function getInstruction(
+    instruction: string | null | undefined,
+    lookFor: string | null | undefined,
+    projectType: ProjectTypeEnum | null | undefined,
+) {
+    if (isNotDefined(instruction) && isNotDefined(lookFor)) {
+        return '??';
+    }
+
+    if (isDefined(instruction)) {
+        return instruction;
+    }
+
+    const fallbackInstruction = (projectType === ProjectTypeEnum.Validate
+        || projectType === ProjectTypeEnum.ValidateImage)
+        ? `Does the shape outline ${lookFor}?`
+        : `You are looking for ${lookFor}`;
+
+    return fallbackInstruction;
+}
+

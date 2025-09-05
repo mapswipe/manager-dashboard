@@ -35,14 +35,13 @@ function MapZoomViewSelectInput(props: Props) {
 
     return (
         <SegmentInput
-            spacing="sm"
             name={undefined}
             value={value}
             onChange={onChange}
             options={options}
             keySelector={keySelector}
             labelSelector={labelSelector}
-            activeSegmentStyleVariant="translucent"
+            activeSegmentStyleVariant="transparent"
         />
     );
 }
