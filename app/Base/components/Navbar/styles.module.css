@@ -25,6 +25,7 @@
             border-top: var(--width-separator-thin) solid transparent;
             border-bottom: var(--width-separator-thin) solid transparent;
             color: var(--color-text-on-dark);
+            font-weight: var(--font-weight-bold);
 
             &.active {
                 opacity: 1;

@@ -77,6 +77,7 @@ import tutorialUpdateSchema, {
 } from './schema';
 
 import styles from './styles.module.css';
+import TutorialActions from './TutorialActions';
 
 // FIXME: move this to utils
 function stringifyId(value: undefined): undefined
@@ -950,36 +951,12 @@ function NewTutorial(props: Props) {
         <PageLayout
             className={_cs(styles.newTutorial, className)}
             heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
-            headerActions={(
-                <>
-                    {(
-                        tutorialData?.tutorial.status === TutorialStatusEnum.Draft
-                        || tutorialData?.tutorial.status === TutorialStatusEnum.Archived
-                    ) && (
-                        <Button
-                            name={TutorialStatusEnum.Published}
-                            onClick={setNewStatus}
-                        >
-                            Publish
-                        </Button>
-                    )}
-                    {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
-                        <Button
-                            name={TutorialStatusEnum.Discarded}
-                            onClick={setNewStatus}
-                        >
-                            Discard
-                        </Button>
-                    )}
-                    {tutorialData?.tutorial.status === TutorialStatusEnum.Published && (
-                        <Button
-                            name={TutorialStatusEnum.Archived}
-                            onClick={setNewStatus}
-                        >
-                            Archive
-                        </Button>
-                    )}
-                </>
+            headerActions={tutorialData && (
+                <TutorialActions
+                    tutorialId={tutorialData.tutorial.id}
+                    clientId={tutorialData.tutorial.clientId}
+                    status={tutorialData.tutorial.status}
+                />
             )}
             footerActions={(
                 <Button

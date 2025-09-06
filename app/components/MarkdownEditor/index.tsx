@@ -1,13 +1,49 @@
 import React, {
+    RefObject,
     useCallback,
     useId,
 } from 'react';
 import Markdown from 'react-mde';
+import { _cs } from '@togglecorp/fujs';
+
+import RawTextArea, { RawTextAreaProps } from '#components/RawTextArea';
 
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
 import MarkdownPreview from '../MarkdownPreview';
 
 import styles from './styles.module.css';
+
+const MarkdownTextArea = React.forwardRef<
+    RawTextAreaProps<unknown>,
+    React.HTMLProps<HTMLTextAreaElement>
+>((props, ref) => {
+    const {
+        // eslint-disable-next-line react/prop-types
+        name,
+        // eslint-disable-next-line react/prop-types
+        value,
+        // eslint-disable-next-line react/prop-types
+        onChange,
+        ...otherProps
+    } = props;
+
+    const handleChange: RawTextAreaProps<unknown>['onChange'] = (_, __, e) => {
+        if (e) {
+            onChange?.(e);
+        }
+    };
+
+    return (
+        <RawTextArea
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...otherProps}
+            name={name}
+            value={value as RawTextAreaProps<unknown>['value']}
+            onChange={handleChange}
+            elementRef={ref as RefObject<HTMLTextAreaElement> ?? undefined}
+        />
+    );
+});
 
 interface MarkdownEditorProps<NAME extends string> {
     name: NAME;
@@ -58,7 +94,7 @@ function MarkdownEditor<const NAME extends string>(props: Props<NAME>) {
     return (
         <InputContainer
             inputId={inputId}
-            className={className}
+            className={_cs(styles.markdownEditor, className)}
             disabled={disabled}
             error={error}
             hint={hint}
@@ -75,6 +111,7 @@ function MarkdownEditor<const NAME extends string>(props: Props<NAME>) {
                     generateMarkdownPreview={generateMarkdownPreview}
                     readOnly={disabled}
                     disablePreview
+                    textAreaComponent={MarkdownTextArea}
                     classes={{
                         reactMde: styles.reactMde,
                         textArea: styles.textArea,

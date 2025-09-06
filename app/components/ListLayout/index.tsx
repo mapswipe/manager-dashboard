@@ -1,9 +1,10 @@
 import {
+    RefObject,
     useLayoutEffect,
-    useRef,
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import useFallbackRef from '#hooks/useFallbackRef';
 import useSpacingToken from '#hooks/useSpacingToken';
 import {
     fullSpacings,
@@ -26,6 +27,8 @@ interface Props extends React.HTMLProps<HTMLDivElement> {
     numPreferredGridColumns?: number;
     minGridColumnSize?: string;
     spacingOffset?: number;
+    elementRef?: RefObject<HTMLDivElement>;
+    withFullWidth?: boolean;
 }
 
 function ListLayout(props: Props) {
@@ -39,10 +42,12 @@ function ListLayout(props: Props) {
         numPreferredGridColumns = 2,
         minGridColumnSize = '12rem',
         spacingOffset,
+        withFullWidth,
+        elementRef: elementRefFromProps,
         ...divElementProps
     } = props;
 
-    const elementRef = useRef<HTMLDivElement>(null);
+    const elementRef = useFallbackRef(elementRefFromProps);
 
     useLayoutEffect(() => {
         if (layout === 'grid') {
@@ -64,7 +69,7 @@ function ListLayout(props: Props) {
                 `calc(${getSpacingValue(spacing)} * ${numPartitions})`,
             );
         }
-    }, [numPreferredGridColumns, minGridColumnSize, layout, withPadding, spacing]);
+    }, [numPreferredGridColumns, minGridColumnSize, layout, withPadding, spacing, elementRef]);
 
     const spacingClassName = useSpacingToken({
         spacing,
@@ -84,6 +89,7 @@ function ListLayout(props: Props) {
                 layout === 'grid' && styles.gridLayout,
                 layout !== 'grid' && spacingClassName,
                 withWrap && styles.withWrap,
+                withFullWidth && styles.withFullWidth,
                 className,
             )}
         >

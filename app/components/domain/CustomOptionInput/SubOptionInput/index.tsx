@@ -1,4 +1,4 @@
-import { IoTrashBin } from 'react-icons/io5';
+import { PiTrash } from 'react-icons/pi';
 import {
     ObjectError,
     SetValueArg,
@@ -7,8 +7,8 @@ import {
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
-import Container from '#components/Container';
 import GridLayoutItem from '#components/GridLayoutItem';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
@@ -48,51 +48,53 @@ function SubOptionInput(props: Props) {
     );
 
     return (
-        <Container
+        <InlineLayout
             className={className}
-            heading={`Sub Option #${index + 1}`}
-            headingLevel={6}
-            headerActions={(
+            start={`#${index + 1}`}
+            end={(
                 <Button
                     name={index}
                     onClick={onRemove}
                     styleVariant="transparent"
                     colorVariant="danger"
-                    start={<IoTrashBin />}
                     withoutPadding
                     disabled={disabled}
                 >
-                    Remove
+                    <PiTrash />
                 </Button>
             )}
+            withCenterAlign
+            spacing="sm"
         >
             <ListLayout
                 layout="grid"
                 numPreferredGridColumns={3}
-                minGridColumnSize="6rem"
+                withFullWidth
+                minGridColumnSize="3rem"
+                spacing="sm"
             >
-                <GridLayoutItem columnSpan={1}>
-                    <NumberInput
-                        label="Value"
-                        name="value"
-                        value={value.value}
-                        onChange={setFieldValue}
-                        error={error?.value}
-                        disabled={disabled}
-                    />
-                </GridLayoutItem>
+                <NumberInput
+                    placeholder="Value"
+                    name="value"
+                    value={value.value}
+                    onChange={setFieldValue}
+                    error={error?.value}
+                    disabled={disabled}
+                    spacing="sm"
+                />
                 <GridLayoutItem columnSpan={2}>
                     <TextInput
-                        label="Description"
+                        placeholder="Description"
                         name="description"
                         value={value.description}
                         onChange={setFieldValue}
                         error={error?.description}
                         disabled={disabled}
+                        spacing="sm"
                     />
                 </GridLayoutItem>
             </ListLayout>
-        </Container>
+        </InlineLayout>
     );
 }
 

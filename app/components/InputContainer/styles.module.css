@@ -1,6 +1,5 @@
 .input-container {
     .input-section {
-        align-items: center;
         border-radius: var(--radius-input-border);
         background-color: var(--color-background-input);
     }

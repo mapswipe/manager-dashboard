@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import { ImSpinner } from 'react-icons/im';
-import { MdSwipeLeft } from 'react-icons/md';
+import {
+    PiEmpty,
+    PiSpinner,
+} from 'react-icons/pi';
 import {
     _cs,
     isDefined,
@@ -37,7 +39,7 @@ function Message(props: Props) {
         empty,
         errored,
 
-        icon = <MdSwipeLeft />,
+        icon = <PiEmpty />,
         description,
         actions,
         emptyMessage,
@@ -93,7 +95,7 @@ function Message(props: Props) {
         >
             {(pending || (icon && !withoutIcon)) && (
                 <div className={styles.icon}>
-                    {pending && <ImSpinner className={styles.spinner} />}
+                    {pending && <PiSpinner className={styles.spinner} />}
                     {!pending && !withoutIcon && icon}
                 </div>
             )}

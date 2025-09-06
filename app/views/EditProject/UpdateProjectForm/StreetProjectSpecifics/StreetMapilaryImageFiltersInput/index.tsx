@@ -35,10 +35,7 @@ function StreetMapilaryImageFiltersInput(props: Props) {
     return (
         <Container
             heading="Mapillary Image Filters"
-            withBackground
-            withPadding
             headingLevel={4}
-            spacing="lg"
         >
             <ListLayout layout="grid">
                 <TextInput

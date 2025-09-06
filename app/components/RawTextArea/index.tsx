@@ -8,7 +8,9 @@ import InputInteractivityContext from '#base/context/InputInteractivityContext';
 
 import styles from './styles.module.css';
 
-export interface Props<NAME> extends Omit<React.HTMLProps<HTMLTextAreaElement>, 'ref' | 'onChange' | 'value' | 'name'> {
+export type RawTextAreaInheritedProps = Omit<React.HTMLProps<HTMLTextAreaElement>, 'ref' | 'onChange' | 'value' | 'name'>;
+
+export interface RawTextAreaProps<NAME> extends RawTextAreaInheritedProps {
     className?: string;
     name: NAME;
     value: string | undefined | null;
@@ -17,10 +19,10 @@ export interface Props<NAME> extends Omit<React.HTMLProps<HTMLTextAreaElement>, 
         name: NAME,
         e: React.FormEvent<HTMLTextAreaElement> | undefined,
     ) => void;
-    elementRef?: React.Ref<HTMLTextAreaElement>;
+    elementRef?: React.RefObject<HTMLTextAreaElement>;
 }
 
-function RawTextArea<const NAME>(props: Props<NAME>) {
+function RawTextArea<const NAME>(props: RawTextAreaProps<NAME>) {
     const {
         className,
         onChange,

@@ -568,3 +568,12 @@ export function getInstruction(
     return fallbackInstruction;
 }
 
+export function stringifyId(value: undefined): undefined
+export function stringifyId(value: number): string
+export function stringifyId(value: number | undefined): string | undefined
+export function stringifyId(value: number | undefined) {
+    if (isNotDefined(value)) {
+        return value;
+    }
+    return String(value);
+}

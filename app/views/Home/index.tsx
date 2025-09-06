@@ -15,25 +15,20 @@ function Home(props: Props) {
     return (
         <PageLayout
             className={className}
-            heading="MapSwipe Manager Dashboard"
+            heading="Manager Dashboard"
             headerDescription={(
-                <>
-                    <div>
-                        You can set up a new project by setting up project draft through
-                        &nbsp;
-                        <SmartLink
-                            route={routes.newProject}
-                            spacing="none"
-                        >
-                            New Project
-                        </SmartLink>
-                        &nbsp;
-                        page.
-                    </div>
-                    <div>
-                        You may find some of the useful stuff below.
-                    </div>
-                </>
+                <div>
+                    You can set up a new project by setting up project draft through
+                    &nbsp;
+                    <SmartLink
+                        route={routes.newProject}
+                        spacing="none"
+                    >
+                        New Project
+                    </SmartLink>
+                    &nbsp;
+                    page.
+                </div>
             )}
         >
             <OrganizationList />

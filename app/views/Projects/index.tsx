@@ -154,6 +154,10 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
                 id
                 name
             }
+            tutorial {
+                id
+                name
+            }
         }
         pageInfo {
             limit

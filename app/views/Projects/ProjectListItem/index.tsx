@@ -189,6 +189,22 @@ function ProjectListItem(props: Props) {
                             </ListLayout>
                             {showDetails && (
                                 <>
+                                    {isDefined(value.tutorial) && (
+                                        <TextOutput
+                                            label="Tutorial"
+                                            value={(
+                                                <SmartLink
+                                                    route={routes.editTutorial}
+                                                    attrs={{ id: value.tutorial.id }}
+                                                    withLinkIcon
+                                                    withoutPadding
+                                                    spacing="xs"
+                                                >
+                                                    {value.tutorial.name}
+                                                </SmartLink>
+                                            )}
+                                        />
+                                    )}
                                     <ListLayout
                                         layout="grid"
                                         spacing="sm"

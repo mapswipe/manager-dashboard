@@ -2,11 +2,11 @@ import {
     PiArchive,
     PiCheckCircle,
     PiCloudCheck,
-    PiExclamationMark,
     PiFileText,
     PiHourglassMedium,
     PiPauseCircle,
     PiTrash,
+    PiWarningCircle,
 } from 'react-icons/pi';
 import { isNotDefined } from '@togglecorp/fujs';
 
@@ -40,7 +40,7 @@ function ProjectStatusIcon(props: Props) {
     }
 
     if (value === ProjectStatusEnum.Failed) {
-        return <PiExclamationMark className={className} />;
+        return <PiWarningCircle className={className} />;
     }
 
     if (value === ProjectStatusEnum.Paused) {

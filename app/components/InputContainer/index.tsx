@@ -40,11 +40,12 @@ function InputContainer(props: Props) {
             <InlineLayout
                 elementRef={inputSectionRef}
                 className={styles.inputSection}
+                withPadding
                 start={icons}
                 end={actions}
-                withPadding
                 spacing={spacing}
                 spacingOffset={spacingOffset}
+                withCenterAlign
             >
                 {input}
             </InlineLayout>

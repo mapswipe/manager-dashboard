@@ -20,6 +20,7 @@ import {
     defaultRasterTileServerInputValue,
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 
 import {
@@ -85,11 +86,9 @@ function ValidateProjectSpecifics(props: Props) {
     return (
         <>
             <Container
-                withBackground
-                withPadding
                 headingLevel={4}
                 heading="Custom options"
-                spacing="lg"
+                withWelledContent
                 headerActions={(
                     <Button
                         name={value?.customOptions?.length ?? 0}
@@ -106,18 +105,20 @@ function ValidateProjectSpecifics(props: Props) {
                 )}
                 empty={isNotDefined(value?.customOptions) || value.customOptions.length === 0}
             >
-                {value?.customOptions?.map((customOption, optionIndex) => (
-                    <CustomOptionInput
-                        key={customOption.clientId}
-                        index={optionIndex}
-                        value={customOption}
-                        onChange={setCustomOptionValue}
-                        error={getErrorObject(
-                            getErrorObject(error?.customOptions)?.[customOption.clientId],
-                        )}
-                        onRemove={removeCustomOption}
-                    />
-                ))}
+                <ListLayout layout="grid">
+                    {value?.customOptions?.map((customOption, optionIndex) => (
+                        <CustomOptionInput
+                            key={customOption.clientId}
+                            index={optionIndex}
+                            value={customOption}
+                            onChange={setCustomOptionValue}
+                            error={getErrorObject(
+                                getErrorObject(error?.customOptions)?.[customOption.clientId],
+                            )}
+                            onRemove={removeCustomOption}
+                        />
+                    ))}
+                </ListLayout>
             </Container>
             <ObjectSourceInput
                 value={value?.objectSource}
@@ -127,9 +128,6 @@ function ValidateProjectSpecifics(props: Props) {
                 projectId={projectId}
             />
             <RasterTileServerInput
-                withContainerBackground
-                withContainerPadding
-                containerSpacing="lg"
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}

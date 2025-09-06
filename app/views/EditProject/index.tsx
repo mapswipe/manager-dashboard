@@ -4,7 +4,7 @@ import {
     isNotDefined,
 } from '@togglecorp/fujs';
 
-import EmptyMessage from '#components/EmptyMessage';
+import Message from '#components/Message';
 import PageLayout from '#components/PageLayout';
 import PendingMessage from '#components/PendingMessage';
 import {
@@ -40,8 +40,9 @@ function EditProject(props: Props) {
             >
                 {projectDataPending && <PendingMessage />}
                 {!projectDataPending && (
-                    <EmptyMessage
-                        title="Failed to load Project data"
+                    <Message
+                        empty
+                        emptyMessage="Failed to load Project data"
                         description={projectDataError?.message ?? 'Unknown error occured!'}
                     />
                 )}

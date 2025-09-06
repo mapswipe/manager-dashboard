@@ -46,7 +46,11 @@ function ContributorUserCard(props: Props) {
             contentLayout="block"
             withHeaderBorder
             headerActions={(
-                <a href={communityDashboardUrl}>
+                <a
+                    href={communityDashboardUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     <ButtonLayout
                         end={<PiArrowSquareOut />}
                         styleVariant={compact ? 'action' : 'translucent'}

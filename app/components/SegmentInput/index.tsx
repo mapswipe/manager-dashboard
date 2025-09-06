@@ -82,7 +82,7 @@ function SegmentInput<
                                 name={key}
                                 key={String(key)}
                                 onClick={handleSegmentClick}
-                                spacingOffset={-3}
+                                spacingOffset={-2}
                                 spacing={spacing}
                             >
                                 {optionLabel}

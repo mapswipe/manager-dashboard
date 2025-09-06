@@ -55,6 +55,7 @@ function ColorSelectInput<const NAME>(props: Props<NAME>) {
             labelSelector={labelSelector}
             optionLabelSelector={colorOptionLabelSelector}
             icons={<ColorPreview value={value} />}
+            nonClearable
         />
     );
 }

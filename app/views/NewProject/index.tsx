@@ -49,6 +49,8 @@ import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 import { DeepNonNullable } from '#utils/types';
 
 import ProjectGeneralInputs from './ProjectGeneralInputs';
+import Alert from '#components/Alert';
+import ListLayout from '#components/ListLayout';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_MUTATION = gql`
@@ -118,14 +120,45 @@ function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
     );
 }
 
-const projectTypeDescriptions: Record<ProjectTypeEnum, string> = {
+const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
     [ProjectTypeEnum.Find]: 'Swipe through satellite images to identify & select those that contain the requested features such as buildings, roadways, waterways and more.',
     [ProjectTypeEnum.Compare]: 'Review before and after satellite images to detect changes in the environment that help inform damage assessment, climate change, or inaccurate data.',
     [ProjectTypeEnum.Validate]: 'Assess building footprints for accuracy where buildings have been previously traced by remote mappers or through AI to identify where remapping is needed.',
     [ProjectTypeEnum.ValidateImage]: 'Assess how well machine learning detections match real-world features in images, flagging false or inaccurate results. This helps improve model accuracy and dataset quality, supporting better outcomes for social good applications.',
-    [ProjectTypeEnum.Completeness]: 'Assess how well OSM data represents buildings in satellite imagery, flagging areas where mapping is incomplete. This helps identify areas needing further mapping efforts to enhance OSM\'s accuracy, especially for disaster response and risk assessment.',
-    // FIXME: add description
-    [ProjectTypeEnum.Street]: '',
+    [ProjectTypeEnum.Completeness]: (
+        <ListLayout layout="block">
+            <p>
+                Assess how well OSM data represents buildings in satellite imagery,
+                flagging areas where mapping is incomplete.
+                This helps identify areas needing further mapping efforts to enhance
+                OSM&apos;s accuracy, especially for disaster response and risk assessment.
+            </p>
+            <Alert
+                name="street-alert"
+                title="Vector overlay layer"
+                type="warning"
+                description="Please be aware that the vector overlay layer is only available in the MapSwipe web app."
+                fullWidth
+                withoutShadow
+            />
+        </ListLayout>
+    ),
+    [ProjectTypeEnum.Street]: (
+        <ListLayout layout="block">
+            <p>
+                Explore ground-level images to find relevant features and
+                capture more detailed information on communities.
+            </p>
+            <Alert
+                name="street-alert"
+                title="MapSwipe Web only"
+                type="warning"
+                description="Street project are currently only available in the MapSwipe web app."
+                fullWidth
+                withoutShadow
+            />
+        </ListLayout>
+    ),
 };
 
 interface Props {

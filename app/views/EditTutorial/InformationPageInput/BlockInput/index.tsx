@@ -67,7 +67,6 @@ function BlockInput(props: Props) {
                     <IoTrashBin />
                 </Button>
             )}
-            withFullWidth
         >
             {value.blockType === TutorialInformationPageBlockTypeEnum.Text && (
                 <MarkdownEditor

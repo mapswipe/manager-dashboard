@@ -2,10 +2,9 @@
     --font-size: var(--font-size-xl);
     display: flex;
     margin: 0;
-    line-height: 1;
+    line-height: 1.125;
     color: var(--color-primary);
     font-size: var(--font-size);
-    font-weight: var(--font-weight-medium);
 
     &.level1 {
         font-weight: var(--font-weight-light);
@@ -18,20 +17,22 @@
     }
 
     &.level3 {
+        font-weight: var(--font-weight-medium);
         --font-size: var(--font-size-2xl);
     }
 
     &.level4 {
+        font-weight: var(--font-weight-medium);
         --font-size: var(--font-size-xl);
     }
 
     &.level5 {
+        font-weight: var(--font-weight-bold);
         --font-size: var(--font-size-lg);
     }
 
     &.level6 {
-        --font-size: var(--font-size-md);
-        color: color-mix(in srgb, var(--color-primary) 80%, transparent);
         font-weight: var(--font-weight-bold);
+        --font-size: var(--font-size-md);
     }
 }

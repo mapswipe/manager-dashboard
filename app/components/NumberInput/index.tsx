@@ -44,6 +44,7 @@ function NumberInput<const N>(props: Props<N>) {
         onChange,
         name,
         value,
+        spacing,
         ...rawInputProps
     } = props;
 
@@ -121,6 +122,7 @@ function NumberInput<const N>(props: Props<N>) {
             icons={icons}
             label={label}
             readOnly={readOnly}
+            spacing={spacing}
             // invalid={isTruthyString(tempValue)}
             input={(
                 <RawInput<N>
