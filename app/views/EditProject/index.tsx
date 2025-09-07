@@ -15,13 +15,8 @@ import {
 import UpdateProcessedProjectForm from './UpdateProcessedProjectForm';
 import UpdateProjectForm from './UpdateProjectForm';
 
-interface Props {
-    className?: string;
-}
-
-function EditProject(props: Props) {
+function EditProject() {
     const { id: projectIdFromParams } = useParams<{ id: string }>();
-    const { className } = props;
 
     const [{
         data: projectData,
@@ -35,7 +30,6 @@ function EditProject(props: Props) {
     if (projectDataPending || isNotDefined(projectData) || isDefined(projectDataError)) {
         return (
             <PageLayout
-                className={className}
                 heading="Update project"
             >
                 {projectDataPending && <PendingMessage />}
@@ -61,10 +55,7 @@ function EditProject(props: Props) {
         || status === ProjectStatusEnum.Failed
     ) {
         return (
-            <UpdateProjectForm
-                className={className}
-                projectData={projectData}
-            />
+            <UpdateProjectForm projectData={projectData} />
         );
     }
 
@@ -75,10 +66,7 @@ function EditProject(props: Props) {
         || status === ProjectStatusEnum.Discarded
     ) {
         return (
-            <UpdateProcessedProjectForm
-                className={className}
-                projectData={projectData}
-            />
+            <UpdateProcessedProjectForm projectData={projectData} />
         );
     }
 

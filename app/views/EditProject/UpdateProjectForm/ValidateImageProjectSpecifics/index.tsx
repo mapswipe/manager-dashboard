@@ -18,7 +18,6 @@ import {
 import { ulid } from 'ulid';
 import { gql } from 'urql';
 
-import EnumsContext from '#base/context/EnumsContext.ts';
 import Button from '#components/Button/index.tsx';
 import Container from '#components/Container/index.tsx';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
@@ -27,6 +26,7 @@ import ListLayout from '#components/ListLayout/index.tsx';
 import NonFieldError from '#components/NonFieldError/index.tsx';
 import Pager from '#components/Pager/index.tsx';
 import RadioInput from '#components/RadioInput/index.tsx';
+import EnumsContext from '#contexts/EnumsContext.ts';
 import {
     useProjectObjectImageAssetsQuery,
     ValidateImageSourceTypeEnum,

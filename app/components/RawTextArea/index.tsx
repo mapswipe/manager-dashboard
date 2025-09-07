@@ -4,7 +4,7 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import InputInteractivityContext from '#base/context/InputInteractivityContext';
+import InputInteractivityContext from '#contexts/InputInteractivityContext';
 
 import styles from './styles.module.css';
 

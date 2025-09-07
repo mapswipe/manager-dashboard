@@ -11,7 +11,6 @@ import {
 } from 'react-icons/pi';
 
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
@@ -56,7 +55,7 @@ function TutorialListItem(props: Props) {
             withShadow
             heading={(
                 <SmartLink
-                    route={routes.editTutorial}
+                    route="editTutorial"
                     attrs={{ id }}
                     withoutPadding
                     colorVariant="primary"

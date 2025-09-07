@@ -13,7 +13,6 @@ import {
 import { type } from 'arktype';
 import { ulid } from 'ulid';
 
-import BulkUploadContext, { useBulkUploadProvider } from '#base/context/BulkUpload';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import FileInput from '#components/FileInput';
@@ -23,6 +22,7 @@ import Modal from '#components/Modal';
 import ProgressBar from '#components/ProgressBar';
 import SelectInput from '#components/SelectInput';
 import TextOutput from '#components/TextOutput';
+import BulkUploadContext, { useBulkUploadProvider } from '#contexts/BulkUpload';
 import useAlert from '#hooks/useAlert';
 import {
     idSelector,

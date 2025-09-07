@@ -5,11 +5,11 @@ import {
     useState,
 } from 'react';
 
-import InputInteractivityContext, { InputInteractivityContextProps } from '#base/context/InputInteractivityContext';
 import InputError from '#components/InputError';
 import InputHint from '#components/InputHint';
 import InputLabel from '#components/InputLabel';
 import ListLayout, { ListLayoutType } from '#components/ListLayout';
+import InputInteractivityContext, { InputInteractivityContextProps } from '#contexts/InputInteractivityContext';
 import { SpacingType } from '#utils/styles';
 
 import { Props as InputContainerProps } from '../InputContainer';

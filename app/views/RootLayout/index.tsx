@@ -5,22 +5,29 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import {
+    Outlet,
+    useNavigation,
+} from 'react-router';
+import {
     isDefined,
     listToMap,
 } from '@togglecorp/fujs';
 import { type } from 'arktype';
 import { gql } from 'urql';
 
+import Navbar from '#base/components/Navbar';
 import PreloadMessage from '#base/components/PreloadMessage';
-import EnumsContext, { EnumsContextProps } from '#base/context/EnumsContext';
-import HealthCheckContext, { HealthCheckData } from '#base/context/HealthCheckContext';
-import TileServerContext, { defaultTileServersValue } from '#base/context/TileServerContext';
-import UserContext from '#base/context/UserContext';
+import EnumsContext, { EnumsContextProps } from '#contexts/EnumsContext';
+import HealthCheckContext, { HealthCheckData } from '#contexts/HealthCheckContext';
+import TileServerContext, { defaultTileServersValue } from '#contexts/TileServerContext';
+import UserContext from '#contexts/UserContext';
 import {
     useAllEnumsQuery,
     useMeQuery,
     useTileServersQuery,
 } from '#generated/types/graphql';
+
+import styles from './styles.module.css';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TILE_SERVERS_QUERY = gql`
@@ -106,21 +113,16 @@ query AllEnums {
 }
 `;
 
-interface Props {
-    preloadClassName?: string;
-    children: React.ReactNode;
-}
-function Init(props: Props) {
-    const {
-        preloadClassName,
-        children,
-    } = props;
+function RootLayout() {
+    const navigation = useNavigation();
 
     const { authenticated, setUser } = React.useContext(UserContext);
     const [healthCheckData, setHealthCheckData] = useState<HealthCheckData>();
 
     const [csrfReady, setCsrfReady] = React.useState(false);
     const [useDetailsReady, setUserDetailsReady] = useState(authenticated);
+
+    const navigationPending = !!navigation.location;
 
     useEffect(() => {
         async function healthCheck() {
@@ -240,15 +242,6 @@ function Init(props: Props) {
         pause: !csrfReady,
     });
 
-    if (!useDetailsReady || !csrfReady || tileServersLoading) {
-        return (
-            <PreloadMessage
-                className={preloadClassName}
-                content="Checking user session..."
-            />
-        );
-    }
-
     return (
         <HealthCheckContext.Provider value={healthCheckData}>
             <TileServerContext.Provider
@@ -257,10 +250,22 @@ function Init(props: Props) {
                 <EnumsContext.Provider
                     value={enumContextValue}
                 >
-                    {children}
+                    <div className={styles.rootLayout}>
+                        <Navbar />
+                        <div className={styles.globalLoading}>
+                            {navigationPending && (
+                                <div className={styles.loader} />
+                            )}
+                        </div>
+                        {(!useDetailsReady || !csrfReady || tileServersLoading) ? (
+                            <PreloadMessage>
+                                Checking user session...
+                            </PreloadMessage>
+                        ) : <Outlet />}
+                    </div>
                 </EnumsContext.Provider>
             </TileServerContext.Provider>
         </HealthCheckContext.Provider>
     );
 }
-export default Init;
+export default RootLayout;

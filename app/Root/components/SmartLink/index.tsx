@@ -5,16 +5,14 @@ import {
 } from 'react-router';
 import { _cs } from '@togglecorp/fujs';
 
-import useRouteMatching, {
-    Attrs,
-    RouteData,
-} from '#base/hooks/useRouteMatching';
+import { RouteKeys } from '#base/configs/routes';
+import useRouteMatching, { type Attrs } from '#base/hooks/useRouteMatching';
 import ButtonLayout, { ButtonLayoutProps } from '#components/ButtonLayout';
 
 import styles from './styles.module.css';
 
 export type Props = Omit<LinkProps, 'to'> & ButtonLayoutProps & {
-    route: RouteData;
+    route: RouteKeys;
     attrs?: Attrs;
     withLinkIcon?: boolean,
 };
@@ -39,6 +37,7 @@ function SmartLink(props: Props) {
     } = props;
 
     const routeData = useRouteMatching(route, attrs);
+
     if (!routeData) {
         return null;
     }
@@ -67,7 +66,7 @@ function SmartLink(props: Props) {
                 styleVariant={styleVariant}
                 withoutPadding={withoutPadding}
             >
-                {children ?? routeData.children}
+                {children}
             </ButtonLayout>
         </Link>
     );

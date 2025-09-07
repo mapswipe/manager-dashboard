@@ -1,11 +1,14 @@
+import { useBlocker } from 'react-router';
 import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
 
+import Button from '#components/Button';
 import Heading from '#components/Heading';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import Modal from '#components/Modal';
 
 import styles from './styles.module.css';
 
@@ -19,6 +22,7 @@ interface Props {
     children: React.ReactNode;
     footerActions?: React.ReactNode;
     withLargeAside?: boolean;
+    confirmNavigationChange?: boolean;
 }
 
 function PageLayout(props: Props) {
@@ -32,7 +36,10 @@ function PageLayout(props: Props) {
         children,
         footerActions,
         withLargeAside,
+        confirmNavigationChange = false,
     } = props;
+
+    const blocker = useBlocker(confirmNavigationChange);
 
     return (
         <div
@@ -94,6 +101,38 @@ function PageLayout(props: Props) {
                 <ListLayout className={styles.footerActions}>
                     {footerActions}
                 </ListLayout>
+            )}
+            {blocker.state === 'blocked' && (
+                <Modal
+                    heading="Confirm"
+                    onClose={blocker.reset}
+                    size="sm"
+                    withAutoHeight
+                    footerActions={(
+                        <>
+                            <Button
+                                name={undefined}
+                                onClick={blocker.reset}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                name={undefined}
+                                onClick={blocker.proceed}
+                                colorVariant="danger"
+                            >
+                                Proceed
+                            </Button>
+                        </>
+                    )}
+                >
+                    <p>
+                        Are you sure you want to navigate away?
+                    </p>
+                    <p>
+                        You may have unsaved changes
+                    </p>
+                </Modal>
             )}
         </div>
     );

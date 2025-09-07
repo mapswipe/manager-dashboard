@@ -1,6 +1,6 @@
 .page-layout {
     --main-spacing: var(--spacing-lg);
-    --aside-size: minmax(12rem, 20%);
+    --aside-size: minmax(14rem, 25%);
 
     display: grid;
     grid-template-columns:

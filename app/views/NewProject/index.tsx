@@ -24,14 +24,16 @@ import { ulid } from 'ulid';
 import { gql } from 'urql';
 
 import routes from '#base/configs/routes';
-import EnumsContext from '#base/context/EnumsContext';
+import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import PageLayout from '#components/PageLayout';
 import SegmentInput from '#components/SegmentInput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     AppEnumCollectionProjectTypeEnum,
     ProjectCreateInput,
@@ -49,8 +51,6 @@ import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 import { DeepNonNullable } from '#utils/types';
 
 import ProjectGeneralInputs from './ProjectGeneralInputs';
-import Alert from '#components/Alert';
-import ListLayout from '#components/ListLayout';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_MUTATION = gql`
@@ -161,12 +161,7 @@ const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
     ),
 };
 
-interface Props {
-    className?: string;
-}
-
-function NewProject(props: Props) {
-    const { className } = props;
+function NewProject() {
     const navigate = useNavigate();
     const alert = useAlert();
 
@@ -188,6 +183,8 @@ function NewProject(props: Props) {
         setFieldValue,
         validate,
         setError,
+        pristine,
+        setPristine,
     } = useForm(projectCreateFormSchema, {
         value: defaultBaseProjectFormValue,
     });
@@ -247,17 +244,24 @@ function NewProject(props: Props) {
                         variant: 'success',
                     },
                 );
-                navigate(
-                    generatePath(
-                        routes.editProject.originalPath,
-                        { id: createProjectResult.id },
-                    ),
-                );
+
+                setPristine(true);
+                // NOTE: pristine needs to be set first before navigation
+                setTimeout(() => {
+                    if (isDefined(routes.editProject.path)) {
+                        navigate(
+                            generatePath(
+                                routes.editProject.path,
+                                { id: createProjectResult.id },
+                            ),
+                        );
+                    }
+                }, 0);
             } catch (apolloError) {
                 alertCombinedError(apolloError, alert);
             }
         },
-        [createNewProject, navigate, setError, alert],
+        [createNewProject, navigate, setError, alert, setPristine],
     );
 
     const handleSubmitButtonClick = useMemo(
@@ -270,7 +274,6 @@ function NewProject(props: Props) {
 
     return (
         <PageLayout
-            className={className}
             heading="Create a New Project"
             headerDescription="Let's get started with adding basic information for the project. You can later add more project type specific details."
             footerActions={(
@@ -290,6 +293,7 @@ function NewProject(props: Props) {
                     value={undefined}
                 />
             )}
+            confirmNavigationChange={!pristine}
         >
             <Container
                 withContentBackgroundAndPadding

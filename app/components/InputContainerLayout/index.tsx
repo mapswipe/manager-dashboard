@@ -5,11 +5,11 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import InputInteractivityContext, { InputInteractivityContextProps } from '#base/context/InputInteractivityContext';
 import InputError from '#components/InputError';
 import InputHint from '#components/InputHint';
 import InputLabel from '#components/InputLabel';
 import ListLayout from '#components/ListLayout';
+import InputInteractivityContext, { InputInteractivityContextProps } from '#contexts/InputInteractivityContext';
 import { SpacingType } from '#utils/styles';
 
 export interface Props {

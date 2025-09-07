@@ -1,18 +1,10 @@
 import PreloadMessage from '#base/components/PreloadMessage';
 
-interface Props {
-    className?: string;
-}
-
-function FourHundredFour(props: Props) {
-    const { className } = props;
-
+function FourHundredFour() {
     return (
-        <PreloadMessage
-            className={className}
-            heading="404"
-            content="The page you are looking for does not exist"
-        />
+        <PreloadMessage>
+            The page you are looking for does not exist
+        </PreloadMessage>
     );
 }
 

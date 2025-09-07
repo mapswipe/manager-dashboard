@@ -10,7 +10,6 @@ import {
 } from '@togglecorp/fujs';
 import { ulid } from 'ulid';
 
-import BulkUploadContext, { useBulkUploadProvider } from '#base/context/BulkUpload';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import FileInput from '#components/FileInput';
@@ -18,6 +17,7 @@ import ListLayout from '#components/ListLayout';
 import Modal from '#components/Modal';
 import ProgressBar from '#components/ProgressBar';
 import TextOutput from '#components/TextOutput';
+import BulkUploadContext, { useBulkUploadProvider } from '#contexts/BulkUpload';
 import { AssetMimetypeEnum } from '#generated/types/graphql';
 
 import DirectImageAsset, { DirectImage } from '../DirectImageAsset';

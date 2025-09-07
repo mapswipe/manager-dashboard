@@ -7,10 +7,10 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
-import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import { PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import RadioInput from '#components/RadioInput';
+import EnumsContext from '#contexts/EnumsContext';
 import { OverlayLayerTypeEnum } from '#generated/types/graphql';
 import {
     keySelector,

@@ -41,8 +41,6 @@ function MapZoomViewSelectInput(props: Props) {
             options={options}
             keySelector={keySelector}
             labelSelector={labelSelector}
-            activeSegmentStyleVariant="transparent"
-            spacing="sm"
         />
     );
 }

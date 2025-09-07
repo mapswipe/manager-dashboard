@@ -10,8 +10,6 @@ import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
-import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Checklist from '#components/Checklist';
 import Container from '#components/Container';
@@ -23,6 +21,7 @@ import SelectInput from '#components/SelectInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextInput from '#components/TextInput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     Ordering,
     ProjectFilter,
@@ -167,13 +166,7 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function Projects(props: Props) {
-    const { className } = props;
-
+function Projects() {
     const {
         filters,
         rawFilters,
@@ -243,10 +236,9 @@ function Projects(props: Props) {
     return (
         <PageLayout
             heading="Projects"
-            className={className}
             headerActions={(
                 <SmartLink
-                    route={routes.newProject}
+                    route="newProject"
                     spacing="md"
                     withLinkIcon
                 >

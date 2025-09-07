@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 
-import EnumsContext from '#base/context/EnumsContext';
 import InlineLayout from '#components/InlineLayout';
+import EnumsContext from '#contexts/EnumsContext';
 import { TutorialStatusEnum } from '#generated/types/graphql';
 import { SpacingType } from '#utils/styles';
 

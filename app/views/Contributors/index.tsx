@@ -62,13 +62,7 @@ query ContributorUserList($filters: ContributorUserFilter, $order: ContributorUs
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function Contributors(props: Props) {
-    const { className } = props;
-
+function Contributors() {
     const {
         filters,
         rawFilters,
@@ -120,7 +114,6 @@ function Contributors(props: Props) {
     return (
         <PageLayout
             heading="Contributors"
-            className={className}
             aside={(
                 <>
                     <TextInput
@@ -187,7 +180,10 @@ function Contributors(props: Props) {
             >
                 <ListLayout layout="grid">
                     {contributorUsersResponse?.contributorUsers.results.map((contributor) => (
-                        <ContributorUserCard value={contributor} />
+                        <ContributorUserCard
+                            key={contributor.id}
+                            value={contributor}
+                        />
                     ))}
                 </ListLayout>
             </Container>

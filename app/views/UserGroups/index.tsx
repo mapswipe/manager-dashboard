@@ -65,13 +65,7 @@ query UserGroupsList($filters: ContributorUserGroupFilter, $order: ContributorUs
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function UserGroups(props: Props) {
-    const { className } = props;
-
+function UserGroups() {
     const [
         showAddModal,
         setShowAddModalTrue,
@@ -140,7 +134,6 @@ function UserGroups(props: Props) {
     return (
         <PageLayout
             heading="User Groups"
-            className={className}
             headerActions={(
                 <Button
                     name={undefined}

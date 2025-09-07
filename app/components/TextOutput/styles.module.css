@@ -13,7 +13,6 @@
     .icon {
         display: flex;
         align-items: center;
-        line-height: 1;
         color: var(--color-text-faint);
     }
 

@@ -161,7 +161,6 @@ function InformationPageInput(props: Props) {
                 </Button>
             )}
             spacing="lg"
-            withPadding
             contentClassName={styles.content}
         >
             <ListLayout

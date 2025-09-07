@@ -27,10 +27,7 @@ import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
-import {
-    ProjectTypeEnum,
-    TutorialProjectDetailQuery,
-} from '#generated/types/graphql';
+import { TutorialProjectDetailQuery } from '#generated/types/graphql';
 
 import { PartialScenarioPageInputFields } from './schema';
 import TaskInput from './TaskInput';
@@ -83,12 +80,6 @@ function ScenarioPageInput(props: Props) {
         [error?.tasks],
     );
 
-    const hideHintSection = projectData?.projectType === ProjectTypeEnum.Validate
-        || projectData?.projectType === ProjectTypeEnum.ValidateImage;
-
-    const hideSuccessSection = projectData?.projectType === ProjectTypeEnum.Validate
-        || projectData?.projectType === ProjectTypeEnum.ValidateImage;
-
     return (
         <Container
             className={_cs(styles.scenarioPageInput, className)}
@@ -106,8 +97,6 @@ function ScenarioPageInput(props: Props) {
                     Remove
                 </Button>
             )}
-            withPadding
-            spacing="lg"
             contentClassName={styles.content}
         >
             <ListLayout
@@ -115,16 +104,18 @@ function ScenarioPageInput(props: Props) {
                 spacing="lg"
             >
                 <Container
-                    heading="Instruction"
+                    heading="Help description"
                     headingLevel={5}
+                    withWelledContent
                 >
-                    <ListLayout
-                        layout="grid"
-                        spacing="sm"
-                    >
-                        <ListLayout
-                            layout="block"
-                            spacing="sm"
+                    <ListLayout layout="grid" numPreferredGridColumns={3}>
+                        <Container
+                            heading="Instruction"
+                            headingLevel={5}
+                            contentLayout="block"
+                            withBackground
+                            withPadding
+                            withShadow
                         >
                             <IconSelectInput
                                 placeholder="Select an icon"
@@ -142,49 +133,41 @@ function ScenarioPageInput(props: Props) {
                                 error={error?.instructionsTitle}
                                 disabled={disabled}
                             />
-                        </ListLayout>
-                        <TextArea
-                            name="instructionsDescription"
-                            placeholder="Enter description"
-                            value={value.instructionsDescription}
-                            onChange={setFieldValue}
-                            error={error?.instructionsDescription}
-                            disabled={disabled}
-                            rows={3}
-                        />
-                    </ListLayout>
-                </Container>
-                {!hideHintSection && (
-                    <Container
-                        heading="Hint"
-                        headingLevel={5}
-                    >
-                        <ListLayout
-                            layout="grid"
-                            spacing="sm"
+                            <TextArea
+                                name="instructionsDescription"
+                                placeholder="Enter description"
+                                value={value.instructionsDescription}
+                                onChange={setFieldValue}
+                                error={error?.instructionsDescription}
+                                disabled={disabled}
+                                rows={3}
+                            />
+                        </Container>
+                        <Container
+                            heading="Hint"
+                            headingLevel={5}
+                            contentLayout="block"
+                            withBackground
+                            withPadding
+                            withShadow
                         >
-                            <ListLayout
-                                layout="block"
-                                spacing="sm"
-                            >
-                                <IconSelectInput
-                                    placeholder="Select an icon"
-                                    name="hintIcon"
-                                    value={value.hintIcon}
-                                    onChange={setFieldValue}
-                                    error={error?.hintIcon}
-                                    disabled={disabled}
-                                    nonClearable
-                                />
-                                <TextInput
-                                    placeholder="Enter title"
-                                    name="hintTitle"
-                                    value={value.hintTitle}
-                                    onChange={setFieldValue}
-                                    error={error?.hintTitle}
-                                    disabled={disabled}
-                                />
-                            </ListLayout>
+                            <IconSelectInput
+                                placeholder="Select an icon"
+                                name="hintIcon"
+                                value={value.hintIcon}
+                                onChange={setFieldValue}
+                                error={error?.hintIcon}
+                                disabled={disabled}
+                                nonClearable
+                            />
+                            <TextInput
+                                placeholder="Enter title"
+                                name="hintTitle"
+                                value={value.hintTitle}
+                                onChange={setFieldValue}
+                                error={error?.hintTitle}
+                                disabled={disabled}
+                            />
                             <TextArea
                                 placeholder="Enter description"
                                 name="hintDescription"
@@ -194,40 +177,32 @@ function ScenarioPageInput(props: Props) {
                                 disabled={disabled}
                                 rows={3}
                             />
-                        </ListLayout>
-                    </Container>
-                )}
-                {!hideSuccessSection && (
-                    <Container
-                        heading="Success"
-                        headingLevel={5}
-                    >
-                        <ListLayout
-                            layout="grid"
-                            spacing="sm"
+                        </Container>
+                        <Container
+                            heading="Success"
+                            headingLevel={5}
+                            contentLayout="block"
+                            withBackground
+                            withPadding
+                            withShadow
                         >
-                            <ListLayout
-                                layout="block"
-                                spacing="sm"
-                            >
-                                <IconSelectInput
-                                    placeholder="Select an icon"
-                                    name="successIcon"
-                                    value={value.successIcon}
-                                    onChange={setFieldValue}
-                                    error={error?.successIcon}
-                                    disabled={disabled}
-                                    nonClearable
-                                />
-                                <TextInput
-                                    placeholder="Enter title"
-                                    name="successTitle"
-                                    value={value.successTitle}
-                                    onChange={setFieldValue}
-                                    error={error?.successTitle}
-                                    disabled={disabled}
-                                />
-                            </ListLayout>
+                            <IconSelectInput
+                                placeholder="Select an icon"
+                                name="successIcon"
+                                value={value.successIcon}
+                                onChange={setFieldValue}
+                                error={error?.successIcon}
+                                disabled={disabled}
+                                nonClearable
+                            />
+                            <TextInput
+                                placeholder="Enter title"
+                                name="successTitle"
+                                value={value.successTitle}
+                                onChange={setFieldValue}
+                                error={error?.successTitle}
+                                disabled={disabled}
+                            />
                             <TextArea
                                 name="successDescription"
                                 placeholder="Enter description"
@@ -237,9 +212,9 @@ function ScenarioPageInput(props: Props) {
                                 disabled={disabled}
                                 rows={3}
                             />
-                        </ListLayout>
-                    </Container>
-                )}
+                        </Container>
+                    </ListLayout>
+                </Container>
                 {isDefined(projectData) && (
                     <Container
                         heading="Tasks"

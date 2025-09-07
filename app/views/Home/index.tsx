@@ -1,27 +1,20 @@
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
 import PageLayout from '#components/PageLayout';
 
 import ManagerList from './ManagerList';
 import OrganizationList from './OrganizationList';
 
-interface Props {
-    className?: string;
-}
-
-function Home(props: Props) {
-    const { className } = props;
-
+function Home() {
     return (
         <PageLayout
-            className={className}
+            // className={className}
             heading="Manager Dashboard"
             headerDescription={(
                 <div>
                     You can set up a new project by setting up project draft through
                     &nbsp;
                     <SmartLink
-                        route={routes.newProject}
+                        route="newProject"
                         spacing="none"
                     >
                         New Project

@@ -8,8 +8,6 @@ import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
-import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Checklist from '#components/Checklist';
 import Container from '#components/Container';
@@ -19,6 +17,7 @@ import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TextInput from '#components/TextInput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     Ordering,
     ProjectFilter,
@@ -104,13 +103,7 @@ query TutorialsList($filters: TutorialFilter, $order: TutorialOrder, $pagination
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function Tutorials(props: Props) {
-    const { className } = props;
-
+function Tutorials() {
     const {
         filters,
         rawFilters,
@@ -175,10 +168,9 @@ function Tutorials(props: Props) {
     return (
         <PageLayout
             heading="Tutorials"
-            className={className}
             headerActions={(
                 <SmartLink
-                    route={routes.newTutorial}
+                    route="newTutorial"
                     spacing="md"
                     withLinkIcon
                 >

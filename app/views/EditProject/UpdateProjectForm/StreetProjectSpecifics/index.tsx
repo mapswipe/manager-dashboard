@@ -16,6 +16,7 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
@@ -25,7 +26,6 @@ import {
 } from './StreetMapilaryImageFiltersInput/schema';
 import { type PartialStreetSpecificFields } from './schema';
 import StreetMapilaryImageFiltersInput from './StreetMapilaryImageFiltersInput';
-import ListLayout from '#components/ListLayout';
 
 interface Props {
     projectId: string;

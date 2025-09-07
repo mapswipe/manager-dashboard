@@ -7,7 +7,6 @@
     color: var(--color-text-faint);
 
     .icon {
-        line-height: 1;
         font-size: 2rem;
 
         .spinner {

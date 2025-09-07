@@ -12,7 +12,6 @@ import {
 import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
 import Container from '#components/Container';
 import Description from '#components/Description';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
@@ -68,7 +67,7 @@ function ProjectListItem(props: Props) {
                             headingLevel={4}
                             heading={(
                                 <SmartLink
-                                    route={routes.editProject}
+                                    route="editProject"
                                     attrs={{
                                         id: value.id,
                                     }}
@@ -194,7 +193,7 @@ function ProjectListItem(props: Props) {
                                             label="Tutorial"
                                             value={(
                                                 <SmartLink
-                                                    route={routes.editTutorial}
+                                                    route="editTutorial"
                                                     attrs={{ id: value.tutorial.id }}
                                                     withLinkIcon
                                                     withoutPadding

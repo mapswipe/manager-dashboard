@@ -7,17 +7,13 @@ import {
     useState,
 } from 'react';
 import { Cookies } from 'react-cookie';
-import { BrowserRouter } from 'react-router';
+import { Outlet } from 'react-router';
 import {
     ErrorBoundary,
-    init,
     setUser as setUserOnSentry,
     User as SentryUser,
 } from '@sentry/react';
-import {
-    _cs,
-    isDefined,
-} from '@togglecorp/fujs';
+import { isDefined } from '@togglecorp/fujs';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import {
     Client as UrqlClient,
@@ -25,28 +21,17 @@ import {
     Provider as UrqlProvider,
 } from 'urql';
 
-import AppRoutes from '#base/components/AppRoutes';
 import AuthPopup from '#base/components/AuthPopup';
-import Init from '#base/components/Init';
-import Navbar from '#base/components/Navbar';
 import PreloadMessage from '#base/components/PreloadMessage';
-import sentryConfig from '#base/configs/sentry';
-import NavbarContext, { type NavbarContextInterface } from '#base/context/NavbarContext';
-import OptionContext, { Options } from '#base/context/OptionContext';
-import UserContext, { type UserContextInterface } from '#base/context/UserContext';
 import { sync } from '#base/hooks/useAuthSync';
 import { User } from '#base/types/user';
 import AlertContainer from '#components/AlertContainer';
+import AlertContext from '#contexts/AlertContext';
+import NavbarContext, { type NavbarContextInterface } from '#contexts/NavbarContext';
+import OptionContext, { Options } from '#contexts/OptionContext';
+import UserContext, { type UserContextInterface } from '#contexts/UserContext';
 import schema from '#generated/schema.json';
 import useAlertContextProviderValue from '#hooks/useAlertContextProviderValue';
-
-import AlertContext from './context/AlertContext';
-
-import styles from './styles.module.css';
-
-if (sentryConfig) {
-    init(sentryConfig);
-}
 
 const COOKIE_NAME = `MAPSWIPE-${import.meta.env.APP_ENVIRONMENT}-CSRFTOKEN`;
 const GRAPHQL_ENDPOINT = `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/graphql/`;
@@ -86,7 +71,7 @@ const gqlClient = new UrqlClient({
     requestPolicy: 'cache-and-network',
 });
 
-function Base() {
+function Root() {
     const [user, setUser] = useState<User | undefined>();
     const [options, setOptions] = useState<Options>({});
     const [navbarVisibility, setNavbarVisibility] = useState(false);
@@ -162,44 +147,29 @@ function Base() {
     const alertContextValue = useAlertContextProviderValue();
 
     return (
-        <div className={styles.base}>
-            <ErrorBoundary
-                showDialog
-                fallback={(
-                    <PreloadMessage
-                        heading="Oh no!"
-                        content="Some error occurred!"
-                    />
-                )}
-            >
-                <UrqlProvider value={gqlClient}>
-                    <OptionContext.Provider value={optionContextValue}>
-                        <UserContext.Provider value={userContext}>
-                            <AlertContext.Provider value={alertContextValue}>
-                                <NavbarContext.Provider value={navbarContext}>
-                                    <AlertContainer />
-                                    <AuthPopup />
-                                    <BrowserRouter>
-                                        <Init preloadClassName={styles.init}>
-                                            <Navbar
-                                                className={_cs(
-                                                    styles.navbar,
-                                                    !navbarVisibility && styles.hidden,
-                                                )}
-                                            />
-                                            <AppRoutes
-                                                routeClassName={styles.view}
-                                            />
-                                        </Init>
-                                    </BrowserRouter>
-                                </NavbarContext.Provider>
-                            </AlertContext.Provider>
-                        </UserContext.Provider>
-                    </OptionContext.Provider>
-                </UrqlProvider>
-            </ErrorBoundary>
-        </div>
+        <ErrorBoundary
+            showDialog
+            fallback={(
+                <PreloadMessage>
+                    Failed to load the given route!
+                </PreloadMessage>
+            )}
+        >
+            <UrqlProvider value={gqlClient}>
+                <OptionContext.Provider value={optionContextValue}>
+                    <UserContext.Provider value={userContext}>
+                        <AlertContext.Provider value={alertContextValue}>
+                            <NavbarContext.Provider value={navbarContext}>
+                                <AlertContainer />
+                                <AuthPopup />
+                                <Outlet />
+                            </NavbarContext.Provider>
+                        </AlertContext.Provider>
+                    </UserContext.Provider>
+                </OptionContext.Provider>
+            </UrqlProvider>
+        </ErrorBoundary>
     );
 }
 
-export default Base;
+export default Root;

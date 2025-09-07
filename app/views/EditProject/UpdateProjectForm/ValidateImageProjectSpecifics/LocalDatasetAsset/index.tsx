@@ -12,7 +12,6 @@ import {
     PiWarningCircle,
 } from 'react-icons/pi';
 
-import BulkUploadContext from '#base/context/BulkUpload';
 import ColorPreview from '#components/ColorSelectInput/ColorPreview';
 import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
@@ -20,6 +19,7 @@ import ListLayout from '#components/ListLayout';
 import PopupButton from '#components/PopupButton';
 import Tag from '#components/Tag';
 import TextOutput from '#components/TextOutput';
+import BulkUploadContext from '#contexts/BulkUpload';
 import {
     ProjectAssetInputTypeEnum,
     useCreateProjectAssetMutation,

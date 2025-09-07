@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { isDefined } from '@togglecorp/fujs';
 
-import EnumsContext from '#base/context/EnumsContext';
 import ColorPreview from '#components/ColorSelectInput/ColorPreview';
 import Container, { ContainerProps } from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     OverlayLayerTypeEnum,
     ProjectOverlayTileServerConfig,

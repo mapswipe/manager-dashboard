@@ -2,11 +2,11 @@ import { useContext } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
+import EnumsContext from '#contexts/EnumsContext';
 import { ValidateImageProjectPropertyType } from '#generated/types/graphql';
 
 interface Props {

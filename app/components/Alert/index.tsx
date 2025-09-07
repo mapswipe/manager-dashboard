@@ -12,11 +12,11 @@ import {
     isTruthyString,
 } from '@togglecorp/fujs';
 
-import { AlertType } from '#base/context/AlertContext';
 import BlockLayout from '#components/BlockLayout';
 import Button from '#components/Button';
 import Heading from '#components/Heading';
 import InlineLayout from '#components/InlineLayout';
+import { AlertType } from '#contexts/AlertContext';
 
 import styles from './styles.module.css';
 

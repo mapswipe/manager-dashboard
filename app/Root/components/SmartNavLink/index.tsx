@@ -4,15 +4,13 @@ import {
 } from 'react-router';
 import { _cs } from '@togglecorp/fujs';
 
-import useRouteMatching, {
-    Attrs,
-    RouteData,
-} from '#base/hooks/useRouteMatching';
+import { RouteKeys } from '#base/configs/routes';
+import useRouteMatching, { Attrs } from '#base/hooks/useRouteMatching';
 
 import styles from './styles.module.css';
 
 export type Props = Omit<NavLinkProps, 'to'> & {
-    route: RouteData;
+    route: RouteKeys;
     attrs?: Attrs;
     children?: React.ReactNode;
     activeClassName?: string;
@@ -46,7 +44,7 @@ function SmartNavLink(props: Props) {
                 isActive && activeClassName,
             )}
         >
-            {children ?? routeData.children}
+            {children}
         </NavLink>
     );
 }

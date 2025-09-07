@@ -57,13 +57,7 @@ query TeamsList($filters: ContributorTeamFilter, $pagination: OffsetPaginationIn
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function Teams(props: Props) {
-    const { className } = props;
-
+function Teams() {
     const {
         filters,
         rawFilters,
@@ -115,7 +109,6 @@ function Teams(props: Props) {
     return (
         <PageLayout
             heading="Teams"
-            className={className}
             aside={(
                 <>
                     <TextInput

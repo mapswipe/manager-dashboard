@@ -34,7 +34,7 @@ export interface ButtonLayoutProps extends Omit<InlineLayoutProps, 'withPadding'
 function ButtonLayout(props: ButtonLayoutProps) {
     const {
         colorVariant = 'text',
-        styleVariant = 'outline',
+        styleVariant = 'translucent',
         spacingOffset = -1,
         className,
         disabled,

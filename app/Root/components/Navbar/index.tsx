@@ -7,14 +7,13 @@ import { _cs } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import SmartNavLink from '#base/components/SmartNavLink';
-import route from '#base/configs/routes';
-import HealthCheckContext from '#base/context/HealthCheckContext';
-import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import Modal from '#components/Modal';
 import TextOutput from '#components/TextOutput';
+import HealthCheckContext from '#contexts/HealthCheckContext';
+import UserContext from '#contexts/UserContext';
 import { useLogoutMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import useBooleanState from '#hooks/useBooleanState';
@@ -72,6 +71,7 @@ function Navbar(props: Props) {
                     variant: 'success',
                 },
             );
+
             setUser(undefined);
         } catch (apolloError) {
             alertCombinedError(apolloError, alert);
@@ -91,17 +91,15 @@ function Navbar(props: Props) {
                 )}
                 end={user && (
                     <ListLayout>
-                        <div className={styles.icon}>
-                            <Button
-                                name={undefined}
-                                styleVariant="transparent"
-                                colorVariant="text-on-dark"
-                                withoutPadding
-                                onClick={setShowModalTrue}
-                            >
-                                <MdOutlineHealthAndSafety />
-                            </Button>
-                        </div>
+                        <Button
+                            name={undefined}
+                            styleVariant="transparent"
+                            colorVariant="text-on-dark"
+                            withoutPadding
+                            onClick={setShowModalTrue}
+                        >
+                            <MdOutlineHealthAndSafety />
+                        </Button>
                         {showModal && (
                             <Modal
                                 heading="System health"
@@ -135,9 +133,9 @@ function Navbar(props: Props) {
                                 )}
                             </Modal>
                         )}
-                        <div>
+                        <InlineLayout>
                             {user.displayName}
-                        </div>
+                        </InlineLayout>
                         <Button
                             styleVariant="transparent"
                             colorVariant="text-on-dark"
@@ -159,35 +157,47 @@ function Navbar(props: Props) {
                     withWrap
                 >
                     <SmartNavLink
-                        route={route.home}
+                        route="home"
                         className={styles.link}
                         activeClassName={styles.active}
-                    />
+                    >
+                        Home
+                    </SmartNavLink>
                     <SmartNavLink
-                        route={route.projects}
+                        route="projects"
                         className={styles.link}
                         activeClassName={styles.active}
-                    />
+                    >
+                        Projects
+                    </SmartNavLink>
                     <SmartNavLink
-                        route={route.tutorials}
+                        route="tutorials"
                         className={styles.link}
                         activeClassName={styles.active}
-                    />
+                    >
+                        Tutorials
+                    </SmartNavLink>
                     <SmartNavLink
-                        route={route.teams}
+                        route="teams"
                         className={styles.link}
                         activeClassName={styles.active}
-                    />
+                    >
+                        Teams
+                    </SmartNavLink>
                     <SmartNavLink
-                        route={route.userGroups}
+                        route="userGroups"
                         className={styles.link}
                         activeClassName={styles.active}
-                    />
+                    >
+                        User groups
+                    </SmartNavLink>
                     <SmartNavLink
-                        route={route.contributors}
+                        route="contributors"
                         className={styles.link}
                         activeClassName={styles.active}
-                    />
+                    >
+                        Contributors
+                    </SmartNavLink>
                 </ListLayout>
             </InlineLayout>
         </nav>

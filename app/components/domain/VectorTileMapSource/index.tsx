@@ -14,8 +14,8 @@ import {
 } from '@togglecorp/re-map';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import TileServerContext from '#base/context/TileServerContext';
 import { vectorTileServerNameToTileInputKey } from '#components/domain/VectorTileServerInput/schema';
+import TileServerContext from '#contexts/TileServerContext';
 import {
     ProjectOverlayVectorTileServerConfig,
     VectorTileServerNameEnum,

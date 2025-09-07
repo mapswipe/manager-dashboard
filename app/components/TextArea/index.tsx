@@ -1,7 +1,7 @@
 import { useId } from 'react';
 
 import InputContainer, { Props as InputContainerProps } from '../InputContainer';
-import RawTextArea, { RawTextAreaProps as RawTextAreaProps } from '../RawTextArea';
+import RawTextArea, { RawTextAreaProps } from '../RawTextArea';
 
 export type TextInputProps<N> = Omit<InputContainerProps, 'input' | 'inputId'>
     & Omit<RawTextAreaProps<N>, 'containerRef' | 'inputSectionRef'>;
