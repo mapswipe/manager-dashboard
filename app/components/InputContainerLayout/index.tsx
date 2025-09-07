@@ -5,12 +5,12 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import InputInteractivityContext, { InputInteractivityContextProps } from '#base/context/InputInteractivityContext';
 import InputError from '#components/InputError';
 import InputHint from '#components/InputHint';
 import InputLabel from '#components/InputLabel';
-
-import styles from './styles.module.css';
+import ListLayout from '#components/ListLayout';
+import InputInteractivityContext, { InputInteractivityContextProps } from '#contexts/InputInteractivityContext';
+import { SpacingType } from '#utils/styles';
 
 export interface Props {
     inputId: string;
@@ -24,6 +24,8 @@ export interface Props {
     disabled?: boolean;
     readOnly?: boolean;
     elementRef?: React.RefObject<HTMLDivElement>;
+    spacing?: SpacingType;
+    spacingOffset?: number;
 }
 
 function InputContainerLayout(props: Props) {
@@ -39,6 +41,8 @@ function InputContainerLayout(props: Props) {
         readOnly,
         focusedClassName,
         hoveredClassName,
+        spacing,
+        spacingOffset = -2,
     } = props;
 
     const [focused, setFocused] = useState<boolean>(false);
@@ -58,18 +62,15 @@ function InputContainerLayout(props: Props) {
         hovered,
         setHovered,
         disabled,
-    }), [focused, hovered, disabled]);
+        readOnly,
+    }), [focused, hovered, disabled, readOnly]);
 
     return (
         <InputInteractivityContext.Provider value={interactivityContextValue}>
-            {/* FIXME: use ListLayout */}
-            <div
-                ref={elementRef}
+            <ListLayout
+                elementRef={elementRef}
                 className={_cs(
                     className,
-                    styles.inputContainerLayout,
-                    disabled && styles.disabled,
-                    readOnly && styles.readOnly,
                     focused && focusedClassName,
                     hovered && hoveredClassName,
                 )}
@@ -77,6 +78,9 @@ function InputContainerLayout(props: Props) {
                 onBlur={handleMouseOut}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
+                layout="block"
+                spacing={spacing}
+                spacingOffset={spacingOffset}
             >
                 {label && (
                     <InputLabel inputId={inputId}>
@@ -94,7 +98,7 @@ function InputContainerLayout(props: Props) {
                         {hint}
                     </InputHint>
                 )}
-            </div>
+            </ListLayout>
         </InputInteractivityContext.Provider>
     );
 }

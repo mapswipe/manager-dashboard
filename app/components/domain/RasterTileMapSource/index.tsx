@@ -13,7 +13,7 @@ import {
 } from '@togglecorp/re-map';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import TileServerContext from '#base/context/TileServerContext';
+import TileServerContext from '#contexts/TileServerContext';
 import {
     ProjectOverlayRasterTileServerConfig,
     RasterTileServerNameEnum,

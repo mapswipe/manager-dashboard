@@ -4,6 +4,7 @@ import {
     listToMap,
 } from '@togglecorp/fujs';
 
+import ColorPreview from '#components/ColorSelectInput/ColorPreview';
 import InlineLayout from '#components/InlineLayout';
 import SelectInput from '#components/SelectInput';
 import { SearchSelectInputProps } from '#components/SelectInput/SearchSelectInput';
@@ -18,26 +19,6 @@ interface Option {
     value: number;
     label: string;
     color: string;
-}
-
-interface ColorPreviewProps {
-    value: string | undefined | null;
-}
-
-function ColorPreview(props: ColorPreviewProps) {
-    const {
-        value,
-    } = props;
-
-    return (
-        <div
-            style={{
-                backgroundColor: value ?? undefined,
-                height: '1rem',
-                width: '1rem',
-            }}
-        />
-    );
 }
 
 function iconOptionLabelSelector(option: Option) {

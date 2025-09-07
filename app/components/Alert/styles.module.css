@@ -1,33 +1,40 @@
 .alert {
+    --variant-color: var(--color-background);
     border-radius: var(--radius-card-border);
-    box-shadow: 0 3px 7px -2px rgba(0, 0, 0, .5);
+    background-color: color-mix(in srgb, var(--variant-color) 20%, var(--color-foreground));
     width: calc(14rem + 16vw);
-    animation: slide-down .3s ease-in forwards;
-    color: var(--color-text-on-dark);
+    animation: slide-down var(--duration-transition-medium) ease-in forwards;
+
+    &:not(.without-shadow) {
+        box-shadow: 0 5px 25px -10px rgba(0, 0, 0, 1);
+    }
+
+    &.full-width {
+        width: 100%;
+    }
 
     .title {
         color: inherit;
     }
 
     .icon {
-        line-height: 1;
-        font-size: var(--font-size-2xl);
+        font-size: var(--font-size-xl);
     }
 
     &.info {
-        background-color: var(--color-text);
+        --variant-color: var(--color-accent);
     }
 
     &.success {
-        background-color: var(--color-success);
+        --variant-color: var(--color-success);
     }
 
     &.danger {
-        background-color: var(--color-danger);
+        --variant-color: var(--color-danger);
     }
 
     &.warning {
-        background-color: var(--color-danger);
+        --variant-color: var(--color-warning);
     }
 
 }

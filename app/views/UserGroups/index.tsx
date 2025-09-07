@@ -2,43 +2,61 @@ import {
     useCallback,
     useState,
 } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import {
-    isDefined,
-    isTruthyString,
-} from '@togglecorp/fujs';
+import { PiMagnifyingGlass } from 'react-icons/pi';
+import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
+import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
+import OrderingInput from '#components/domain/OrderingInput';
+import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
-import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
-import { useUserGroupsListQuery } from '#generated/types/graphql';
-import useBooleanState from '#hooks/useBooleanState';
-import useDebouncedValue from '#hooks/useDebouncedValue';
-import useInputState from '#hooks/useInputState';
 import {
-    DEFAULT_PAGE,
-    DEFAULT_PAGE_SIZE,
-    defaultPagePerItemOptions,
-    keySelector,
-    labelSelector,
-} from '#utils/common';
+    ContributorUserGroupFilter,
+    ContributorUserGroupOrder,
+    Ordering,
+    useUserGroupsListQuery,
+} from '#generated/types/graphql';
+import useBooleanState from '#hooks/useBooleanState';
+import useListManagement, { ExactFilter } from '#hooks/useListManagement';
+import { defaultPagePerItemOptions } from '#utils/common';
 
 import UserGroupFormModal from './UserGroupFormModal';
-import UserListItem from './UserListItem';
+import UserGroupListItem from './UserGroupListItem';
+
+const sortKeyOptions: SortByOption<keyof ContributorUserGroupOrder>[] = [
+    {
+        key: 'id',
+        label: 'Created',
+    },
+    {
+        key: 'name',
+        label: 'Title',
+    },
+];
+
+type UserGroupFilterValue = {
+    name: ContributorUserGroupFilter['name'];
+    isArchived: ExactFilter<ContributorUserGroupFilter, 'isArchived'>,
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_GROUPS_LIST_QUERY = gql`
-query UserGroupsList($filters: ContributorUserGroupFilter, $pagination: OffsetPaginationInput, $includeAll: Boolean!= false) {
-    contributorUserGroups(pagination: $pagination, filters: $filters, includeAll: $includeAll) {
+query UserGroupsList($filters: ContributorUserGroupFilter, $order: ContributorUserGroupOrder, $pagination: OffsetPaginationInput, $includeAll: Boolean!= false) {
+    contributorUserGroups(pagination: $pagination, order: $order, filters: $filters, includeAll: $includeAll) {
         totalCount
         results {
             id
             clientId
             isArchived
+            createdBy {
+                id
+                displayName
+            }
+            createdAt
             name
             membersCount
             description
@@ -47,20 +65,7 @@ query UserGroupsList($filters: ContributorUserGroupFilter, $pagination: OffsetPa
 }
 `;
 
-const statusOptions = [
-    { key: true, label: 'Archived' },
-    { key: false, label: 'Active' },
-];
-
-interface Props {
-    className?: string;
-}
-
-function UserGroups(props: Props) {
-    const {
-        className,
-    } = props;
-
+function UserGroups() {
     const [
         showAddModal,
         setShowAddModalTrue,
@@ -68,14 +73,30 @@ function UserGroups(props: Props) {
     ] = useBooleanState(false);
     const [editUserGroupId, setEditUserGroupId] = useState<string | undefined>();
 
-    const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
-    const [archivedStatus, setArchivedStatus] = useState<
-        boolean | undefined
-    >(undefined);
-
-    const debouncedSearchText = useDebouncedValue(searchText?.trim());
-    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
-    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+    const {
+        filters,
+        rawFilters,
+        sort,
+        setSortKey,
+        setSortOrdering,
+        page,
+        setPage,
+        pageSize,
+        offset,
+        limit,
+        filtersApplied,
+        setFilterField,
+        resetFilters,
+    } = useListManagement<UserGroupFilterValue, keyof ContributorUserGroupOrder>({
+        defaultFilters: {
+            name: undefined,
+            isArchived: undefined,
+        },
+        defaultSort: {
+            key: 'id',
+            ordering: Ordering.Desc,
+        },
+    });
 
     const [
         {
@@ -86,13 +107,15 @@ function UserGroups(props: Props) {
     ] = useUserGroupsListQuery({
         variables: {
             filters: {
-                name: debouncedSearchText,
-                isArchived: { exact: archivedStatus },
+                name: filters.name,
+                isArchived: { exact: filters.isArchived },
             },
-            includeAll: true,
+            order: isDefined(sort) ? ({
+                [sort.key]: sort.ordering,
+            }) : undefined,
             pagination: {
-                offset: (activePage - 1) * pagePerItem,
-                limit: pagePerItem,
+                limit,
+                offset,
             },
         },
     });
@@ -102,23 +125,15 @@ function UserGroups(props: Props) {
     const filteredUserGroupList = userGroupsResponse?.contributorUserGroups.results ?? [];
     const totalCount = userGroupsResponse?.contributorUserGroups.totalCount ?? 0;
 
-    const filtersApplied = isTruthyString(debouncedSearchText);
-
     const handleUserGroupModalUpdate = useCallback(() => {
         setEditUserGroupId(undefined);
         setShowAddModalFalse();
         refetchUserGroup();
     }, [refetchUserGroup, setShowAddModalFalse]);
 
-    const handleClearFilterButtonClick = useCallback(() => {
-        setArchivedStatus(undefined);
-        setSearchText(undefined);
-    }, [setSearchText, setArchivedStatus]);
-
     return (
         <PageLayout
             heading="User Groups"
-            className={className}
             headerActions={(
                 <Button
                     name={undefined}
@@ -132,25 +147,21 @@ function UserGroups(props: Props) {
             aside={(
                 <>
                     <TextInput
-                        icons={<FaSearch />}
-                        name={undefined}
-                        value={searchText}
-                        onChange={setSearchText}
+                        name="name"
+                        icons={<PiMagnifyingGlass />}
+                        value={rawFilters.name}
+                        onChange={setFilterField}
                         placeholder="Search by title"
                     />
-                    <RadioInput
-                        label="Usergroup status"
-                        name={undefined}
-                        options={statusOptions}
-                        value={archivedStatus}
-                        onChange={setArchivedStatus}
-                        keySelector={keySelector}
-                        labelSelector={labelSelector}
-                        radioListLayout="block"
+                    <Checkbox
+                        name="isArchived"
+                        label="Archived"
+                        value={rawFilters.isArchived}
+                        onChange={setFilterField}
                     />
                     <Button
                         name={undefined}
-                        onClick={handleClearFilterButtonClick}
+                        onClick={resetFilters}
                         colorVariant="danger"
                         styleVariant="translucent"
                     >
@@ -160,37 +171,44 @@ function UserGroups(props: Props) {
             )}
         >
             <Container
-                footer={`Showing ${totalItems} of ${userGroupsResponse?.contributorUserGroups.totalCount} teams`}
+                heading={`Showing ${totalItems} of ${userGroupsResponse?.contributorUserGroups.totalCount} teams`}
+                headingLevel={6}
+                headerActions={(
+                    <>
+                        <SortByInput
+                            name={undefined}
+                            value={sort?.key}
+                            options={sortKeyOptions}
+                            onChange={setSortKey}
+                        />
+                        <OrderingInput
+                            name={undefined}
+                            value={sort?.ordering}
+                            onChange={setSortOrdering}
+                        />
+                    </>
+                )}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}
                 emptyMessage="No User Group found!"
                 filteredEmptyMessage="No matching user group found!"
-                withBackground={totalCount === 0}
-                withPadding={totalCount === 0}
-                withMinHeight={totalCount === 0}
                 spacing="lg"
                 footerActions={(
                     <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
-                        activePage={activePage}
-                        onActivePageChange={setActivePage}
-                        totalItems={userGroupsResponse?.contributorUserGroups.totalCount ?? 0}
+                        pagePerItem={pageSize}
+                        activePage={page}
+                        onActivePageChange={setPage}
+                        totalItems={totalCount}
                         pagePerItemOptions={defaultPagePerItemOptions}
                     />
                 )}
             >
                 {filteredUserGroupList.map((userGroup) => (
-                    <UserListItem
+                    <UserGroupListItem
                         key={userGroup.id}
-                        id={userGroup.id}
-                        name={userGroup.name}
-                        description={userGroup.description}
-                        membersCount={userGroup.membersCount}
+                        value={userGroup}
                         onEdit={setEditUserGroupId}
-                        isArchived={userGroup.isArchived}
-                        clientId={userGroup.clientId}
                         refetchUserGroup={refetchUserGroup}
                     />
                 ))}

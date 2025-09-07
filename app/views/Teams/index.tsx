@@ -1,28 +1,46 @@
-import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { isTruthyString } from '@togglecorp/fujs';
+import { PiMagnifyingGlass } from 'react-icons/pi';
+import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
+import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
+import OrderingInput from '#components/domain/OrderingInput';
+import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
 import TextInput from '#components/TextInput';
-import { useTeamsListQuery } from '#generated/types/graphql';
-import useDebouncedValue from '#hooks/useDebouncedValue';
-import useInputState from '#hooks/useInputState';
 import {
-    DEFAULT_PAGE,
-    DEFAULT_PAGE_SIZE,
-    defaultPagePerItemOptions,
-} from '#utils/common';
+    ContributorTeamFilter,
+    ContributorTeamOrder,
+    Ordering,
+    useTeamsListQuery,
+} from '#generated/types/graphql';
+import useListManagement, { ExactFilter } from '#hooks/useListManagement';
+import { defaultPagePerItemOptions } from '#utils/common';
 
 import TeamListItem from './TeamListItem';
 
+const sortKeyOptions: SortByOption<keyof ContributorTeamOrder>[] = [
+    {
+        key: 'id',
+        label: 'Created',
+    },
+    {
+        key: 'name',
+        label: 'Title',
+    },
+];
+
+type TeamFilterValue = {
+    name: ContributorTeamFilter['name'];
+    isArchived: ExactFilter<ContributorTeamFilter, 'isArchived'>,
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TEAMS_LIST_QUERY = gql`
-query TeamsList($filters: ContributorTeamFilter, $offset: Int!, $limit: Int) {
-    contributorTeams(pagination: {offset: $offset, limit: $limit}, filters: $filters) {
+query TeamsList($filters: ContributorTeamFilter, $pagination: OffsetPaginationInput, $order: ContributorTeamOrder) {
+    contributorTeams(pagination: $pagination, order: $order, filters: $filters) {
         totalCount
         results {
             id
@@ -33,29 +51,37 @@ query TeamsList($filters: ContributorTeamFilter, $offset: Int!, $limit: Int) {
                 displayName
             }
             createdAt
-        }
-        pageInfo {
-            limit
-            offset
+            isArchived
         }
     }
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function Teams(props: Props) {
+function Teams() {
     const {
-        className,
-    } = props;
-
-    const [searchText, setSearchText] = useInputState<string | undefined>(undefined);
-
-    const debouncedSearchText = useDebouncedValue(searchText?.trim());
-    const [activePage, setActivePage] = useState(DEFAULT_PAGE);
-    const [pagePerItem, setPagePerItem] = useState(DEFAULT_PAGE_SIZE);
+        filters,
+        rawFilters,
+        sort,
+        setSortKey,
+        setSortOrdering,
+        page,
+        setPage,
+        pageSize,
+        offset,
+        limit,
+        filtersApplied,
+        setFilterField,
+        resetFilters,
+    } = useListManagement<TeamFilterValue, keyof ContributorTeamOrder>({
+        defaultFilters: {
+            name: undefined,
+            isArchived: undefined,
+        },
+        defaultSort: {
+            key: 'id',
+            ordering: Ordering.Desc,
+        },
+    });
 
     const [{
         data: teamsResponse,
@@ -63,36 +89,44 @@ function Teams(props: Props) {
     }] = useTeamsListQuery({
         variables: {
             filters: {
-                name: debouncedSearchText,
+                name: filters.name,
+                isArchived: { exact: filters.isArchived },
             },
-            offset: (activePage - 1) * pagePerItem,
-            limit: pagePerItem,
+            order: isDefined(sort) ? ({
+                [sort.key]: sort.ordering,
+            }) : undefined,
+            pagination: {
+                limit,
+                offset,
+            },
         },
     });
 
     const totalItems = teamsResponse?.contributorTeams.results.length ?? 0;
-
-    const filteredTeamList = teamsResponse?.contributorTeams.results ?? [];
+    const teamList = teamsResponse?.contributorTeams.results ?? [];
     const totalCount = teamsResponse?.contributorTeams.totalCount ?? 0;
-
-    const filtersApplied = isTruthyString(debouncedSearchText);
 
     return (
         <PageLayout
             heading="Teams"
-            className={className}
             aside={(
                 <>
                     <TextInput
-                        icons={<FaSearch />}
-                        name={undefined}
-                        value={searchText}
-                        onChange={setSearchText}
+                        name="name"
+                        icons={<PiMagnifyingGlass />}
+                        value={rawFilters.name}
+                        onChange={setFilterField}
                         placeholder="Search by title"
+                    />
+                    <Checkbox
+                        name="isArchived"
+                        label="Archived"
+                        value={rawFilters.isArchived}
+                        onChange={setFilterField}
                     />
                     <Button
                         name={undefined}
-                        onClick={setSearchText}
+                        onClick={resetFilters}
                         colorVariant="danger"
                         styleVariant="translucent"
                     >
@@ -102,35 +136,44 @@ function Teams(props: Props) {
             )}
         >
             <Container
-                footer={`Showing ${totalItems} of ${totalCount} teams`}
+                heading={`Showing ${totalItems} of ${totalCount} teams`}
+                headingLevel={6}
+                headerActions={(
+                    <>
+                        <SortByInput
+                            name={undefined}
+                            value={sort?.key}
+                            options={sortKeyOptions}
+                            onChange={setSortKey}
+                        />
+                        <OrderingInput
+                            name={undefined}
+                            value={sort?.ordering}
+                            onChange={setSortOrdering}
+                        />
+                    </>
+                )}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}
                 emptyMessage="No team found!"
                 filteredEmptyMessage="No matching team found!"
                 spacing="lg"
-                withBackground={totalCount === 0}
-                withPadding={totalCount === 0}
-                withMinHeight={totalCount === 0}
                 footerActions={(
                     <Pager
-                        pagePerItem={pagePerItem}
-                        onPagePerItemChange={setPagePerItem}
-                        activePage={activePage}
-                        onActivePageChange={setActivePage}
-                        totalItems={teamsResponse?.contributorTeams.totalCount ?? 0}
+                        pagePerItem={pageSize}
+                        activePage={page}
+                        onActivePageChange={setPage}
+                        totalItems={totalCount}
                         pagePerItemOptions={defaultPagePerItemOptions}
                     />
                 )}
             >
-                {filteredTeamList.map((team) => (
+                {teamList.map((team) => (
                     <TeamListItem
                         key={team.id}
-                        id={team.id}
+                        value={team}
                         membersCount={team.membersCount}
-                        name={team.name}
-                        createdAt={team.createdAt}
-                        createdBy={team.createdBy.displayName}
                     />
                 ))}
             </Container>

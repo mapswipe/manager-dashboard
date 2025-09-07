@@ -1,0 +1,10 @@
+.preload-message {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    background-color: var(--color-background);
+    text-align: center;
+    font-size: var(--font-size-lg);
+}

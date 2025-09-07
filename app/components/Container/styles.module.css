@@ -6,6 +6,10 @@
     .content {
         display: flex;
 
+        &:empty {
+            display: none;
+        }
+
         &.inline-content {
             flex-direction: row;
             flex-wrap: wrap;

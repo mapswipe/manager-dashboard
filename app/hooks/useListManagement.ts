@@ -6,6 +6,7 @@ import {
 } from 'react';
 import { type EntriesAsList } from '@togglecorp/toggle-form';
 
+import { Ordering } from '#generated/types/graphql';
 import useDebouncedValue from '#hooks/useDebouncedValue';
 import {
     DEFAULT_PAGE,
@@ -27,51 +28,90 @@ interface SetPageAction {
     value: number;
 }
 
-interface SetOrderAction<ORDER extends object> {
-    type: 'set-order'
-    value: SetStateAction<ORDER | undefined>;
+interface SetSortAction<SORT_KEY extends object> {
+    type: 'set-sort'
+    value: SetStateAction<SORT_KEY | undefined>;
 }
 
-type FilterActions<FILTERS extends object, ORDER extends object> = (
-    ResetFilterAction
-    | SetFilterAction<FILTERS>
-    | SetPageAction
-    | SetOrderAction<ORDER>
-);
+export type ListFilter<
+    FILTER extends object,
+    PROPERTY extends keyof FILTER,
+> = NonNullable<FILTER[PROPERTY]> extends { inList?: infer TYPE }
+    ? NonNullable<TYPE> | undefined
+    : never;
 
-interface FilterState<FILTER, ORDER> {
+export type SearchFilter<
+    FILTER extends object,
+    PROPERTY extends keyof FILTER,
+> = NonNullable<FILTER[PROPERTY]> extends { iContains?: infer TYPE }
+    ? NonNullable<TYPE> | undefined
+    : never;
+
+export type ExactFilter<
+    FILTER extends object,
+    PROPERTY extends keyof FILTER,
+> = NonNullable<FILTER[PROPERTY]> extends { exact?: infer TYPE }
+    ? NonNullable<TYPE> | undefined
+    : never;
+
+export type IdFilter<
+    FILTER extends object,
+    PROPERTY extends keyof FILTER,
+> = NonNullable<FILTER[PROPERTY]> extends { id?: infer TYPE } ? TYPE : never;
+
+interface SortState<SORT_KEY> {
+    key: SORT_KEY;
+    ordering: Ordering;
+}
+
+interface ListState<FILTER, SORT> {
     filters: FILTER,
-    order: ORDER | undefined,
+    sort: SORT | undefined,
     page: number,
 }
 
-function useListManagement<FILTERS extends object, ORDER extends object>(options: {
-    filters: FILTERS,
-    order?: ORDER,
-    page?: number,
+type ListStateActions<FILTERS extends object, SORT extends object> = (
+    ResetFilterAction
+    | SetFilterAction<FILTERS>
+    | SetPageAction
+    | SetSortAction<SORT>
+);
+
+interface Option<FILTERS, SORT> {
+    defaultFilters: FILTERS,
+    defaultSort ?: SORT,
+    defaultPage?: number,
     pageSize?: number,
     debounceTime?: number,
-}) {
+}
+
+function useListManagement<
+    FILTERS extends object,
+    SORT_KEY,
+    SORT extends SortState<SORT_KEY> = SortState<SORT_KEY>,
+>(
+    options: Option<FILTERS, SORT>,
+) {
     const {
-        filters,
-        order,
-        page = DEFAULT_PAGE,
+        defaultFilters,
+        defaultSort,
+        defaultPage = DEFAULT_PAGE,
         pageSize = DEFAULT_PAGE_SIZE,
         debounceTime = 200,
     } = options;
 
     type Reducer = (
-        prevState: FilterState<FILTERS, ORDER>,
-        action: FilterActions<FILTERS, ORDER>,
-    ) => FilterState<FILTERS, ORDER>;
+        prevState: ListState<FILTERS, SORT>,
+        action: ListStateActions<FILTERS, SORT>,
+    ) => ListState<FILTERS, SORT>;
 
     const [state, dispatch] = useReducer<Reducer>(
         (prevState, action) => {
             if (action.type === 'reset-filter') {
                 return {
-                    filters,
-                    order,
-                    page,
+                    filters: defaultFilters,
+                    sort: defaultSort,
+                    page: defaultPage,
                 };
             }
             if (action.type === 'set-filter') {
@@ -89,11 +129,11 @@ function useListManagement<FILTERS extends object, ORDER extends object>(options
                     page: action.value,
                 };
             }
-            if (action.type === 'set-order') {
+            if (action.type === 'set-sort') {
                 return {
                     ...prevState,
-                    order: typeof action.value === 'function'
-                        ? action.value(prevState.order)
+                    sort: typeof action.value === 'function'
+                        ? action.value(prevState.sort)
                         : action.value,
                     page: 1,
                 };
@@ -102,10 +142,10 @@ function useListManagement<FILTERS extends object, ORDER extends object>(options
             return prevState;
         },
         {
-            filters,
-            order,
-            page,
-        },
+            filters: defaultFilters,
+            sort: defaultSort,
+            page: defaultPage,
+        } satisfies ListState<FILTERS, SORT>,
     );
 
     const setFilters = useCallback(
@@ -148,25 +188,46 @@ function useListManagement<FILTERS extends object, ORDER extends object>(options
         },
         [],
     );
-    const setOrder = useCallback(
-        (value: SetStateAction<ORDER | undefined>) => {
+
+    const setSort = useCallback(
+        (value: SetStateAction<SORT | undefined>) => {
             dispatch({
-                type: 'set-order',
+                type: 'set-sort',
                 value,
             });
         },
         [],
     );
 
-    const debouncedState = useDebouncedValue(state, debounceTime);
+    const setSortKey = useCallback(
+        (newKey: SORT_KEY) => {
+            setSort((oldSortState) => {
+                const newSortState = {
+                    ...oldSortState,
+                    key: newKey,
+                } as SORT;
 
-    const sortState = useMemo(
-        () => ({
-            sorting: state.order,
-            setSorting: setOrder,
-        }),
-        [state.order, setOrder],
+                return newSortState;
+            });
+        },
+        [setSort],
     );
+
+    const setSortOrdering = useCallback(
+        (newOrdering: Ordering) => {
+            setSort((oldSortState) => {
+                const newSortState = {
+                    ...oldSortState,
+                    ordering: newOrdering,
+                } as SORT;
+
+                return newSortState;
+            });
+        },
+        [setSort],
+    );
+
+    const debouncedState = useDebouncedValue(state, debounceTime);
 
     const filtersApplied = useMemo(
         () => hasSomeDefinedValue(debouncedState.filters),
@@ -192,12 +253,14 @@ function useListManagement<FILTERS extends object, ORDER extends object>(options
         offset: pageSize * (debouncedState.page - 1),
         limit: pageSize,
         setPage,
-
-        rawOrder: order,
-        order: debouncedState.order,
-
-        sortState,
         pageSize,
+
+        rawSort: state.sort,
+        sort: state.sort,
+
+        setSortKey,
+        setSortOrdering,
+
     };
 }
 

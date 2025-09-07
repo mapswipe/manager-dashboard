@@ -67,13 +67,7 @@ mutation NewTutorial($data: TutorialCreateInput!) {
 }
 `;
 
-interface Props {
-    className?: string;
-}
-
-function NewTutorial(props: Props) {
-    const { className } = props;
-
+function NewTutorial() {
     const navigate = useNavigate();
     const alert = useAlert();
 
@@ -87,6 +81,8 @@ function NewTutorial(props: Props) {
         error: formError,
         validate,
         setError,
+        pristine,
+        setPristine,
     } = useForm(
         tutorialCreateFormSchema,
         { value: defaultTutorialCreateFormValue },
@@ -176,17 +172,23 @@ function NewTutorial(props: Props) {
                     },
                 );
 
-                navigate(
-                    generatePath(
-                        routes.editTutorial.originalPath,
-                        { id: createTutorialResult.id },
-                    ),
-                );
+                setPristine(true);
+                // NOTE: pristine needs to be set first before navigation
+                setTimeout(() => {
+                    if (routes.editTutorial.path) {
+                        navigate(
+                            generatePath(
+                                routes.editTutorial.path,
+                                { id: createTutorialResult.id },
+                            ),
+                        );
+                    }
+                }, 0);
             } catch (combinedError) {
                 alertCombinedError(combinedError, alert);
             }
         },
-        [navigate, createNewTutorial, setError, alert],
+        [navigate, createNewTutorial, setError, alert, setPristine],
     );
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
@@ -198,7 +200,6 @@ function NewTutorial(props: Props) {
 
     return (
         <PageLayout
-            className={className}
             heading="Create a New Tutorial"
             footerActions={(
                 <Button
@@ -211,6 +212,7 @@ function NewTutorial(props: Props) {
                     Submit
                 </Button>
             )}
+            confirmNavigationChange={!pristine}
         >
             <Container
                 heading="Title"

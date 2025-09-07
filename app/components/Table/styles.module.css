@@ -11,16 +11,20 @@
 
     .header-row {
         .header-cell {
-            padding: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
             text-align: left;
+            color: var(--color-primary);
+            font-family: inherit;
+            font-weight: var(--font-weight-medium)
         }
     }
 
     .row {
         .cell {
-            border-top: 1px solid rgba(0, 0, 0, .1);
-            padding: var(--spacing-md);
+            border-top: var(--width-separator-thin) solid var(--color-separator);
+            padding: var(--spacing-sm) var(--spacing-md);
             overflow: hidden;
+            font-family: inherit;
         }
     }
 }

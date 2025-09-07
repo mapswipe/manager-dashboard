@@ -14,7 +14,8 @@ export function getOpticallyCorrectedSpacingValue(value: string, mode: SpacingMo
     // Horizontal padding seems a bit imbalanced
     // due to the gap from the line height in vertical padding
     if (mode === 'padding-inline') {
-        return `calc(${value} + (1rem * var(--line-height-md) - 1rem))`;
+        // FIXME: use line-height istead of 1.5
+        return `calc(${value} + (1rem * 1.25 - 1rem))`;
     }
 
     return value;

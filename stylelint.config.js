@@ -4,7 +4,7 @@ const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
 
 const cssPaths = [
-    path.resolve(__dirname, './app/Base/styles.module.css'),
+    path.resolve(__dirname, './app/index.css'),
 ];
 
 /** @type {import('stylelint').Config} */

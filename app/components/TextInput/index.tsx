@@ -17,6 +17,7 @@ function TextInput<const N>(props: TextInputProps<N>) {
         label,
         readOnly,
         type = 'text',
+        spacing,
         ...textInputProps
     } = props;
 
@@ -33,6 +34,7 @@ function TextInput<const N>(props: TextInputProps<N>) {
             icons={icons}
             label={label}
             readOnly={readOnly}
+            spacing={spacing}
             input={(
                 <RawInput<N>
                     // eslint-disable-next-line react/jsx-props-no-spreading

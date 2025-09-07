@@ -9,13 +9,13 @@ import InputContainer, { Props as InputContainerProps } from '#components/InputC
 import ListLayout from '#components/ListLayout';
 import { SpacingType } from '#utils/styles';
 
-interface Props<Value extends string | number | boolean, Option, Name> extends Omit<InputContainerProps, 'input' | 'inputId'> {
-    options: Option[];
-    keySelector: (item: Option, index: number, data: Option[]) => Value;
-    labelSelector: (item: Option, index: number, data: Option[]) => React.ReactNode;
-    value: Value | undefined | null;
-    name: Name;
-    onChange: (newValue: Value, name: Name) => void;
+interface Props<VALUE extends string | number | boolean, OPTION, NAME> extends Omit<InputContainerProps, 'input' | 'inputId'> {
+    options: OPTION[];
+    keySelector: (item: OPTION, index: number, data: OPTION[]) => VALUE;
+    labelSelector: (item: OPTION, index: number, data: OPTION[]) => React.ReactNode;
+    value: VALUE | undefined | null;
+    name: NAME;
+    onChange: (newValue: VALUE, name: NAME) => void;
     className?: string;
     spacing?: SpacingType;
     activeSegmentStyleVariant?: ButtonStyleVariant;
@@ -62,6 +62,7 @@ function SegmentInput<
             icons={icons}
             label={label}
             readOnly={readOnly}
+            spacing={spacing}
             input={(
                 <ListLayout
                     spacingOffset={-1}
@@ -80,7 +81,7 @@ function SegmentInput<
                                 name={key}
                                 key={String(key)}
                                 onClick={handleSegmentClick}
-                                spacingOffset={-1}
+                                spacingOffset={-3}
                                 spacing={spacing}
                             >
                                 {optionLabel}

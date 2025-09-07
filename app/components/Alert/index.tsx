@@ -1,35 +1,24 @@
 import { useCallback } from 'react';
 import { IoCopyOutline } from 'react-icons/io5';
 import {
-    RiCheckboxCircleLine,
-    RiCloseLargeLine,
-    RiErrorWarningLine,
-    RiInformationLine,
-    RiQuestionLine,
-} from 'react-icons/ri';
+    PiCheckCircle,
+    PiCross,
+    PiInfo,
+    PiQuestion,
+    PiWarningCircle,
+} from 'react-icons/pi';
 import {
     _cs,
     isTruthyString,
 } from '@togglecorp/fujs';
 
-import { AlertType } from '#base/context/AlertContext';
 import BlockLayout from '#components/BlockLayout';
 import Button from '#components/Button';
 import Heading from '#components/Heading';
 import InlineLayout from '#components/InlineLayout';
+import { AlertType } from '#contexts/AlertContext';
 
 import styles from './styles.module.css';
-
-export interface Props<N> {
-    name: N;
-    className?: string;
-    type?: AlertType;
-    title?: React.ReactNode;
-    description?: React.ReactNode;
-    nonDismissable?: boolean;
-    onCloseButtonClick?: (name: N) => void;
-    debugMessage?: string;
-}
 
 const alertTypeToClassNameMap: {
     [key in AlertType]: string;
@@ -43,11 +32,23 @@ const alertTypeToClassNameMap: {
 const icon: {
     [key in AlertType]: React.ReactNode;
 } = {
-    success: <RiCheckboxCircleLine className={styles.icon} />,
-    danger: <RiErrorWarningLine className={styles.icon} />,
-    info: <RiInformationLine className={styles.icon} />,
-    warning: <RiQuestionLine className={styles.icon} />,
+    success: <PiCheckCircle className={styles.icon} />,
+    danger: <PiWarningCircle className={styles.icon} />,
+    info: <PiInfo className={styles.icon} />,
+    warning: <PiQuestion className={styles.icon} />,
 };
+export interface Props<N> {
+    name: N;
+    className?: string;
+    type?: AlertType;
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    nonDismissable?: boolean;
+    onCloseButtonClick?: (name: N) => void;
+    debugMessage?: string;
+    withoutShadow?: boolean;
+    fullWidth?: boolean;
+}
 
 function Alert<N extends string>(props: Props<N>) {
     const {
@@ -59,6 +60,8 @@ function Alert<N extends string>(props: Props<N>) {
         onCloseButtonClick,
         nonDismissable,
         debugMessage,
+        withoutShadow,
+        fullWidth,
     } = props;
 
     const handleCloseButtonClick = useCallback(
@@ -84,11 +87,14 @@ function Alert<N extends string>(props: Props<N>) {
             className={_cs(
                 styles.alert,
                 alertTypeToClassNameMap[type],
+                fullWidth && styles.fullWidth,
+                withoutShadow && styles.withoutShadow,
                 className,
             )}
             start={(
                 <InlineLayout
                     start={icon[type]}
+                    withCenterAlign
                     end={nonDismissable && (
                         <Button
                             name={undefined}
@@ -96,13 +102,13 @@ function Alert<N extends string>(props: Props<N>) {
                             styleVariant="action"
                             title="Close"
                         >
-                            <RiCloseLargeLine className={styles.closeIcon} />
+                            <PiCross />
                         </Button>
                     )}
                 >
                     <Heading
                         className={styles.title}
-                        level={4}
+                        level={5}
                     >
                         {title}
                     </Heading>
@@ -116,7 +122,6 @@ function Alert<N extends string>(props: Props<N>) {
                                 name={undefined}
                                 onClick={handleCopyDebugMessageButtonClick}
                                 styleVariant="transparent"
-                                colorVariant="text-on-dark"
                                 withoutPadding
                                 start={<IoCopyOutline />}
                             >

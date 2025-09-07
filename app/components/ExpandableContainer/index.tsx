@@ -13,6 +13,8 @@ interface Props<NAME> extends ContainerProps {
     onExpansionChange?: (v: boolean, name: NAME) => void;
     alwaysVisibleContent?: React.ReactNode;
     className?: string;
+    showDetailsButtonLabel?: React.ReactNode;
+    hideDetailsButtonLabel?: React.ReactNode;
 }
 
 function ExpandableContainer<NAME>(props: Props<NAME>) {
@@ -23,6 +25,8 @@ function ExpandableContainer<NAME>(props: Props<NAME>) {
         onExpansionChange,
         name,
         alwaysVisibleContent,
+        showDetailsButtonLabel = 'Show details',
+        hideDetailsButtonLabel = 'Hide details',
         ...containerProps
     } = props;
 
@@ -43,7 +47,7 @@ function ExpandableContainer<NAME>(props: Props<NAME>) {
                         styleVariant="action"
                         start={isExpanded ? <PiCaretUp /> : <PiCaretDown />}
                     >
-                        {isExpanded ? 'Hide details' : 'Show details'}
+                        {isExpanded ? hideDetailsButtonLabel : showDetailsButtonLabel}
                     </Button>
                 </>
             )}

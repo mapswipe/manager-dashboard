@@ -7,8 +7,7 @@
     color: var(--color-text-faint);
 
     .icon {
-        line-height: 1;
-        font-size: 3rem;
+        font-size: 2rem;
 
         .spinner {
             animation: rotate 1s linear infinite;

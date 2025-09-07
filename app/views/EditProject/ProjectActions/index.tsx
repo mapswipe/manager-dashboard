@@ -219,7 +219,9 @@ function ProjectActions(props: Props) {
                     withAutoHeight
                     headingLevel={4}
                 >
-                    Are you sure you want to change the status of the project?
+                    <p>
+                        Are you sure you want to change the status of the project?
+                    </p>
                     <ListLayout layout="inline">
                         <ProjectStatusOutput value={status} />
                         <PiArrowRight />

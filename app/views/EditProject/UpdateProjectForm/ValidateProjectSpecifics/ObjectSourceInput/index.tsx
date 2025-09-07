@@ -6,11 +6,11 @@ import {
     ObjectError,
 } from '@togglecorp/toggle-form';
 
-import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     ProjectAssetInputTypeEnum,
     ValidateObjectSourceTypeEnum,
@@ -57,9 +57,6 @@ function ObjectSourceInput(props: Props) {
         <Container
             heading="Validation Object Source"
             headingLevel={4}
-            withPadding
-            withBackground
-            spacing="lg"
         >
             <RadioInput
                 label="Source type"

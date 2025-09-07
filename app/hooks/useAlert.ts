@@ -5,7 +5,7 @@ import {
 } from 'react';
 import { randomString } from '@togglecorp/fujs';
 
-import AlertContext, { AlertType } from '#base/context/AlertContext';
+import AlertContext, { AlertType } from '#contexts/AlertContext';
 import { DEFAULT_ALERT_DISMISS_DURATION } from '#utils/common';
 
 interface AddAlertOption {

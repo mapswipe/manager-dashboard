@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import EnumsContext from '#base/context/EnumsContext';
 import Container from '#components/Container';
 import DefaultMapContainer from '#components/DefaultMapContainer';
 import BaseMap from '#components/domain/BaseMap';
@@ -11,6 +10,7 @@ import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
 import RasterTileServerOutput from '#components/domain/RasterTileServerOutput';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
+import EnumsContext from '#contexts/EnumsContext';
 import { ValidateProjectPropertyType } from '#generated/types/graphql';
 
 interface Props {

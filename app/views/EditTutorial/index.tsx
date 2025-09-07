@@ -6,13 +6,14 @@ import {
     useRef,
     useState,
 } from 'react';
-import { CgArrowTopRightR } from 'react-icons/cg';
-import { IoAdd } from 'react-icons/io5';
-import { MdDownload } from 'react-icons/md';
-import { PiFloppyDisk } from 'react-icons/pi';
+import {
+    PiBoxArrowUp,
+    PiDownload,
+    PiFloppyDisk,
+    PiPlus,
+} from 'react-icons/pi';
 import { useParams } from 'react-router';
 import {
-    _cs,
     compareNumber,
     isDefined,
     isNotDefined,
@@ -75,6 +76,7 @@ import tutorialUpdateSchema, {
     PartialTutorialUpdateInputFields,
     TutorialFormContext,
 } from './schema';
+import TutorialActions from './TutorialActions';
 
 import styles from './styles.module.css';
 
@@ -255,12 +257,7 @@ function createCud<
     ];
 }
 
-interface Props {
-    className?: string;
-}
-
-function NewTutorial(props: Props) {
-    const { className } = props;
+function NewTutorial() {
     const { id: tutorialIdFromParams } = useParams<{ id: string }>();
     const [tutorialFormContext, setTutorialFormContext] = useState<TutorialFormContext>();
     const inputId = useId();
@@ -300,6 +297,8 @@ function NewTutorial(props: Props) {
         error: formError,
         validate,
         setError,
+        pristine,
+        setPristine,
     } = useForm(
         tutorialUpdateSchema,
         { value: defaultTutorialCreateFormValue },
@@ -930,12 +929,14 @@ function NewTutorial(props: Props) {
                 'Tutorial status updated successfully!',
                 { variant: 'success' },
             );
+
+            setPristine(true);
         } catch (apolloError) {
             alertCombinedError(apolloError, alert);
         }
 
         setNewStatus(undefined);
-    }, [tutorialData, updateTutorialStatus, newStatus, alert, setError]);
+    }, [tutorialData, updateTutorialStatus, newStatus, alert, setError, setPristine]);
 
     const inputsDisabled = updateTutorialPending || updateTutorialStatusPending;
     const actionsDisabled = inputsDisabled;
@@ -948,38 +949,14 @@ function NewTutorial(props: Props) {
 
     return (
         <PageLayout
-            className={_cs(styles.newTutorial, className)}
+            className={styles.newTutorial}
             heading={isDefined(tutorialIdFromParams) ? 'Update Tutorial' : 'Create a New Tutorial'}
-            headerActions={(
-                <>
-                    {(
-                        tutorialData?.tutorial.status === TutorialStatusEnum.Draft
-                        || tutorialData?.tutorial.status === TutorialStatusEnum.Archived
-                    ) && (
-                        <Button
-                            name={TutorialStatusEnum.Published}
-                            onClick={setNewStatus}
-                        >
-                            Publish
-                        </Button>
-                    )}
-                    {tutorialData?.tutorial.status === TutorialStatusEnum.Draft && (
-                        <Button
-                            name={TutorialStatusEnum.Discarded}
-                            onClick={setNewStatus}
-                        >
-                            Discard
-                        </Button>
-                    )}
-                    {tutorialData?.tutorial.status === TutorialStatusEnum.Published && (
-                        <Button
-                            name={TutorialStatusEnum.Archived}
-                            onClick={setNewStatus}
-                        >
-                            Archive
-                        </Button>
-                    )}
-                </>
+            headerActions={tutorialData && (
+                <TutorialActions
+                    tutorialId={tutorialData.tutorial.id}
+                    clientId={tutorialData.tutorial.clientId}
+                    status={tutorialData.tutorial.status}
+                />
             )}
             footerActions={(
                 <Button
@@ -993,6 +970,7 @@ function NewTutorial(props: Props) {
                     Update tutorial
                 </Button>
             )}
+            confirmNavigationChange={!pristine}
         >
             <Container
                 heading="General"
@@ -1058,7 +1036,7 @@ function NewTutorial(props: Props) {
                                                     rel="noreferrer"
                                                     title="Preview in geojson.io"
                                                 >
-                                                    <CgArrowTopRightR />
+                                                    <PiBoxArrowUp />
                                                 </a>
                                             )}
                                             {projectAsset.file && (
@@ -1070,7 +1048,7 @@ function NewTutorial(props: Props) {
                                                     title="Download"
                                                     download
                                                 >
-                                                    <MdDownload />
+                                                    <PiDownload />
                                                 </a>
                                             )}
                                         </>
@@ -1084,20 +1062,19 @@ function NewTutorial(props: Props) {
                 )}
             </Container>
             <Container
-                withContentBackgroundAndPadding={value.informationPages?.length === 0}
+                withContentBackgroundAndPadding
                 heading="Information Pages"
                 headerDescription={(
                     <NonFieldError
                         error={error?.informationPages}
                     />
                 )}
-                withHeaderBorder
                 headerActions={(
                     <Button
                         className={styles.addPageButton}
                         name={value.informationPages?.length ?? 0}
                         onClick={addInformationPage}
-                        start={<IoAdd />}
+                        start={<PiPlus />}
                         styleVariant="transparent"
                         withoutPadding
                     >
@@ -1123,9 +1100,8 @@ function NewTutorial(props: Props) {
                 ))}
             </Container>
             <Container
-                withContentBackgroundAndPadding={!value.scenarios?.length}
+                withContentBackgroundAndPadding
                 heading="Scenario Pages"
-                withHeaderBorder
                 headerDescription={(
                     <>
                         {isNotDefined(projectDetailResponse?.project.projectType) && (

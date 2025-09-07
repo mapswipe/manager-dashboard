@@ -3,10 +3,7 @@ import {
     useContext,
     useMemo,
 } from 'react';
-import {
-    _cs,
-    isNotDefined,
-} from '@togglecorp/fujs';
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
     getErrorObject,
@@ -20,12 +17,13 @@ import {
     gql,
 } from 'urql';
 
-import UserContext from '#base/context/UserContext';
 import Button from '#components/Button';
+import Container from '#components/Container';
+import NonFieldError from '#components/NonFieldError';
 import TextInput from '#components/TextInput';
+import UserContext from '#contexts/UserContext';
 import { useLoginMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -65,15 +63,7 @@ const loginFormSchema: LoginFormSchema = {
 
 const defaultLoginFormValue: LoginFormFields = {};
 
-interface Props {
-    className?: string;
-}
-
-function Login(props: Props) {
-    const {
-        className,
-    } = props;
-
+function Login() {
     const { setUser } = useContext(UserContext);
     const alert = useAlert();
 
@@ -156,21 +146,28 @@ function Login(props: Props) {
     );
 
     return (
-        <div className={_cs(styles.login, className)}>
-            <div className={styles.container}>
-                <div className={styles.appBrand}>
-                    <img
-                        className={styles.logo}
-                        src={mapSwipeLogo}
-                        alt="MapSwipe"
-                    />
-                    <div className={styles.text}>
-                        Manager Dashboard
-                    </div>
-                </div>
-                <form
-                    className={styles.loginFormContainer}
-                    onSubmit={handleSubmitButtonClick}
+        <div className={styles.login}>
+            <form
+                onSubmit={handleSubmitButtonClick}
+                className={styles.form}
+            >
+                <Container
+                    heading="Login to Manager Dashboard"
+                    withHeaderBorder
+                    withShadow
+                    withBackground
+                    withPadding
+                    spacing="lg"
+                    footerActions={(
+                        <Button
+                            type="submit"
+                            name={undefined}
+                            disabled={pending}
+                            colorVariant="accent"
+                        >
+                            Login
+                        </Button>
+                    )}
                 >
                     <TextInput
                         name="email"
@@ -190,22 +187,11 @@ function Login(props: Props) {
                         type="password"
                         disabled={pending}
                     />
-                    {error?.[nonFieldError] && (
-                        <div className={styles.errorMessage}>
-                            {error?.[nonFieldError]}
-                        </div>
-                    )}
-                    <div className={styles.actions}>
-                        <Button
-                            type="submit"
-                            name={undefined}
-                            disabled={pending}
-                        >
-                            Login
-                        </Button>
-                    </div>
-                </form>
-            </div>
+                    <NonFieldError
+                        error={error}
+                    />
+                </Container>
+            </form>
         </div>
     );
 }

@@ -16,6 +16,7 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
@@ -77,10 +78,8 @@ function StreetProjectSpecifics(props: Props) {
         <>
             <Container
                 withBackground
-                withPadding
                 headingLevel={4}
                 heading="Custom options"
-                spacing="lg"
                 headerActions={(
                     <Button
                         name={value?.customOptions?.length ?? 0}
@@ -96,23 +95,25 @@ function StreetProjectSpecifics(props: Props) {
                     <NonFieldError error={error?.customOptions} />
                 )}
                 empty={isNotDefined(value?.customOptions) || value.customOptions.length === 0}
+                withWelledContent
             >
-                {value?.customOptions?.map((customOption, optionIndex) => (
-                    <CustomOptionInput
-                        key={customOption.clientId}
-                        index={optionIndex}
-                        value={customOption}
-                        onChange={setCustomOptionValue}
-                        error={getErrorObject(
-                            getErrorObject(error?.customOptions)?.[customOption.clientId],
-                        )}
-                        onRemove={removeCustomOption}
-                    />
-                ))}
+                <ListLayout layout="grid">
+                    {value?.customOptions?.map((customOption, optionIndex) => (
+                        <CustomOptionInput
+                            key={customOption.clientId}
+                            index={optionIndex}
+                            value={customOption}
+                            onChange={setCustomOptionValue}
+                            error={getErrorObject(
+                                getErrorObject(error?.customOptions)?.[customOption.clientId],
+                            )}
+                            onRemove={removeCustomOption}
+                        />
+                    ))}
+                </ListLayout>
             </Container>
             <Container
                 withBackground
-                withPadding
             >
                 <AssetInput
                     label="AOI geometry"

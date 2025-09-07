@@ -1,11 +1,8 @@
 import { useContext } from 'react';
-import { FaSearch } from 'react-icons/fa';
 import {
-    PiArrowsDownUp,
     PiFlag,
     PiLock,
-    PiSortAscending,
-    PiSortDescending,
+    PiMagnifyingGlass,
     PiStar,
     PiUsersThree,
 } from 'react-icons/pi';
@@ -13,30 +10,34 @@ import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
-import EnumsContext from '#base/context/EnumsContext';
 import Button from '#components/Button';
 import Checklist from '#components/Checklist';
 import Container from '#components/Container';
+import OrderingInput from '#components/domain/OrderingInput';
+import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
-import PopupButton from '#components/PopupButton';
 import SelectInput from '#components/SelectInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextInput from '#components/TextInput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     Ordering,
     ProjectFilter,
     ProjectOrder,
     useProjectsListQuery,
 } from '#generated/types/graphql';
-import useListManagement from '#hooks/useListManagement';
+import useListManagement, {
+    ExactFilter,
+    IdFilter,
+    ListFilter,
+} from '#hooks/useListManagement';
 import {
-    DEFAULT_PAGE_SIZE,
     defaultPagePerItemOptions,
     keySelector,
     labelSelector,
+    removeEmptyList,
 } from '#utils/common';
 
 import ProjectListItem from './ProjectListItem';
@@ -68,28 +69,7 @@ const privateOptions: BooleanOption[] = [
     },
 ];
 
-type OrderingOption = {
-    key: Ordering;
-    label: React.ReactNode;
-}
-
-const orderingOptions: OrderingOption[] = [
-    {
-        key: Ordering.Asc,
-        label: <PiSortAscending />,
-    },
-    {
-        key: Ordering.Desc,
-        label: <PiSortDescending />,
-    },
-];
-
-type OrderPropertyOption = {
-    key: keyof ProjectOrder;
-    label: string;
-}
-
-const orderPropertyOptions: OrderPropertyOption[] = [
+const sortKeyOptions: SortByOption<keyof ProjectOrder>[] = [
     {
         key: 'id',
         label: 'Created',
@@ -102,18 +82,14 @@ const orderPropertyOptions: OrderPropertyOption[] = [
 
 type ProjectFilterValue = {
     name: ProjectFilter['name'];
-    projectType: NonNullable<ProjectFilter['projectType']>['inList'];
-    status: NonNullable<ProjectFilter['status']>['inList'];
-    organization: NonNullable<ProjectFilter['requestingOrganizationId']>['exact'];
     region: ProjectFilter['region'];
-    isFeatured: NonNullable<ProjectFilter['isFeatured']>['exact'];
-    isPrivate: NonNullable<ProjectFilter['isPrivate']>['exact'];
-    team: NonNullable<ProjectFilter['team']>['id'] | undefined;
-}
 
-type ProjectOrderValue = {
-    value: Ordering,
-    property: keyof ProjectOrder;
+    projectType: ListFilter<ProjectFilter, 'projectType'>;
+    status: ListFilter<ProjectFilter, 'status'>;
+    organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
+    isFeatured: ExactFilter<ProjectFilter, 'isFeatured'>;
+    isPrivate: ExactFilter<ProjectFilter, 'isPrivate'>;
+    team: IdFilter<ProjectFilter, 'team'> | undefined;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -133,8 +109,8 @@ query ProjectsFilterEnums {
 `;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_LIST_QUERY = gql`
-query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $offset: Int!, $limit: Int) {
-    projects(pagination: {offset: $offset, limit: $limit}, order: $order, filters: $filters, includeAll: true) {
+query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: OffsetPaginationInput) {
+    projects(pagination: $pagination, order: $order, filters: $filters, includeAll: true) {
         totalCount
         results {
             id
@@ -177,6 +153,10 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $offset: Int!,
                 id
                 name
             }
+            tutorial {
+                id
+                name
+            }
         }
         pageInfo {
             limit
@@ -186,25 +166,13 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $offset: Int!,
 }
 `;
 
-function removeEmptyList<T>(list: T[] | undefined | null) {
-    if (isDefined(list) && list.length === 0) {
-        return undefined;
-    }
-    return list;
-}
-
-interface Props {
-    className?: string;
-}
-
-function Projects(props: Props) {
-    const { className } = props;
-
+function Projects() {
     const {
         filters,
         rawFilters,
-        order,
-        sortState,
+        sort,
+        setSortKey,
+        setSortOrdering,
         page,
         setPage,
         pageSize,
@@ -213,8 +181,8 @@ function Projects(props: Props) {
         filtersApplied,
         setFilterField,
         resetFilters,
-    } = useListManagement<ProjectFilterValue, ProjectOrderValue>({
-        filters: {
+    } = useListManagement<ProjectFilterValue, keyof ProjectOrder>({
+        defaultFilters: {
             name: undefined,
             projectType: undefined,
             status: undefined,
@@ -224,11 +192,10 @@ function Projects(props: Props) {
             isPrivate: undefined,
             team: undefined,
         },
-        order: {
-            property: 'id',
-            value: Ordering.Desc,
+        defaultSort: {
+            key: 'id',
+            ordering: Ordering.Desc,
         },
-        pageSize: DEFAULT_PAGE_SIZE,
     });
 
     const [{
@@ -236,11 +203,13 @@ function Projects(props: Props) {
         fetching: pending,
     }] = useProjectsListQuery({
         variables: {
-            offset,
-            order: isDefined(order) ? ({
-                [order.property]: order.value,
+            pagination: {
+                limit,
+                offset,
+            },
+            order: isDefined(sort) ? ({
+                [sort.key]: sort.ordering,
             }) : undefined,
-            limit,
             filters: {
                 name: filters.name,
                 projectType: { inList: removeEmptyList(filters.projectType) },
@@ -267,10 +236,9 @@ function Projects(props: Props) {
     return (
         <PageLayout
             heading="Projects"
-            className={className}
             headerActions={(
                 <SmartLink
-                    route={routes.newProject}
+                    route="newProject"
                     spacing="md"
                     withLinkIcon
                 >
@@ -281,7 +249,7 @@ function Projects(props: Props) {
                 <>
                     <TextInput
                         name="name"
-                        icons={<FaSearch />}
+                        icons={<PiMagnifyingGlass />}
                         value={rawFilters.name}
                         onChange={setFilterField}
                         placeholder="Search by title"
@@ -367,38 +335,23 @@ function Projects(props: Props) {
                 heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount ?? 0} projects`}
                 headingLevel={6}
                 headerActions={(
-                    <PopupButton
-                        label={<PiArrowsDownUp />}
-                        withoutDropdownIcon
-                        styleVariant="translucent"
-                        colorVariant="accent"
-                    >
-                        {orderPropertyOptions.flatMap((property) => (
-                            orderingOptions.map((ordering) => (
-                                <Button
-                                    key={`${property.key}-${ordering.key}`}
-                                    name={{
-                                        property: property.key,
-                                        value: ordering.key,
-                                    } satisfies ProjectOrderValue}
-                                    styleVariant="transparent"
-                                    colorVariant={property.key === sortState.sorting?.property && ordering.key === sortState.sorting.value ? 'accent' : 'text'}
-                                    withFullWidth
-                                    end={ordering.label}
-                                    onClick={sortState.setSorting}
-                                >
-                                    {property.label}
-                                </Button>
-                            ))
-                        ))}
-                    </PopupButton>
+                    <>
+                        <SortByInput
+                            name={undefined}
+                            value={sort?.key}
+                            options={sortKeyOptions}
+                            onChange={setSortKey}
+                        />
+                        <OrderingInput
+                            name={undefined}
+                            value={sort?.ordering}
+                            onChange={setSortOrdering}
+                        />
+                    </>
                 )}
                 pending={pending}
                 filtered={filtersApplied}
                 empty={totalCount === 0}
-                withBackground={totalCount === 0}
-                withPadding={totalCount === 0}
-                withMinHeight={totalCount === 0}
                 emptyMessage="No projects found!"
                 filteredEmptyMessage="No matching projects found!"
                 spacing="lg"
@@ -407,7 +360,7 @@ function Projects(props: Props) {
                         pagePerItem={pageSize}
                         activePage={page}
                         onActivePageChange={setPage}
-                        totalItems={projectsResponse?.projects.totalCount ?? 0}
+                        totalItems={totalCount}
                         pagePerItemOptions={defaultPagePerItemOptions}
                     />
                 )}

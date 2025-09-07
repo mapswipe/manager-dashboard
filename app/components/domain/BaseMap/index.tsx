@@ -9,8 +9,8 @@ import {
 import Map from '@togglecorp/re-map';
 import { removeNull } from '@togglecorp/toggle-form';
 
-import TileServerContext from '#base/context/TileServerContext';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
+import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
 import { standardizeQuadKey } from '#utils/geo';
 

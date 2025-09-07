@@ -16,14 +16,14 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
-import EnumsContext from '#base/context/EnumsContext';
-import TileServerContext from '#base/context/TileServerContext';
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
+import EnumsContext from '#contexts/EnumsContext';
+import TileServerContext from '#contexts/TileServerContext';
 import { VectorTileServerNameEnum } from '#generated/types/graphql';
 import {
     keySelector,

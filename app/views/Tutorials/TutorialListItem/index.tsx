@@ -11,7 +11,6 @@ import {
 } from 'react-icons/pi';
 
 import SmartLink from '#base/components/SmartLink';
-import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
@@ -23,9 +22,8 @@ import OverflowMenu from '#components/OverflowMenu';
 import Tag from '#components/Tag';
 import TextOutput from '#components/TextOutput';
 import { TutorialsListQuery } from '#generated/types/graphql';
+import { getInstruction } from '#utils/common';
 import TutorialActions from '#views/EditTutorial/TutorialActions';
-
-import styles from './styles.module.css';
 
 interface Props {
     value: TutorialsListQuery['tutorials']['results'][number];
@@ -50,7 +48,6 @@ function TutorialListItem(props: Props) {
 
     return (
         <Container
-            className={styles.tutorialListItem}
             contentLayout="block"
             spacing="lg"
             withBackground
@@ -58,7 +55,7 @@ function TutorialListItem(props: Props) {
             withShadow
             heading={(
                 <SmartLink
-                    route={routes.editTutorial}
+                    route="editTutorial"
                     attrs={{ id }}
                     withoutPadding
                     colorVariant="primary"
@@ -113,7 +110,11 @@ function TutorialListItem(props: Props) {
                     <TextOutput
                         icon={<PiInfo />}
                         label="Instruction"
-                        value={project.projectInstruction}
+                        value={getInstruction(
+                            project.projectInstruction,
+                            project.lookFor,
+                            project.projectType,
+                        )}
                         withCenterAlign
                     />
                 </GridLayoutItem>

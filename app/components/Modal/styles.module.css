@@ -1,9 +1,13 @@
 .modal {
+    --max-width: calc(100% - 2 * var(--spacing-md));
     width: 100%;
+    max-width: var(--max-width);
     height: 100%;
+    max-height: calc(100% - 2 * var(--spacing-md));
+    overflow: auto;
 
     .content {
-        overflow: visible;
+        overflow: auto;
     }
 
     &.sm-size {
@@ -23,7 +27,7 @@
     }
 
     &.lg-size {
-        max-width: var(--width-page-content-max);
+        max-width: min(var(--max-width), var(--width-page-content-max));
 
         &:not(.with-auto-height) {
             max-height: min(60rem, 100% - 2 * var(--spacing-md));
@@ -32,6 +36,5 @@
 
     &.with-auto-height {
         height: initial;
-        max-height: calc(100% - 2 * var(--spacing-md));
     }
 }

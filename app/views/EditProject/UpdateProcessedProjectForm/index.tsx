@@ -105,6 +105,8 @@ function UpdateProcessedProjectForm(props: Props) {
         validate,
         setError,
         setValue,
+        pristine,
+        setPristine,
     } = useForm(
         processedProjectUpdateFormSchema,
         { value: defaultProcessedProjectFormValue },
@@ -209,10 +211,11 @@ function UpdateProcessedProjectForm(props: Props) {
                 'Project updated successfully!',
                 { variant: 'success' },
             );
+            setPristine(true);
         } catch (apolloError) {
             alertCombinedError(apolloError, alert);
         }
-    }, [projectData.project.id, updateProcessedProject, setError, alert]);
+    }, [projectData.project.id, updateProcessedProject, setError, alert, setPristine]);
 
     const handleUpdateBasicDetails = useCallback((
         submittedValue: PartialProcessedProjectUpdateInput,
@@ -238,6 +241,7 @@ function UpdateProcessedProjectForm(props: Props) {
     return (
         <PageLayout
             heading="Update project"
+            confirmNavigationChange={!pristine}
             className={className}
             headerActions={isDefined(projectData) && (
                 <ProjectActions

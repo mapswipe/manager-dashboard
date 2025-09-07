@@ -1,0 +1,26 @@
+.image-preview {
+    .image {
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-background);
+        width: 100%;
+        height: 10rem;
+        object-fit: cover;
+        object-position: bottom center;
+    }
+
+    .fallback-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-card-border);
+        background-color: var(--color-background);
+        width: 100%;
+        height: 10rem;
+
+        .icon {
+            /* FIXME: use variable */
+            color: #c2c2c0;
+            font-size: 6rem;
+        }
+    }
+}

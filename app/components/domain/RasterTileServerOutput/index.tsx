@@ -9,11 +9,11 @@ import {
     listToMap,
 } from '@togglecorp/fujs';
 
-import EnumsContext from '#base/context/EnumsContext';
-import TileServerContext from '#base/context/TileServerContext';
 import Button from '#components/Button';
 import Container, { ContainerProps } from '#components/Container';
 import TextOutput from '#components/TextOutput';
+import EnumsContext from '#contexts/EnumsContext';
+import TileServerContext from '#contexts/TileServerContext';
 import {
     ProjectRasterTileServerConfig,
     RasterTileServerNameEnum,

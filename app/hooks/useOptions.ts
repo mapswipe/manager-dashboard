@@ -5,7 +5,7 @@ import {
 } from 'react';
 import { unique } from '@togglecorp/fujs';
 
-import OptionContext, { Options } from '#base/context/OptionContext';
+import OptionContext, { Options } from '#contexts/OptionContext';
 
 function useOptions<K extends keyof Options>(key: K): [
     Options[K],

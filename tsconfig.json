@@ -6,8 +6,9 @@
             "#views/*": ["./app/views/*"],
             "#hooks/*": ["./app/hooks/*"],
             "#utils/*": ["./app/utils/*"],
+            "#contexts/*": ["./app/contexts/*"],
             "#resources/*": ["./app/resources/*"],
-            "#base/*": ["./app/Base/*"]
+            "#base/*": ["./app/Root/*"]
         },
 
         "target": "ESNext",

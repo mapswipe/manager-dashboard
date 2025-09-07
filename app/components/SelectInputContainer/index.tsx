@@ -16,6 +16,7 @@ import GenericOption, {
     OptionKey,
 } from '#components/GenericOption';
 import InputContainer, { Props as InputContainerProps } from '#components/InputContainer';
+import { ListLayoutType } from '#components/ListLayout';
 import Popup from '#components/Popup';
 import RawInput from '#components/RawInput';
 import useBlurEffect from '#hooks/useBlurEffect';
@@ -50,6 +51,8 @@ export type SelectInputContainerProps<
     optionRendererParams: (optionKey: OK, option: O) => P;
     totalOptionsCount?: number;
     optionsPopupContentClassName?: string;
+    optionPopupContentLayout?: ListLayoutType;
+    optionPopupContentNumPreferredGridColumns?: number;
     options: O[] | undefined | null;
     optionsPending?: boolean;
     optionsFiltered?: boolean;
@@ -89,6 +92,8 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         options: optionsFromProps,
         optionsPopupClassName,
         optionsPopupContentClassName,
+        optionPopupContentLayout,
+        optionPopupContentNumPreferredGridColumns,
         persistentOptionPopup,
         readOnly,
         placeholder,
@@ -309,6 +314,8 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
                         styles.popupContent,
                         optionsPopupContentClassName,
                     )}
+                    contentLayout={optionPopupContentLayout}
+                    contentNumPreferredGridColumns={optionPopupContentNumPreferredGridColumns}
                 >
                     <List
                         data={options}

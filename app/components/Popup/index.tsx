@@ -6,7 +6,7 @@ import {
 } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import ListLayout from '#components/ListLayout';
+import ListLayout, { ListLayoutType } from '#components/ListLayout';
 import Portal from '#components/Portal';
 import { SpacingType } from '#utils/styles';
 
@@ -123,6 +123,8 @@ export interface PopupProps {
     children: React.ReactNode;
     freeWidth?: boolean;
     spacing?: SpacingType;
+    contentLayout?: ListLayoutType;
+    contentNumPreferredGridColumns?: number;
 }
 
 function Popup(props: PopupProps) {
@@ -134,6 +136,8 @@ function Popup(props: PopupProps) {
         freeWidth,
         elementRef,
         spacing,
+        contentLayout = 'block',
+        contentNumPreferredGridColumns,
     } = props;
 
     const {
@@ -158,12 +162,13 @@ function Popup(props: PopupProps) {
             >
                 <div className={styles.tip} />
                 <ListLayout
+                    layout={contentLayout}
+                    numPreferredGridColumns={contentNumPreferredGridColumns}
                     className={_cs(styles.content, contentClassName)}
                     style={{
                         minWidth: !freeWidth ? width : undefined,
                         maxHeight,
                     }}
-                    layout="block"
                     spacing={spacing}
                     withPadding
                 >

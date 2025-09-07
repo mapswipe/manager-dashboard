@@ -1,0 +1,52 @@
+import {
+    NavLink,
+    NavLinkProps,
+} from 'react-router';
+import { _cs } from '@togglecorp/fujs';
+
+import { RouteKeys } from '#base/configs/routes';
+import useRouteMatching, { Attrs } from '#base/hooks/useRouteMatching';
+
+import styles from './styles.module.css';
+
+export type Props = Omit<NavLinkProps, 'to'> & {
+    route: RouteKeys;
+    attrs?: Attrs;
+    children?: React.ReactNode;
+    activeClassName?: string;
+    className?: string;
+};
+
+function SmartNavLink(props: Props) {
+    const {
+        route,
+        attrs,
+        children,
+        className,
+        activeClassName,
+        ...otherProps
+    } = props;
+
+    const routeData = useRouteMatching(route, attrs);
+    if (!routeData) {
+        return null;
+    }
+
+    return (
+        <NavLink
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...otherProps}
+            to={routeData.to}
+            className={({ isActive }) => _cs(
+                styles.smartNavLink,
+                isActive && styles.active,
+                className,
+                isActive && activeClassName,
+            )}
+        >
+            {children}
+        </NavLink>
+    );
+}
+
+export default SmartNavLink;

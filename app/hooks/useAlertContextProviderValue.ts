@@ -8,7 +8,7 @@ import { unique } from '@togglecorp/fujs';
 import {
     AlertContextProps,
     AlertParams,
-} from '#base/context/AlertContext';
+} from '#contexts/AlertContext';
 
 function useAlertContextProviderValue() {
     const [alerts, setAlerts] = useState<AlertParams[]>([]);

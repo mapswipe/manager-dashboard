@@ -24,14 +24,16 @@ import { ulid } from 'ulid';
 import { gql } from 'urql';
 
 import routes from '#base/configs/routes';
-import EnumsContext from '#base/context/EnumsContext';
+import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import PageLayout from '#components/PageLayout';
 import SegmentInput from '#components/SegmentInput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     AppEnumCollectionProjectTypeEnum,
     ProjectCreateInput,
@@ -118,22 +120,48 @@ function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
     );
 }
 
-const projectTypeDescriptions: Record<ProjectTypeEnum, string> = {
+const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
     [ProjectTypeEnum.Find]: 'Swipe through satellite images to identify & select those that contain the requested features such as buildings, roadways, waterways and more.',
     [ProjectTypeEnum.Compare]: 'Review before and after satellite images to detect changes in the environment that help inform damage assessment, climate change, or inaccurate data.',
     [ProjectTypeEnum.Validate]: 'Assess building footprints for accuracy where buildings have been previously traced by remote mappers or through AI to identify where remapping is needed.',
     [ProjectTypeEnum.ValidateImage]: 'Assess how well machine learning detections match real-world features in images, flagging false or inaccurate results. This helps improve model accuracy and dataset quality, supporting better outcomes for social good applications.',
-    [ProjectTypeEnum.Completeness]: 'Assess how well OSM data represents buildings in satellite imagery, flagging areas where mapping is incomplete. This helps identify areas needing further mapping efforts to enhance OSM\'s accuracy, especially for disaster response and risk assessment.',
-    // FIXME: add description
-    [ProjectTypeEnum.Street]: '',
+    [ProjectTypeEnum.Completeness]: (
+        <ListLayout layout="block">
+            <p>
+                Assess how well OSM data represents buildings in satellite imagery,
+                flagging areas where mapping is incomplete.
+                This helps identify areas needing further mapping efforts to enhance
+                OSM&apos;s accuracy, especially for disaster response and risk assessment.
+            </p>
+            <Alert
+                name="street-alert"
+                title="Vector overlay layer"
+                type="warning"
+                description="Please be aware that the vector overlay layer is only available in the MapSwipe web app."
+                fullWidth
+                withoutShadow
+            />
+        </ListLayout>
+    ),
+    [ProjectTypeEnum.Street]: (
+        <ListLayout layout="block">
+            <p>
+                Explore ground-level images to find relevant features and
+                capture more detailed information on communities.
+            </p>
+            <Alert
+                name="street-alert"
+                title="MapSwipe Web only"
+                type="warning"
+                description="Street project are currently only available in the MapSwipe web app."
+                fullWidth
+                withoutShadow
+            />
+        </ListLayout>
+    ),
 };
 
-interface Props {
-    className?: string;
-}
-
-function NewProject(props: Props) {
-    const { className } = props;
+function NewProject() {
     const navigate = useNavigate();
     const alert = useAlert();
 
@@ -155,6 +183,8 @@ function NewProject(props: Props) {
         setFieldValue,
         validate,
         setError,
+        pristine,
+        setPristine,
     } = useForm(projectCreateFormSchema, {
         value: defaultBaseProjectFormValue,
     });
@@ -214,17 +244,24 @@ function NewProject(props: Props) {
                         variant: 'success',
                     },
                 );
-                navigate(
-                    generatePath(
-                        routes.editProject.originalPath,
-                        { id: createProjectResult.id },
-                    ),
-                );
+
+                setPristine(true);
+                // NOTE: pristine needs to be set first before navigation
+                setTimeout(() => {
+                    if (isDefined(routes.editProject.path)) {
+                        navigate(
+                            generatePath(
+                                routes.editProject.path,
+                                { id: createProjectResult.id },
+                            ),
+                        );
+                    }
+                }, 0);
             } catch (apolloError) {
                 alertCombinedError(apolloError, alert);
             }
         },
-        [createNewProject, navigate, setError, alert],
+        [createNewProject, navigate, setError, alert, setPristine],
     );
 
     const handleSubmitButtonClick = useMemo(
@@ -237,7 +274,6 @@ function NewProject(props: Props) {
 
     return (
         <PageLayout
-            className={className}
             heading="Create a New Project"
             headerDescription="Let's get started with adding basic information for the project. You can later add more project type specific details."
             footerActions={(
@@ -257,6 +293,7 @@ function NewProject(props: Props) {
                     value={undefined}
                 />
             )}
+            confirmNavigationChange={!pristine}
         >
             <Container
                 withContentBackgroundAndPadding
@@ -274,6 +311,7 @@ function NewProject(props: Props) {
                     labelSelector={projectTypeLabelSelector}
                     error={error?.projectType}
                     disabled={inputsDisabled}
+                    spacing="lg"
                 />
                 {isDefined(value.projectType) && (
                     <div>

@@ -16,8 +16,6 @@ import {
     useFormObject,
 } from '@togglecorp/toggle-form';
 
-import EnumsContext from '#base/context/EnumsContext';
-import TileServerContext from '#base/context/TileServerContext';
 import Container, { type ContainerProps } from '#components/Container';
 import DefaultMapContainer from '#components/DefaultMapContainer';
 import InlineLayout from '#components/InlineLayout';
@@ -25,6 +23,8 @@ import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
+import EnumsContext from '#contexts/EnumsContext';
+import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
 import {
     keySelector,

@@ -4,7 +4,6 @@ import {
 } from 'react';
 import {
     PiArchive,
-    PiCheck,
     PiFlagBold,
     PiPencil,
     PiPlus,
@@ -13,6 +12,7 @@ import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
+import ColorPreview from '#components/ColorSelectInput/ColorPreview';
 import Container from '#components/Container';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
@@ -239,11 +239,17 @@ function OrganizationList(props: Props) {
                         >
                             <Tag>
                                 <InlineLayout
-                                    spacingOffset={-1}
+                                    spacing="sm"
+                                    start={organization.isArchived ? (
+                                        <PiArchive />
+                                    ) : (
+                                        <ColorPreview
+                                            value="var(--color-success)"
+                                            compact
+                                            rounded
+                                        />
+                                    )}
                                     withCenterAlign
-                                    start={organization.isArchived
-                                        ? <PiArchive />
-                                        : <PiCheck />}
                                 >
                                     {organization.isArchived ? 'Archived' : 'Active'}
                                 </InlineLayout>

@@ -190,6 +190,8 @@ function UpdateProjectForm(props: Props) {
         validate,
         setError,
         setValue,
+        pristine,
+        setPristine,
     } = useForm(projectUpdateFormSchema, {
         value: defaultBaseProjectFormValue,
     }, projectContext);
@@ -298,10 +300,11 @@ function UpdateProjectForm(props: Props) {
                 'Project updated successfully!',
                 { variant: 'success' },
             );
+            setPristine(false);
         } catch (apolloError) {
             alertCombinedError(apolloError, alert);
         }
-    }, [projectData.project.id, updateProject, setError, alert]);
+    }, [projectData.project.id, updateProject, setError, alert, setPristine]);
 
     const handleUpdateDraft = useCallback(async (
         submittedFormValues: PartialProjectUpdateInput,
@@ -404,7 +407,7 @@ function UpdateProjectForm(props: Props) {
                     disabled={baseInputsDisabled}
                     start={<PiFloppyDisk />}
                 >
-                    Update draft
+                    Save project
                 </Button>
             )}
             aside={(
@@ -412,6 +415,7 @@ function UpdateProjectForm(props: Props) {
                     value={projectData?.project.status}
                 />
             )}
+            confirmNavigationChange={!pristine}
         >
             {projectData?.project.status === ProjectStatusEnum.Failed && (
                 <InputError>
