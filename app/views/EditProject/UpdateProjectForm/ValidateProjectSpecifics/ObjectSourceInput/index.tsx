@@ -79,8 +79,7 @@ function ObjectSourceInput(props: Props) {
                     value={value.aoiGeometry}
                     error={error?.aoiGeometry}
                     inputType={ProjectAssetInputTypeEnum.AoiGeometry}
-                    // TODO(frozenhelium): add proper hint
-                    // hint="Upload your project area as GeoJSON File (max. 1MB)
+                    hint="Upload your project area as GeoJSON File (max. 1MB)"
                     disabled={disabled}
                     withoutPreview
                 />
@@ -92,6 +91,7 @@ function ObjectSourceInput(props: Props) {
                     value={value.objectGeojsonUrl}
                     error={error?.objectGeojsonUrl}
                     onChange={setFieldValue}
+                    hint="Provide a direct link to a GeoJSON file containing your building footprint geometries."
                 />
             )}
             {value?.sourceType === TaskingManager && (
@@ -101,6 +101,7 @@ function ObjectSourceInput(props: Props) {
                     value={value.taskingManagerProjectId}
                     error={error?.taskingManagerProjectId}
                     onChange={setFieldValue}
+                    hint="Provide the ID of a HOT Tasking Manager Project (only numbers, e.g. 6526)."
                 />
             )}
             {(value?.sourceType === AoiGeojsonFile || value?.sourceType === TaskingManager) && (
@@ -110,6 +111,7 @@ function ObjectSourceInput(props: Props) {
                     value={value.ohsomeFilter}
                     error={error?.ohsomeFilter}
                     onChange={setFieldValue}
+                    hint="Please specify which objects should be included in your project."
                 />
             )}
         </Container>

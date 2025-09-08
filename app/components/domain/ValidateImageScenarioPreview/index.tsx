@@ -13,8 +13,12 @@ import { PartialForm } from '@togglecorp/toggle-form';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import Icon from '#components/domain/Icon';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import MobilePreview from '#components/MobilePreview';
 import { TutorialScenarioPageCreateInput } from '#generated/types/graphql';
+
+import TutorialPreviewScreenSelectInput, { PreviewItem } from '../TutorialPreviewScreenSelectInput';
 
 import styles from './styles.module.css';
 
@@ -32,6 +36,8 @@ function ValidateImageScenarioPreview(props: Props) {
         projectInstruction,
         customOptions,
     } = props;
+
+    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const imgRef = useRef<HTMLImageElement>(null);
     const task = scenario?.tasks?.[0]?.projectTypeSpecifics?.validateImage;
@@ -89,12 +95,16 @@ function ValidateImageScenarioPreview(props: Props) {
     }, [task]);
 
     return (
-        <div className={_cs(styles.validateImageScenarioPreview, className)}>
+        <ListLayout
+            className={_cs(styles.validateImageScenarioPreview, className)}
+            layout="block"
+        >
             <MobilePreview
                 heading={projectInstruction}
-                popupIcons={<Icon value={scenario?.instructionsIcon} />}
-                popupTitle={scenario?.instructionsTitle || '{title}'}
-                popupDescription={scenario?.instructionsDescription || '{description}'}
+                popupIcons={<Icon value={preview?.icon} />}
+                popupTitle={preview?.title || '{title}'}
+                popupDescription={preview?.description || '{description}'}
+                popupVariant={preview?.popupVariant}
                 contentClassName={styles.content}
             >
                 <div className={styles.imageWrapper}>
@@ -120,7 +130,13 @@ function ValidateImageScenarioPreview(props: Props) {
                     value={customOptions}
                 />
             </MobilePreview>
-        </div>
+            <InlineLayout withCenteredContent>
+                <TutorialPreviewScreenSelectInput
+                    scenario={scenario}
+                    onPreviewChange={setPreview}
+                />
+            </InlineLayout>
+        </ListLayout>
     );
 }
 

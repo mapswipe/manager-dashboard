@@ -232,6 +232,7 @@ function ProjectListItem(props: Props) {
                                             <TextOutput
                                                 label="Firebase ID"
                                                 value={value.firebaseId}
+                                                withWrap
                                             />
                                         </GridLayoutItem>
                                     </ListLayout>

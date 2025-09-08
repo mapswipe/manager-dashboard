@@ -1,5 +1,6 @@
 import 'react-mde/lib/styles/css/react-mde-all.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import 'mapillary-js/dist/mapillary.css';
 
 import {
     useCallback,

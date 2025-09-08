@@ -309,6 +309,8 @@ fragment TutorialDetailFields on TutorialType {
                 }
                 ... on StreetTutorialTaskPropertyType {
                     __typename
+                    mapillaryImageId
+                    geometry
                 }
             }
         }

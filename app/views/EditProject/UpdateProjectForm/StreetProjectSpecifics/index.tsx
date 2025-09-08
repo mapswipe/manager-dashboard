@@ -21,11 +21,11 @@ import NonFieldError from '#components/NonFieldError';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
 import {
-    defaultStreetMapilaryImageFiltersInputFormValue,
-    PartialStreetMapilaryImageFiltersInputFields,
-} from './StreetMapilaryImageFiltersInput/schema';
+    defaultStreetMapillaryImageFiltersInputFormValue,
+    PartialStreetMapillaryImageFiltersInputFields,
+} from './StreetMapillaryImageFiltersInput/schema';
 import { type PartialStreetSpecificFields } from './schema';
-import StreetMapilaryImageFiltersInput from './StreetMapilaryImageFiltersInput';
+import StreetMapillaryImageFiltersInput from './StreetMapillaryImageFiltersInput';
 
 interface Props {
     projectId: string;
@@ -68,10 +68,10 @@ function StreetProjectSpecifics(props: Props) {
         );
     }, [setFieldValue]);
 
-    const setStreetMapilaryImageFiltersInputFieldValue = useFormObject<'mapillaryImageFilters', PartialStreetMapilaryImageFiltersInputFields>(
+    const setStreetMapillaryImageFiltersInputFieldValue = useFormObject<'mapillaryImageFilters', PartialStreetMapillaryImageFiltersInputFields>(
         'mapillaryImageFilters' as const,
         setFieldValue,
-        defaultStreetMapilaryImageFiltersInputFormValue,
+        defaultStreetMapillaryImageFiltersInputFormValue,
     );
 
     return (
@@ -124,12 +124,13 @@ function StreetProjectSpecifics(props: Props) {
                     error={error?.aoiGeometry}
                     inputType={ProjectAssetInputTypeEnum.AoiGeometry}
                     disabled={disabled}
+                    hint="Upload your project area as GeoJSON File (max. 1MB)"
                     withoutPreview
                 />
             </Container>
-            <StreetMapilaryImageFiltersInput
+            <StreetMapillaryImageFiltersInput
                 value={value?.mapillaryImageFilters}
-                setFieldValue={setStreetMapilaryImageFiltersInputFieldValue}
+                setFieldValue={setStreetMapillaryImageFiltersInputFieldValue}
                 disabled={disabled}
                 error={error?.mapillaryImageFilters}
             />

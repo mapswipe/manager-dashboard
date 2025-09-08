@@ -87,6 +87,7 @@ function BlockInput(props: Props) {
                     onChange={setFieldValue}
                     error={error?.image}
                     inputType={TutorialAssetInputTypeEnum.InformationBlockImage}
+                    hint="Make sure you have the rights to use the image. It should end with .jpg or .png."
                 />
             )}
         </InlineLayout>

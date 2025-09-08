@@ -43,6 +43,18 @@ function formatDate(
     return formattedDate;
 }
 
+function formatBoolean(value: boolean | null | undefined) {
+    if (value === true) {
+        return 'Yes';
+    }
+
+    if (value === false) {
+        return 'No';
+    }
+
+    return null;
+}
+
 interface BaseProps {
     className?: string;
     icon?: React.ReactNode
@@ -53,6 +65,7 @@ interface BaseProps {
     withWrap?: boolean;
     spacing?: SpacingType;
     withCenterAlign?: boolean;
+    emptyValueDisplay?: React.ReactNode;
 }
 
 interface BooleanProps {
@@ -96,6 +109,7 @@ function TextOutput(props: Props) {
         spacing,
         withWrap,
         withCenterAlign,
+        emptyValueDisplay = '--',
     } = props;
 
     const spacingClassName = useSpacingToken({
@@ -111,6 +125,10 @@ function TextOutput(props: Props) {
 
         if (valueType === 'date') {
             return formatDate(value);
+        }
+
+        if (valueType === 'boolean') {
+            return formatBoolean(value);
         }
 
         return value;
@@ -142,7 +160,7 @@ function TextOutput(props: Props) {
                 </div>
             )}
             <div className={styles.value}>
-                {formattedValue}
+                {formattedValue ?? emptyValueDisplay}
             </div>
             {description && (
                 <div>

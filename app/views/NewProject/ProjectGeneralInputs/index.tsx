@@ -66,6 +66,7 @@ function ProjectGeneralInputs(props: Props) {
                 onChange={setFieldValue}
                 error={error?.topic}
                 disabled={disabled}
+                hint="Enter the topic of your project."
             />
             <ListLayout layout="grid">
                 <TextInput
@@ -75,6 +76,7 @@ function ProjectGeneralInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.region}
                     disabled={disabled}
+                    hint="Enter name of your project Region"
                 />
                 <NumberInput
                     label="Project number"
@@ -83,6 +85,7 @@ function ProjectGeneralInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.projectNumber}
                     disabled={disabled}
+                    hint="Is this project part of a bigger campaign with multiple projects?"
                 />
             </ListLayout>
             <MarkdownEditor
@@ -92,18 +95,20 @@ function ProjectGeneralInputs(props: Props) {
                 onChange={setFieldValue}
                 error={error?.description}
                 disabled={disabled}
+                hint="Enter the description for your project. (markdown syntax is supported)"
             />
             <ListLayout
                 layout="grid"
                 spacing="lg"
             >
                 <OrganizationSelectInput
-                    label="Requesting organization"
+                    label="Organization"
                     name="requestingOrganization"
                     value={value?.requestingOrganization}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
                     disabled={disabled}
+                    hint="Which group, institution or community is requesting this project?"
                 />
                 <TextInput
                     label="Additional info URL"
@@ -112,6 +117,7 @@ function ProjectGeneralInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.additionalInfoUrl}
                     disabled={disabled}
+                    hint="Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)"
                 />
                 <TextInput
                     label="Instruction"
@@ -120,6 +126,7 @@ function ProjectGeneralInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.projectInstruction}
                     disabled={disabled}
+                    hint="Provide a brief instruction for the user (e.g. Is there a building?)"
                 />
                 <TextInput
                     label="Look for (legacy)"
@@ -127,13 +134,13 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.lookFor}
                     onChange={setFieldValue}
                     error={error?.lookFor}
-                    hint="This field is used only for legacy app"
+                    hint="What should the users look for (e.g. buildings, cars, trees)? Note: This field is used only for legacy app as a fallback for 'Instruction'"
                     disabled={disabled}
                 />
                 <TeamSelectInput
                     label="Select Team (Private)"
                     name="team"
-                    hint="Please note that if selected, this project will only be visible to the team members"
+                    hint="Select the team for which this project should be displayed. If selected, this project will only be visible to the team members"
                     value={value?.team}
                     onChange={setFieldValue}
                     error={error?.team}

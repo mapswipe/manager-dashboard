@@ -1,4 +1,7 @@
-import { useMemo } from 'react';
+import {
+    useMemo,
+    useState,
+} from 'react';
 import {
     _cs,
     isDefined,
@@ -14,11 +17,15 @@ import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionI
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import GeoJsonPreview from '#components/domain/GeoJsonPreview';
 import Icon from '#components/domain/Icon';
+import InlineLayout from '#components/InlineLayout';
+import ListLayout from '#components/ListLayout';
 import MobilePreview from '#components/MobilePreview';
 import {
     ProjectRasterTileServerConfig,
     TutorialScenarioPageCreateInput,
 } from '#generated/types/graphql';
+
+import TutorialPreviewScreenSelectInput, { PreviewItem } from '../TutorialPreviewScreenSelectInput';
 
 import styles from './styles.module.css';
 
@@ -49,6 +56,8 @@ function ValidateScenarioPreview(props: Props) {
         customOptions,
     } = props;
 
+    const [preview, setPreview] = useState<PreviewItem | undefined>();
+
     const generatedGeojson = useMemo<GeoJSON.FeatureCollection>(() => {
         const features: Array<GeoJSON.Feature> = scenario?.tasks?.map((task) => {
             if (isNotDefined(task.projectTypeSpecifics?.validate?.objectGeometry)) {
@@ -71,12 +80,16 @@ function ValidateScenarioPreview(props: Props) {
     }, [scenario]);
 
     return (
-        <div className={_cs(styles.validateScenarioPreview, className)}>
+        <ListLayout
+            className={_cs(styles.validateScenarioPreview, className)}
+            layout="block"
+        >
             <MobilePreview
                 heading={projectInstruction}
-                popupIcons={<Icon value={scenario?.instructionsIcon} />}
-                popupTitle={scenario?.instructionsTitle || '{title}'}
-                popupDescription={scenario?.instructionsDescription || '{description}'}
+                popupIcons={<Icon value={preview?.icon} />}
+                popupTitle={preview?.title || '{title}'}
+                popupDescription={preview?.description || '{description}'}
+                popupVariant={preview?.popupVariant}
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
@@ -92,7 +105,13 @@ function ValidateScenarioPreview(props: Props) {
                     value={customOptions}
                 />
             </MobilePreview>
-        </div>
+            <InlineLayout withCenteredContent>
+                <TutorialPreviewScreenSelectInput
+                    scenario={scenario}
+                    onPreviewChange={setPreview}
+                />
+            </InlineLayout>
+        </ListLayout>
     );
 }
 

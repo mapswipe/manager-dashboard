@@ -462,19 +462,8 @@ export type ZoomLeveOption = {
     area: number;
 };
 
+// TODO: verify scale and area
 export const zoomLevelOptions: ZoomLeveOption[] = [
-    {
-        value: 10, label: 'Town View', description: 'Towns, small cities', scale: 152, area: 1500,
-    },
-    {
-        value: 11, label: 'Neighborhood View', description: 'Urban neighborhoods', scale: 76, area: 400,
-    },
-    {
-        value: 12, label: 'Street View', description: 'Street-level navigation', scale: 38, area: 100,
-    },
-    {
-        value: 13, label: 'Local Street View', description: 'Blocks, parks, schools', scale: 19, area: 25,
-    },
     {
         value: 14, label: 'Sub-Street View', description: 'Individual buildings', scale: 9.5, area: 5,
     },

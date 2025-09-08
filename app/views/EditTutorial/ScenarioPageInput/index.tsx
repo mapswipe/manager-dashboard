@@ -21,6 +21,7 @@ import CompareScenarioPreview from '#components/domain/CompareScenarioPreview';
 import CompletenessScenarioPreview from '#components/domain/CompletenessScenarioPreview';
 import FindScenarioPreview from '#components/domain/FindScenarioPreview';
 import IconSelectInput from '#components/domain/IconSelectInput';
+import StreetScenarioPreview from '#components/domain/StreetScenarioPreview';
 import ValidateImageScenarioPreview from '#components/domain/ValidateImageScenarioPreview';
 import ValidateScenarioPreview from '#components/domain/ValidateScenarioPreview';
 import ListLayout from '#components/ListLayout';
@@ -280,6 +281,14 @@ function ScenarioPageInput(props: Props) {
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
                 <ValidateImageScenarioPreview
+                    scenario={value}
+                    projectInstruction={projectData.projectInstruction}
+                    customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.projectTypeSpecifics?.__typename === 'StreetProjectPropertyType' && (
+                <StreetScenarioPreview
                     scenario={value}
                     projectInstruction={projectData.projectInstruction}
                     customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}

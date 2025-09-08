@@ -149,6 +149,7 @@ function TutorialListItem(props: Props) {
                         label="Firebase ID"
                         value={firebaseId}
                         withCenterAlign
+                        withWrap
                     />
                 </GridLayoutItem>
             </ListLayout>

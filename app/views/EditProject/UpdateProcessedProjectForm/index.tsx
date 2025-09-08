@@ -21,6 +21,7 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
+import ProjectTaskDetails from '#components/domain/ProjectTaskDetails';
 import InputError from '#components/InputError';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
@@ -296,8 +297,12 @@ function UpdateProcessedProjectForm(props: Props) {
                         onChange={setFieldValue}
                         error={error?.image}
                         disabled={baseInputsDisabled}
+                        hint="Make sure you have the rights to use the image. It should end with .jpg or .png."
                     />
                 </ListLayout>
+                <ProjectTaskDetails
+                    value={projectData.project}
+                />
             </Container>
             <ProjectSpecificDetails
                 projectId={projectData.project.id}

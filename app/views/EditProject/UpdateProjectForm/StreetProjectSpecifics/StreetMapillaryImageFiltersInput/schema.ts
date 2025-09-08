@@ -6,22 +6,22 @@ import {
 import { StreetMapillaryImageFiltersInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
-export type PartialStreetMapilaryImageFiltersInputFields = PartialForm<
+export type PartialStreetMapillaryImageFiltersInputFields = PartialForm<
     DeepNonNullable<StreetMapillaryImageFiltersInput>
 >;
 
-type StreetMapilaryImageFiltersFormSchema = ObjectSchema<
-    PartialStreetMapilaryImageFiltersInputFields
+type StreetMapillaryImageFiltersFormSchema = ObjectSchema<
+    PartialStreetMapillaryImageFiltersInputFields
 >;
 
 // eslint-disable-next-line max-len
-export const defaultStreetMapilaryImageFiltersInputFormValue: PartialStreetMapilaryImageFiltersInputFields = {
+export const defaultStreetMapillaryImageFiltersInputFormValue: PartialStreetMapillaryImageFiltersInputFields = {
     randomizeOrder: false,
     isPano: false,
 };
 
-const streetMapilaryimageFiltersFormSchema: StreetMapilaryImageFiltersFormSchema = {
-    fields: (): ReturnType<StreetMapilaryImageFiltersFormSchema['fields']> => ({
+const streetMapillaryimageFiltersFormSchema: StreetMapillaryImageFiltersFormSchema = {
+    fields: (): ReturnType<StreetMapillaryImageFiltersFormSchema['fields']> => ({
         isPano: {},
         creatorId: {},
         organizationId: {},
@@ -32,4 +32,4 @@ const streetMapilaryimageFiltersFormSchema: StreetMapilaryImageFiltersFormSchema
     }),
 };
 
-export default streetMapilaryimageFiltersFormSchema;
+export default streetMapillaryimageFiltersFormSchema;
