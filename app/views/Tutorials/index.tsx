@@ -31,6 +31,7 @@ import useListManagement, {
 } from '#hooks/useListManagement';
 import {
     defaultPagePerItemOptions,
+    formatNumber,
     keySelector,
     labelSelector,
     removeEmptyList,
@@ -78,6 +79,8 @@ query TutorialsList($filters: TutorialFilter, $order: TutorialOrder, $pagination
             id
             clientId
             firebaseId
+            firebasePushStatus
+            firebaseLastPushed
             createdBy {
                 id
                 displayName
@@ -231,7 +234,7 @@ function Tutorials() {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${totalCount} tutorial`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} tutorial`}
                 headingLevel={6}
                 headerActions={(
                     <>

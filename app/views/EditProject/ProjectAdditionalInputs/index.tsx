@@ -63,6 +63,7 @@ function ProjectAdditionalInputs(props: Props) {
                         onChange={setFieldValue}
                         error={error?.verificationNumber}
                         disabled={disabled}
+                        hint="How many people do you want to see every tile before you consider it finished? (default is 3 - more is recommended for harder tasks, but this will also make project take longer)"
                     />
                     <NumberInput
                         label="Group size"
@@ -71,6 +72,7 @@ function ProjectAdditionalInputs(props: Props) {
                         onChange={setFieldValue}
                         error={error?.groupSize}
                         disabled={disabled}
+                        hint="How big should a mapping session be? Group size refers to the number of tasks per mapping session."
                     />
                     <NumberInput
                         label="Max tasks per user"
@@ -79,6 +81,7 @@ function ProjectAdditionalInputs(props: Props) {
                         onChange={setFieldValue}
                         error={error?.maxTasksPerUser}
                         disabled={disabled}
+                        hint="How many tasks each user is allowed to work on for this project. Empty indicates that no limit is set."
                     />
                 </ListLayout>
                 <AssetInput
@@ -90,6 +93,7 @@ function ProjectAdditionalInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.image}
                     disabled={disabled}
+                    hint="Make sure you have the rights to use the image. It should end with .jpg or .png."
                 />
             </ListLayout>
         </Container>

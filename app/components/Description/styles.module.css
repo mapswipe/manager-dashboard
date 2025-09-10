@@ -1,3 +1,7 @@
 .description {
     color: var(--color-text-light);
+
+    &.compact {
+        font-size: var(--font-size-sm);
+    }
 }

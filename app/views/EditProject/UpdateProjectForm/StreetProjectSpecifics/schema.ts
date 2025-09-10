@@ -11,7 +11,7 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import streetMapilaryimageFiltersFormSchema, { defaultStreetMapilaryImageFiltersInputFormValue } from './StreetMapilaryImageFiltersInput/schema';
+import streetMapillaryimageFiltersFormSchema, { defaultStreetMapillaryImageFiltersInputFormValue } from './StreetMapillaryImageFiltersInput/schema';
 
 export type PartialStreetSpecificFields = PartialForm<
     DeepNonNullable<StreetProjectPropertyInput>,
@@ -24,7 +24,7 @@ type StreetSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultStreetSpecificFormValue: PartialStreetSpecificFields = {
-    mapillaryImageFilters: defaultStreetMapilaryImageFiltersInputFormValue,
+    mapillaryImageFilters: defaultStreetMapillaryImageFiltersInputFormValue,
 };
 
 const streetSpecificFormSchema: StreetSpecificFormSchema = {
@@ -34,7 +34,7 @@ const streetSpecificFormSchema: StreetSpecificFormSchema = {
             member: () => customOptionSchema,
         },
         aoiGeometry: {},
-        mapillaryImageFilters: streetMapilaryimageFiltersFormSchema,
+        mapillaryImageFilters: streetMapillaryimageFiltersFormSchema,
     }),
 };
 

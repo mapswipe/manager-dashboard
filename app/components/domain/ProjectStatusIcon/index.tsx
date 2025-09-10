@@ -1,6 +1,7 @@
 import {
     PiArchive,
     PiCheckCircle,
+    PiChecks,
     PiCloudCheck,
     PiFileText,
     PiHourglassMedium,
@@ -31,32 +32,44 @@ function ProjectStatusIcon(props: Props) {
         return <PiFileText className={className} />;
     }
 
-    if (value === ProjectStatusEnum.MarkedAsReady) {
+    if (value === ProjectStatusEnum.ReadyToProcess) {
         return <PiHourglassMedium className={className} />;
     }
 
-    if (value === ProjectStatusEnum.Ready) {
+    if (value === ProjectStatusEnum.Processed) {
         return <PiCheckCircle className={className} />;
     }
 
-    if (value === ProjectStatusEnum.Failed) {
+    if (value === ProjectStatusEnum.ProcessingFailed) {
         return <PiWarningCircle className={className} />;
-    }
-
-    if (value === ProjectStatusEnum.Paused) {
-        return <PiPauseCircle className={className} />;
-    }
-
-    if (value === ProjectStatusEnum.Archived) {
-        return <PiArchive className={className} />;
     }
 
     if (value === ProjectStatusEnum.Discarded) {
         return <PiTrash className={className} />;
     }
 
+    if (value === ProjectStatusEnum.ReadyToPublish) {
+        return <PiHourglassMedium className={className} />;
+    }
+
+    if (value === ProjectStatusEnum.PublishingFailed) {
+        return <PiWarningCircle className={className} />;
+    }
+
     if (value === ProjectStatusEnum.Published) {
         return <PiCloudCheck className={className} />;
+    }
+
+    if (value === ProjectStatusEnum.Paused) {
+        return <PiPauseCircle className={className} />;
+    }
+
+    if (value === ProjectStatusEnum.Withdrawn) {
+        return <PiArchive className={className} />;
+    }
+
+    if (value === ProjectStatusEnum.Finished) {
+        return <PiChecks className={className} />;
     }
 
     value satisfies never;

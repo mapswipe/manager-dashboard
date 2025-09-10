@@ -1,71 +1,76 @@
-import { useMemo } from 'react';
-import { ImSpinner } from 'react-icons/im';
 import {
-    MdAdjust,
-    MdCheckCircle,
-} from 'react-icons/md';
+    PiArrowCircleRightDuotone,
+    PiSealCheckDuotone,
+    PiSealWarningDuotone,
+    PiTimer,
+} from 'react-icons/pi';
 import {
     _cs,
     isNotDefined,
-    mapToList,
 } from '@togglecorp/fujs';
 
+import Description from '#components/Description';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import { ProjectStatusEnum } from '#generated/types/graphql';
 
 import styles from './styles.module.css';
 
-type Status = 'pending' | 'processing' | 'in-progress' | 'completed';
+type StatusTense = 'past' | 'present' | 'future';
 
 interface StatusProps {
     label: React.ReactNode;
-    description?: React.ReactNode;
-    status: Status;
+    description: React.ReactNode;
+    statusTense: StatusTense;
+    errored?: boolean;
 }
-function Status(props: StatusProps) {
+function StatusItem(props: StatusProps) {
     const {
         label,
-        status,
+        statusTense,
         description,
+        errored,
     } = props;
 
     return (
-        <ListLayout
+        <InlineLayout
             spacing="sm"
             className={_cs(
                 styles.status,
-                status === 'pending' && styles.pending,
-                status === 'in-progress' && styles.inProgress,
-                status === 'processing' && styles.processing,
-                status === 'completed' && styles.completed,
+                statusTense === 'past' && styles.past,
+                statusTense === 'present' && styles.present,
+                statusTense === 'future' && styles.future,
+                errored && styles.errored,
+            )}
+            startContainerClassName={styles.startContainer}
+            start={(
+                <ListLayout
+                    className={styles.tenseIcon}
+                    layout="block"
+                    spacing="sm"
+                >
+                    {statusTense === 'past' && !errored && <PiSealCheckDuotone className={styles.icon} />}
+                    {statusTense === 'past' && errored && <PiSealWarningDuotone className={styles.icon} />}
+                    {statusTense === 'present' && <PiArrowCircleRightDuotone className={styles.icon} />}
+                    {statusTense === 'future' && <PiTimer className={styles.icon} />}
+                    <div className={styles.line} />
+                </ListLayout>
             )}
         >
             <ListLayout
-                className={styles.iconContainer}
-                layout="block"
-                spacing="xs"
-            >
-                {status === 'pending' && <MdAdjust className={styles.icon} />}
-                {status === 'in-progress' && <MdAdjust className={styles.icon} />}
-                {status === 'processing' && <ImSpinner className={styles.icon} />}
-                {status === 'completed' && <MdCheckCircle className={styles.icon} />}
-                <div className={styles.line} />
-            </ListLayout>
-            <ListLayout
                 layout="block"
                 className={styles.details}
-                spacing="xs"
+                spacing="none"
             >
-                <div className={styles.label}>
+                <span className={styles.title}>
                     {label}
-                </div>
-                {description && (
-                    <div className={styles.description}>
-                        {description}
-                    </div>
-                )}
+                </span>
+                <Description compact>
+                    {description}
+                </Description>
             </ListLayout>
-        </ListLayout>
+            <div className={styles.backdrop} />
+        </InlineLayout>
     );
 }
 
@@ -73,170 +78,113 @@ interface Props {
     value: ProjectStatusEnum | undefined;
 }
 
+interface ProjectStatusDetail {
+    label: string,
+    description: string,
+}
+
+const projectStatusDetails: Record<ProjectStatusEnum, ProjectStatusDetail> = {
+    [ProjectStatusEnum.Draft]: {
+        label: 'Draft',
+        description: 'Update basic and project type specific details. You can update most of the fields during this phase.',
+    },
+    [ProjectStatusEnum.ReadyToProcess]: {
+        label: 'Processing',
+        description: 'Project is being processed to create tasks, groups and other necessary information, This might take a while depending on the inputs you\'ve provided',
+    },
+    [ProjectStatusEnum.ProcessingFailed]: {
+        label: 'Processing failed!',
+        description: 'There were some issues while processing the project.',
+    },
+    [ProjectStatusEnum.Processed]: {
+        label: 'Processed',
+        description: 'The project has been processed successfully! Add a tutorial and you may proceed to publish the project',
+    },
+    [ProjectStatusEnum.Discarded]: {
+        label: 'Discarded',
+        description: 'Projects is discarded',
+    },
+    [ProjectStatusEnum.ReadyToPublish]: {
+        label: 'Publishing',
+        description: 'Project is currently being published to firebase. Once completed, users will be able to contribute to it',
+    },
+    [ProjectStatusEnum.PublishingFailed]: {
+        label: 'Publishing failed!',
+        description: 'There were some issue while publishing the project to the firebase!',
+    },
+    [ProjectStatusEnum.Published]: {
+        label: 'Published',
+        description: 'Project is published and available to the users for swipping',
+    },
+    [ProjectStatusEnum.Paused]: {
+        label: 'Paused',
+        description: 'Project it temporarily made unavailable to the users for swipping',
+    },
+    [ProjectStatusEnum.Withdrawn]: {
+        label: 'Withdrawn',
+        description: 'Project is archived and is no longer available to the users for swipping',
+    },
+    [ProjectStatusEnum.Finished]: {
+        label: 'Finished',
+        description: 'Project is completed',
+    },
+};
+
 function ProjectStatusTimeline(props: Props) {
     const { value } = props;
-    interface ProjectStatusDetail {
-        label: string,
-        status: Status,
-        description: string,
-    }
 
-    const projectStatuses = useMemo(() => {
-        const baseStatus: Record<ProjectStatusEnum | 'START', ProjectStatusDetail> = {
-            START: {
-                label: 'Start',
-                status: 'in-progress',
-                description: 'Get started with basic details of the project',
-            },
-            [ProjectStatusEnum.Draft]: {
-                label: 'Draft',
-                status: 'pending',
-                description: 'Add or update basic details or project type specific details. You can update most of the fields during this phase.',
-            },
-            [ProjectStatusEnum.MarkedAsReady]: {
-                label: 'Processing',
-                status: 'pending',
-                description: 'Project is being processed',
-            },
-            [ProjectStatusEnum.Failed]: {
-                label: 'Update required',
-                status: 'pending',
-                description: 'There are validation errors in the project',
-            },
-            [ProjectStatusEnum.Ready]: {
-                label: 'Ready to Publish',
-                status: 'pending',
-                description: 'All of the processing is completed and the project is ready to be published',
-            },
-            [ProjectStatusEnum.Published]: {
-                label: 'Published',
-                status: 'pending',
-                description: 'Project is published and available to the users for swipping',
-            },
-            [ProjectStatusEnum.Paused]: {
-                label: 'Paused',
-                status: 'pending',
-                description: 'Project is published but not available to the users for swipping',
-            },
-            [ProjectStatusEnum.Archived]: {
-                label: 'Archived',
-                status: 'pending',
-                description: 'Project is archived and is no longer available to the users for swipping',
-            },
-            [ProjectStatusEnum.Discarded]: {
-                label: 'Discarded',
-                status: 'pending',
-                description: 'Projects is discarded',
-            },
-        };
+    const {
+        Draft,
+        ReadyToProcess,
+        ProcessingFailed,
+        Processed,
+        Discarded,
+        ReadyToPublish,
+        PublishingFailed,
+        Published,
+        Paused,
+        Withdrawn,
+        Finished,
+    } = ProjectStatusEnum;
+
+    const statusOrder = {
+        [Draft]: 1,
+        [ReadyToProcess]: 2,
+        [ProcessingFailed]: 3,
+        [Processed]: 4,
+        [Discarded]: 5,
+        [ReadyToPublish]: 6,
+        [PublishingFailed]: 7,
+        [Published]: 8,
+        [Paused]: 9,
+        [Withdrawn]: 10,
+        [Finished]: 11,
+    };
+
+    function getStatusTense(status: ProjectStatusEnum | undefined): StatusTense {
+        if (isNotDefined(status)) {
+            if (isNotDefined(value)) {
+                return 'present';
+            }
+
+            return 'past';
+        }
 
         if (isNotDefined(value)) {
-            const applicableStatus = {
-                START: baseStatus.START,
-                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
-                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
-                [ProjectStatusEnum.Ready]: baseStatus.READY,
-                [ProjectStatusEnum.Published]: baseStatus.PUBLISHED,
-            };
-
-            return applicableStatus;
+            return 'future';
         }
 
-        if (value === ProjectStatusEnum.Draft) {
-            const applicableStatus = {
-                START: baseStatus.START,
-                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
-                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
-                [ProjectStatusEnum.Ready]: baseStatus.READY,
-                [ProjectStatusEnum.Published]: baseStatus.PUBLISHED,
-            };
+        const diff = statusOrder[status] - statusOrder[value];
 
-            applicableStatus.START.status = 'completed';
-            applicableStatus.DRAFT.status = 'in-progress';
-
-            return applicableStatus;
+        if (diff > 0) {
+            return 'future';
         }
 
-        if (value === ProjectStatusEnum.MarkedAsReady) {
-            const applicableStatus = {
-                START: baseStatus.START,
-                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
-                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
-                [ProjectStatusEnum.Ready]: baseStatus.READY,
-                [ProjectStatusEnum.Published]: baseStatus.PUBLISHED,
-            };
-
-            applicableStatus.START.status = 'completed';
-            applicableStatus.DRAFT.status = 'completed';
-            applicableStatus.MARKED_AS_READY.status = 'processing';
-
-            return applicableStatus;
+        if (diff < 0) {
+            return 'past';
         }
 
-        if (value === ProjectStatusEnum.Ready) {
-            const applicableStatus = {
-                START: baseStatus.START,
-                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
-                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
-                [ProjectStatusEnum.Ready]: baseStatus.READY,
-                [ProjectStatusEnum.Published]: baseStatus.PUBLISHED,
-            };
-
-            applicableStatus.START.status = 'completed';
-            applicableStatus.DRAFT.status = 'completed';
-            applicableStatus.MARKED_AS_READY.status = 'completed';
-            applicableStatus.READY.status = 'in-progress';
-
-            return applicableStatus;
-        }
-
-        if (value === ProjectStatusEnum.Failed) {
-            const applicableStatus = {
-                START: baseStatus.START,
-                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
-                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
-                [ProjectStatusEnum.Failed]: baseStatus.FAILED,
-            };
-
-            applicableStatus.START.status = 'completed';
-            applicableStatus.DRAFT.status = 'completed';
-            applicableStatus.MARKED_AS_READY.status = 'completed';
-            applicableStatus.FAILED.status = 'in-progress';
-
-            return applicableStatus;
-        }
-
-        if (value === ProjectStatusEnum.Published) {
-            const applicableStatus = {
-                START: baseStatus.START,
-                [ProjectStatusEnum.Draft]: baseStatus.DRAFT,
-                [ProjectStatusEnum.MarkedAsReady]: baseStatus.MARKED_AS_READY,
-                [ProjectStatusEnum.Ready]: baseStatus.READY,
-                [ProjectStatusEnum.Published]: baseStatus.PUBLISHED,
-            };
-
-            applicableStatus.START.status = 'completed';
-            applicableStatus.DRAFT.status = 'completed';
-            applicableStatus.MARKED_AS_READY.status = 'completed';
-            applicableStatus.READY.status = 'completed';
-            applicableStatus.PUBLISHED.status = 'completed';
-
-            return applicableStatus;
-        }
-
-        return baseStatus;
-    }, [value]);
-
-    const statusList = mapToList(
-        projectStatuses,
-        (item, key) => ({
-            key,
-            ...item,
-        }),
-    );
-
-    if (isNotDefined(projectStatuses)) {
-        return null;
+        return 'present';
     }
 
     return (
@@ -244,14 +192,79 @@ function ProjectStatusTimeline(props: Props) {
             className={styles.projectStatusOutput}
             layout="block"
         >
-            {statusList.map((statusItem) => (
-                <Status
-                    key={statusItem.key}
-                    label={statusItem.label}
-                    status={statusItem.status}
-                    description={statusItem.description}
+            <StatusItem
+                statusTense={getStatusTense(undefined)}
+                label="Initialize"
+                description="Get started with basic details of the project"
+            />
+            <StatusItem
+                statusTense={getStatusTense(Draft)}
+                label={projectStatusDetails[Draft].label}
+                description={projectStatusDetails[Draft].description}
+            />
+            {value !== ProcessingFailed && (
+                <StatusItem
+                    statusTense={getStatusTense(ReadyToProcess)}
+                    label={projectStatusDetails[ReadyToProcess].label}
+                    description={projectStatusDetails[ReadyToProcess].description}
                 />
-            ))}
+            )}
+            {value === ProcessingFailed && (
+                <StatusItem
+                    statusTense={getStatusTense(ProcessingFailed)}
+                    label={projectStatusDetails[ProcessingFailed].label}
+                    description={projectStatusDetails[ProcessingFailed].description}
+                    errored
+                />
+            )}
+            <StatusItem
+                statusTense={getStatusTense(Processed)}
+                label={projectStatusDetails[Processed].label}
+                description={projectStatusDetails[Processed].description}
+            />
+            {value === Discarded && (
+                <StatusItem
+                    statusTense={getStatusTense(Discarded)}
+                    label={projectStatusDetails[Discarded].label}
+                    description={projectStatusDetails[Discarded].description}
+                />
+            )}
+            <StatusItem
+                statusTense={getStatusTense(ReadyToPublish)}
+                label={projectStatusDetails[ReadyToPublish].label}
+                description={projectStatusDetails[ReadyToPublish].description}
+            />
+            {value === PublishingFailed && (
+                <StatusItem
+                    statusTense={getStatusTense(PublishingFailed)}
+                    label={projectStatusDetails[PublishingFailed].label}
+                    description={projectStatusDetails[PublishingFailed].description}
+                />
+            )}
+            <StatusItem
+                statusTense={getStatusTense(Published)}
+                label={projectStatusDetails[Published].label}
+                description={projectStatusDetails[Published].description}
+            />
+            {value === Paused && (
+                <StatusItem
+                    statusTense={getStatusTense(Paused)}
+                    label={projectStatusDetails[Paused].label}
+                    description={projectStatusDetails[Paused].description}
+                />
+            )}
+            {value === Withdrawn && (
+                <StatusItem
+                    statusTense={getStatusTense(Withdrawn)}
+                    label={projectStatusDetails[Withdrawn].label}
+                    description={projectStatusDetails[Withdrawn].description}
+                />
+            )}
+            <StatusItem
+                statusTense={getStatusTense(Finished)}
+                label={projectStatusDetails[Finished].label}
+                description={projectStatusDetails[Finished].description}
+            />
         </ListLayout>
     );
 }

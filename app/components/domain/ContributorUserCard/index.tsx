@@ -86,7 +86,7 @@ function ContributorUserCard(props: Props) {
             </ListLayout>
             <ListLayout
                 layout={compact ? 'block' : 'grid'}
-                minGridColumnSize="11rem"
+                minGridColumnSize="12rem"
                 spacing="sm"
                 numPreferredGridColumns={3}
             >

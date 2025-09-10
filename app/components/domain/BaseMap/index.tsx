@@ -114,10 +114,6 @@ function BaseMap(props: Props) {
         };
     }, [url, tileSize, credits, minzoom, maxzoom]);
 
-    if (isNotDefined(mapStyle)) {
-        return null;
-    }
-
     return (
         <Map
             mapStyle={mapStyle}

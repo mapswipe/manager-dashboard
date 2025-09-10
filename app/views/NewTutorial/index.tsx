@@ -183,7 +183,7 @@ function NewTutorial() {
                             ),
                         );
                     }
-                }, 0);
+                }, 200);
             } catch (combinedError) {
                 alertCombinedError(combinedError, alert);
             }

@@ -91,9 +91,8 @@ function Pager(props: Props) {
                     key={i}
                     name={i}
                     onClick={onActivePageChange}
-                    styleVariant={i === activePage ? 'filled' : 'outline'}
+                    styleVariant={i === activePage ? 'filled' : 'translucent'}
                     colorVariant={i === activePage ? 'accent' : 'text'}
-                    spacing="sm"
                 >
                     {i}
                 </Button>

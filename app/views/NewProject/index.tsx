@@ -247,7 +247,7 @@ function NewProject() {
 
                 setPristine(true);
                 // NOTE: pristine needs to be set first before navigation
-                setTimeout(() => {
+                window.setTimeout(() => {
                     if (isDefined(routes.editProject.path)) {
                         navigate(
                             generatePath(
@@ -256,7 +256,7 @@ function NewProject() {
                             ),
                         );
                     }
-                }, 0);
+                }, 200);
             } catch (apolloError) {
                 alertCombinedError(apolloError, alert);
             }

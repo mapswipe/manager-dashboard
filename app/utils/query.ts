@@ -218,6 +218,7 @@ fragment ProjectDetailFields on ProjectType {
         name
     }
     status
+    statusMessage
     verificationNumber
 }
 `;
@@ -309,6 +310,8 @@ fragment TutorialDetailFields on TutorialType {
                 }
                 ... on StreetTutorialTaskPropertyType {
                     __typename
+                    mapillaryImageId
+                    geometry
                 }
             }
         }

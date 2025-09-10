@@ -38,7 +38,6 @@ import GeoJsonFileInput from '#components/domain/GeoJsonFileInput';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import FileInput from '#components/FileInput';
 import InlineLayout from '#components/InlineLayout';
-import Modal from '#components/Modal';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import TextInput from '#components/TextInput';
@@ -46,13 +45,11 @@ import TextOutput from '#components/TextOutput';
 import {
     AssetMimetypeEnum,
     ProjectTypeEnum,
-    TutorialStatusEnum,
     TutorialUpdateInput,
     useProjectOutputAssetsQuery,
     useTutorialDetailsQuery,
     useTutorialProjectDetailQuery,
     useUpdateTutorialMutation,
-    useUpdateTutorialStatusMutation,
     ValidateImageTutorialTaskPropertyInput,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
@@ -69,6 +66,7 @@ import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
 import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
 import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
 import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
+import { StreetPropertyInputFields } from './ScenarioPageInput/TaskInput/StreetPropertyInput/schema';
 import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
@@ -139,13 +137,10 @@ const CompletenessFeaturePropertyType = type.merge(
     },
 );
 
-/*
 const StreetFeaturePropertyType = type({
     '...': CommonFeaturePropertyType,
-    // This is not used anymore
-    // id: '"string" | "number"',
+    id: 'string',
 });
-*/
 
 const ValidateTutorialGeoJsonType = type({
     type: '"FeatureCollection"',
@@ -154,6 +149,7 @@ const ValidateTutorialGeoJsonType = type({
         properties: ValidateFeaturePropertyType,
     }).array(),
 });
+
 const FindTutorialGeoJsonType = type({
     type: '"FeatureCollection"',
     features: type({
@@ -210,6 +206,14 @@ const CompletenessTutorialGeoJsonType = type({
 
 const ValidateImageJsonType = CocoType;
 
+const StreetTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: StreetFeaturePropertyType,
+    }).array(),
+});
+
 function createMapping<T extends { clientId: string }>(items: T[]) {
     return listToMap(items, ({ clientId }) => clientId);
 }
@@ -264,17 +268,10 @@ function NewTutorial() {
 
     const alert = useAlert();
 
-    const [newStatus, setNewStatus] = useState<TutorialStatusEnum | undefined>();
-
     const [
         { fetching: updateTutorialPending },
         updateTutorial,
     ] = useUpdateTutorialMutation();
-
-    const [
-        { fetching: updateTutorialStatusPending },
-        updateTutorialStatus,
-    ] = useUpdateTutorialStatusMutation();
 
     const [{
         // fetching: tutorialDataPending,
@@ -373,6 +370,18 @@ function NewTutorial() {
                             },
                         };
                     }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'StreetTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                street: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    task.projectTypeSpecifics satisfies undefined;
 
                     return { ...task };
                 }),
@@ -607,6 +616,7 @@ function NewTutorial() {
                         variant: 'success',
                     },
                 );
+                setPristine(false);
             } catch (apolloError) {
                 alertCombinedError(apolloError, alert);
             }
@@ -617,6 +627,7 @@ function NewTutorial() {
             updateTutorial,
             alert,
             setError,
+            setPristine,
         ],
     );
 
@@ -775,6 +786,36 @@ function NewTutorial() {
 
                 setFieldValue(scenarioPages, 'scenarios');
             }
+        } else if (projectType === ProjectTypeEnum.Street) {
+            const result = StreetTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const scenarioPages = result.features.map((feature, i) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: isDefined(feature.properties.screen)
+                        ? feature.properties.screen
+                        : i + 1,
+                    tasks: [
+                        {
+                            clientId: ulid(),
+                            reference: feature.properties.reference,
+                            projectTypeSpecifics: {
+                                street: {
+                                    mapillaryImageId: feature.properties.id,
+                                    geometry: JSON.stringify(feature.geometry, null, 4),
+                                } satisfies StreetPropertyInputFields,
+                            },
+                        },
+                    ],
+                }));
+
+                setFieldValue(scenarioPages, 'scenarios');
+            }
         }
     }, [projectDetailResponse, setError, setFieldValue]);
 
@@ -873,72 +914,7 @@ function NewTutorial() {
         }
     }, [alert, setFieldValue]);
 
-    const handleStatusUpdateCancel = useCallback(() => {
-        setNewStatus(undefined);
-    }, []);
-
-    const handleStatusUpdateConfirm = useCallback(async () => {
-        if (isNotDefined(tutorialData)) {
-            return;
-        }
-
-        try {
-            const result = await updateTutorialStatus({
-                data: {
-                    clientId: tutorialData.tutorial.clientId,
-                    status: newStatus,
-                },
-                id: tutorialData.tutorial.id,
-            });
-
-            if (checkAndAlertGraphQLResultError(result, alert)) {
-                return;
-            }
-
-            if (isNotDefined(result.data)
-                // eslint-disable-next-line no-underscore-dangle
-                || result.data.updateTutorialStatus.__typename !== 'TutorialTypeMutationResponseType'
-            ) {
-                alert.show(
-                    'Failed to create the Tutorial!',
-                    {
-                        description: 'Unexpectected response from the server!',
-                        variant: 'danger',
-                    },
-                );
-
-                return;
-            }
-
-            const {
-                ok,
-                errors,
-                result: updateTutorialResult,
-            } = result.data.updateTutorialStatus;
-
-            if (!ok || !updateTutorialResult) {
-                alert.show(
-                    'Failed to update status of the Tutorial!',
-                    { variant: 'danger' },
-                );
-                setError(transformErrors(errors));
-                return;
-            }
-
-            alert.show(
-                'Tutorial status updated successfully!',
-                { variant: 'success' },
-            );
-
-            setPristine(true);
-        } catch (apolloError) {
-            alertCombinedError(apolloError, alert);
-        }
-
-        setNewStatus(undefined);
-    }, [tutorialData, updateTutorialStatus, newStatus, alert, setError, setPristine]);
-
-    const inputsDisabled = updateTutorialPending || updateTutorialStatusPending;
+    const inputsDisabled = updateTutorialPending;
     const actionsDisabled = inputsDisabled;
 
     if (isNotDefined(tutorialIdFromParams)) {
@@ -1152,42 +1128,6 @@ function NewTutorial() {
                     />
                 ))}
             </Container>
-            {isDefined(newStatus) && (
-                <Modal
-                    heading="Confirm status update!"
-                    size="sm"
-                    footerActions={(
-                        <>
-                            <Button
-                                name="cancel"
-                                onClick={handleStatusUpdateCancel}
-                                styleVariant="transparent"
-                                withoutPadding
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                name="confirm"
-                                onClick={handleStatusUpdateConfirm}
-                                styleVariant="transparent"
-                                withoutPadding
-                            >
-                                Confirm
-                            </Button>
-                        </>
-                    )}
-                    onClose={handleStatusUpdateCancel}
-                >
-                    {`Are you sure you want to change the status to ${newStatus} ?`}
-                    {(newStatus === TutorialStatusEnum.Archived
-                        || newStatus === TutorialStatusEnum.Discarded
-                    ) && (
-                        <p>
-                            Please note that this action is irreversable!
-                        </p>
-                    )}
-                </Modal>
-            )}
         </PageLayout>
     );
 }

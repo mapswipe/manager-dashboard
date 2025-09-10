@@ -49,7 +49,6 @@ const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
         description: {},
         image: {},
         team: {},
-        status: {},
         tutorial: {
             // FIXME(frozenhelium): only make this required for publish project
             required: true,

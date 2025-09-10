@@ -2,7 +2,9 @@ import {
     PiArchive,
     PiCloudCheck,
     PiFileText,
+    PiHourglassMedium,
     PiTrash,
+    PiWarningCircle,
 } from 'react-icons/pi';
 import { isNotDefined } from '@togglecorp/fujs';
 
@@ -27,16 +29,24 @@ function TutorialStatusIcon(props: Props) {
         return <PiFileText className={className} />;
     }
 
+    if (value === TutorialStatusEnum.ReadyToPublish) {
+        return <PiHourglassMedium className={className} />;
+    }
+
+    if (value === TutorialStatusEnum.Published) {
+        return <PiCloudCheck className={className} />;
+    }
+
+    if (value === TutorialStatusEnum.PublishingFailed) {
+        return <PiWarningCircle className={className} />;
+    }
+
     if (value === TutorialStatusEnum.Archived) {
         return <PiArchive className={className} />;
     }
 
     if (value === TutorialStatusEnum.Discarded) {
         return <PiTrash className={className} />;
-    }
-
-    if (value === TutorialStatusEnum.Published) {
-        return <PiCloudCheck className={className} />;
     }
 
     value satisfies never;

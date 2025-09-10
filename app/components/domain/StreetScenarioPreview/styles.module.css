@@ -1,0 +1,15 @@
+.find-scenario-preview {
+    isolation: isolate;
+
+    .content {
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--spacing-lg);
+
+        .street-preview {
+            margin-top: var(--spacing-lg);
+            width: var(--size-tile-validate);
+            height: calc(1.5 * var(--size-tile-validate));
+        }
+    }
+}

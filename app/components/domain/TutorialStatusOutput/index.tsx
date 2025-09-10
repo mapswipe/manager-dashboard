@@ -20,7 +20,8 @@ function TutorialStatusOutput(props: Props) {
         className,
         spacing,
     } = props;
-    const { projectStatusMapping } = useContext(EnumsContext);
+
+    const { tutorialStatusMapping } = useContext(EnumsContext);
 
     if (isNotDefined(value)) {
         return null;
@@ -34,7 +35,7 @@ function TutorialStatusOutput(props: Props) {
             spacingOffset={-2}
             withCenterAlign
         >
-            {projectStatusMapping?.[value].label}
+            {tutorialStatusMapping?.[value].label}
         </InlineLayout>
     );
 }

@@ -2,6 +2,7 @@
     display: grid;
     min-height: 100vh;
     grid-template-rows: auto auto 1fr;
+    font-size: var(--font-size-md);
 
     .global-loading {
         position: sticky;

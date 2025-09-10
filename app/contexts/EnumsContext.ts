@@ -13,6 +13,7 @@ export interface EnumsContextProps {
     iconOptions: AllEnumsQuery['enums']['IconEnum'],
     overlayLayerTypeOptions: AllEnumsQuery['enums']['OverlayLayerTypeEnum'],
     tutorialStatusOptions: AllEnumsQuery['enums']['TutorialStatusEnum'],
+    firebasePushStatusOptions: AllEnumsQuery['enums']['FirebasePushStatusEnum'],
 
     validateObjectSourceTypeMapping: Record<
         AllEnumsQuery['enums']['ValidateObjectSourceTypeEnum'][number]['key'],
@@ -54,6 +55,10 @@ export interface EnumsContextProps {
         AllEnumsQuery['enums']['TutorialStatusEnum'][number]['key'],
         AllEnumsQuery['enums']['TutorialStatusEnum'][number]
     > | undefined;
+    firebasePushStatusMapping: Record<
+        AllEnumsQuery['enums']['FirebasePushStatusEnum'][number]['key'],
+        AllEnumsQuery['enums']['FirebasePushStatusEnum'][number]
+    > | undefined;
 }
 
 export const defaultAllEnumsValue: EnumsContextProps = {
@@ -67,6 +72,7 @@ export const defaultAllEnumsValue: EnumsContextProps = {
     iconOptions: [],
     overlayLayerTypeOptions: [],
     tutorialStatusOptions: [],
+    firebasePushStatusOptions: [],
 
     validateObjectSourceTypeMapping: undefined,
     validateImageSourceTypeMapping: undefined,
@@ -78,6 +84,7 @@ export const defaultAllEnumsValue: EnumsContextProps = {
     iconMapping: undefined,
     overlayLayerTypeMapping: undefined,
     tutorialStatusMapping: undefined,
+    firebasePushStatusMapping: undefined,
 };
 
 const EnumsContext = createContext<EnumsContextProps>(defaultAllEnumsValue);

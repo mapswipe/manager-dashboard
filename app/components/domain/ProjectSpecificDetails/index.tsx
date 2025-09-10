@@ -10,6 +10,7 @@ import ProjectTypeOutput from '../ProjectTypeOutput';
 import CompareDetails from './CompareDetails';
 import CompletenessDetails from './CompletenessDetails';
 import FindDetails from './FindDetails';
+import StreetDetails from './StreetDetails';
 import ValidateDetails from './ValidateDetails';
 import ValidateImageDetails from './ValidateImageDetails';
 
@@ -100,6 +101,12 @@ function ProjectSpecificDetails(props: Props) {
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
                 <ValidateImageDetails
+                    data={projectData.project.projectTypeSpecifics}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.project.projectTypeSpecifics?.__typename === 'StreetProjectPropertyType' && (
+                <StreetDetails
                     data={projectData.project.projectTypeSpecifics}
                 />
             )}

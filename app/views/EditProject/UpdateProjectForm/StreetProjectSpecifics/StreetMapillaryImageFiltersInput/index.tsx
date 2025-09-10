@@ -11,18 +11,18 @@ import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
 
-import { PartialStreetMapilaryImageFiltersInputFields } from './schema';
+import { PartialStreetMapillaryImageFiltersInputFields } from './schema';
 
 interface Props {
-    value: PartialStreetMapilaryImageFiltersInputFields | undefined | null;
-    error: LeafError | ObjectError<PartialStreetMapilaryImageFiltersInputFields>;
+    value: PartialStreetMapillaryImageFiltersInputFields | undefined | null;
+    error: LeafError | ObjectError<PartialStreetMapillaryImageFiltersInputFields>;
     setFieldValue: (
-        ...entries: EntriesAsList<PartialStreetMapilaryImageFiltersInputFields>
+        ...entries: EntriesAsList<PartialStreetMapillaryImageFiltersInputFields>
     ) => void;
     disabled?: boolean;
 }
 
-function StreetMapilaryImageFiltersInput(props: Props) {
+function StreetMapillaryImageFiltersInput(props: Props) {
     const {
         value,
         error: formError,
@@ -99,4 +99,4 @@ function StreetMapilaryImageFiltersInput(props: Props) {
     );
 }
 
-export default StreetMapilaryImageFiltersInput;
+export default StreetMapillaryImageFiltersInput;

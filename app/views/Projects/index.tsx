@@ -35,6 +35,7 @@ import useListManagement, {
 } from '#hooks/useListManagement';
 import {
     defaultPagePerItemOptions,
+    formatNumber,
     keySelector,
     labelSelector,
     removeEmptyList,
@@ -116,6 +117,8 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
             id
             clientId
             firebaseId
+            firebasePushStatus
+            firebaseLastPushed
             additionalInfoUrl
             createdBy {
                 displayName
@@ -332,7 +335,7 @@ function Projects() {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${projectsResponse?.projects.totalCount ?? 0} projects`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} projects`}
                 headingLevel={6}
                 headerActions={(
                     <>

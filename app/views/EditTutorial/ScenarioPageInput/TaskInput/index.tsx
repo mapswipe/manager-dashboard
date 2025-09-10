@@ -15,6 +15,10 @@ import {
     TutorialProjectDetailQuery,
 } from '#generated/types/graphql';
 
+import { PartialComparePropertyInputFields } from './ComparePropertyInput/schema';
+import { PartialCompletenessPropertyInputFields } from './CompletenessPropertyInput/schema';
+import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
+import { PartialStreetPropertyInputFields } from './StreetPropertyInput/schema';
 import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
 import ComparePropertyInput from './ComparePropertyInput';
@@ -24,6 +28,7 @@ import {
     PartialProjectTypeSpecifics,
     PartialTaskInputFields,
 } from './schema';
+import StreetPropertyInput from './StreetPropertyInput';
 import ValidateImagePropertyInput from './ValidateImagePropertyInput';
 import ValidatePropertyInput from './ValidatePropertyInput';
 
@@ -67,19 +72,19 @@ function TaskInput(props: Props) {
         {},
     );
 
-    const setFindProjectSpecificsFieldValue = useFormObject(
+    const setFindProjectSpecificsFieldValue = useFormObject<'find', PartialFindPropertyInputFields>(
         'find' as const,
         setProjectSpecificFieldValue,
         {},
     );
 
-    const setCompareProjectSpecificsFieldValue = useFormObject(
+    const setCompareProjectSpecificsFieldValue = useFormObject<'compare', PartialComparePropertyInputFields>(
         'compare' as const,
         setProjectSpecificFieldValue,
         {},
     );
 
-    const setCompletenessProjectSpecificsFieldValue = useFormObject(
+    const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessPropertyInputFields>(
         'completeness' as const,
         setProjectSpecificFieldValue,
         {},
@@ -93,6 +98,12 @@ function TaskInput(props: Props) {
 
     const setValidateImageProjectSpecificsFieldValue = useFormObject<'validateImage', PartialValidateImagePropertyInputFields>(
         'validateImage' as const,
+        setProjectSpecificFieldValue,
+        {},
+    );
+
+    const setStreetProjectSpecificsFieldValue = useFormObject<'street', PartialStreetPropertyInputFields>(
+        'street' as const,
         setProjectSpecificFieldValue,
         {},
     );
@@ -166,6 +177,14 @@ function TaskInput(props: Props) {
                         value={value.projectTypeSpecifics?.validateImage}
                         setFieldValue={setValidateImageProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Street && (
+                    <StreetPropertyInput
+                        value={value.projectTypeSpecifics?.street}
+                        setFieldValue={setStreetProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.street}
                         disabled
                     />
                 )}

@@ -82,12 +82,16 @@ function Navbar(props: Props) {
         <nav className={_cs(className, styles.navbar)}>
             <InlineLayout
                 className={styles.content}
+                withCenterAlign
                 start={(
-                    <img
-                        className={styles.logo}
-                        src={mapSwipeLogo}
-                        alt="MapSwipe"
-                    />
+                    <>
+                        <img
+                            className={styles.logo}
+                            src={mapSwipeLogo}
+                            alt="MapSwipe"
+                        />
+                        <div />
+                    </>
                 )}
                 end={user && (
                     <ListLayout>
@@ -148,8 +152,7 @@ function Navbar(props: Props) {
                         </Button>
                     </ListLayout>
                 )}
-                spacing="lg"
-                withPadding
+                spacing="md"
                 withWrap
             >
                 <ListLayout
@@ -158,43 +161,37 @@ function Navbar(props: Props) {
                 >
                     <SmartNavLink
                         route="home"
-                        className={styles.link}
-                        activeClassName={styles.active}
+                        withoutPadding
                     >
                         Home
                     </SmartNavLink>
                     <SmartNavLink
                         route="projects"
-                        className={styles.link}
-                        activeClassName={styles.active}
+                        withoutPadding
                     >
                         Projects
                     </SmartNavLink>
                     <SmartNavLink
                         route="tutorials"
-                        className={styles.link}
-                        activeClassName={styles.active}
+                        withoutPadding
                     >
                         Tutorials
                     </SmartNavLink>
                     <SmartNavLink
                         route="teams"
-                        className={styles.link}
-                        activeClassName={styles.active}
+                        withoutPadding
                     >
                         Teams
                     </SmartNavLink>
                     <SmartNavLink
                         route="userGroups"
-                        className={styles.link}
-                        activeClassName={styles.active}
+                        withoutPadding
                     >
                         User groups
                     </SmartNavLink>
                     <SmartNavLink
                         route="contributors"
-                        className={styles.link}
-                        activeClassName={styles.active}
+                        withoutPadding
                     >
                         Contributors
                     </SmartNavLink>

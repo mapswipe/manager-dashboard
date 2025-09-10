@@ -1,16 +1,19 @@
 .smart-nav-link {
-    display: flex;
-    position: relative;
-    align-items: center;
-    outline: none;
-    text-decoration: none;
-    color: var(--color-text);
+    display: contents;
 
-    &:hover {
-        background-color: var(--color-hover-background);
+    .button-layout {
+        opacity: 0.6;
+        border-top: var(--width-separator-thin) solid transparent;
+        border-bottom: var(--width-separator-thin) solid transparent;
+        color: var(--color-text-on-dark);
+        font-weight: var(--font-weight-bold);
     }
 
     &.active {
-        color: var(--color-accent);
+        .button-layout {
+            opacity: 1;
+            border-bottom-color: var(--color-text-on-dark);
+        }
     }
+
 }

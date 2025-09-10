@@ -16,4 +16,6 @@ export default defineConfig({
     // Used in application, automatically injected by vite
     APP_COMMIT_HASH: Schema.string.optional(),
     APP_VERSION: Schema.string.optional(),
+
+    APP_MAPILLARY_API_KEY: Schema.string.optional(),
 })

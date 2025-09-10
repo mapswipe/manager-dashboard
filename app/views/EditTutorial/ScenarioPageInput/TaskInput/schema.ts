@@ -1,3 +1,4 @@
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     ObjectSchema,
     PartialForm,
@@ -18,6 +19,7 @@ import {
 import comparePropertyInputSchema from './ComparePropertyInput/schema';
 import completenessPropertyInputSchema from './CompletenessPropertyInput/schema';
 import findPropertyInputSchema from './FindPropertyInput/schema';
+import streetPropertyInputSchema from './StreetPropertyInput/schema';
 import validateImagePropertyInputSchema from './ValidateImagePropertyInput/schema';
 import validatePropertyInputSchema from './ValidatePropertyInput/schema';
 
@@ -43,55 +45,86 @@ const taskSchema: TaskSchema = {
         reference: {},
         projectTypeSpecifics: {
             fields: (): ReturnType<ProjectTypeSpecificsSchema['fields']> => {
-                if (context?.projectType === ProjectTypeEnum.Find) {
+                const projectType = context?.projectType;
+
+                if (isNotDefined(projectType)) {
+                    return {
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Find) {
                     return {
                         find: findPropertyInputSchema,
                         completeness: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
                     };
                 }
 
-                if (context?.projectType === ProjectTypeEnum.Compare) {
+                if (projectType === ProjectTypeEnum.Compare) {
                     return {
                         compare: comparePropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
                     };
                 }
 
-                if (context?.projectType === ProjectTypeEnum.Completeness) {
+                if (projectType === ProjectTypeEnum.Completeness) {
                     return {
                         completeness: completenessPropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
                     };
                 }
 
-                if (context?.projectType === ProjectTypeEnum.Validate) {
+                if (projectType === ProjectTypeEnum.Validate) {
                     return {
                         validate: validatePropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
                     };
                 }
 
-                if (context?.projectType === ProjectTypeEnum.ValidateImage) {
+                if (projectType === ProjectTypeEnum.ValidateImage) {
                     return {
                         validateImage: validateImagePropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
                     };
                 }
+
+                if (projectType === ProjectTypeEnum.Street) {
+                    return {
+                        street: streetPropertyInputSchema,
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
+                    };
+                }
+
+                projectType satisfies never;
 
                 return {
                     find: { forceValue: undefinedValue },
@@ -99,6 +132,7 @@ const taskSchema: TaskSchema = {
                     completeness: { forceValue: undefinedValue },
                     validate: { forceValue: undefinedValue },
                     validateImage: { forceValue: undefinedValue },
+                    street: { forceValue: undefinedValue },
                 };
             },
         },
