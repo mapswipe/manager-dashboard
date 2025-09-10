@@ -25,7 +25,10 @@ import useListManagement, {
     ExactFilter,
     SearchFilter,
 } from '#hooks/useListManagement';
-import { defaultPagePerItemOptions } from '#utils/common';
+import {
+    defaultPagePerItemOptions,
+    formatNumber,
+} from '#utils/common';
 
 const sortKeyOptions: SortByOption<keyof ContributorUserOrder>[] = [
     {
@@ -142,7 +145,7 @@ function Contributors() {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${totalCount} users`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} users`}
                 headingLevel={6}
                 headerActions={(
                     <>
@@ -165,9 +168,6 @@ function Contributors() {
                 emptyMessage="No contributor found!"
                 filteredEmptyMessage="No matching contributor found!"
                 spacing="lg"
-                withBackground={totalCount === 0}
-                withPadding={totalCount === 0}
-                withMinHeight={totalCount === 0}
                 footerActions={(
                     <Pager
                         pagePerItem={pageSize}

@@ -22,7 +22,10 @@ import {
 } from '#generated/types/graphql';
 import useBooleanState from '#hooks/useBooleanState';
 import useListManagement, { ExactFilter } from '#hooks/useListManagement';
-import { defaultPagePerItemOptions } from '#utils/common';
+import {
+    defaultPagePerItemOptions,
+    formatNumber,
+} from '#utils/common';
 
 import UserGroupFormModal from './UserGroupFormModal';
 import UserGroupListItem from './UserGroupListItem';
@@ -171,7 +174,7 @@ function UserGroups() {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${userGroupsResponse?.contributorUserGroups.totalCount} teams`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} teams`}
                 headingLevel={6}
                 headerActions={(
                     <>

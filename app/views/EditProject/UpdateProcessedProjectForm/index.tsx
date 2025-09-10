@@ -16,13 +16,13 @@ import {
 } from '@togglecorp/toggle-form';
 import { gql } from 'urql';
 
+import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTaskDetails from '#components/domain/ProjectTaskDetails';
-import InputError from '#components/InputError';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
@@ -232,9 +232,8 @@ function UpdateProcessedProjectForm(props: Props) {
 
     const pending = updateProcessedProjectPending;
     const baseInputsEditable = isDefined(projectData) && (
-        projectData.project.status === ProjectStatusEnum.Draft
-        || projectData.project.status === ProjectStatusEnum.Failed
-        || projectData.project.status === ProjectStatusEnum.Ready
+        projectData.project.status === ProjectStatusEnum.ProcessingFailed
+        || projectData.project.status === ProjectStatusEnum.Processed
     );
 
     const baseInputsDisabled = pending || !baseInputsEditable;
@@ -269,13 +268,17 @@ function UpdateProcessedProjectForm(props: Props) {
                 />
             )}
         >
-            <NonFieldError error={error} />
-            {projectData?.project.status === ProjectStatusEnum.Failed && (
-                <InputError>
-                    There was an error while processing the project.
-                    Please make the necessary changes before proceeding!
-                </InputError>
+            {projectData?.project.status === ProjectStatusEnum.PublishingFailed && (
+                <Alert
+                    name="processing-error"
+                    title="Processing failed!"
+                    description="There was an error while publising the project!"
+                    fullWidth
+                    type="danger"
+                    withoutShadow
+                />
             )}
+            <NonFieldError error={error} />
             <ProjectGeneralInputs
                 value={value}
                 setFieldValue={setFieldValue}

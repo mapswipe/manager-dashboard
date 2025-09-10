@@ -17,7 +17,10 @@ import {
     useTeamsListQuery,
 } from '#generated/types/graphql';
 import useListManagement, { ExactFilter } from '#hooks/useListManagement';
-import { defaultPagePerItemOptions } from '#utils/common';
+import {
+    defaultPagePerItemOptions,
+    formatNumber,
+} from '#utils/common';
 
 import TeamListItem from './TeamListItem';
 
@@ -136,7 +139,7 @@ function Teams() {
             )}
         >
             <Container
-                heading={`Showing ${totalItems} of ${totalCount} teams`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} teams`}
                 headingLevel={6}
                 headerActions={(
                     <>

@@ -5,7 +5,16 @@
         .grid-content {
             display: grid;
             /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-            grid-template-columns: repeat(auto-fill, minmax(max(var(--min-grid-column-size), calc((100cqi - var(--reserved-space)) / var(--num-preferred-grid-columns))), 1fr));
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(
+                    min(
+                        var(--min-grid-column-size),
+                        calc((100cqi - var(--reserved-space)) / var(--num-preferred-grid-columns))
+                    ),
+                    1fr
+                )
+            );
         }
     }
 
@@ -27,9 +36,11 @@
         flex-wrap: wrap;
     }
 
-    @container (max-width: 20rem) {
-        .grid-content {
-            grid-template-columns: 1fr;
+    @container (max-width: 24rem) {
+        &.grid-layout {
+            .grid-content {
+                grid-template-columns: 1fr;
+            }
         }
     }
 }

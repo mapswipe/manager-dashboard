@@ -40,7 +40,7 @@ function ListLayout(props: Props) {
         withWrap,
         children,
         numPreferredGridColumns = 2,
-        minGridColumnSize = '12rem',
+        minGridColumnSize = '16rem',
         spacingOffset,
         withFullWidth,
         elementRef: elementRefFromProps,

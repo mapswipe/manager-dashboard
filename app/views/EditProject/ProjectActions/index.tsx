@@ -116,10 +116,12 @@ function ProjectActions(props: Props) {
 
     return (
         <>
-            {(status === ProjectStatusEnum.Draft || status === ProjectStatusEnum.Failed) && (
+            {(status === ProjectStatusEnum.Draft
+                || status === ProjectStatusEnum.ProcessingFailed
+            ) && (
                 <Button
-                    name={ProjectStatusEnum.MarkedAsReady}
-                    start={<ProjectStatusIcon value={ProjectStatusEnum.MarkedAsReady} />}
+                    name={ProjectStatusEnum.ReadyToProcess}
+                    start={<ProjectStatusIcon value={ProjectStatusEnum.ReadyToProcess} />}
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
@@ -128,9 +130,9 @@ function ProjectActions(props: Props) {
                     Process
                 </Button>
             )}
-            {status === ProjectStatusEnum.Ready && (
+            {status === ProjectStatusEnum.Processed && (
                 <Button
-                    name={ProjectStatusEnum.Published}
+                    name={ProjectStatusEnum.ReadyToPublish}
                     start={<ProjectStatusIcon value={ProjectStatusEnum.Published} />}
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
@@ -142,8 +144,8 @@ function ProjectActions(props: Props) {
             )}
             {status === ProjectStatusEnum.Published && (
                 <Button
-                    name={ProjectStatusEnum.Archived}
-                    start={<ProjectStatusIcon value={ProjectStatusEnum.Archived} />}
+                    name={ProjectStatusEnum.Withdrawn}
+                    start={<ProjectStatusIcon value={ProjectStatusEnum.Withdrawn} />}
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     colorVariant="danger"
@@ -152,10 +154,22 @@ function ProjectActions(props: Props) {
                     Archive
                 </Button>
             )}
-            {(status === ProjectStatusEnum.Ready
-                || status === ProjectStatusEnum.Paused
+            {status === ProjectStatusEnum.Published && (
+                <Button
+                    name={ProjectStatusEnum.Finished}
+                    start={<ProjectStatusIcon value={ProjectStatusEnum.Finished} />}
+                    onClick={setNewStatus}
+                    disabled={actionsDisabled}
+                    styleVariant={buttonStyleVariant}
+                    colorVariant="danger"
+                >
+                    Finish
+                </Button>
+            )}
+            {(status === ProjectStatusEnum.ReadyToProcess
+                || status === ProjectStatusEnum.Processed
                 || status === ProjectStatusEnum.Draft
-                || status === ProjectStatusEnum.Failed
+                || status === ProjectStatusEnum.ProcessingFailed
             ) && (
                 <Button
                     name={ProjectStatusEnum.Discarded}
@@ -176,7 +190,7 @@ function ProjectActions(props: Props) {
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
                 >
-                    Un-pause
+                    Resume
                 </Button>
             )}
             {status === ProjectStatusEnum.Published && (
@@ -227,8 +241,9 @@ function ProjectActions(props: Props) {
                         <PiArrowRight />
                         <ProjectStatusOutput value={newStatus} />
                     </ListLayout>
-                    {(newStatus === ProjectStatusEnum.Archived
+                    {(newStatus === ProjectStatusEnum.Withdrawn
                         || newStatus === ProjectStatusEnum.Discarded
+                        || newStatus === ProjectStatusEnum.Finished
                     ) && (
                         <p>
                             Please note that this action is irreversable!

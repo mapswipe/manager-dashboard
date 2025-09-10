@@ -1,5 +1,9 @@
-import { useState } from 'react';
 import {
+    useContext,
+    useState,
+} from 'react';
+import {
+    PiArrowsClockwise,
     PiCalendar,
     PiFlag,
     PiInfo,
@@ -24,9 +28,11 @@ import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import MarkdownPreview from '#components/MarkdownPreview';
 import OverflowMenu from '#components/OverflowMenu';
+import PopupButton from '#components/PopupButton';
 import ProgressBar from '#components/ProgressBar';
 import Tag from '#components/Tag';
 import TextOutput from '#components/TextOutput';
+import EnumsContext from '#contexts/EnumsContext';
 import {
     ProjectsListQuery,
     ProjectStatusEnum,
@@ -41,6 +47,7 @@ interface Props {
 function ProjectListItem(props: Props) {
     const { value } = props;
     const [showDetails, setShowDetails] = useState(false);
+    const { firebasePushStatusMapping } = useContext(EnumsContext);
 
     return (
         <ExpandableContainer
@@ -56,7 +63,7 @@ function ProjectListItem(props: Props) {
                 <ListLayout
                     layout="grid"
                     numPreferredGridColumns={4}
-                    minGridColumnSize="9rem"
+                    minGridColumnSize="10rem"
                 >
                     <ImagePreview
                         src={value.image?.file?.url}
@@ -119,7 +126,7 @@ function ProjectListItem(props: Props) {
                             )}
                             contentLayout="block"
                             headerActions={(value.status !== ProjectStatusEnum.Discarded
-                                && value.status !== ProjectStatusEnum.Archived) && (
+                                && value.status !== ProjectStatusEnum.Withdrawn) && (
                                 <OverflowMenu persistent>
                                     <ProjectActions
                                         clientId={value.clientId}
@@ -133,7 +140,6 @@ function ProjectListItem(props: Props) {
                             <ListLayout
                                 layout="grid"
                                 spacing="sm"
-                                numPreferredGridColumns={2}
                             >
                                 <GridLayoutItem columnSpan={2}>
                                     <TextOutput
@@ -228,14 +234,48 @@ function ProjectListItem(props: Props) {
                                             value={value.contributorsCount}
                                             valueType="number"
                                         />
+                                    </ListLayout>
+                                    {(value.status === ProjectStatusEnum.PublishingFailed
+                                        || value.status === ProjectStatusEnum.Published
+                                        || value.status === ProjectStatusEnum.Paused
+                                        || value.status === ProjectStatusEnum.Finished
+                                        || value.status === ProjectStatusEnum.Withdrawn
+                                    ) && (
                                         <GridLayoutItem columnSpan={2}>
                                             <TextOutput
                                                 label="Firebase ID"
                                                 value={value.firebaseId}
                                                 withWrap
+                                                description={(
+                                                    <PopupButton
+                                                        label={<PiInfo />}
+                                                        withoutPadding
+                                                        withoutDropdownIcon
+                                                        styleVariant="transparent"
+                                                    >
+                                                        <TextOutput
+                                                            icon={<PiArrowsClockwise />}
+                                                            label="Firebase last synced"
+                                                            value={value.firebaseLastPushed}
+                                                            withCenterAlign
+                                                            valueType="date"
+                                                        />
+                                                        <TextOutput
+                                                            label="Firebase push status"
+                                                            // eslint-disable-next-line max-len
+                                                            value={isDefined(value.firebasePushStatus)
+                                                                // eslint-disable-next-line max-len
+                                                                ? firebasePushStatusMapping?.[value.firebasePushStatus].label
+                                                                : undefined}
+                                                            withCenterAlign
+                                                            icon={<PiCalendar />}
+                                                        />
+                                                    </PopupButton>
+                                                )}
                                             />
                                         </GridLayoutItem>
-                                    </ListLayout>
+                                    )}
+
                                     {isDefined(value.description) && (
                                         <Description>
                                             <MarkdownPreview markdown={value.description} />

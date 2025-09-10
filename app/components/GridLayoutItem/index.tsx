@@ -1,11 +1,14 @@
 import {
     HTMLProps,
-    useMemo,
+    useEffect,
+    useRef,
 } from 'react';
 import {
+    _cs,
     isDefined,
-    isNotDefined,
 } from '@togglecorp/fujs';
+
+import styles from './style.module.css';
 
 interface Props extends Omit<HTMLProps<HTMLDivElement>, 'ref'> {
     rowSpan?: number;
@@ -16,31 +19,33 @@ function GridLayoutItem(props: Props) {
     const {
         rowSpan,
         columnSpan,
-        style,
         ...otherProps
     } = props;
 
-    const combinedStyle = useMemo(() => {
-        if (isNotDefined(rowSpan) && isNotDefined(columnSpan)) {
-            return style;
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (containerRef.current) {
+            containerRef.current.style.setProperty(
+                '--num-row-span',
+                String(rowSpan ?? 1),
+            );
+            containerRef.current.style.setProperty(
+                '--num-column-span',
+                String(columnSpan ?? 1),
+            );
         }
-
-        const tempStyle = { ...style };
-
-        if (isDefined(rowSpan)) {
-            tempStyle.gridRow = `span ${rowSpan}`;
-        }
-
-        if (isDefined(columnSpan)) {
-            tempStyle.gridColumn = `span ${columnSpan}`;
-        }
-
-        return tempStyle;
-    }, [style, rowSpan, columnSpan]);
+    }, [rowSpan, columnSpan]);
 
     return (
         <div
-            style={combinedStyle}
+            ref={containerRef}
+            className={_cs(
+                styles.gridLayoutItem,
+                isDefined(rowSpan) && styles.rowSpan,
+                isDefined(columnSpan) && styles.columnSpan,
+            )}
+            // style={combinedStyle}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...otherProps}
         />

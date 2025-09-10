@@ -109,6 +109,10 @@ query AllEnums {
             key
             label
         }
+        FirebasePushStatusEnum {
+            key
+            label
+        }
     }
 }
 `;
@@ -193,6 +197,7 @@ function RootLayout() {
         iconOptions: allEnumsResponse?.enums.IconEnum ?? [],
         overlayLayerTypeOptions: allEnumsResponse?.enums.OverlayLayerTypeEnum ?? [],
         tutorialStatusOptions: allEnumsResponse?.enums.TutorialStatusEnum ?? [],
+        firebasePushStatusOptions: allEnumsResponse?.enums.FirebasePushStatusEnum ?? [],
         validateObjectSourceTypeMapping: listToMap(
             allEnumsResponse?.enums.ValidateObjectSourceTypeEnum,
             ({ key }) => key,
@@ -231,6 +236,10 @@ function RootLayout() {
         ),
         tutorialStatusMapping: listToMap(
             allEnumsResponse?.enums.TutorialStatusEnum,
+            ({ key }) => key,
+        ),
+        firebasePushStatusMapping: listToMap(
+            allEnumsResponse?.enums.FirebasePushStatusEnum,
             ({ key }) => key,
         ),
     } satisfies EnumsContextProps), [allEnumsResponse]);

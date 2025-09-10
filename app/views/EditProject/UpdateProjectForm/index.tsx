@@ -17,11 +17,11 @@ import {
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
+import Alert from '#components/Alert/index.tsx';
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeOutput from '#components/domain/ProjectTypeOutput/index.tsx';
-import InputError from '#components/InputError/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import {
@@ -105,7 +105,7 @@ function UpdateProjectForm(props: Props) {
     });
 
     useEffect(() => {
-        if (projectData.project.status !== ProjectStatusEnum.MarkedAsReady) {
+        if (projectData.project.status !== ProjectStatusEnum.ReadyToProcess) {
             return undefined;
         }
 
@@ -363,12 +363,12 @@ function UpdateProjectForm(props: Props) {
     const pending = updateProjectPending;
     const baseInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
-        || projectData.project.status === ProjectStatusEnum.Failed
-        || projectData.project.status === ProjectStatusEnum.Ready
+        || projectData.project.status === ProjectStatusEnum.ProcessingFailed
+        || projectData.project.status === ProjectStatusEnum.Processed
     );
     const projectTypeSpecificInputsEditable = isDefined(projectData) && (
         projectData.project.status === ProjectStatusEnum.Draft
-        || projectData.project.status === ProjectStatusEnum.Failed
+        || projectData.project.status === ProjectStatusEnum.ProcessingFailed
     );
 
     const baseInputsDisabled = pending || !baseInputsEditable;
@@ -417,12 +417,17 @@ function UpdateProjectForm(props: Props) {
             )}
             confirmNavigationChange={!pristine}
         >
-            {projectData?.project.status === ProjectStatusEnum.Failed && (
-                <InputError>
-                    There was an error while processing the project.
-                    Please make the necessary changes before proceeding!
-                </InputError>
+            {projectData?.project.status === ProjectStatusEnum.ProcessingFailed && (
+                <Alert
+                    name="processing-error"
+                    title="Processing failed!"
+                    description="There was an error while processing the project. Please make the necessary changes before proceeding!"
+                    fullWidth
+                    type="danger"
+                    withoutShadow
+                />
             )}
+            <NonFieldError error={error} />
             <ProjectGeneralInputs
                 value={value}
                 setFieldValue={setFieldValue}

@@ -51,17 +51,17 @@ function EditProject() {
     } = projectData;
 
     if (status === ProjectStatusEnum.Draft
-        || status === ProjectStatusEnum.MarkedAsReady
-        || status === ProjectStatusEnum.Failed
+        || status === ProjectStatusEnum.ReadyToProcess
+        || status === ProjectStatusEnum.ProcessingFailed
     ) {
         return (
             <UpdateProjectForm projectData={projectData} />
         );
     }
 
-    if (status === ProjectStatusEnum.Ready
+    if (status === ProjectStatusEnum.Processed
         || status === ProjectStatusEnum.Published
-        || status === ProjectStatusEnum.Archived
+        || status === ProjectStatusEnum.Withdrawn
         || status === ProjectStatusEnum.Paused
         || status === ProjectStatusEnum.Discarded
     ) {

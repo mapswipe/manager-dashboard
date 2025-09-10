@@ -1,13 +1,22 @@
 .navbar {
+    --main-spacing: var(--spacing-lg);
     display: grid;
     z-index: 1;
     box-shadow: var(--shadow-card);
     background-color: var(--color-primary);
+    padding: var(--spacing-md) 0;
     color: var(--color-text-on-dark);
-    grid-template-columns: 1fr [content-start] min(100%, var(--width-page-content-max)) [content-end] 1fr;
+    grid-template-columns:
+        1fr
+        [content-start]
+            min(
+                100% - 2 * var(--main-spacing),
+                var(--width-page-content-max) - 2 * var(--main-spacing)
+            )
+        [content-end]
+        1fr;
 
     .content {
-        align-items: center;
         grid-column: content;
 
         .logo {
@@ -18,19 +27,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        .link {
-            opacity: 0.6;
-            border-top: var(--width-separator-thin) solid transparent;
-            border-bottom: var(--width-separator-thin) solid transparent;
-            color: var(--color-text-on-dark);
-            font-weight: var(--font-weight-bold);
-
-            &.active {
-                opacity: 1;
-                border-bottom-color: var(--color-text-on-dark);
-            }
         }
     }
 }

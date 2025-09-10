@@ -117,7 +117,7 @@ function TutorialActions(props: Props) {
         <>
             {(status === TutorialStatusEnum.Draft || status === TutorialStatusEnum.Archived) && (
                 <Button
-                    name={TutorialStatusEnum.Published}
+                    name={TutorialStatusEnum.ReadyToPublish}
                     start={<TutorialStatusIcon value={TutorialStatusEnum.Published} />}
                     onClick={setNewStatus}
                     disabled={actionsDisabled}

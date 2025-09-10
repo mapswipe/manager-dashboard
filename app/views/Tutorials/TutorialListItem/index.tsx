@@ -1,14 +1,18 @@
-import { useState } from 'react';
 import {
+    useContext,
+    useState,
+} from 'react';
+import {
+    PiArrowsClockwise,
     PiCalendar,
     PiCaretDown,
     PiCaretUp,
     PiFlag,
     PiInfo,
     PiMapPin,
-    PiTextT,
     PiUser,
 } from 'react-icons/pi';
+import { isDefined } from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import Button from '#components/Button';
@@ -19,9 +23,14 @@ import TutorialStatusOutput from '#components/domain/TutorialStatusOutput';
 import GridLayoutItem from '#components/GridLayoutItem';
 import ListLayout from '#components/ListLayout';
 import OverflowMenu from '#components/OverflowMenu';
+import PopupButton from '#components/PopupButton';
 import Tag from '#components/Tag';
 import TextOutput from '#components/TextOutput';
-import { TutorialsListQuery } from '#generated/types/graphql';
+import EnumsContext from '#contexts/EnumsContext';
+import {
+    TutorialsListQuery,
+    TutorialStatusEnum,
+} from '#generated/types/graphql';
 import { getInstruction } from '#utils/common';
 import TutorialActions from '#views/EditTutorial/TutorialActions';
 
@@ -41,10 +50,13 @@ function TutorialListItem(props: Props) {
             firebaseId,
             projectId,
             project,
+            firebasePushStatus,
+            firebaseLastPushed,
         },
     } = props;
 
     const [showDetails, setShowDetails] = useState(false);
+    const { firebasePushStatusMapping } = useContext(EnumsContext);
 
     return (
         <Container
@@ -116,6 +128,7 @@ function TutorialListItem(props: Props) {
                             project.projectType,
                         )}
                         withCenterAlign
+                        withWrap
                     />
                 </GridLayoutItem>
                 <TextOutput
@@ -129,6 +142,7 @@ function TutorialListItem(props: Props) {
                     icon={<PiFlag />}
                     label="Organization"
                     value={project.requestingOrganization.name}
+                    withWrap
                 />
                 <TextOutput
                     icon={<PiCalendar />}
@@ -136,22 +150,52 @@ function TutorialListItem(props: Props) {
                     value={createdAt}
                     valueType="date"
                     withCenterAlign
+                    withWrap
                 />
                 <TextOutput
                     icon={<PiUser />}
                     label="Created by"
                     value={createdBy.displayName}
                     withCenterAlign
+                    withWrap
                 />
-                <GridLayoutItem columnSpan={2}>
-                    <TextOutput
-                        icon={<PiTextT />}
-                        label="Firebase ID"
-                        value={firebaseId}
-                        withCenterAlign
-                        withWrap
-                    />
-                </GridLayoutItem>
+                {(status === TutorialStatusEnum.PublishingFailed
+                    || status === TutorialStatusEnum.ReadyToPublish
+                    || status === TutorialStatusEnum.Published
+                    || status === TutorialStatusEnum.Archived
+                ) && (
+                    <GridLayoutItem columnSpan={2}>
+                        <TextOutput
+                            label="Firebase ID"
+                            value={firebaseId}
+                            withWrap
+                            description={(
+                                <PopupButton
+                                    label={<PiInfo />}
+                                    withoutPadding
+                                    withoutDropdownIcon
+                                    styleVariant="transparent"
+                                >
+                                    <TextOutput
+                                        icon={<PiArrowsClockwise />}
+                                        label="Firebase last synced"
+                                        value={firebaseLastPushed}
+                                        withCenterAlign
+                                        valueType="date"
+                                    />
+                                    <TextOutput
+                                        label="Firebase push status"
+                                        value={isDefined(firebasePushStatus)
+                                            ? firebasePushStatusMapping?.[firebasePushStatus].label
+                                            : undefined}
+                                        withCenterAlign
+                                        icon={<PiCalendar />}
+                                    />
+                                </PopupButton>
+                            )}
+                        />
+                    </GridLayoutItem>
+                )}
             </ListLayout>
             {showDetails && (
                 <>
