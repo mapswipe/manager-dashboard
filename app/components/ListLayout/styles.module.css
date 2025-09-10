@@ -8,7 +8,7 @@
             grid-template-columns: repeat(
                 auto-fill,
                 minmax(
-                    min(
+                    max(
                         var(--min-grid-column-size),
                         calc((100cqi - var(--reserved-space)) / var(--num-preferred-grid-columns))
                     ),

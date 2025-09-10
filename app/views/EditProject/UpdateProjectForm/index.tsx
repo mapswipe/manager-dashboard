@@ -421,7 +421,17 @@ function UpdateProjectForm(props: Props) {
                 <Alert
                     name="processing-error"
                     title="Processing failed!"
-                    description="There was an error while processing the project. Please make the necessary changes before proceeding!"
+                    description={(
+                        <>
+                            <p>
+                                There was an error while processing the project.
+                                Please make the necessary changes before proceeding!
+                            </p>
+                            {!!projectData.project.statusMessage && (
+                                <p>{projectData.project.statusMessage}</p>
+                            )}
+                        </>
+                    )}
                     fullWidth
                     type="danger"
                     withoutShadow

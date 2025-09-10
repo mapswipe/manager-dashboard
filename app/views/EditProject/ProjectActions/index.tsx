@@ -151,7 +151,7 @@ function ProjectActions(props: Props) {
                     colorVariant="danger"
                     styleVariant={buttonStyleVariant}
                 >
-                    Archive
+                    Withdraw
                 </Button>
             )}
             {status === ProjectStatusEnum.Published && (

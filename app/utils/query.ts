@@ -218,6 +218,7 @@ fragment ProjectDetailFields on ProjectType {
         name
     }
     status
+    statusMessage
     verificationNumber
 }
 `;

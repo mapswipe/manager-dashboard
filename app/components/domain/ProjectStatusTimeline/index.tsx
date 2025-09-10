@@ -94,7 +94,7 @@ const projectStatusDetails: Record<ProjectStatusEnum, ProjectStatusDetail> = {
     },
     [ProjectStatusEnum.ProcessingFailed]: {
         label: 'Processing failed!',
-        description: 'There were somme issues while processing the project. This incident has been notified to the dev team! Please reach out on the MapSwipe slack for any further assistance',
+        description: 'There were some issues while processing the project.',
     },
     [ProjectStatusEnum.Processed]: {
         label: 'Processed',
@@ -110,7 +110,7 @@ const projectStatusDetails: Record<ProjectStatusEnum, ProjectStatusDetail> = {
     },
     [ProjectStatusEnum.PublishingFailed]: {
         label: 'Publishing failed!',
-        description: 'There were some issue while publishing the project to the firebase! This incident has been notified to the dev team! Please reach out on the MapSwipe slack for any further assistance',
+        description: 'There were some issue while publishing the project to the firebase!',
     },
     [ProjectStatusEnum.Published]: {
         label: 'Published',

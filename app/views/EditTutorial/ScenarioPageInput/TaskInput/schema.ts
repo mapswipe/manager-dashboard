@@ -115,7 +115,7 @@ const taskSchema: TaskSchema = {
 
                 if (projectType === ProjectTypeEnum.Street) {
                     return {
-                        street: { forceValue: streetPropertyInputSchema },
+                        street: streetPropertyInputSchema,
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         completeness: { forceValue: undefinedValue },

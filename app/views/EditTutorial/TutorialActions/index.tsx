@@ -136,7 +136,7 @@ function TutorialActions(props: Props) {
                     colorVariant="danger"
                     styleVariant={buttonStyleVariant}
                 >
-                    Archive
+                    Withdraw
                 </Button>
             )}
             {status === TutorialStatusEnum.Draft && (

@@ -6,6 +6,7 @@
 
         .backdrop {
             position: absolute;
+            pointer-events: none;
             top: calc(-1 * var(--spacing-xs));
             left: calc(-1 * var(--spacing-xs));
             border-radius: var(--radius-card-border);
