@@ -29,6 +29,7 @@ interface Props {
     tutorialId: string;
     status: TutorialStatusEnum;
     buttonStyleVariant?: ButtonStyleVariant;
+    withFullWidth?: boolean;
 }
 
 function TutorialActions(props: Props) {
@@ -37,6 +38,7 @@ function TutorialActions(props: Props) {
         tutorialId,
         status,
         buttonStyleVariant = 'translucent',
+        withFullWidth,
     } = props;
 
     const alert = useAlert();
@@ -122,6 +124,7 @@ function TutorialActions(props: Props) {
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                     colorVariant="accent"
                 >
                     Publish
@@ -135,6 +138,7 @@ function TutorialActions(props: Props) {
                     disabled={actionsDisabled}
                     colorVariant="danger"
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                 >
                     Withdraw
                 </Button>
@@ -147,6 +151,7 @@ function TutorialActions(props: Props) {
                     disabled={actionsDisabled}
                     colorVariant="danger"
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                 >
                     Discard
                 </Button>

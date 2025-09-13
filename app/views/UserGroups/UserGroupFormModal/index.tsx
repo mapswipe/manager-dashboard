@@ -345,7 +345,6 @@ function UserGroupFormModal(props: Props) {
                     name={undefined}
                     colorVariant="accent"
                     styleVariant="filled"
-                    spacing="sm"
                     onClick={handleSubmitButtonClick}
                     disabled={actionsDisabled}
                 >

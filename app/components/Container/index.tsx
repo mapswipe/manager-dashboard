@@ -36,6 +36,7 @@ export interface ContainerProps {
     footerActions?: React.ReactNode;
     footer?: React.ReactNode;
     withFooterBorder?: boolean;
+    withWrapInHeader?: boolean;
 
     pending?: boolean;
     overlayPending?: boolean;
@@ -69,6 +70,7 @@ function Container(props: ContainerProps) {
         headerActions,
         headerDescription,
         withHeaderBorder,
+        withWrapInHeader,
 
         footerIcons,
         footer,
@@ -142,6 +144,7 @@ function Container(props: ContainerProps) {
                             start={headerIcons}
                             end={headerActions}
                             className={styles.headingRow}
+                            withWrap={withWrapInHeader}
                         >
                             <Heading
                                 level={headingLevel}

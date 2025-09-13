@@ -8,6 +8,7 @@ import {
 } from '@togglecorp/fujs';
 import Map from '@togglecorp/re-map';
 import { removeNull } from '@togglecorp/toggle-form';
+import { type } from 'arktype';
 
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import TileServerContext from '#contexts/TileServerContext';
@@ -48,7 +49,7 @@ function BaseMap(props: Props) {
     } = useMemo(() => {
         const rasterTileServerMapping = listToMap(
             rasterTileServers,
-            ({ type }) => type,
+            ({ type: tileType }) => tileType,
         );
 
         if (isNotDefined(baseTileServer)) {
@@ -89,7 +90,9 @@ function BaseMap(props: Props) {
     }, [baseTileServer, rasterTileServers]);
 
     const mapStyle = useMemo<maplibregl.StyleSpecification | undefined>(() => {
-        if (isNotDefined(url)) {
+        const result = type('string.url')(url);
+
+        if (result instanceof type.errors) {
             return undefined;
         }
 
@@ -99,7 +102,7 @@ function BaseMap(props: Props) {
                 'base-tile-source': removeNull({
                     type: 'raster',
                     // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
-                    tiles: [standardizeQuadKey(url)],
+                    tiles: [standardizeQuadKey(result)],
                     tileSize,
                     attribution: credits ?? '',
                     minzoom: minzoom ?? null,

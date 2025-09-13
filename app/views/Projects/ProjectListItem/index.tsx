@@ -63,7 +63,6 @@ function ProjectListItem(props: Props) {
                 <ListLayout
                     layout="grid"
                     numPreferredGridColumns={4}
-                    minGridColumnSize="10rem"
                 >
                     <ImagePreview
                         src={value.image?.file?.url}
@@ -86,7 +85,7 @@ function ProjectListItem(props: Props) {
                                 </SmartLink>
                             )}
                             headerDescription={(
-                                <ListLayout>
+                                <ListLayout withWrap>
                                     <Tag>
                                         <ProjectTypeOutput value={value.projectType} />
                                     </Tag>
@@ -125,17 +124,22 @@ function ProjectListItem(props: Props) {
                                 </ListLayout>
                             )}
                             contentLayout="block"
-                            headerActions={(value.status !== ProjectStatusEnum.Discarded
-                                && value.status !== ProjectStatusEnum.Withdrawn) && (
-                                <OverflowMenu persistent>
-                                    <ProjectActions
-                                        clientId={value.clientId}
-                                        status={value.status}
-                                        projectId={value.id}
-                                        buttonStyleVariant="transparent"
-                                    />
-                                </OverflowMenu>
-                            )}
+                            headerActions={
+                                value.status !== ProjectStatusEnum.Discarded
+                                && value.status !== ProjectStatusEnum.Withdrawn
+                                && value.status !== ProjectStatusEnum.Finished
+                                && (
+                                    <OverflowMenu persistent>
+                                        <ProjectActions
+                                            clientId={value.clientId}
+                                            status={value.status}
+                                            projectId={value.id}
+                                            buttonStyleVariant="transparent"
+                                            withFullWidth
+                                        />
+                                    </OverflowMenu>
+                                )
+                            }
                         >
                             <ListLayout
                                 layout="grid"
@@ -150,7 +154,7 @@ function ProjectListItem(props: Props) {
                                             value.lookFor,
                                             value.projectType,
                                         )}
-                                        withWrap
+                                        withEllipsizedOverflow
                                         withCenterAlign
                                     />
                                 </GridLayoutItem>
@@ -158,14 +162,14 @@ function ProjectListItem(props: Props) {
                                     icon={<PiMapPin />}
                                     label="Region"
                                     value={value.region}
-                                    withWrap
+                                    withEllipsizedOverflow
                                     withCenterAlign
                                 />
                                 <TextOutput
                                     icon={<PiFlag />}
                                     label="Organization"
                                     value={value.requestingOrganization.name}
-                                    withWrap
+                                    withEllipsizedOverflow
                                     withCenterAlign
                                 />
                                 <TextOutput
@@ -173,14 +177,14 @@ function ProjectListItem(props: Props) {
                                     label="Created on"
                                     value={value.createdAt}
                                     valueType="date"
-                                    withWrap
+                                    withEllipsizedOverflow
                                     withCenterAlign
                                 />
                                 <TextOutput
                                     icon={<PiUser />}
                                     label="Created by"
                                     value={value.createdBy.displayName}
-                                    withWrap
+                                    withEllipsizedOverflow
                                     withCenterAlign
                                 />
                                 {isDefined(value.team) && (
@@ -188,6 +192,7 @@ function ProjectListItem(props: Props) {
                                         icon={<PiUsersThree />}
                                         label="Team"
                                         value={value.team.name}
+                                        withEllipsizedOverflow
                                         withCenterAlign
                                     />
                                 )}
@@ -245,13 +250,14 @@ function ProjectListItem(props: Props) {
                                             <TextOutput
                                                 label="Firebase ID"
                                                 value={value.firebaseId}
-                                                withWrap
+                                                withEllipsizedOverflow
                                                 description={(
                                                     <PopupButton
                                                         label={<PiInfo />}
                                                         withoutPadding
                                                         withoutDropdownIcon
                                                         styleVariant="transparent"
+                                                        preferredWidth="18rem"
                                                     >
                                                         <TextOutput
                                                             icon={<PiArrowsClockwise />}

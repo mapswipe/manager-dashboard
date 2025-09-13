@@ -3,7 +3,10 @@ import {
     isNotDefined,
     listToMap,
 } from '@togglecorp/fujs';
-import { nonFieldError } from '@togglecorp/toggle-form';
+import {
+    nonFieldError,
+    ObjectError,
+} from '@togglecorp/toggle-form';
 import {
     CombinedError,
     OperationResult,
@@ -11,22 +14,51 @@ import {
 
 import useAlert from '#hooks/useAlert';
 
+interface PydanticError {
+    type: string,
+    loc: string[];
+    msg: string;
+    input: string;
+}
+
 interface ServerError {
     array_errors: unknown[] | null,
     client_id: string | null,
     field: string,
     messages: string | string[] | null,
     object_errors: unknown[] | null,
-    pydantic_errors: {
-        input: unknown;
-        loc: string[],
-        msg: string,
-        type: string,
-    }[],
+    pydantic_errors: PydanticError[],
+}
+
+function snakeToCamel(str: string): string {
+    return str.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
+}
+
+type GenericObjectError = {
+    [key: string]: GenericFormError;
+    [nonFieldError]?: GenericFormError;
+}
+type GenericFormError = string | GenericObjectError;
+
+function getFormErrorFromPydanticError(
+    error: PydanticError,
+): string | Record<string, GenericFormError> {
+    const currentField = error.loc[0];
+
+    if (currentField) {
+        return {
+            [snakeToCamel(currentField)]: getFormErrorFromPydanticError({
+                ...error,
+                loc: error.loc.slice(1),
+            }),
+        };
+    }
+
+    return error.msg;
 }
 
 export function transformErrors(errors: ServerError[]) {
-    const mappedErrors = listToMap(
+    const mappedErrors: ObjectError<object> = listToMap(
         errors,
         ({ field }) => field,
         ({
@@ -54,11 +86,19 @@ export function transformErrors(errors: ServerError[]) {
             }
 
             if (pydantic_errors) {
-                return {
-                    [nonFieldError]: [
-                        pydantic_errors?.map(({ msg }) => msg).join(' '),
-                    ],
-                };
+                return pydantic_errors.map((pydantic_error) => (
+                    getFormErrorFromPydanticError(pydantic_error)
+                )).reduce((acc: GenericObjectError, val) => {
+                    if (typeof val === 'string') {
+                        acc[nonFieldError] = acc[nonFieldError] ? `${acc[nonFieldError]}, ${val}` : val;
+                        return acc;
+                    }
+
+                    return {
+                        ...acc,
+                        ...val,
+                    };
+                }, {} as GenericObjectError);
             }
 
             return {
@@ -67,7 +107,7 @@ export function transformErrors(errors: ServerError[]) {
         },
     );
 
-    if (isDefined(mappedErrors.nonFieldErrors)) {
+    if (isDefined(mappedErrors) && 'nonFieldErrors' in mappedErrors && isDefined(mappedErrors.nonFieldErrors)) {
         // @ts-expect-error fix typing
         mappedErrors[nonFieldError] = mappedErrors.nonFieldErrors;
     }

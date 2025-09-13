@@ -242,8 +242,8 @@ function Projects() {
             headerActions={(
                 <SmartLink
                     route="newProject"
-                    spacing="md"
                     withLinkIcon
+                    styleVariant="translucent"
                 >
                     New Project
                 </SmartLink>
@@ -337,6 +337,7 @@ function Projects() {
             <Container
                 heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} projects`}
                 headingLevel={6}
+                withWrapInHeader
                 headerActions={(
                     <>
                         <SortByInput

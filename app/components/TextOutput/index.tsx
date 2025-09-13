@@ -6,6 +6,8 @@ import {
     populateFormat,
 } from '@togglecorp/fujs';
 
+import Container from '#components/Container';
+import Tooltip from '#components/Tooltip';
 import useSpacingToken from '#hooks/useSpacingToken';
 import { formatNumber } from '#utils/common';
 import {
@@ -66,6 +68,7 @@ interface BaseProps {
     spacing?: SpacingType;
     withCenterAlign?: boolean;
     emptyValueDisplay?: React.ReactNode;
+    withEllipsizedOverflow?: boolean;
 }
 
 interface BooleanProps {
@@ -110,6 +113,7 @@ function TextOutput(props: Props) {
         withWrap,
         withCenterAlign,
         emptyValueDisplay = '--',
+        withEllipsizedOverflow,
     } = props;
 
     const spacingClassName = useSpacingToken({
@@ -140,6 +144,7 @@ function TextOutput(props: Props) {
                 styles.textOutput,
                 withWrap && styles.withWrap,
                 withCenterAlign && styles.withCenterAlign,
+                withEllipsizedOverflow && styles.withEllipsizedOverflow,
                 spacingClassName,
                 className,
             )}
@@ -159,8 +164,20 @@ function TextOutput(props: Props) {
                     {label}
                 </div>
             )}
-            <div className={styles.value}>
+            <div
+                className={styles.value}
+            >
                 {formattedValue ?? emptyValueDisplay}
+                {withEllipsizedOverflow && (
+                    <Tooltip>
+                        <Container
+                            heading={label}
+                            headingLevel={6}
+                        >
+                            {formattedValue}
+                        </Container>
+                    </Tooltip>
+                )}
             </div>
             {description && (
                 <div>

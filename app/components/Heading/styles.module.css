@@ -5,6 +5,7 @@
     line-height: 1.125;
     color: var(--color-primary);
     font-size: var(--font-size);
+    overflow-wrap: anywhere;
 
     &.level1 {
         font-weight: var(--font-weight-light);

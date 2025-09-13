@@ -6,9 +6,11 @@ import {
 } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
+import ButtonLayout from '#components/ButtonLayout';
 import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
+    formatNumber,
     labelSelector,
     valueSelector,
 } from '#utils/common';
@@ -94,17 +96,18 @@ function Pager(props: Props) {
                     styleVariant={i === activePage ? 'filled' : 'translucent'}
                     colorVariant={i === activePage ? 'accent' : 'text'}
                 >
-                    {i}
+                    {formatNumber(i)}
                 </Button>
             );
 
             const getEllipsis = (pos: 'start' | 'end' | 'mid') => (
-                <div
-                    className={styles.ellipsis}
+                <ButtonLayout
+                    styleVariant="transparent"
                     key={`${pos}-ellipsis`}
+                    disabled
                 >
                     <IoEllipsisHorizontal />
-                </div>
+                </ButtonLayout>
             );
 
             const pageCapacity = 7;

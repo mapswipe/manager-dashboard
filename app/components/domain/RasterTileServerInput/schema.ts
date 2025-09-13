@@ -3,6 +3,7 @@ import {
     addCondition,
     ObjectSchema,
     PartialForm,
+    requiredStringCondition,
     undefinedValue,
 } from '@togglecorp/toggle-form';
 
@@ -96,7 +97,10 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
                                     required: true,
                                     validations: [imageryUrlCondition],
                                 },
-                                credits: {},
+                                credits: {
+                                    required: true,
+                                    requiredValidation: requiredStringCondition,
+                                },
                                 minZoom: {},
                                 maxZoom: {},
                             }),
@@ -108,7 +112,10 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
                     ...defaultRasterTileServerFieldSchema,
                     [key]: {
                         fields: (): ReturnType<CommonRasterTileServerConfigSchema['fields']> => ({
-                            credits: {},
+                            credits: {
+                                required: true,
+                                requiredValidation: requiredStringCondition,
+                            },
                         }),
                     },
                 };

@@ -22,6 +22,7 @@ import useAlert from '#hooks/useAlert';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
+    transformErrors,
 } from '#utils/error';
 
 interface Props {
@@ -29,6 +30,7 @@ interface Props {
     projectId: string;
     status: ProjectStatusEnum;
     buttonStyleVariant?: ButtonStyleVariant;
+    withFullWidth?: boolean;
 }
 
 function ProjectActions(props: Props) {
@@ -37,6 +39,7 @@ function ProjectActions(props: Props) {
         projectId,
         status,
         buttonStyleVariant = 'translucent',
+        withFullWidth,
     } = props;
 
     const alert = useAlert();
@@ -84,29 +87,35 @@ function ProjectActions(props: Props) {
             // FIXME(frozenhelium): show proper errors
             const {
                 ok,
-                // errors,
+                errors,
                 // result,
             } = result.data.updateProjectStatus;
 
             if (!ok) {
+                const formErrors = transformErrors(errors);
+                const errorMessage = isDefined(formErrors)
+                    ? Object.values(formErrors).join(', ')
+                    : 'Unknown error occured';
+
                 alert.show(
                     'Failed to update the Project status!',
                     {
-                        // description: 'Please fix the errors and try again!',
+                        description: errorMessage,
                         variant: 'danger',
                     },
                 );
-                // setError(transformErrors(errors));
 
+                setNewStatus(undefined);
                 return;
             }
 
+            setNewStatus(undefined);
             alert.show(
                 'Project status updated successfully!',
                 { variant: 'success' },
             );
-        } catch (apolloError) {
-            alertCombinedError(apolloError, alert);
+        } catch (combinedError) {
+            alertCombinedError(combinedError, alert);
         }
 
         setNewStatus(undefined);
@@ -126,6 +135,7 @@ function ProjectActions(props: Props) {
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
                     colorVariant="accent"
+                    withFullWidth={withFullWidth}
                 >
                     Process
                 </Button>
@@ -137,6 +147,7 @@ function ProjectActions(props: Props) {
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                     colorVariant="accent"
                 >
                     Publish
@@ -150,6 +161,7 @@ function ProjectActions(props: Props) {
                     disabled={actionsDisabled}
                     colorVariant="danger"
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                 >
                     Withdraw
                 </Button>
@@ -161,6 +173,7 @@ function ProjectActions(props: Props) {
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                     colorVariant="danger"
                 >
                     Finish
@@ -178,6 +191,7 @@ function ProjectActions(props: Props) {
                     disabled={actionsDisabled}
                     colorVariant="danger"
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                 >
                     Discard
                 </Button>
@@ -189,6 +203,7 @@ function ProjectActions(props: Props) {
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                 >
                     Resume
                 </Button>
@@ -200,6 +215,7 @@ function ProjectActions(props: Props) {
                     onClick={setNewStatus}
                     disabled={actionsDisabled}
                     styleVariant={buttonStyleVariant}
+                    withFullWidth={withFullWidth}
                 >
                     Pause
                 </Button>

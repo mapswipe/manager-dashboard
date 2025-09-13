@@ -320,6 +320,7 @@ function NewProject() {
                 )}
             </Container>
             <ProjectGeneralInputs
+                projectType={value.projectType}
                 value={value}
                 error={error}
                 setFieldValue={setFieldValue}

@@ -1,5 +1,6 @@
 import {
-    greaterThanCondition,
+    greaterThanOrEqualToCondition,
+    lessThanOrEqualToCondition,
     ObjectSchema,
     PartialForm,
     requiredStringCondition,
@@ -29,7 +30,7 @@ const findSpecificFormSchema: FindSpecificFormSchema = {
     fields: (): ReturnType<FindSpecificFormSchema['fields']> => ({
         zoomLevel: {
             required: true,
-            validations: [greaterThanCondition(0)],
+            validations: [greaterThanOrEqualToCondition(14), lessThanOrEqualToCondition(22)],
         },
         tileServerProperty: rasterTileServerFormSchema,
         aoiGeometry: {

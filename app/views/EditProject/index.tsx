@@ -60,15 +60,20 @@ function EditProject() {
     }
 
     if (status === ProjectStatusEnum.Processed
+        || status === ProjectStatusEnum.ReadyToPublish
         || status === ProjectStatusEnum.Published
         || status === ProjectStatusEnum.Withdrawn
         || status === ProjectStatusEnum.Paused
         || status === ProjectStatusEnum.Discarded
+        || status === ProjectStatusEnum.Finished
+        || status === ProjectStatusEnum.PublishingFailed
     ) {
         return (
             <UpdateProcessedProjectForm projectData={projectData} />
         );
     }
+
+    status satisfies never;
 
     return null;
 }

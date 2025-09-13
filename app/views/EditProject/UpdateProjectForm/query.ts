@@ -10,6 +10,7 @@ query ProjectStatus($projectId: ID!) {
     project(id: $projectId) {
         id
         status
+        statusMessage
     }
 }
 `;

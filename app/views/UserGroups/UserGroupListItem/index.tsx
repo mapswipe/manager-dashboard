@@ -2,27 +2,25 @@ import {
     useCallback,
     useState,
 } from 'react';
-import { FaEdit } from 'react-icons/fa';
-import { IoArchive } from 'react-icons/io5';
 import {
     PiArchive,
     PiCalendar,
+    PiPencil,
     PiUser,
 } from 'react-icons/pi';
 import { gql } from 'urql';
 
 import Button from '#components/Button';
 import ColorPreview from '#components/ColorSelectInput/ColorPreview';
+import ContributorUserCard from '#components/domain/ContributorUserCard';
 import ExpandableContainer from '#components/ExpandableContainer';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import OverflowMenu from '#components/OverflowMenu';
 import Pager from '#components/Pager';
-import Table, { Column } from '#components/Table';
 import Tag from '#components/Tag';
 import TextOutput from '#components/TextOutput';
 import {
-    UserGroupMemberListQuery,
     UserGroupsListQuery,
     useUpdateUserGroupMutation,
     useUserGroupMemberListQuery,
@@ -45,15 +43,21 @@ query UserGroupMemberList($filters: ContributorUserGroupMembershipFilter, $pagin
         pagination: $pagination,
         filters: $filters
     ) {
+        totalCount
         results {
             id
+            userId
             user {
+                username
+                totalSwipes
+                totalSwipeTime
+                totalMappingProjects
                 id
                 firebaseId
-                username
+                createdAt
+                communityDashboardUrl
             }
         }
-        totalCount
     }
 }
 `;
@@ -86,15 +90,11 @@ mutation UpdateUserGroup($id: ID!, $data: ContributorUserGroupUpdateInput!) {
 }
 `;
 
-type UserMemberTye = UserGroupMemberListQuery['contributorUserGroupMembers']['results'][number];
-
 interface Props {
     value: UserGroupsListQuery['contributorUserGroups']['results'][number];
     onEdit: (id: string) => void;
     refetchUserGroup: () => void;
 }
-
-const keySelector = (item: UserMemberTye) => item.user.id;
 
 function UserGroupListItem(props: Props) {
     const {
@@ -142,24 +142,6 @@ function UserGroupListItem(props: Props) {
             },
         },
     });
-
-    const columns: Column<UserMemberTye>[] = [
-        {
-            id: 'id',
-            title: 'User Id',
-            cellRenderer: (item) => item.user.id,
-        },
-        {
-            id: 'username',
-            title: 'User Name',
-            cellRenderer: (item) => item.user.username,
-        },
-        {
-            id: 'firebaseId',
-            title: 'Firebase ID',
-            cellRenderer: (item) => item.user.firebaseId,
-        },
-    ];
 
     const handleStatusUpdate = useCallback(async (newArchivedStatus: boolean) => {
         try {
@@ -215,9 +197,9 @@ function UserGroupListItem(props: Props) {
                         name={!isArchived}
                         styleVariant="transparent"
                         onClick={handleStatusUpdate}
-                        withoutPadding
                         disabled={updateUserGroupPending}
-                        start={<IoArchive />}
+                        start={<PiArchive />}
+                        withFullWidth
                     >
                         {isArchived ? 'Unarchive' : 'Archive'}
                     </Button>
@@ -225,8 +207,8 @@ function UserGroupListItem(props: Props) {
                         name={id}
                         onClick={onEdit}
                         styleVariant="transparent"
-                        withoutPadding
-                        start={<FaEdit />}
+                        start={<PiPencil />}
+                        withFullWidth
                     >
                         Edit
                     </Button>
@@ -234,7 +216,7 @@ function UserGroupListItem(props: Props) {
             )}
             headerDescription={(
                 <ListLayout spacing="sm" layout="block">
-                    <ListLayout>
+                    <ListLayout withWrap>
                         <Tag>
                             <InlineLayout
                                 spacing="sm"
@@ -286,11 +268,13 @@ function UserGroupListItem(props: Props) {
                 />
             )}
         >
-            <Table
-                keySelector={keySelector}
-                columns={columns}
-                data={userMemberResponse?.contributorUserGroupMembers?.results}
-            />
+            {userMemberResponse?.contributorUserGroupMembers?.results.map((contributor) => (
+                <ContributorUserCard
+                    key={contributor.id}
+                    value={contributor.user}
+                    compact
+                />
+            ))}
             <InlineLayout
                 end={(
                     <Pager

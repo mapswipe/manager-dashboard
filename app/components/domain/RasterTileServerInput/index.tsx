@@ -186,6 +186,7 @@ function RasterTileServerInput(props: Props) {
                                         onChange={setCustomRasterTileServerFieldValue}
                                         disabled={disabled}
                                         error={getErrorObject(error?.custom)?.minZoom}
+                                        hint="Minimum zoom level supported by the imagery server"
                                     />
                                     <NumberInput
                                         name="maxZoom"
@@ -194,6 +195,7 @@ function RasterTileServerInput(props: Props) {
                                         onChange={setCustomRasterTileServerFieldValue}
                                         disabled={disabled}
                                         error={getErrorObject(error?.custom)?.maxZoom}
+                                        hint="Maximum zoom level supported by the imagery server"
                                     />
                                 </ListLayout>
                             </>
