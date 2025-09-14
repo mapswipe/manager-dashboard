@@ -10,6 +10,7 @@ import ButtonLayout from '#components/ButtonLayout';
 import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
+    defaultPagePerItemOptions,
     formatNumber,
     labelSelector,
     valueSelector,
@@ -66,7 +67,7 @@ class Side {
 
 interface Props {
     className?: string;
-    pagePerItemOptions: LabelValue[];
+    pagePerItemOptions?: LabelValue[];
     onPagePerItemChange?: (newValue: number) => void;
     pagePerItem: number,
     activePage: number,
@@ -77,7 +78,7 @@ interface Props {
 function Pager(props: Props) {
     const {
         className,
-        pagePerItemOptions,
+        pagePerItemOptions = defaultPagePerItemOptions,
         onPagePerItemChange,
         pagePerItem,
         totalItems,

@@ -10,11 +10,7 @@ import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import Pager from '#components/Pager';
 import { useUserListQuery } from '#generated/types/graphql';
-import {
-    DEFAULT_PAGE,
-    DEFAULT_PAGE_SIZE,
-    defaultPagePerItemOptions,
-} from '#utils/common';
+import { DEFAULT_PAGE } from '#utils/common';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_LIST_QUERY = gql`
@@ -29,6 +25,8 @@ query UserList($pagination: OffsetPaginationInput!) {
     }
 }
 `;
+
+const PAGE_SIZE = 9;
 
 interface Props {
     className?: string;
@@ -45,8 +43,8 @@ function ManagerList(props: Props) {
     }] = useUserListQuery({
         variables: {
             pagination: {
-                offset: (activePage - 1) * DEFAULT_PAGE_SIZE,
-                limit: DEFAULT_PAGE_SIZE,
+                offset: (activePage - 1) * PAGE_SIZE,
+                limit: PAGE_SIZE,
             },
         },
     });
@@ -64,11 +62,10 @@ function ManagerList(props: Props) {
             spacing="lg"
             footerActions={(
                 <Pager
-                    pagePerItem={DEFAULT_PAGE_SIZE}
+                    pagePerItem={PAGE_SIZE}
                     activePage={activePage}
                     onActivePageChange={setActivePage}
                     totalItems={totalItems}
-                    pagePerItemOptions={defaultPagePerItemOptions}
                 />
             )}
         >
