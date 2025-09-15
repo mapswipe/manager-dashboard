@@ -22,8 +22,9 @@ function ZoomLevelOutput(props: Props) {
             label="Zoom level"
             value={selectedOption?.value ?? value}
             valueType="number"
+            withWrap
             description={isDefined(selectedOption)
-                ? ` - ${selectedOption?.label} (${selectedOption?.description})`
+                ? `${selectedOption?.label} (${selectedOption?.description})`
                 : null}
         />
     );

@@ -6,9 +6,12 @@ import {
 } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
+import ButtonLayout from '#components/ButtonLayout';
 import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
+    defaultPagePerItemOptions,
+    formatNumber,
     labelSelector,
     valueSelector,
 } from '#utils/common';
@@ -64,7 +67,7 @@ class Side {
 
 interface Props {
     className?: string;
-    pagePerItemOptions: LabelValue[];
+    pagePerItemOptions?: LabelValue[];
     onPagePerItemChange?: (newValue: number) => void;
     pagePerItem: number,
     activePage: number,
@@ -75,7 +78,7 @@ interface Props {
 function Pager(props: Props) {
     const {
         className,
-        pagePerItemOptions,
+        pagePerItemOptions = defaultPagePerItemOptions,
         onPagePerItemChange,
         pagePerItem,
         totalItems,
@@ -94,17 +97,18 @@ function Pager(props: Props) {
                     styleVariant={i === activePage ? 'filled' : 'translucent'}
                     colorVariant={i === activePage ? 'accent' : 'text'}
                 >
-                    {i}
+                    {formatNumber(i)}
                 </Button>
             );
 
             const getEllipsis = (pos: 'start' | 'end' | 'mid') => (
-                <div
-                    className={styles.ellipsis}
+                <ButtonLayout
+                    styleVariant="transparent"
                     key={`${pos}-ellipsis`}
+                    disabled
                 >
                     <IoEllipsisHorizontal />
-                </div>
+                </ButtonLayout>
             );
 
             const pageCapacity = 7;

@@ -152,7 +152,7 @@ function Root() {
             showDialog
             fallback={(
                 <PreloadMessage>
-                    Failed to load the given route!
+                    Failed to load the page!
                 </PreloadMessage>
             )}
         >

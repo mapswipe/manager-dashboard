@@ -17,6 +17,11 @@ import {
     ProjectAssetInputTypeEnum,
     useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
+import {
+    alertCombinedError,
+    transformErrors,
+} from '#utils/error';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 
 function getAcceptForInputType(value: ProjectAssetInputTypeEnum): string | undefined {
@@ -81,6 +86,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
         ...inputLayoutContainerProps
     } = props;
 
+    const alert = useAlert();
     const inputId = useId();
     const [
         { fetching: createProjectAssetPending },
@@ -104,25 +110,62 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 return;
             }
 
-            const result = await createProjectAsset({
-                data: {
-                    clientId: ulid(),
-                    file,
-                    inputType,
-                    project: projectId,
-                },
-            });
+            try {
+                const result = await createProjectAsset({
+                    data: {
+                        clientId: ulid(),
+                        file,
+                        inputType,
+                        project: projectId,
+                    },
+                });
 
-            if (
-                // eslint-disable-next-line no-underscore-dangle
-                result.data?.createProjectAsset.__typename === 'ProjectAssetTypeMutationResponseType'
-                && result.data.createProjectAsset.ok
-                && result.data.createProjectAsset.result
-            ) {
+                if (
+                    isNotDefined(result.data)
+                        // eslint-disable-next-line no-underscore-dangle
+                        || result.data.createProjectAsset.__typename !== 'ProjectAssetTypeMutationResponseType'
+                ) {
+                    alert.show(
+                        'Failed to upload the Project asset!',
+                        {
+                            description: 'Unexpectected response from the server!',
+                            variant: 'danger',
+                        },
+                    );
+
+                    return;
+                }
+
+                const {
+                    ok,
+                    errors,
+                    // result,
+                } = result.data.createProjectAsset;
+
+                if (!ok || isNotDefined(result.data.createProjectAsset.result)) {
+                    const formErrors = transformErrors(errors);
+                    const errorMessage = isDefined(formErrors)
+                        ? Object.values(formErrors).join(', ')
+                        : 'Unknown error occured';
+
+                    alert.show(
+                        'Failed to upload the Project asset!',
+                        {
+                            description: errorMessage,
+                            variant: 'danger',
+                        },
+                    );
+                    // setError(transformErrors(errors));
+
+                    return;
+                }
+
                 onChange(result.data.createProjectAsset.result.id, name);
+            } catch (combinedError) {
+                alertCombinedError(combinedError, alert);
             }
         }
-    }, [createProjectAsset, projectId, onChange, name, inputType]);
+    }, [createProjectAsset, projectId, onChange, name, inputType, alert]);
 
     return (
         <InputContainerLayout

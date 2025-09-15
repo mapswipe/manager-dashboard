@@ -57,6 +57,7 @@ function PageLayout(props: Props) {
                     start={headerIcons}
                     end={headerActions}
                     withEndAlign
+                    withWrap
                 >
                     <Heading
                         level={1}

@@ -5,6 +5,7 @@
     flex-grow: 1;
     justify-content: center;
     background-color: var(--color-background);
+    height: 100vh;
     text-align: center;
     font-size: var(--font-size-lg);
 }

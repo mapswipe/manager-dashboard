@@ -84,6 +84,7 @@ function TutorialListItem(props: Props) {
                         status={status}
                         tutorialId={id}
                         buttonStyleVariant="transparent"
+                        withFullWidth
                     />
                 </OverflowMenu>
             )}

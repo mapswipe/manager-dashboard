@@ -8,6 +8,7 @@ import { gql } from 'urql';
 
 import SmartNavLink from '#base/components/SmartNavLink';
 import Button from '#components/Button';
+import ButtonLayout from '#components/ButtonLayout';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import Modal from '#components/Modal';
@@ -94,7 +95,7 @@ function Navbar(props: Props) {
                     </>
                 )}
                 end={user && (
-                    <ListLayout>
+                    <ListLayout spacing="sm">
                         <Button
                             name={undefined}
                             styleVariant="transparent"
@@ -137,9 +138,14 @@ function Navbar(props: Props) {
                                 )}
                             </Modal>
                         )}
-                        <InlineLayout>
+                        <ButtonLayout
+                            styleVariant="transparent"
+                            colorVariant="text-on-dark"
+                            withoutPadding
+                            disabled
+                        >
                             {user.displayName}
-                        </InlineLayout>
+                        </ButtonLayout>
                         <Button
                             styleVariant="transparent"
                             colorVariant="text-on-dark"
@@ -155,10 +161,7 @@ function Navbar(props: Props) {
                 spacing="md"
                 withWrap
             >
-                <ListLayout
-                    spacing="lg"
-                    withWrap
-                >
+                <ListLayout withWrap>
                     <SmartNavLink
                         route="home"
                         withoutPadding

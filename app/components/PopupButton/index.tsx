@@ -11,7 +11,7 @@ import {
 import { _cs } from '@togglecorp/fujs';
 
 import Button, { Props as ButtonProps } from '#components/Button';
-import Popup from '#components/Popup';
+import Popup, { PopupProps } from '#components/Popup';
 import useBlurEffect from '#hooks/useBlurEffect';
 
 import styles from './styles.module.css';
@@ -26,6 +26,7 @@ export interface PopupButtonProps extends Omit<ButtonProps<undefined>, 'name' | 
     persistent?: boolean;
     withoutDropdownIcon?: boolean;
     defaultShown?: boolean;
+    preferredWidth?: PopupProps['preferredWidth'];
 }
 
 function PopupButton(props: PopupButtonProps) {
@@ -38,6 +39,7 @@ function PopupButton(props: PopupButtonProps) {
         withoutDropdownIcon,
         persistent = false,
         defaultShown,
+        preferredWidth,
         ...otherProps
     } = props;
 
@@ -111,6 +113,7 @@ function PopupButton(props: PopupButtonProps) {
                     parentRef={buttonRef}
                     className={_cs(styles.popup, popupClassName)}
                     contentClassName={styles.popupContent}
+                    preferredWidth={preferredWidth}
                 >
                     {children}
                 </Popup>

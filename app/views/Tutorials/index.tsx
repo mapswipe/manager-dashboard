@@ -174,8 +174,8 @@ function Tutorials() {
             headerActions={(
                 <SmartLink
                     route="newTutorial"
-                    spacing="md"
                     withLinkIcon
+                    styleVariant="translucent"
                 >
                     New Tutorial
                 </SmartLink>
@@ -235,6 +235,7 @@ function Tutorials() {
         >
             <Container
                 heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} tutorial`}
+                withWrapInHeader
                 headingLevel={6}
                 headerActions={(
                     <>

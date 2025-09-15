@@ -13,7 +13,7 @@ export const fullSpacings: SpacingMode[] = [
 export function getOpticallyCorrectedSpacingValue(value: string, mode: SpacingMode) {
     // Horizontal padding seems a bit imbalanced
     // due to the gap from the line height in vertical padding
-    if (mode === 'padding-block') {
+    if (mode === 'padding-block' || mode === 'row-gap') {
         return `calc(${value} + (1rem / var(--optical-correction-factor) - 1rem))`;
     }
 

@@ -94,7 +94,9 @@ function TeamListItem(props: Props) {
             heading={name}
             headingLevel={5}
             headerDescription={(
-                <ListLayout>
+                <ListLayout
+                    withWrap
+                >
                     <Tag>
                         <InlineLayout
                             spacing="sm"

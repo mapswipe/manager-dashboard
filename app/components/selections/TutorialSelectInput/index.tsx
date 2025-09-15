@@ -67,7 +67,6 @@ function TutorialSelectInput<K extends string>(props: SelectInputProps<K>) {
     const {
         className,
         projectType,
-        hint = "Please note that you'll only be able to select the tutorial of same project type",
         ...otherProps
     } = props;
 
@@ -130,7 +129,6 @@ function TutorialSelectInput<K extends string>(props: SelectInputProps<K>) {
             optionsPending={fetching}
             searchOptions={searchOptions}
             totalOptionsCount={totalOptionsCount ?? undefined}
-            hint={hint}
         />
     );
 }

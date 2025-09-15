@@ -439,6 +439,7 @@ function UpdateProjectForm(props: Props) {
             )}
             <NonFieldError error={error} />
             <ProjectGeneralInputs
+                projectType={projectData.project.projectType}
                 value={value}
                 setFieldValue={setFieldValue}
                 error={error}
@@ -466,7 +467,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={findProjectTypeSpecifics}
                         setFieldValue={setFindProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.find}
+                        error={getErrorObject(error?.projectTypeSpecifics)}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -475,7 +476,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={compareProjectTypeSpecifics}
                         setFieldValue={setCompareProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.compare}
+                        error={getErrorObject(error?.projectTypeSpecifics)}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -484,7 +485,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={validateProjectTypeSpecifics}
                         setFieldValue={setValidateProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.validate}
+                        error={getErrorObject(error?.projectTypeSpecifics)}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -493,7 +494,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={completenessProjectTypeSpecifics}
                         setFieldValue={setCompletenessProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
+                        error={getErrorObject(error?.projectTypeSpecifics)}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -502,7 +503,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={validateImageProjectTypeSpecifics}
                         setFieldValue={setValidateImageProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
+                        error={getErrorObject(error?.projectTypeSpecifics)}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -511,7 +512,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={streetProjectTypeSpecifics}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)?.street}
+                        error={getErrorObject(error?.projectTypeSpecifics)}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}

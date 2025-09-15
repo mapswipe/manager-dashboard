@@ -159,7 +159,7 @@ function RootLayout() {
         fetching: meResponseLoading,
         data: meResponseData,
     }] = useMeQuery({
-        pause: authenticated || !csrfReady,
+        pause: !csrfReady,
     });
 
     useEffect(() => {
@@ -182,7 +182,7 @@ function RootLayout() {
     }, [csrfReady, authenticated, meResponseLoading, meResponseData, setUser]);
 
     const [{ data: allEnumsResponse }] = useAllEnumsQuery({
-        pause: !csrfReady,
+        pause: !csrfReady || !authenticated,
     });
 
     const enumContextValue = useMemo(() => ({

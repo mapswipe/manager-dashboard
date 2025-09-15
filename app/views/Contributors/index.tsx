@@ -146,6 +146,7 @@ function Contributors() {
         >
             <Container
                 heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} users`}
+                withWrapInHeader
                 headingLevel={6}
                 headerActions={(
                     <>

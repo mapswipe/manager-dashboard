@@ -6,37 +6,35 @@
     --font-family-monospace: 'Source Code Pro', monospace;
     --font-family-sans-serif: 'Source Sans 3', sans-serif;
 
-    --optical-correction-factor: 1.25;
+    --optical-correction-factor: 1.35;
     --spacing-base: 1rem;
     --font-size-base: 1rem;
 
     @media screen and (max-width: 50rem) {
-        --spacing-base: 0.87rem;
-        --font-size-base: 0.96rem;
+        --spacing-base: 0.953rem;
     }
 
     @media screen and (max-width: 30rem) {
-        --spacing-base: 0.8rem;
-        --font-size-base: 0.87rem;
+        --spacing-base: 0.926rem;
     }
 
-    --spacing-2xs: calc(var(--spacing-base) * 0.15);
-    --spacing-xs: calc(var(--spacing-base) * 0.25);
-    --spacing-sm: calc(var(--spacing-base) * 0.45);
-    --spacing-md: calc(var(--spacing-base) * 0.7);
-    --spacing-lg: calc(var(--spacing-base) * 1.1);
-    --spacing-xl: calc(var(--spacing-base) * 1.625);
-    --spacing-2xl: calc(var(--spacing-base) * 2.625);
+    --spacing-2xs: calc(var(--spacing-base) * 0.25);
+    --spacing-xs: calc(var(--spacing-base) * 0.5);
+    --spacing-sm: calc(var(--spacing-base) * 0.75);
+    --spacing-md: calc(var(--spacing-base) * 1);
+    --spacing-lg: calc(var(--spacing-base) * 1.25);
+    --spacing-xl: calc(var(--spacing-base) * 1.5625);
+    --spacing-2xl: calc(var(--spacing-base) * 1.953);
 
-    --font-size-2xs: calc(var(--font-size-base) * 0.75);
-    --font-size-xs: calc(var(--font-size-base) * 0.8125);
-    --font-size-sm: calc(var(--font-size-base) * 0.875);
-    --font-size-md: calc(var(--font-size-base) * 1);
-    --font-size-lg: calc(var(--font-size-base) * 1.125);
-    --font-size-xl: calc(var(--font-size-base) * 1.25);
-    --font-size-2xl: calc(var(--font-size-base) * 1.75);
-    --font-size-3xl: calc(var(--font-size-base) * 2.0);
-    --font-size-4xl: calc(var(--font-size-base) * 2.25);
+    --font-size-2xs: calc(var(--font-size-base) * 0.625);
+    --font-size-xs:  calc(var(--font-size-base) * 0.75);
+    --font-size-sm:  calc(var(--font-size-base) * 0.875);
+    --font-size-md:  calc(var(--font-size-base) * 1);
+    --font-size-lg:  calc(var(--font-size-base) * 1.2);
+    --font-size-xl:  calc(var(--font-size-base) * 1.44);
+    --font-size-2xl: calc(var(--font-size-base) * 1.728);
+    --font-size-3xl: calc(var(--font-size-base) * 2.074);
+    --font-size-4xl: calc(var(--font-size-base) * 2.488);
 
     --color-primary: #001958;
     --color-text-on-dark: #ffffff;
@@ -49,8 +47,7 @@
     --color-warning: #c8a311;
     --color-success: #53b391;
     --color-separator: rgba(0, 0, 0, 0.1);
-    --color-shadow: rgba(0, 0, 0, 0.1);
-
+    --color-shadow: rgba(0, 0, 0, 0.3);
 
     --color-background: #f5f5f5;
     --color-foreground: #ffffff;
@@ -68,7 +65,6 @@
     --color-input-border: rgba(0, 0, 0, 0.1);
     --color-active-input-border: var(--color-accent);
 
-
     --font-weight-light: 300;
     --font-weight-medium: 360;
     --font-weight-bold: 480;
@@ -79,7 +75,7 @@
     --width-separator-medium: 3pt;
     --width-separator-thick: 5pt;
     --width-separator-mobile-preview: 8pt;
-    --width-scrollbar: 0.75rem;
+    --width-scrollbar: 0.5rem;
     --width-page-content-max: 80rem;
 
     --size-tile: 180px;
@@ -93,20 +89,20 @@
     --width-mobile-preview: calc(var(--size-tile) * 2);
     --height-mobile-preview: calc(var(--width-mobile-preview) * 19 / 9);
 
-    --radius-popup-border: 0.25rem;
+    --radius-popup-border: 0.325rem;
     --radius-scrollbar-border: 0.25rem;
     --radius-blur-shadow: 5px;
     --radius-modal: 0.25rem;
-    --radius-button-border: 0.25rem;
-    --radius-input-border: 0.35rem;
+    --radius-button-border: 0.325rem;
+    --radius-tag-border: 0.325rem;
+    --radius-input-border: 0.325rem;
     --radius-card-border: 0.5rem;
-    --radius-badge-border: 1rem;
 
     --line-height-sm: 1.125;
     --line-height-md: 1.25;
     --line-height-lg: 1.5;
 
-    --shadow-card: 0 2px 5px -1px var(--color-shadow);
+    --shadow-card: 0 1px 10px -6px var(--color-shadow);
 
     --duration-transition-medium: .2s;
 

@@ -280,6 +280,7 @@ function UpdateProcessedProjectForm(props: Props) {
             )}
             <NonFieldError error={error} />
             <ProjectGeneralInputs
+                projectType={projectData.project.projectType}
                 value={value}
                 setFieldValue={setFieldValue}
                 error={error}
@@ -324,6 +325,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.tutorial}
                     disabled={baseInputsDisabled}
                     projectType={projectData.project.projectType}
+                    hint="Please note that you'll only be able to select the tutorial of same project type"
                 />
             </Container>
         </PageLayout>

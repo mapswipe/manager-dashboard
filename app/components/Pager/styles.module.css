@@ -4,12 +4,4 @@
     .items-per-page {
         width: 10rem;
     }
-
-    .page-list {
-        align-items: baseline;
-
-        .ellipsis {
-            padding: var(--spacing-md);
-        }
-    }
 }
