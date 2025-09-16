@@ -225,15 +225,17 @@ function NewProject() {
                 } = result.data.createProject;
 
                 if (!ok || !createProjectResult) {
+                    setError(transformErrors(errors));
+
                     alert.show(
                         'Failed to create the Project!',
                         {
-                            description: 'Please fix the errors and try again!',
+                            description: 'Something unexpected occured.',
                             variant: 'danger',
+                            debugMessage: JSON.stringify(errors, null, 2),
                         },
                     );
 
-                    setError(transformErrors(errors));
                     return;
                 }
 

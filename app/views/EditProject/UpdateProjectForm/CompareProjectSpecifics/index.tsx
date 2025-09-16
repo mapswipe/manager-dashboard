@@ -12,7 +12,7 @@ import {
     defaultRasterTileServerInputValue,
     type PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
-import NumberInput from '#components/NumberInput';
+import ZoomLevelSelectInput from '#components/ZoomLevelSelectInput';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
 import { type PartialCompareSpecificFields } from './schema';
@@ -79,8 +79,7 @@ function CompareProjectSpecifics(props: Props) {
                 aoiGeoJsonAssetId={value?.aoiGeometry}
                 zoomLevel={value?.zoomLevel}
             />
-            <NumberInput
-                label="Zoom level"
+            <ZoomLevelSelectInput
                 name="zoomLevel"
                 value={value?.zoomLevel}
                 onChange={setFieldValue}
