@@ -291,7 +291,21 @@ function UpdateProjectForm(props: Props) {
                         variant: 'danger',
                     },
                 );
-                setError(transformErrors(errors));
+
+                const transformedErrors = transformErrors(errors);
+
+                if ('projectTypeSpecifics' in transformedErrors) {
+                    const projectTypeKey = projectTypeToKeyMap[projectData.project.projectType];
+
+                    setError({
+                        ...transformErrors,
+                        projectTypeSpecifics: {
+                            [projectTypeKey]: transformedErrors.projectTypeSpecifics,
+                        },
+                    });
+                } else {
+                    setError(transformedErrors);
+                }
 
                 return;
             }
@@ -304,7 +318,14 @@ function UpdateProjectForm(props: Props) {
         } catch (apolloError) {
             alertCombinedError(apolloError, alert);
         }
-    }, [projectData.project.id, updateProject, setError, alert, setPristine]);
+    }, [
+        projectData.project.id,
+        projectData.project.projectType,
+        updateProject,
+        setError,
+        alert,
+        setPristine,
+    ]);
 
     const handleUpdateDraft = useCallback(async (
         submittedFormValues: PartialProjectUpdateInput,
@@ -467,7 +488,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={findProjectTypeSpecifics}
                         setFieldValue={setFindProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.find}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -476,7 +497,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={compareProjectTypeSpecifics}
                         setFieldValue={setCompareProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.compare}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -485,7 +506,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={validateProjectTypeSpecifics}
                         setFieldValue={setValidateProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validate}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -494,7 +515,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={completenessProjectTypeSpecifics}
                         setFieldValue={setCompletenessProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -503,7 +524,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={validateImageProjectTypeSpecifics}
                         setFieldValue={setValidateImageProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
@@ -512,7 +533,7 @@ function UpdateProjectForm(props: Props) {
                         projectId={projectData.project.id}
                         value={streetProjectTypeSpecifics}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
-                        error={getErrorObject(error?.projectTypeSpecifics)}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.street}
                         disabled={projectTypeSpecificInputsDisabled}
                     />
                 )}
