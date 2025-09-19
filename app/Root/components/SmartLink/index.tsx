@@ -33,6 +33,7 @@ function SmartLink(props: Props) {
         styleVariant = 'transparent',
         withoutPadding,
         spacing,
+        disabled,
         ...otherProps
     } = props;
 
@@ -51,6 +52,7 @@ function SmartLink(props: Props) {
         >
             <ButtonLayout
                 className={_cs(className, styles.buttonLayout)}
+                disabled={disabled}
                 start={start}
                 end={(
                     <>

@@ -1,8 +1,4 @@
-import {
-    useCallback,
-    useContext,
-    useMemo,
-} from 'react';
+import react from 'react';
 import { MdArrowForward } from 'react-icons/md';
 import {
     generatePath,
@@ -31,14 +27,17 @@ import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
+import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import SegmentInput from '#components/SegmentInput';
 import EnumsContext from '#contexts/EnumsContext';
 import {
     AppEnumCollectionProjectTypeEnum,
     ProjectCreateInput,
+    ProjectNameInput,
     ProjectTypeEnum,
     useNewProjectMutation,
+    useProjectNameQuery,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import { keySelector } from '#utils/common';
@@ -69,6 +68,13 @@ mutation NewProject($data: ProjectCreateInput!) {
             ...OperationInfoFields
         }
     }
+}
+`;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const PROJECT_NAME_QUERY = gql`
+query ProjectName($params: ProjectNameInput) {
+  projectName(params: $params)
 }
 `;
 
@@ -170,9 +176,9 @@ function NewProject() {
         createNewProject,
     ] = useNewProjectMutation();
 
-    const { projectTypeOptions } = useContext(EnumsContext);
+    const { projectTypeOptions } = react.useContext(EnumsContext);
 
-    const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
+    const defaultBaseProjectFormValue = react.useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),
         projectNumber: 1,
     }), []);
@@ -189,9 +195,35 @@ function NewProject() {
         value: defaultBaseProjectFormValue,
     });
 
+    const projectNameParams = react.useMemo(() => {
+        if (isNotDefined(value.topic)
+            || isNotDefined(value.requestingOrganization)
+            || isNotDefined(value.region)
+            || isNotDefined(value.projectNumber)
+        ) {
+            return undefined;
+        }
+
+        return {
+            topic: value.topic,
+            requestingOrganizationId: value.requestingOrganization,
+            region: value.region,
+            projectNumber: value.projectNumber,
+        } satisfies ProjectNameInput;
+    }, [value]);
+
+    const [{
+        data: projectNameResult,
+    }] = useProjectNameQuery({
+        variables: {
+            params: projectNameParams,
+        },
+        pause: isNotDefined(projectNameParams),
+    });
+
     const error = getErrorObject(formError);
 
-    const handleFormSubmission = useCallback(
+    const handleFormSubmission = react.useCallback(
         async (submittedFormValues: PartialProjectCreateInputFields) => {
             const finalValues = submittedFormValues as ProjectCreateInput;
 
@@ -266,7 +298,7 @@ function NewProject() {
         [createNewProject, navigate, setError, alert, setPristine],
     );
 
-    const handleSubmitButtonClick = useMemo(
+    const handleSubmitButtonClick = react.useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
@@ -297,6 +329,7 @@ function NewProject() {
             )}
             confirmNavigationChange={!pristine}
         >
+            <NonFieldError error={error} />
             <Container
                 withContentBackgroundAndPadding
                 withHeaderBorder
@@ -322,6 +355,7 @@ function NewProject() {
                 )}
             </Container>
             <ProjectGeneralInputs
+                name={projectNameResult?.projectName}
                 projectType={value.projectType}
                 value={value}
                 error={error}

@@ -76,8 +76,12 @@ function ProjectSelectInput<K extends string>(props: SelectInputProps<K>) {
             debouncedSearchText ? {
                 filters: {
                     name: debouncedSearchText,
+                    oldId: { isNull: true },
                 },
             } : {
+                filters: {
+                    oldId: { isNull: true },
+                },
                 order: {
                     name: Ordering.Asc,
                 },

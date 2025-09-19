@@ -2,8 +2,6 @@ import {
     useCallback,
     useMemo,
 } from 'react';
-import { CgArrowTopRightR } from 'react-icons/cg';
-import { MdDownload } from 'react-icons/md';
 import {
     generatePath,
     useNavigate,
@@ -23,17 +21,15 @@ import { gql } from 'urql';
 import routes from '#base/configs/routes';
 import Button from '#components/Button';
 import Container from '#components/Container';
+import ProjectAssetsList from '#components/domain/ProjectAssetsList';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
-import InlineLayout from '#components/InlineLayout';
 import PageLayout from '#components/PageLayout';
 import ProjectSelectInput from '#components/selections/ProjectSelectInput';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
-    AssetMimetypeEnum,
     TutorialCreateInput,
     useNewTutorialMutation,
-    useProjectOutputAssetsQuery,
     useTutorialProjectDetailQuery,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
@@ -96,19 +92,6 @@ function NewTutorial() {
     }] = useTutorialProjectDetailQuery({
         variables: {
             projectId: value.project ?? '',
-        },
-        pause: isNotDefined(value.project),
-    });
-
-    const [{
-        data: projectAssetsResponse,
-    }] = useProjectOutputAssetsQuery({
-        variables: {
-            projectId: value.project ?? '',
-            pagination: {
-                offset: 0,
-                limit: 10,
-            },
         },
         pause: isNotDefined(value.project),
     });
@@ -265,50 +248,9 @@ function NewTutorial() {
                         <ProjectSpecificDetails
                             projectId={projectDetailResponse.project.id}
                         />
-                        <Container
-                            heading="Project Assets"
-                            headingLevel={4}
-                            contentLayout="inline"
-                        >
-                            {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
-                                <InlineLayout
-                                    key={projectAsset.id}
-                                    // className={styles.assetCard}
-                                    withPadding
-                                    spacing="sm"
-                                    end={(
-                                        <>
-                                            {/* eslint-disable-next-line max-len */}
-                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && isDefined(projectAsset.file) && (
-                                                <a
-                                                    // className={styles.projectAssetDownloadLink}
-                                                    href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    title="Preview in geojson.io"
-                                                >
-                                                    <CgArrowTopRightR />
-                                                </a>
-                                            )}
-                                            {isDefined(projectAsset.file) && (
-                                                <a
-                                                    // className={styles.projectAssetDownloadLink}
-                                                    href={projectAsset.file.url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    title="Download"
-                                                    download
-                                                >
-                                                    <MdDownload />
-                                                </a>
-                                            )}
-                                        </>
-                                    )}
-                                >
-                                    {projectAsset.file?.name.replace(/^.*[\\/]/, '') ?? '??'}
-                                </InlineLayout>
-                            ))}
-                        </Container>
+                        <ProjectAssetsList
+                            projectId={projectDetailResponse.project.id}
+                        />
                     </>
                 )}
             </Container>

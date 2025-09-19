@@ -59,6 +59,11 @@ export type IdFilter<
     PROPERTY extends keyof FILTER,
 > = NonNullable<FILTER[PROPERTY]> extends { id?: infer TYPE } ? TYPE : never;
 
+export type IsNullFilter<
+    FILTER extends object,
+    PROPERTY extends keyof FILTER,
+> = NonNullable<FILTER[PROPERTY]> extends { isNull?: infer TYPE } ? TYPE : never;
+
 interface SortState<SORT_KEY> {
     key: SORT_KEY;
     ordering: Ordering;

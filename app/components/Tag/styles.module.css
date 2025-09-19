@@ -1,8 +1,30 @@
 .tag {
+    --color-variant: var(--color-text);
+
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-tag-border);
-    background-color: var(--color-background-accent-hint);
+    background-color: color-mix(in srgb, var(--color-variant) 8%, transparent);
     width: fit-content;
+
+    &.color-variant-text {
+        --color-variant: var(--color-text);
+    }
+
+    &.color-variant-primary {
+        --color-variant: var(--color-primary);
+    }
+
+    &.color-variant-accent {
+        --color-variant: var(--color-accent);
+    }
+
+    &.color-variant-success {
+        --color-variant: var(--color-success);
+    }
+
+    &.color-variant-danger {
+        --color-variant: var(--color-danger);
+    }
 };

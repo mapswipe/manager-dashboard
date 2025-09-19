@@ -18,10 +18,12 @@ import {
 import { ulid } from 'ulid';
 
 import Alert from '#components/Alert/index.tsx';
+import BlockLayout from '#components/BlockLayout/index.tsx';
 import Button from '#components/Button';
 import Container from '#components/Container/index.tsx';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeOutput from '#components/domain/ProjectTypeOutput/index.tsx';
+import Message from '#components/Message/index.tsx';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import {
@@ -392,6 +394,8 @@ function UpdateProjectForm(props: Props) {
         || projectData.project.status === ProjectStatusEnum.ProcessingFailed
     );
 
+    const readOnly = isDefined(projectData.project.oldId);
+
     const baseInputsDisabled = pending || !baseInputsEditable;
     const projectTypeSpecificInputsDisabled = pending || !projectTypeSpecificInputsEditable;
 
@@ -412,29 +416,49 @@ function UpdateProjectForm(props: Props) {
         <PageLayout
             heading="Update project"
             className={className}
-            headerActions={(isDefined(projectData) && (
+            headerActions={(isDefined(projectData) && isNotDefined(projectData.project.oldId) && (
                 <ProjectActions
                     projectId={projectData.project.id}
                     clientId={projectData.project.clientId}
                     status={projectData.project.status}
                 />
             ))}
+            headerDescription={isDefined(projectData.project.oldId) && (
+                <Alert
+                    name="old-system-alert"
+                    title="Read-only mode enabled for old project"
+                    description="This project was migrated over from old system and cannot be edited here"
+                    fullWidth
+                    withoutShadow
+                />
+            )}
             footerActions={(
                 <Button
                     name={undefined}
                     colorVariant="accent"
                     styleVariant="filled"
                     onClick={handleUpdateDraftButtonClick}
-                    disabled={baseInputsDisabled}
+                    disabled={baseInputsDisabled || readOnly}
                     start={<PiFloppyDisk />}
                 >
                     Save project
                 </Button>
             )}
             aside={(
-                <ProjectStatusTimeline
-                    value={projectData?.project.status}
-                />
+                <>
+                    {projectData.project.status === ProjectStatusEnum.ReadyToProcess && (
+                        <BlockLayout withEndSeparator>
+                            <Message
+                                pending
+                                pendingMessage="Processing Project"
+                                description={projectData.project.processingStatus}
+                            />
+                        </BlockLayout>
+                    )}
+                    <ProjectStatusTimeline
+                        value={projectData?.project.status}
+                    />
+                </>
             )}
             confirmNavigationChange={!pristine}
         >
@@ -460,18 +484,19 @@ function UpdateProjectForm(props: Props) {
             )}
             <NonFieldError error={error} />
             <ProjectGeneralInputs
+                name={projectData.project.name}
                 projectType={projectData.project.projectType}
                 value={value}
                 setFieldValue={setFieldValue}
                 error={error}
-                disabled={baseInputsDisabled}
+                disabled={baseInputsDisabled || readOnly}
             />
             <ProjectAdditionalInputs
                 projectId={projectData.project.id}
                 value={value}
                 setFieldValue={setFieldValue}
                 error={error}
-                disabled={baseInputsDisabled}
+                disabled={baseInputsDisabled || readOnly}
             />
             <Container
                 spacing="lg"
@@ -489,7 +514,7 @@ function UpdateProjectForm(props: Props) {
                         value={findProjectTypeSpecifics}
                         setFieldValue={setFindProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.find}
-                        disabled={projectTypeSpecificInputsDisabled}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Compare && (
@@ -498,7 +523,7 @@ function UpdateProjectForm(props: Props) {
                         value={compareProjectTypeSpecifics}
                         setFieldValue={setCompareProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.compare}
-                        disabled={projectTypeSpecificInputsDisabled}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Validate && (
@@ -507,7 +532,7 @@ function UpdateProjectForm(props: Props) {
                         value={validateProjectTypeSpecifics}
                         setFieldValue={setValidateProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validate}
-                        disabled={projectTypeSpecificInputsDisabled}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Completeness && (
@@ -516,7 +541,7 @@ function UpdateProjectForm(props: Props) {
                         value={completenessProjectTypeSpecifics}
                         setFieldValue={setCompletenessProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.completeness}
-                        disabled={projectTypeSpecificInputsDisabled}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.ValidateImage && (
@@ -525,7 +550,7 @@ function UpdateProjectForm(props: Props) {
                         value={validateImageProjectTypeSpecifics}
                         setFieldValue={setValidateImageProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
-                        disabled={projectTypeSpecificInputsDisabled}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Street && (
@@ -534,7 +559,7 @@ function UpdateProjectForm(props: Props) {
                         value={streetProjectTypeSpecifics}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.street}
-                        disabled={projectTypeSpecificInputsDisabled}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
             </Container>

@@ -11,6 +11,7 @@ query ProjectStatus($projectId: ID!) {
         id
         status
         statusMessage
+        processingStatus
     }
 }
 `;
@@ -47,6 +48,7 @@ mutation UpdateProjectStatus($id: ID!, $data: ProjectStatusUpdateInput!) {
                 clientId
                 id
                 status
+                statusMessage
             }
         }
         ... on OperationInfo {

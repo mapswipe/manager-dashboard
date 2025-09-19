@@ -11,6 +11,7 @@ import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
 import Button from '#components/Button';
+import Checkbox from '#components/Checkbox';
 import Checklist from '#components/Checklist';
 import Container from '#components/Container';
 import OrderingInput from '#components/domain/OrderingInput';
@@ -31,6 +32,7 @@ import {
 import useListManagement, {
     ExactFilter,
     IdFilter,
+    IsNullFilter,
     ListFilter,
 } from '#hooks/useListManagement';
 import {
@@ -91,6 +93,7 @@ type ProjectFilterValue = {
     isFeatured: ExactFilter<ProjectFilter, 'isFeatured'>;
     isPrivate: ExactFilter<ProjectFilter, 'isPrivate'>;
     team: IdFilter<ProjectFilter, 'team'> | undefined;
+    showOldProjects: IsNullFilter<ProjectFilter, 'oldId'>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -116,6 +119,7 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
         results {
             id
             clientId
+            oldId
             firebaseId
             firebasePushStatus
             firebaseLastPushed
@@ -194,6 +198,7 @@ function Projects() {
             isFeatured: undefined,
             isPrivate: undefined,
             team: undefined,
+            showOldProjects: false,
         },
         defaultSort: {
             key: 'id',
@@ -222,6 +227,7 @@ function Projects() {
                 isFeatured: { exact: filters.isFeatured },
                 isPrivate: { exact: filters.isFeatured },
                 team: isDefined(filters.team) ? ({ id: filters.team }) : undefined,
+                oldId: { isNull: !filters.showOldProjects },
             },
         },
     });
@@ -323,6 +329,12 @@ function Projects() {
                             value={rawFilters.team}
                         />
                     )}
+                    <Checkbox
+                        name="showOldProjects"
+                        label="Show old projects"
+                        onChange={setFilterField}
+                        value={rawFilters.showOldProjects}
+                    />
                     <Button
                         name={undefined}
                         onClick={resetFilters}
