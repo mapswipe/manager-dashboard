@@ -236,7 +236,7 @@ function UserGroupListItem(props: Props) {
                         </Tag>
                         <TextOutput
                             icon={<PiCalendar />}
-                            label="Create on"
+                            label="Created on"
                             value={createdAt}
                             valueType="date"
                             withCenterAlign

@@ -78,6 +78,7 @@ function Root() {
     const [navbarVisibility, setNavbarVisibility] = useState(false);
 
     const authenticated = !!user;
+
     const setUserWithSentry: typeof setUser = useCallback(
         (u) => {
             if (typeof u === 'function') {

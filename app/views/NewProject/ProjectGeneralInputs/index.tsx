@@ -195,21 +195,13 @@ function ProjectGeneralInputs(props: Props) {
                     hint={getHint('requestingOrganization')}
                 />
             </ListLayout>
-            {isDefined(name) && (
-                <TextOutput
-                    label="Title preview"
-                    value={name}
-                />
-            )}
-            {isNotDefined(name) && (
-                <InlineLayout
-                    withCenterAlign
-                    start={<PiInfo />}
-                    spacing="sm"
-                >
-                    Please select all the fields above to see the title preview
-                </InlineLayout>
-            )}
+            <TextInput
+                label="Project name (readonly)"
+                name={undefined}
+                value={name}
+                placeholder="Please select all the fields above to see the preview"
+                readOnly
+            />
             <MarkdownEditor
                 label="Project description"
                 name="description"

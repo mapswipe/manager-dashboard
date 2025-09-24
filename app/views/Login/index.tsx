@@ -1,129 +1,112 @@
 import {
     useCallback,
+    useContext,
+    useEffect,
     useMemo,
     useState,
 } from 'react';
 import { Cookies } from 'react-cookie';
-import { Link } from 'react-router';
-import { isDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     createSubmitHandler,
     getErrorObject,
+    nonFieldError,
     ObjectSchema,
     requiredStringCondition,
     useForm,
 } from '@togglecorp/toggle-form';
+import { type } from 'arktype';
+import { FirebaseError } from 'firebase/app';
 import {
-    FirebaseError,
-    initializeApp,
-} from 'firebase/app';
-import {
-    connectAuthEmulator,
-    getAuth,
     signInWithEmailAndPassword,
+    signOut,
 } from 'firebase/auth';
+import {
+    CombinedError,
+    gql,
+} from 'urql';
 
+import { firebaseAuth } from '#base/configs/firebase';
 import Button from '#components/Button';
-import ButtonLayout from '#components/ButtonLayout';
+import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
+import PageLayout from '#components/PageLayout';
 import TextInput from '#components/TextInput';
+import UserContext from '#contexts/UserContext';
+import {
+    useLoginMutation,
+    useMeQuery,
+} from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
+import { resolveUrl } from '#utils/common';
+import {
+    alertCombinedError,
+    checkAndAlertGraphQLResultError,
+} from '#utils/error';
 
 import styles from './styles.module.css';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LOGIN_MUTATION = gql`
+mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+        id
+        displayName
+    }
+}
+`;
 
 const { APP_ENVIRONMENT } = import.meta.env;
 const COOKIE_NAME = `MAPSWIPE-${APP_ENVIRONMENT}-CSRFTOKEN`;
 const REST_ENDPOINT = import.meta.env.APP_REST_API_DOMAIN;
 const cookies = new Cookies();
 
-async function loginUsingFirebaseToken({ token }: { token: string }) {
-    try {
-        const response = await fetch(`${REST_ENDPOINT}/firebase-auth/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': cookies.get(COOKIE_NAME),
-            },
-            body: JSON.stringify({ token }),
-        });
+const UNKNOWN_ERROR = 'Unknown error occured';
 
-        if (!response.ok) {
-            let errorMsg = `Request failed with status ${response.status}`;
-            try {
-                const errorData = await response.json();
-
-                if (errorData?.non_field_errors?.length) {
-                    errorMsg = errorData.non_field_errors.join(', ');
-                } else if (typeof errorData === 'object') {
-                    errorMsg = Object.entries(errorData)
-                        .map(([field, messages]) => {
-                            if (Array.isArray(messages)) {
-                                return `${field}: ${messages.join(', ')}`;
-                            }
-                            return `${field}: ${messages}`;
-                        })
-                        .join(' | ');
-                }
-            } catch {
-                // ignore parse errors
+function transformTokenError(response: unknown) {
+    const ErrorLeaf = type.string.or(type.string.array).pipe(
+        (leafError) => {
+            if (Array.isArray(leafError)) {
+                return leafError.join(', ');
             }
 
-            return { error: errorMsg };
-        }
+            return leafError;
+        },
+    );
 
-        return { error: undefined };
-    } catch (err: unknown) {
-        return { error: String(err) || 'Unknown error' };
+    const ServerError = type({
+        token: ErrorLeaf.optional(),
+        non_field_errors: ErrorLeaf.optional(),
+    }).pipe((error) => Object.values(error).join('; '));
+
+    const errorMessage = ServerError(response);
+
+    if (errorMessage instanceof type.errors) {
+        return UNKNOWN_ERROR;
     }
+
+    return errorMessage;
 }
 
-// Your Firebase config
-const firebaseConfig = {
-    apiKey: import.meta.env.APP_FIREBASE_API_KEY,
-    authDomain: import.meta.env.APP_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.APP_FIREBASE_PROJECT_ID,
-};
-
-// Init Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-if (APP_ENVIRONMENT === 'DEV') {
-    connectAuthEmulator(auth, 'http://localhost:9099');
-}
-
-async function loginWithEmailPassword(email: string, password: string) {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        return { user: userCredential.user, error: null };
-    } catch (err: unknown) {
-        let errorMessage = 'Something went wrong, please try again.';
-
-        if (err instanceof FirebaseError) {
-            switch (err.code) {
-                case 'auth/invalid-email':
-                    errorMessage = 'Invalid email format.';
-                    break;
-                case 'auth/user-disabled':
-                    errorMessage = 'This user account has been disabled.';
-                    break;
-                case 'auth/user-not-found':
-                    errorMessage = 'No user found with this email.';
-                    break;
-                case 'auth/wrong-password':
-                    errorMessage = 'Incorrect password.';
-                    break;
-                case 'auth/too-many-requests':
-                    errorMessage = 'Too many failed attempts. Try again later.';
-                    break;
-                default:
-                    errorMessage = err.message; // fallback from Firebase
-            }
-        }
-
-        return { user: null, error: errorMessage };
+function transformFirebaseError(err: FirebaseError) {
+    switch (err.code) {
+        case 'auth/invalid-email':
+            return 'Invalid email format.';
+        case 'auth/user-disabled':
+            return 'This user account has been disabled.';
+        case 'auth/user-not-found':
+            return 'No user found with this email.';
+        case 'auth/wrong-password':
+            return 'Incorrect password.';
+        case 'auth/too-many-requests':
+            return 'Too many failed attempts. Try again later.';
+        default:
+            return err.message;
     }
 }
 
@@ -151,7 +134,27 @@ const defaultLoginFormValue: LoginFormFields = {};
 
 function Login() {
     const [loginPending, setLoginPending] = useState(false);
+    const [bypassFirebaseLogin, setBypassFirebaseLogin] = useState(false);
     const alert = useAlert();
+    const { setUser } = useContext(UserContext);
+
+    const [{
+        fetching: meResponseLoading,
+        data: meResponseData,
+    }, fetchUserData] = useMeQuery({
+        pause: true,
+    });
+
+    const [
+        { fetching: pendingGqlLogin },
+        loginToGql,
+    ] = useLoginMutation();
+
+    useEffect(() => {
+        if (!meResponseLoading && isDefined(meResponseData?.me)) {
+            setUser(meResponseData.me);
+        }
+    }, [setUser, meResponseData, meResponseLoading]);
 
     const {
         setFieldValue,
@@ -175,95 +178,195 @@ function Login() {
                 );
                 return;
             }
+
+            if (bypassFirebaseLogin) {
+                try {
+                    const result = await loginToGql({
+                        username: finalValues.email,
+                        password: finalValues.password,
+                    });
+
+                    if (checkAndAlertGraphQLResultError(result, alert)) {
+                        return;
+                    }
+
+                    if (isNotDefined(result.data)) {
+                        alert.show(
+                            'Failed to login!',
+                            {
+                                description: 'Unexpectected response from the server!',
+                                variant: 'danger',
+                            },
+                        );
+
+                        return;
+                    }
+
+                    alert.show(
+                        'Login successful!',
+                        {
+                            // description: 'Navigating to home page.',
+                            variant: 'success',
+                        },
+                    );
+                    setUser({
+                        id: result.data.login.id,
+                        displayName: result.data.login.displayName,
+                    });
+
+                    return;
+                } catch (combinedError) {
+                    alertCombinedError(combinedError, alert);
+
+                    if (combinedError instanceof CombinedError) {
+                        setError({ [nonFieldError]: combinedError.message });
+                    }
+
+                    return;
+                }
+            }
+
+            if (isNotDefined(firebaseAuth)) {
+                alert.show(
+                    'System error!',
+                    {
+                        description: 'Firebase authentication is not configured properly, please contact the admin!',
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
             setLoginPending(true);
-            const userCredential = await loginWithEmailPassword(
-                finalValues.email,
-                finalValues.password,
-            );
-            const {
-                user,
-                error: errorMessage,
-            } = userCredential;
 
-            if (!user || errorMessage) {
+            try {
+                const userCredential = await signInWithEmailAndPassword(
+                    firebaseAuth,
+                    finalValues.email,
+                    finalValues.password,
+                );
+
+                const { user } = userCredential;
+                const token = await user.getIdToken();
+
+                const requestOptions: RequestInit = {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': cookies.get(COOKIE_NAME),
+                    },
+                    body: JSON.stringify({ token }),
+                };
+
+                const response = await fetch(
+                    resolveUrl(REST_ENDPOINT, 'firebase-auth/'),
+                    requestOptions,
+                );
+
+                if (!response.ok) {
+                    if (isDefined(firebaseAuth)) {
+                        await signOut(firebaseAuth);
+                    }
+
+                    const responseJson = await response.json();
+
+                    setLoginPending(false);
+
+                    const errorMessage = transformTokenError(responseJson);
+
+                    alert.show(
+                        'Failed to login!',
+                        {
+                            description: errorMessage,
+                            variant: 'danger',
+                        },
+                    );
+
+                    return;
+                }
+
                 setLoginPending(false);
+                fetchUserData();
+
+                alert.show(
+                    'Login successful!',
+                    {
+                        // description: 'Fetching user details',
+                        variant: 'success',
+                    },
+                );
+            } catch (ex) {
+                setLoginPending(false);
+                let errorMessage = UNKNOWN_ERROR;
+
+                if (ex instanceof FirebaseError) {
+                    errorMessage = transformFirebaseError(ex);
+                }
+
                 alert.show(
                     'Failed to login!',
                     {
-                        description: errorMessage ?? 'Unexpected response from the server!',
+                        description: errorMessage,
                         variant: 'danger',
                     },
                 );
 
-                return;
+                setError({
+                    [nonFieldError]: errorMessage,
+                });
             }
-
-            const token = await userCredential.user.getIdToken();
-            const result = await loginUsingFirebaseToken({ token });
-
-            setLoginPending(false);
-
-            if (isDefined(result.error)) {
-                alert.show(
-                    'Failed to login!',
-                    {
-                        description: result.error,
-                        variant: 'danger',
-                    },
-                );
-
-                return;
-            }
-
-            alert.show(
-                'Login successful!',
-                {
-                    description: 'Navigating to home page.',
-                    variant: 'success',
-                },
-            );
-            window.location.reload();
         }
 
         login();
-    }, [alert]);
+    }, [alert, bypassFirebaseLogin, fetchUserData, loginToGql, setError, setUser]);
 
     const handleSubmitButtonClick = useMemo(
         () => createSubmitHandler(validate, setError, handleFormSubmission),
         [validate, setError, handleFormSubmission],
     );
 
+    const pending = loginPending || meResponseLoading || pendingGqlLogin;
+
     return (
-        <div className={styles.login}>
+        <PageLayout
+            heading="Manager Dashboard"
+            className={styles.login}
+        >
             <form
                 onSubmit={handleSubmitButtonClick}
                 className={styles.form}
             >
                 <Container
-                    heading="Login to Manager Dashboard"
+                    heading="Login"
                     withHeaderBorder
                     withShadow
                     withBackground
                     withPadding
                     spacing="lg"
+                    pending={pending}
                     footerActions={(
                         <Button
                             type="submit"
                             name={undefined}
-                            disabled={loginPending}
+                            disabled={pending}
                             colorVariant="accent"
                         >
                             Login
                         </Button>
                     )}
                 >
+                    <NonFieldError
+                        error={error}
+                    />
                     <TextInput
                         name="email"
                         label="Email"
                         value={value?.email}
                         error={error?.email}
                         onChange={setFieldValue}
-                        disabled={loginPending}
+                        disabled={pending}
                         autoFocus
                     />
                     <TextInput
@@ -273,25 +376,19 @@ function Login() {
                         onChange={setFieldValue}
                         error={error?.password}
                         type="password"
-                        disabled={loginPending}
+                        disabled={pending}
                     />
+                    {APP_ENVIRONMENT === 'DEV' && (
+                        <Checkbox
+                            name="undefined"
+                            label="Bypass firebase auth"
+                            value={bypassFirebaseLogin}
+                            onChange={setBypassFirebaseLogin}
+                        />
+                    )}
                 </Container>
-                <NonFieldError
-                    error={error}
-                />
             </form>
-            {APP_ENVIRONMENT === 'DEV' && (
-                <Link
-                    to={`${import.meta.env.APP_REST_API_DOMAIN}/admin`}
-                >
-                    <ButtonLayout
-                        className={styles.link}
-                    >
-                        or Sign-in using Admin Panel
-                    </ButtonLayout>
-                </Link>
-            )}
-        </div>
+        </PageLayout>
     );
 }
 

@@ -1,19 +1,11 @@
 .login {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
     background-color: var(--color-background);
-    padding: var(--spacing-md);
     height: 100%;
-    gap: var(--spacing-lg);
 
     .form {
+        margin: auto;
+        margin-top: 10vh;
         width: 100%;
         max-width: 30rem;
-    }
-
-    .link {
-        padding: var(--spacing-sm);
     }
 }
