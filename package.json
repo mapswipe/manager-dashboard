@@ -23,8 +23,6 @@
         "lint:unused": "knip --tags=-knipignore"
     },
     "dependencies": {
-        "@graphql-codegen/introspection": "^4.0.3",
-        "@graphql-codegen/typescript-operations": "^4.2.0",
         "@mapbox/tilebelt": "^2.0.2",
         "@placemarkio/check-geojson": "^0.1.12",
         "@sentry/react": "^9.13.0",
@@ -48,7 +46,6 @@
         "react-mde": "^11.5.0",
         "react-router": "^7.5.1",
         "react-showdown": "^2.3.1",
-        "stylelint-config-concentric-order": "^5.2.1",
         "ulid": "^3.0.0",
         "urql": "^4.2.2"
     },
@@ -58,9 +55,11 @@
         "@eslint/json": "^0.12.0",
         "@graphql-codegen/cli": "^5.0.5",
         "@graphql-codegen/client-preset": "^4.8.2",
+        "@graphql-codegen/introspection": "^4.0.3",
+        "@graphql-codegen/typescript-operations": "^4.2.0",
         "@graphql-codegen/typescript-urql": "^4.0.1",
         "@graphql-typed-document-node/core": "^3.2.0",
-        "@julr/vite-plugin-validate-env": "^1.0.1",
+        "@togglecorp/vite-plugin-validate-env": "^2.2.1",
         "@types/node": "^20.11.6",
         "@types/react": "^18.0.28",
         "@types/react-dom": "^18.2.22",
@@ -90,6 +89,7 @@
         "rollup-plugin-visualizer": "^5.9.0",
         "stylelint": "^16.17.0",
         "stylelint-config-concentric": "^2.0.2",
+        "stylelint-config-concentric-order": "^5.2.1",
         "stylelint-config-recommended": "^15.0.0",
         "stylelint-value-no-unknown-custom-properties": "^6.0.1",
         "typescript": "^5.5.2",
@@ -102,7 +102,7 @@
         "vitest": "^1.2.2"
     },
     "engines": {
-        "node": "20",
+        "node": "22",
         "pnpm": "10.6.1"
     },
     "packageManager": "pnpm@10.6.1+sha512.40ee09af407fa9fbb5fbfb8e1cb40fbb74c0af0c3e10e9224d7b53c7658528615b2c92450e74cfad91e3a2dcafe3ce4050d80bda71d757756d2ce2b66213e9a3",

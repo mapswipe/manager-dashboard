@@ -5,7 +5,7 @@ import reactSwc from '@vitejs/plugin-react-swc';
 import { execSync } from 'child_process';
 import { compression } from 'vite-plugin-compression2';
 import checker from 'vite-plugin-checker';
-import { ValidateEnv as validateEnv } from '@julr/vite-plugin-validate-env';
+import { ValidateEnv as validateEnv } from '@togglecorp/vite-plugin-validate-env';
 
 import managerDashboardPackage from './package.json';
 
@@ -68,6 +68,19 @@ export default defineConfig(({ mode }) => {
         build: {
             outDir: 'build',
             sourcemap: isProd,
+            rollupOptions: {
+                output: {
+                    chunkFileNames: 'chunk-[name].[hash].js',
+                    entryFileNames: 'entry-[name].[hash].js',
+                    assetFileNames: 'asset-[name]-[hash].[ext]',
+                    manualChunks: {
+                        'mapillary-js': ['mapillary-js'],
+                        'maplibre-gl': ['maplibre-gl'],
+                    }
+                    // experimentalMinChunkSize: 500_000,
+                },
+            },
+
         },
         test: {
             environment: 'happy-dom',

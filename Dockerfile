@@ -1,6 +1,7 @@
-# -------------------------- Dev ---------------------------------------
+# syntax=docker/dockerfile:1-labs
 
-FROM node:20-bookworm AS dev
+# -------------------------- Dev ---------------------------------------
+FROM node:22-bookworm AS dev
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
@@ -17,9 +18,13 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 WORKDIR /code
 
-# -------------------------- Builder ---------------------------------------
+# -------------------------- Web app build -----------------------------
+FROM dev AS web-app-build
 
-FROM dev AS builder
+# NOTE: --parents is not yet available in stable syntax, using docker/dockerfile:1-labs
+COPY --parents package.json pnpm-lock.yaml patches/ /code/
+
+RUN corepack prepare --activate
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     --mount=type=bind,source=package.json,target=package.json \
@@ -29,31 +34,31 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 COPY . /code/
 
-# -------------------------- Nginx - Builder --------------------------------
+# Example configuration (These env variables are used to infer the type only)
 
-FROM builder AS nginx-build
+ENV APP_ENVIRONMENT=STAGE
+ENV APP_REST_API_DOMAIN=https://mock.mapswipe.org/api
+ENV APP_GRAPHQL_API_DOMAIN=https://mock.mapswipe.org/api
 
-ENV APP_GRAPHQL_CODEGEN_ENDPOINT=./backend/schema.graphql
+ENV APP_SENTRY_DSN=https://mock.sentry.io/hello123
+ENV APP_SENTRY_TRACES_SAMPLE_RATE=0.2
+ENV APP_FIREBASE_API_KEY=FIrebaseMockAP1k3Y
+ENV APP_FIREBASE_AUTH_DOMAIN=mapswipe-mock.firebaseapp.com
+ENV APP_FIREBASE_PROJECT_ID=mapswipe-mock
+ENV APP_FIREBASE_AUTH_EMULATOR_URL=http://localhost:9099
 
-ENV APP_ENVIRONMENT_LOOSE_VALIDATION=true
-ENV APP_ENVIRONMENT=APP_ENVIRONMENT_PLACEHOLDER
-ENV APP_GRAPHQL_API_DOMAIN=APP_GRAPHQL_API_DOMAIN_PLACEHOLDER
-ENV APP_SENTRY_DSN=APP_SENTRY_DSN_PLACEHOLDER
-ENV APP_SENTRY_TRACES_SAMPLE_RATE=APP_SENTRY_TRACES_SAMPLE_RATE_PLACEHOLDER
+ENV APP_MAPILLARY_API_KEY="MLY\|1234567890987654321\|abcdef12321fedcba"
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store env > .env && pnpm generate:type && pnpm build
+RUN WEB_APP_SERVE_ENABLED=true pnpm build
 
-# ---------------------------------------------------------------------------
-
-FROM nginx:1 AS nginx-serve
+FROM ghcr.io/toggle-corp/web-app-serve:v0.1.2 AS web-app-serve
 
 LABEL maintainer="Togglecorp"
-LABEL org.opencontainers.image.source="github.com/mapswipe/manager-dashboard"
+LABEL org.opencontainers.image.source="https://github.com/mapswipe/manager-dashboard"
 
-COPY ./nginx-serve/apply-config.sh /docker-entrypoint.d/
-COPY ./nginx-serve/nginx.conf.template /etc/nginx/templates/default.conf.template
-COPY --from=nginx-build /code/build /code/build
-
+# NOTE: Used by apply-config.sh
 ENV APPLY_CONFIG__SOURCE_DIRECTORY=/code/build/
-ENV APPLY_CONFIG__DESTINATION_DIRECTORY=/usr/share/nginx/html/
-ENV APPLY_CONFIG__OVERWRITE_DESTINATION=true
+
+COPY --from=web-app-build /code/build "$APPLY_CONFIG__SOURCE_DIRECTORY"
+
+RUN echo '{ "files": { "maxSize": 2097152 }, "formatter": { "includes": ["**/*.js", "**/*.html"] } }' > biome.json

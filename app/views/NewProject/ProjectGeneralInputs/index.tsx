@@ -1,8 +1,4 @@
-import { PiInfo } from 'react-icons/pi';
-import {
-    isDefined,
-    isNotDefined,
-} from '@togglecorp/fujs';
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -12,14 +8,12 @@ import {
 } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
-import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import MarkdownEditor from '#components/MarkdownEditor';
 import NumberInput from '#components/NumberInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextInput from '#components/TextInput';
-import TextOutput from '#components/TextOutput';
 import {
     ProjectCreateInput,
     ProjectTypeEnum,
