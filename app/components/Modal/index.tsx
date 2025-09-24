@@ -11,7 +11,6 @@ interface Props extends Omit<ContainerProps, 'withBackground' | 'withPadding' | 
     onClose?: () => void;
     // closeOnBlur?: boolean;
     // closeOnEscape?: boolean;
-    withoutCloseButton?: boolean;
     size?: 'sm' | 'md' | 'lg';
     withAutoHeight?: boolean;
 }
@@ -21,7 +20,6 @@ function Modal(props: Props) {
         className,
         onClose,
         headerActions,
-        withoutCloseButton,
         withAutoHeight = false,
         contentClassName,
         size = 'md',
@@ -46,7 +44,7 @@ function Modal(props: Props) {
                 headerActions={(
                     <>
                         {headerActions}
-                        {!withoutCloseButton && (
+                        {onClose && (
                             <Button
                                 className={styles.closeButton}
                                 onClick={onClose}

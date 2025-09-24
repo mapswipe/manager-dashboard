@@ -175,6 +175,7 @@ function OrganizationList(props: Props) {
                 headingLevel={2}
                 pending={organizationListPending}
                 empty={organizationList.length === 0}
+                withWrapInHeader
                 spacing="lg"
                 headerActions={(
                     <Button

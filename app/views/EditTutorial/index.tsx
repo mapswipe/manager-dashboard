@@ -7,8 +7,6 @@ import {
     useState,
 } from 'react';
 import {
-    PiBoxArrowUp,
-    PiDownload,
     PiFloppyDisk,
     PiPlus,
 } from 'react-icons/pi';
@@ -35,18 +33,16 @@ import { ulid } from 'ulid';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import GeoJsonFileInput from '#components/domain/GeoJsonFileInput';
+import ProjectAssetsList from '#components/domain/ProjectAssetsList';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import FileInput from '#components/FileInput';
-import InlineLayout from '#components/InlineLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import TextInput from '#components/TextInput';
 import TextOutput from '#components/TextOutput';
 import {
-    AssetMimetypeEnum,
     ProjectTypeEnum,
     TutorialUpdateInput,
-    useProjectOutputAssetsQuery,
     useTutorialDetailsQuery,
     useTutorialProjectDetailQuery,
     useUpdateTutorialMutation,
@@ -420,19 +416,6 @@ function NewTutorial() {
         'informationPages' as const,
         setFieldValue,
     );
-
-    const [{
-        data: projectAssetsResponse,
-    }] = useProjectOutputAssetsQuery({
-        variables: {
-            projectId: tutorialData?.tutorial.projectId ?? '',
-            pagination: {
-                offset: 0,
-                limit: 10,
-            },
-        },
-        pause: isNotDefined(tutorialData?.tutorial.projectId),
-    });
 
     const [{
         data: projectDetailResponse,
@@ -990,50 +973,9 @@ function NewTutorial() {
                         <ProjectSpecificDetails
                             projectId={projectDetailResponse.project.id}
                         />
-                        <Container
-                            heading="Project Assets"
-                            headingLevel={4}
-                            contentLayout="inline"
-                        >
-                            {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
-                                <InlineLayout
-                                    key={projectAsset.id}
-                                    className={styles.assetCard}
-                                    withPadding
-                                    spacing="sm"
-                                    end={(
-                                        <>
-                                            {/* eslint-disable-next-line max-len */}
-                                            {projectAsset.mimetype === AssetMimetypeEnum.Geojson && projectAsset.file && (
-                                                <a
-                                                    className={styles.projectAssetDownloadLink}
-                                                    href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    title="Preview in geojson.io"
-                                                >
-                                                    <PiBoxArrowUp />
-                                                </a>
-                                            )}
-                                            {projectAsset.file && (
-                                                <a
-                                                    className={styles.projectAssetDownloadLink}
-                                                    href={projectAsset.file.url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    title="Download"
-                                                    download
-                                                >
-                                                    <PiDownload />
-                                                </a>
-                                            )}
-                                        </>
-                                    )}
-                                >
-                                    {projectAsset.file?.name.replace(/^.*[\\/]/, '') ?? '??'}
-                                </InlineLayout>
-                            ))}
-                        </Container>
+                        <ProjectAssetsList
+                            projectId={projectDetailResponse.project.id}
+                        />
                     </>
                 )}
             </Container>

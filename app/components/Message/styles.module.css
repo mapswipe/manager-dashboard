@@ -4,7 +4,15 @@
     flex-direction: column;
     justify-content: center;
     padding: var(--spacing-md);
-    color: var(--color-text-faint);
+
+    .title {
+        color: var(--color-text-light);
+        font-weight: var(--font-weight-bold);
+    }
+
+    .description {
+        color: var(--color-text-faint);
+    }
 
     .icon {
         font-size: 2rem;

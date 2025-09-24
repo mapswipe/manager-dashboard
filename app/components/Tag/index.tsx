@@ -8,10 +8,13 @@ import {
 
 import styles from './styles.module.css';
 
+type TagColorVariant = 'text' | 'primary' | 'accent' | 'success' | 'danger';
+
 interface Props {
     className?: string;
     children?: React.ReactNode;
     spacing?: SpacingType;
+    colorVariant?: TagColorVariant;
 }
 
 function Tag(props: Props) {
@@ -19,6 +22,7 @@ function Tag(props: Props) {
         className,
         children,
         spacing,
+        colorVariant = 'primary',
     } = props;
 
     const spacingClassName = useSpacingToken({
@@ -32,6 +36,11 @@ function Tag(props: Props) {
             className={_cs(
                 styles.tag,
                 spacingClassName,
+                colorVariant === 'text' && styles.colorVariantText,
+                colorVariant === 'primary' && styles.colorVariantPrimary,
+                colorVariant === 'accent' && styles.colorVariantAccent,
+                colorVariant === 'success' && styles.colorVariantSuccess,
+                colorVariant === 'danger' && styles.colorVariantDanger,
                 className,
             )}
         >

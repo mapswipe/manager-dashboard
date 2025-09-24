@@ -185,6 +185,7 @@ fragment ProjectDetailFields on ProjectType {
     description
     groupSize
     id
+    oldId
     isFeatured
     lookFor
     projectInstruction

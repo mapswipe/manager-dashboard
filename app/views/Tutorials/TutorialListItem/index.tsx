@@ -176,12 +176,14 @@ function TutorialListItem(props: Props) {
                                     withoutPadding
                                     withoutDropdownIcon
                                     styleVariant="transparent"
+                                    preferredWidth="18rem"
                                 >
                                     <TextOutput
                                         icon={<PiArrowsClockwise />}
                                         label="Firebase last synced"
                                         value={firebaseLastPushed}
                                         withCenterAlign
+                                        withWrap
                                         valueType="date"
                                     />
                                     <TextOutput
@@ -190,6 +192,7 @@ function TutorialListItem(props: Props) {
                                             ? firebasePushStatusMapping?.[firebasePushStatus].label
                                             : undefined}
                                         withCenterAlign
+                                        withWrap
                                         icon={<PiCalendar />}
                                     />
                                 </PopupButton>

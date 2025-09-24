@@ -17,6 +17,7 @@ import {
 import { gql } from 'urql';
 
 import Alert from '#components/Alert';
+import BlockLayout from '#components/BlockLayout';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
@@ -24,6 +25,7 @@ import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTaskDetails from '#components/domain/ProjectTaskDetails';
 import ListLayout from '#components/ListLayout';
+import Message from '#components/Message';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import TutorialSelectInput from '#components/selections/TutorialSelectInput';
@@ -32,6 +34,7 @@ import {
     ProjectAssetInputTypeEnum,
     ProjectDetailsQuery,
     ProjectStatusEnum,
+    useProjectStatusQuery,
     useUpdateProcessedProjectMutation,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
@@ -49,6 +52,8 @@ import ProjectGeneralInputs from '#views/NewProject/ProjectGeneralInputs';
 
 import ProjectActions from '../ProjectActions';
 import processedProjectUpdateFormSchema, { type PartialProcessedProjectUpdateInput } from './schema';
+
+const DEFAULT_POLL_DURATION = 3000;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UPDATE_PROCESSED_PROJECT_MUTATION = gql`
@@ -89,6 +94,30 @@ function UpdateProcessedProjectForm(props: Props) {
     const [, setOrganizationOptions] = useOptions('organization');
     const [, setTutorialOptions] = useOptions('tutorial');
     const [, setTeamOptions] = useOptions('project');
+
+    const [, execProjectStatusQuery] = useProjectStatusQuery({
+        variables: {
+            projectId: projectData.project.id,
+        },
+        pause: true,
+    });
+
+    useEffect(() => {
+        if (projectData.project.status !== ProjectStatusEnum.ReadyToProcess) {
+            return undefined;
+        }
+
+        const intervalId = setInterval(() => {
+            execProjectStatusQuery({ requestPolicy: 'cache-and-network' });
+        }, DEFAULT_POLL_DURATION);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [
+        projectData.project.status,
+        execProjectStatusQuery,
+    ]);
 
     const [
         { fetching: updateProcessedProjectPending },
@@ -213,8 +242,8 @@ function UpdateProcessedProjectForm(props: Props) {
                 { variant: 'success' },
             );
             setPristine(true);
-        } catch (apolloError) {
-            alertCombinedError(apolloError, alert);
+        } catch (combinedError) {
+            alertCombinedError(combinedError, alert);
         }
     }, [projectData.project.id, updateProcessedProject, setError, alert, setPristine]);
 
@@ -236,6 +265,7 @@ function UpdateProcessedProjectForm(props: Props) {
         || projectData.project.status === ProjectStatusEnum.Processed
     );
 
+    const readOnly = isDefined(projectData.project.oldId);
     const baseInputsDisabled = pending || !baseInputsEditable;
 
     return (
@@ -243,11 +273,21 @@ function UpdateProcessedProjectForm(props: Props) {
             heading="Update project"
             confirmNavigationChange={!pristine}
             className={className}
-            headerActions={isDefined(projectData) && (
+            headerActions={(isDefined(projectData) && isNotDefined(projectData.project.oldId) && (
                 <ProjectActions
                     clientId={projectData.project.clientId}
                     projectId={projectData.project.id}
                     status={projectData.project.status}
+                />
+            ))}
+            headerDescription={isDefined(projectData.project.oldId) && (
+                <Alert
+                    name="old-system-alert"
+                    title="Read-only mode enabled for old project"
+                    description="This project was migrated over from old system and cannot be edited here"
+                    fullWidth
+                    withoutShadow
+                    type="warning"
                 />
             )}
             footerActions={(
@@ -256,16 +296,26 @@ function UpdateProcessedProjectForm(props: Props) {
                     onClick={handleUpdateBasicDetailsButtonClick}
                     colorVariant="accent"
                     styleVariant="filled"
-                    disabled={baseInputsDisabled}
+                    disabled={baseInputsDisabled || readOnly}
                     start={<PiFloppyDisk />}
                 >
                     Update project
                 </Button>
             )}
             aside={(
-                <ProjectStatusTimeline
-                    value={projectData?.project.status}
-                />
+                <>
+                    {projectData.project.status === ProjectStatusEnum.ReadyToPublish && (
+                        <BlockLayout withEndSeparator>
+                            <Message
+                                pending
+                                pendingMessage="Publishing Project"
+                            />
+                        </BlockLayout>
+                    )}
+                    <ProjectStatusTimeline
+                        value={projectData?.project.status}
+                    />
+                </>
             )}
         >
             {projectData?.project.status === ProjectStatusEnum.PublishingFailed && (
@@ -280,11 +330,12 @@ function UpdateProcessedProjectForm(props: Props) {
             )}
             <NonFieldError error={error} />
             <ProjectGeneralInputs
+                name={projectData.project.name}
                 projectType={projectData.project.projectType}
                 value={value}
                 setFieldValue={setFieldValue}
                 error={error}
-                disabled={baseInputsDisabled}
+                disabled={baseInputsDisabled || readOnly}
             />
             <Container
                 heading="Additional"
@@ -300,7 +351,7 @@ function UpdateProcessedProjectForm(props: Props) {
                         value={value.image}
                         onChange={setFieldValue}
                         error={error?.image}
-                        disabled={baseInputsDisabled}
+                        disabled={baseInputsDisabled || readOnly}
                         hint="Make sure you have the rights to use the image. It should end with .jpg or .png."
                     />
                 </ListLayout>
@@ -323,7 +374,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     value={value.tutorial}
                     onChange={setFieldValue}
                     error={error?.tutorial}
-                    disabled={baseInputsDisabled}
+                    disabled={baseInputsDisabled || readOnly}
                     projectType={projectData.project.projectType}
                     hint="Please note that you'll only be able to select the tutorial of same project type"
                 />

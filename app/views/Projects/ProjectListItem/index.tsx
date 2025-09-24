@@ -13,7 +13,10 @@ import {
     PiUser,
     PiUsersThree,
 } from 'react-icons/pi';
-import { isDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 
 import SmartLink from '#base/components/SmartLink';
 import Container from '#components/Container';
@@ -71,7 +74,7 @@ function ProjectListItem(props: Props) {
                     <GridLayoutItem columnSpan={3}>
                         <Container
                             headingLevel={4}
-                            heading={(
+                            heading={isNotDefined(value.oldId) ? (
                                 <SmartLink
                                     route="editProject"
                                     attrs={{
@@ -83,9 +86,20 @@ function ProjectListItem(props: Props) {
                                 >
                                     {value.name}
                                 </SmartLink>
-                            )}
+                            ) : value.name}
                             headerDescription={(
                                 <ListLayout withWrap>
+                                    {isDefined(value.oldId) && (
+                                        <Tag colorVariant="danger">
+                                            <InlineLayout
+                                                start={<PiLock />}
+                                                spacingOffset={-2}
+                                                withCenterAlign
+                                            >
+                                                Old project
+                                            </InlineLayout>
+                                        </Tag>
+                                    )}
                                     <Tag>
                                         <ProjectTypeOutput value={value.projectType} />
                                     </Tag>
@@ -128,6 +142,7 @@ function ProjectListItem(props: Props) {
                                 value.status !== ProjectStatusEnum.Discarded
                                 && value.status !== ProjectStatusEnum.Withdrawn
                                 && value.status !== ProjectStatusEnum.Finished
+                                && isNotDefined(value.oldId)
                                 && (
                                     <OverflowMenu persistent>
                                         <ProjectActions
@@ -264,6 +279,7 @@ function ProjectListItem(props: Props) {
                                                             label="Firebase last synced"
                                                             value={value.firebaseLastPushed}
                                                             withCenterAlign
+                                                            withWrap
                                                             valueType="date"
                                                         />
                                                         <TextOutput
@@ -274,6 +290,7 @@ function ProjectListItem(props: Props) {
                                                                 ? firebasePushStatusMapping?.[value.firebasePushStatus].label
                                                                 : undefined}
                                                             withCenterAlign
+                                                            withWrap
                                                             icon={<PiCalendar />}
                                                         />
                                                     </PopupButton>

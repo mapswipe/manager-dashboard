@@ -1,4 +1,8 @@
-import { isNotDefined } from '@togglecorp/fujs';
+import { PiInfo } from 'react-icons/pi';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -8,12 +12,14 @@ import {
 } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import MarkdownEditor from '#components/MarkdownEditor';
 import NumberInput from '#components/NumberInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextInput from '#components/TextInput';
+import TextOutput from '#components/TextOutput';
 import {
     ProjectCreateInput,
     ProjectTypeEnum,
@@ -122,6 +128,7 @@ interface Props {
     error: LeafError | ObjectError<PartialProjectGeneralInputFields>;
     setFieldValue: (...entries: EntriesAsList<PartialProjectGeneralInputFields>) => void;
     disabled?: boolean;
+    name: string | undefined;
 }
 
 function ProjectGeneralInputs(props: Props) {
@@ -131,6 +138,7 @@ function ProjectGeneralInputs(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
+        name,
     } = props;
 
     const error = getErrorObject(formError);
@@ -149,16 +157,16 @@ function ProjectGeneralInputs(props: Props) {
             withContentBackgroundAndPadding
             spacing="lg"
         >
-            <TextInput
-                label="Project topic"
-                name="topic"
-                value={value?.topic}
-                onChange={setFieldValue}
-                error={error?.topic}
-                disabled={disabled}
-                hint={getHint('topic')}
-            />
             <ListLayout layout="grid">
+                <TextInput
+                    label="Project topic"
+                    name="topic"
+                    value={value?.topic}
+                    onChange={setFieldValue}
+                    error={error?.topic}
+                    disabled={disabled}
+                    hint={getHint('topic')}
+                />
                 <TextInput
                     label="Project region"
                     name="region"
@@ -177,7 +185,31 @@ function ProjectGeneralInputs(props: Props) {
                     disabled={disabled}
                     hint={getHint('projectNumber')}
                 />
+                <OrganizationSelectInput
+                    label="Organization"
+                    name="requestingOrganization"
+                    value={value?.requestingOrganization}
+                    onChange={setFieldValue}
+                    error={error?.requestingOrganization}
+                    disabled={disabled}
+                    hint={getHint('requestingOrganization')}
+                />
             </ListLayout>
+            {isDefined(name) && (
+                <TextOutput
+                    label="Title preview"
+                    value={name}
+                />
+            )}
+            {isNotDefined(name) && (
+                <InlineLayout
+                    withCenterAlign
+                    start={<PiInfo />}
+                    spacing="sm"
+                >
+                    Please select all the fields above to see the title preview
+                </InlineLayout>
+            )}
             <MarkdownEditor
                 label="Project description"
                 name="description"
@@ -191,24 +223,6 @@ function ProjectGeneralInputs(props: Props) {
                 layout="grid"
                 spacing="lg"
             >
-                <OrganizationSelectInput
-                    label="Organization"
-                    name="requestingOrganization"
-                    value={value?.requestingOrganization}
-                    onChange={setFieldValue}
-                    error={error?.requestingOrganization}
-                    disabled={disabled}
-                    hint={getHint('requestingOrganization')}
-                />
-                <TextInput
-                    label="Additional info URL"
-                    name="additionalInfoUrl"
-                    value={value?.additionalInfoUrl}
-                    onChange={setFieldValue}
-                    error={error?.additionalInfoUrl}
-                    disabled={disabled}
-                    hint={getHint('additionalInfoUrl')}
-                />
                 <TextInput
                     label="Instruction"
                     name="projectInstruction"
@@ -235,6 +249,15 @@ function ProjectGeneralInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.team}
                     disabled={disabled}
+                />
+                <TextInput
+                    label="Additional info URL"
+                    name="additionalInfoUrl"
+                    value={value?.additionalInfoUrl}
+                    onChange={setFieldValue}
+                    error={error?.additionalInfoUrl}
+                    disabled={disabled}
+                    hint={getHint('additionalInfoUrl')}
                 />
             </ListLayout>
         </Container>

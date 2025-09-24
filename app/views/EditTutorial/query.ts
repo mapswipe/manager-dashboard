@@ -15,26 +15,6 @@ query TutorialDetails($id: ID!) {
 }
 `;
 
-export const PROJECT_ASSETS_QUERY = gql`
-query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
-    projectAssets(
-        pagination: $pagination
-        filters: {projectId: {exact: $projectId}, type: {exact: OUTPUT}}
-    ) {
-        results {
-            file {
-                url
-                name
-            }
-            id
-            projectId
-            type
-            mimetype
-        }
-    }
-}
-`;
-
 export const PROJECT_DETAIL_QUERY = gql`
 ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 query TutorialProjectDetail($projectId: ID!) {
