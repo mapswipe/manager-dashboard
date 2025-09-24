@@ -197,6 +197,7 @@ function NewProject() {
 
     const projectNameParams = react.useMemo(() => {
         if (isNotDefined(value.topic)
+            || isNotDefined(value.projectType)
             || isNotDefined(value.requestingOrganization)
             || isNotDefined(value.region)
             || isNotDefined(value.projectNumber)
@@ -205,6 +206,7 @@ function NewProject() {
         }
 
         return {
+            projectType: value.projectType,
             topic: value.topic,
             requestingOrganizationId: value.requestingOrganization,
             region: value.region,

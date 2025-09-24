@@ -4,9 +4,11 @@ import {
 } from 'react';
 import { MdOutlineHealthAndSafety } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
+import { signOut } from 'firebase/auth';
 import { gql } from 'urql';
 
 import SmartNavLink from '#base/components/SmartNavLink';
+import { firebaseAuth } from '#base/configs/firebase';
 import Button from '#components/Button';
 import ButtonLayout from '#components/ButtonLayout';
 import InlineLayout from '#components/InlineLayout';
@@ -65,6 +67,11 @@ function Navbar(props: Props) {
                 return;
             }
 
+            if (firebaseAuth) {
+                signOut(firebaseAuth);
+            }
+
+            setUser(undefined);
             alert.show(
                 'Logout successful!',
                 {
@@ -72,8 +79,6 @@ function Navbar(props: Props) {
                     variant: 'success',
                 },
             );
-
-            setUser(undefined);
         } catch (apolloError) {
             alertCombinedError(apolloError, alert);
         }

@@ -26,6 +26,7 @@ import {
     useMeQuery,
     useTileServersQuery,
 } from '#generated/types/graphql';
+import { resolveUrl } from '#utils/common';
 
 import styles from './styles.module.css';
 
@@ -132,8 +133,7 @@ function RootLayout() {
         async function healthCheck() {
             try {
                 const res = await fetch(
-                    `${import.meta.env.APP_GRAPHQL_API_DOMAIN}/health-check/?format=json`,
-                    { credentials: 'include' },
+                    resolveUrl(import.meta.env.APP_GRAPHQL_API_DOMAIN, 'health-check/?format=json'),
                 );
                 const serverResponse = await res.json();
 
@@ -163,7 +163,7 @@ function RootLayout() {
     });
 
     useEffect(() => {
-        if (!csrfReady || authenticated || meResponseLoading) {
+        if (!csrfReady || meResponseLoading) {
             return;
         }
 
@@ -179,9 +179,16 @@ function RootLayout() {
 
             setUserDetailsReady(true);
         });
-    }, [csrfReady, authenticated, meResponseLoading, meResponseData, setUser]);
+    }, [csrfReady, meResponseLoading, meResponseData, setUser]);
 
     const [{ data: allEnumsResponse }] = useAllEnumsQuery({
+        pause: !csrfReady || !authenticated,
+    });
+
+    const [{
+        fetching: tileServersLoading,
+        data: tileServersResponse,
+    }] = useTileServersQuery({
         pause: !csrfReady || !authenticated,
     });
 
@@ -243,13 +250,6 @@ function RootLayout() {
             ({ key }) => key,
         ),
     } satisfies EnumsContextProps), [allEnumsResponse]);
-
-    const [{
-        fetching: tileServersLoading,
-        data: tileServersResponse,
-    }] = useTileServersQuery({
-        pause: !csrfReady,
-    });
 
     return (
         <HealthCheckContext.Provider value={healthCheckData}>

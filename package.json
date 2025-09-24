@@ -37,6 +37,7 @@
         "@turf/invariant": "^6.5.0",
         "@urql/exchange-graphcache": "^7.2.3",
         "arktype": "^2.1.20",
+        "firebase": "^12.2.1",
         "graphql": "^16.8.1",
         "mapillary-js": "^4.1.2",
         "maplibre-gl": "^5.5.0",

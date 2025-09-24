@@ -12,10 +12,12 @@
 
     @media screen and (max-width: 50rem) {
         --spacing-base: 0.953rem;
+        --font-size-base: 0.953rem;
     }
 
     @media screen and (max-width: 30rem) {
         --spacing-base: 0.926rem;
+        --font-size-base: 0.926rem;
     }
 
     --spacing-2xs: calc(var(--spacing-base) * 0.25);
@@ -76,7 +78,7 @@
     --width-separator-thick: 5pt;
     --width-separator-mobile-preview: 8pt;
     --width-scrollbar: 0.5rem;
-    --width-page-content-max: 80rem;
+    --width-page-content-max: 86rem;
 
     --size-tile: 180px;
 
