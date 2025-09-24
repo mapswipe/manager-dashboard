@@ -143,3 +143,6 @@ deploy/eb/
 
 # tox
 ./.tox
+
+backend
+!backend/schema.graphql

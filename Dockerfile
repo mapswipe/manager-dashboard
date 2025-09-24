@@ -35,21 +35,22 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 COPY . /code/
 
 # Example configuration (These env variables are used to infer the type only)
-
 ENV APP_ENVIRONMENT=STAGE
 ENV APP_REST_API_DOMAIN=https://mock.mapswipe.org/api
 ENV APP_GRAPHQL_API_DOMAIN=https://mock.mapswipe.org/api
-
 ENV APP_SENTRY_DSN=https://mock.sentry.io/hello123
 ENV APP_SENTRY_TRACES_SAMPLE_RATE=0.2
 ENV APP_FIREBASE_API_KEY=FIrebaseMockAP1k3Y
 ENV APP_FIREBASE_AUTH_DOMAIN=mapswipe-mock.firebaseapp.com
 ENV APP_FIREBASE_PROJECT_ID=mapswipe-mock
 ENV APP_FIREBASE_AUTH_EMULATOR_URL=http://localhost:9099
-
 ENV APP_MAPILLARY_API_KEY="MLY\|1234567890987654321\|abcdef12321fedcba"
 
-RUN WEB_APP_SERVE_ENABLED=true pnpm build
+
+# NOTE: used for type generation
+ENV APP_GRAPHQL_CODEGEN_ENDPOINT=./backend/schema.graphql
+
+RUN pnpm generate:type && WEB_APP_SERVE_ENABLED=true pnpm build
 
 FROM ghcr.io/toggle-corp/web-app-serve:v0.1.2 AS web-app-serve
 
