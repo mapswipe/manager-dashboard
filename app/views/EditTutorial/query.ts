@@ -19,6 +19,24 @@ export const PROJECT_DETAIL_QUERY = gql`
 ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 query TutorialProjectDetail($projectId: ID!) {
     project(id: $projectId) {
+        aoiGeometry {
+            id
+            totalArea
+        }
+        aoiGeometryInputAsset {
+            id
+            file {
+                name
+                url
+            }
+        }
+        projectTypeSpecificOutputAsset {
+            id
+            file {
+                name
+                url
+            }
+        }
         id
         lookFor
         projectInstruction

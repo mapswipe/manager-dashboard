@@ -1,71 +1,52 @@
-import { Fragment } from 'react/jsx-runtime';
 import {
     PiArrowUpRight,
     PiDownload,
 } from 'react-icons/pi';
-import { isNotDefined } from '@togglecorp/fujs';
-import { gql } from 'urql';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 
 import ButtonLayout from '#components/ButtonLayout';
 import Container from '#components/Container';
-import { useProjectOutputAssetsQuery } from '#generated/types/graphql';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PROJECT_ASSETS_QUERY = gql`
-query ProjectOutputAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
-    projectAssets(
-        pagination: $pagination
-        filters: {projectId: {exact: $projectId}, type: {exact: OUTPUT}, exportType: {exact: AREA_OF_INTEREST}}
-    ) {
-        results {
-            file {
-                url
-                name
-            }
-            id
-            projectId
-            type
-            mimetype
-        }
-    }
-}
-`;
+import ListLayout from '#components/ListLayout';
+import { TutorialProjectDetailQuery } from '#generated/types/graphql';
 
 interface Props {
-    projectId: string | undefined;
+    projectDetail: TutorialProjectDetailQuery | undefined;
 }
 
 function ProjectAssetsList(props: Props) {
-    const { projectId } = props;
+    const { projectDetail } = props;
 
-    const [{
-        data: projectAssetsResponse,
-    }] = useProjectOutputAssetsQuery({
-        variables: {
-            projectId: projectId ?? '',
-            pagination: {
-                offset: 0,
-                limit: 10,
-            },
-        },
-        pause: isNotDefined(projectId),
-    });
+    if (isNotDefined(projectDetail?.project)) {
+        return null;
+    }
 
-    if (!projectAssetsResponse) {
+    const {
+        aoiGeometryInputAsset,
+        projectTypeSpecificOutputAsset,
+    } = projectDetail.project;
+
+    if (isNotDefined(aoiGeometryInputAsset) && isNotDefined(projectTypeSpecificOutputAsset)) {
         return null;
     }
 
     return (
         <Container
-            heading="Project AOI GeoJSON"
+            heading="Project Assets"
             headingLevel={5}
-            contentLayout="inline"
+            withHeaderBorder
         >
-            {projectAssetsResponse?.projectAssets.results.map((projectAsset) => (
-                <Fragment key={projectAsset.id}>
-                    {projectAsset.file && (
+            <ListLayout layout="grid">
+                {isDefined(aoiGeometryInputAsset?.file) && (
+                    <Container
+                        heading="AOI Geometry"
+                        headingLevel={6}
+                        contentLayout="inline"
+                    >
                         <a
-                            href={projectAsset.file.url}
+                            href={aoiGeometryInputAsset.file.url}
                             target="_blank"
                             rel="noreferrer"
                             title="Download"
@@ -74,13 +55,11 @@ function ProjectAssetsList(props: Props) {
                             <ButtonLayout
                                 start={<PiDownload />}
                             >
-                                Download
+                                Download GeoJSON
                             </ButtonLayout>
                         </a>
-                    )}
-                    {projectAsset.file && (
                         <a
-                            href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectAsset.file.url)}`}
+                            href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(aoiGeometryInputAsset.file.url)}`}
                             target="_blank"
                             rel="noreferrer"
                             title="Preview in geojson.io"
@@ -91,9 +70,29 @@ function ProjectAssetsList(props: Props) {
                                 Open in geojson.io
                             </ButtonLayout>
                         </a>
-                    )}
-                </Fragment>
-            ))}
+                    </Container>
+                )}
+                {isDefined(projectTypeSpecificOutputAsset?.file) && (
+                    <Container
+                        heading="Processed Tasks"
+                        headingLevel={6}
+                    >
+                        <a
+                            href={projectTypeSpecificOutputAsset.file.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Download"
+                            download
+                        >
+                            <ButtonLayout
+                                start={<PiDownload />}
+                            >
+                                Download GeoJSON
+                            </ButtonLayout>
+                        </a>
+                    </Container>
+                )}
+            </ListLayout>
         </Container>
     );
 }

@@ -1,5 +1,8 @@
 import { useContext } from 'react';
-import { isNotDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
@@ -32,6 +35,24 @@ function ValidateDetails(props: Props) {
                 label="Source type"
                 value={validateObjectSourceTypeMapping?.[data.objectSource.sourceType].label}
             />
+            {isDefined(data.objectSource.taskingManagerProjectId) && (
+                <TextOutput
+                    label="HOT Tasking Manager ID"
+                    value={data.objectSource.taskingManagerProjectId}
+                />
+            )}
+            {isDefined(data.objectSource.objectGeojsonUrl) && (
+                <TextOutput
+                    label="Object GeoJSON URL"
+                    value={data.objectSource.objectGeojsonUrl}
+                />
+            )}
+            {isDefined(data.objectSource.ohsomeFilter) && (
+                <TextOutput
+                    label="Ohsome filter"
+                    value={data.objectSource.ohsomeFilter}
+                />
+            )}
             <ListLayout layout="grid">
                 <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
                     <DefaultMapContainer />

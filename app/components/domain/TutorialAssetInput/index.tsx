@@ -17,6 +17,11 @@ import {
     TutorialAssetInputTypeEnum,
     useCreateTutorialAssetMutation,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
+import {
+    DEFAULT_MAX_FILE_SIZE,
+    formatFileSize,
+} from '#utils/common';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 
 function getAcceptForInputType(value: TutorialAssetInputTypeEnum): string | undefined {
@@ -57,6 +62,7 @@ interface Props<NAME> extends Omit<InputContainerLayoutProps, 'children' | 'inpu
     disabled?: boolean;
     inputType: TutorialAssetInputTypeEnum;
     withoutPreview?: boolean;
+    maxFileSize?: number;
 }
 
 function TutorialAssetInput<const NAME>(props: Props<NAME>) {
@@ -70,9 +76,11 @@ function TutorialAssetInput<const NAME>(props: Props<NAME>) {
         inputType,
         selectFileButtonLabel = 'Select an image',
         withoutPreview,
+        maxFileSize = DEFAULT_MAX_FILE_SIZE,
         ...inputLayoutContainerProps
     } = props;
 
+    const alert = useAlert();
     const inputId = useId();
     const [
         { fetching: createTutorialAssetPending },
@@ -82,6 +90,18 @@ function TutorialAssetInput<const NAME>(props: Props<NAME>) {
     const handleFileInputChange = useCallback(async (file: File | undefined) => {
         if (file) {
             const { type } = file;
+
+            if (file.size > maxFileSize) {
+                alert.show(
+                    'Cannot upload the Tutorial asset!',
+                    {
+                        description: `File size (${formatFileSize(file.size)}) exceeds the allowed limit (${formatFileSize(maxFileSize)}).`,
+                        variant: 'danger',
+                    },
+                );
+                return;
+            }
+
             const mimetypeEnumMap: Record<string, AssetMimetypeEnum> = {
                 'image/jpeg': AssetMimetypeEnum.ImageJpeg,
                 'image/png': AssetMimetypeEnum.ImagePng,
@@ -91,8 +111,13 @@ function TutorialAssetInput<const NAME>(props: Props<NAME>) {
 
             const selectedEnum = mimetypeEnumMap[type];
             if (isNotDefined(selectedEnum)) {
-                // eslint-disable-next-line no-console
-                console.error('Invalid file selected!');
+                alert.show(
+                    'Cannot upload the Tutorial asset!',
+                    {
+                        description: 'Selected file does not match expected type',
+                        variant: 'danger',
+                    },
+                );
                 return;
             }
 
@@ -118,12 +143,18 @@ function TutorialAssetInput<const NAME>(props: Props<NAME>) {
                     ?.createTutorialAsset?.__typename === 'OperationInfo'
                     ? result.data.createTutorialAsset.messages
                     : result.data?.createTutorialAsset?.errors?.[0]?.message
-                    || 'Failed to upload file. Please try again.';
-                // eslint-disable-next-line no-console
-                console.error(errorMessage);
+                        || 'Unknown error occured';
+
+                alert.show(
+                    'Failed to upload the Tutorial asset!',
+                    {
+                        description: errorMessage,
+                        variant: 'danger',
+                    },
+                );
             }
         }
-    }, [createTutorialAsset, tutorialId, onChange, name, inputType]);
+    }, [maxFileSize, createTutorialAsset, inputType, tutorialId, alert, onChange, name]);
 
     return (
         <InputContainerLayout

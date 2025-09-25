@@ -19,6 +19,10 @@ import {
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import {
+    DEFAULT_MAX_FILE_SIZE,
+    formatFileSize,
+} from '#utils/common';
+import {
     alertCombinedError,
     transformErrors,
 } from '#utils/error';
@@ -68,6 +72,7 @@ interface Props<NAME> extends Omit<InputContainerLayoutProps, 'children' | 'inpu
     disabled?: boolean;
     inputType: ProjectAssetInputTypeEnum;
     withoutPreview?: boolean;
+    maxFileSize?: number;
 }
 
 function AssetInput<const NAME>(props: Props<NAME>) {
@@ -83,6 +88,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
             ? 'Select geojson'
             : 'Select an image',
         withoutPreview,
+        maxFileSize = DEFAULT_MAX_FILE_SIZE,
         ...inputLayoutContainerProps
     } = props;
 
@@ -96,6 +102,18 @@ function AssetInput<const NAME>(props: Props<NAME>) {
     const handleFileInputChange = useCallback(async (file: File | undefined) => {
         if (file) {
             const { type } = file;
+
+            if (file.size > maxFileSize) {
+                alert.show(
+                    'Cannot upload the Project asset!',
+                    {
+                        description: `File size (${formatFileSize(file.size)}) exceeds the allowed limit (${formatFileSize(maxFileSize)}).`,
+                        variant: 'danger',
+                    },
+                );
+                return;
+            }
+
             const mimetypeEnumMap: Record<string, AssetMimetypeEnum> = {
                 'image/jpeg': AssetMimetypeEnum.ImageJpeg,
                 'image/png': AssetMimetypeEnum.ImagePng,
@@ -105,8 +123,13 @@ function AssetInput<const NAME>(props: Props<NAME>) {
             };
             const selectedEnum = mimetypeEnumMap[type];
             if (isNotDefined(selectedEnum)) {
-                // eslint-disable-next-line no-console
-                console.error('Invalid file selected!');
+                alert.show(
+                    'Cannot upload the Project asset!',
+                    {
+                        description: 'Selected file does not match expected type',
+                        variant: 'danger',
+                    },
+                );
                 return;
             }
 
@@ -165,7 +188,7 @@ function AssetInput<const NAME>(props: Props<NAME>) {
                 alertCombinedError(combinedError, alert);
             }
         }
-    }, [createProjectAsset, projectId, onChange, name, inputType, alert]);
+    }, [maxFileSize, alert, createProjectAsset, inputType, projectId, onChange, name]);
 
     return (
         <InputContainerLayout

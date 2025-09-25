@@ -23,7 +23,11 @@ const geoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'] = {
     paint: {
         'line-color': '#ffffff',
         'line-width': 2,
+        'line-opacity': 1,
         // 'line-dasharray': [2, 1],
+    },
+    layout: {
+        visibility: 'visible',
     },
 };
 
@@ -50,6 +54,7 @@ function GeoJsonMapSource(props: Props) {
         if (isNotDefined(bounds) || isNotDefined(zoomLevel)) {
             return undefined;
         }
+
         const x1 = bounds[0];
         const y1 = bounds[1];
         const x2 = bounds[2];
@@ -68,11 +73,13 @@ function GeoJsonMapSource(props: Props) {
     return (
         <>
             <MapSource
+                key={sourceKey}
                 sourceKey={sourceKey}
                 sourceOptions={geoJsonSourceOptions}
                 geoJson={geoJson as GeoJSON.FeatureCollection}
             >
                 <MapLayer
+                    key={layerKey}
                     layerKey={layerKey}
                     layerOptions={geoJsonLayerOptions}
                 />

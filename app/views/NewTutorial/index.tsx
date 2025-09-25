@@ -249,7 +249,7 @@ function NewTutorial() {
                             projectId={projectDetailResponse.project.id}
                         />
                         <ProjectAssetsList
-                            projectId={projectDetailResponse.project.id}
+                            projectDetail={projectDetailResponse}
                         />
                     </>
                 )}

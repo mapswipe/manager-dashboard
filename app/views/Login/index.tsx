@@ -68,7 +68,7 @@ const cookies = new Cookies();
 const UNKNOWN_ERROR = 'Unknown error occured';
 
 function transformTokenError(response: unknown) {
-    const ErrorLeaf = type.string.or(type.string.array).pipe(
+    const ErrorLeaf = type.string.array().or(type.string).pipe(
         (leafError) => {
             if (Array.isArray(leafError)) {
                 return leafError.join(', ');

@@ -10,6 +10,7 @@ import {
 
 import Button from '#components/Button';
 import { ButtonStyleVariant } from '#components/ButtonLayout';
+import Container from '#components/Container';
 import TutorialStatusIcon from '#components/domain/TutorialStatusIcon';
 import TutorialStatusOutput from '#components/domain/TutorialStatusOutput';
 import ListLayout from '#components/ListLayout';
@@ -22,6 +23,7 @@ import useAlert from '#hooks/useAlert';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
+    transformErrors,
 } from '#utils/error';
 
 interface Props {
@@ -85,23 +87,29 @@ function TutorialActions(props: Props) {
 
             const {
                 ok,
-                // errors,
+                errors,
                 // result,
             } = result.data.updateTutorialStatus;
 
             if (!ok) {
+                const formErrors = transformErrors(errors);
+                const errorMessage = isDefined(formErrors)
+                    ? Object.values(formErrors).join(', ')
+                    : 'Unknown error occured';
+
                 alert.show(
                     'Failed to update the Tutorial status!',
                     {
-                        // description: 'Please fix the errors and try again!',
+                        description: errorMessage,
                         variant: 'danger',
                     },
                 );
-                // setError(transformErrors(errors));
 
+                setNewStatus(undefined);
                 return;
             }
 
+            setNewStatus(undefined);
             alert.show(
                 'Tutorial status updated successfully!',
                 { variant: 'success' },
@@ -186,16 +194,21 @@ function TutorialActions(props: Props) {
                     headingLevel={4}
                 >
                     Are you sure you want to change the status of the tutorial?
-                    <ListLayout layout="inline">
-                        <TutorialStatusOutput value={status} />
-                        <PiArrowRight />
-                        <TutorialStatusOutput value={newStatus} />
-                    </ListLayout>
+                    <Container withWelledContent>
+                        <ListLayout layout="inline">
+                            <TutorialStatusOutput value={status} />
+                            <PiArrowRight />
+                            <TutorialStatusOutput value={newStatus} />
+                        </ListLayout>
+                    </Container>
+                    <p>
+                        Please make sure you have saved all the changes before continuing
+                    </p>
                     {(newStatus === TutorialStatusEnum.Archived
                         || newStatus === TutorialStatusEnum.Discarded
                     ) && (
                         <p>
-                            Please note that this action is irreversable!
+                            NOTE: This action is irreversable!
                         </p>
                     )}
                 </Modal>

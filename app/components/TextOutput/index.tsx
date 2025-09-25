@@ -9,7 +9,10 @@ import {
 import Container from '#components/Container';
 import Tooltip from '#components/Tooltip';
 import useSpacingToken from '#hooks/useSpacingToken';
-import { formatNumber } from '#utils/common';
+import {
+    formatNumber,
+    FormatNumberOptions,
+} from '#utils/common';
 import {
     gapSpacings,
     SpacingType,
@@ -76,7 +79,7 @@ interface BooleanProps {
     value: boolean | undefined | null;
 }
 
-interface NumberProps {
+interface NumberProps extends FormatNumberOptions {
     valueType: 'number',
     value: number | undefined | null;
 }
@@ -114,6 +117,7 @@ function TextOutput(props: Props) {
         withCenterAlign,
         emptyValueDisplay = '--',
         withEllipsizedOverflow,
+        ...additionalOptions
     } = props;
 
     const spacingClassName = useSpacingToken({
@@ -124,7 +128,7 @@ function TextOutput(props: Props) {
 
     const formattedValue = useMemo(() => {
         if (valueType === 'number') {
-            return formatNumber(value);
+            return formatNumber(value, additionalOptions);
         }
 
         if (valueType === 'date') {
@@ -136,7 +140,7 @@ function TextOutput(props: Props) {
         }
 
         return value;
-    }, [value, valueType]);
+    }, [value, valueType, additionalOptions]);
 
     return (
         <div

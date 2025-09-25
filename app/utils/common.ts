@@ -416,7 +416,7 @@ export function formatNumber(
     } = options;
 
     if (isTruthyString(unit)) {
-        if (unit in Intl.supportedValuesOf('unit')) {
+        if (Intl.supportedValuesOf('unit').includes(unit)) {
             formattingOptions.unit = unit;
             formattingOptions.unitDisplay = 'short';
             formattingOptions.style = 'unit';
@@ -574,4 +574,25 @@ export function resolveUrl(from: string, to: string) {
         return pathname + search + hash;
     }
     return resolvedUrl.toString();
+}
+
+export const DEFAULT_MAX_FILE_SIZE = 1024 * 1024;
+
+export function formatFileSize(fileSize: number) {
+    const order = Math.log10(fileSize) / Math.log10(1000);
+
+    return formatNumber(fileSize * (1000 ** order / 1024 ** order), {
+        compact: true,
+        suffix: 'b',
+    });
+}
+
+export function formatArea(area: number) {
+    return formatNumber(
+        area > 1000000 ? area / 1000000 : area,
+        {
+            prefix: '~',
+            suffix: area > 1000000 ? 'km²' : 'm²',
+        },
+    );
 }

@@ -103,7 +103,7 @@ function UpdateProcessedProjectForm(props: Props) {
     });
 
     useEffect(() => {
-        if (projectData.project.status !== ProjectStatusEnum.ReadyToProcess) {
+        if (projectData.project.status !== ProjectStatusEnum.ReadyToPublish) {
             return undefined;
         }
 

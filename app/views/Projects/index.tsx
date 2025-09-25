@@ -118,6 +118,10 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
         totalCount
         results {
             id
+            aoiGeometry {
+                id
+                totalArea
+            }
             clientId
             oldId
             firebaseId
