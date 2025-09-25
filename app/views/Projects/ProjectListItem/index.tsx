@@ -234,6 +234,14 @@ function ProjectListItem(props: Props) {
                                         layout="grid"
                                         spacing="sm"
                                     >
+                                        {isDefined(value.aoiGeometry) && (
+                                            <TextOutput
+                                                label="Total area"
+                                                value={value.aoiGeometry.totalArea}
+                                                valueType="number"
+                                                suffix=" km²"
+                                            />
+                                        )}
                                         <TextOutput
                                             label="Required results"
                                             value={value.requiredResults}

@@ -180,6 +180,24 @@ fragment OperationInfoFields on OperationInfo {
 export const PROJECT_DETAILS_FRAGMENT = gql`
 ${PROJECT_TYPE_SPECIFIC_FRAGMENT}
 fragment ProjectDetailFields on ProjectType {
+    aoiGeometry {
+        id
+        totalArea
+    }
+    aoiGeometryInputAsset {
+        id
+        file {
+            name
+            url
+        }
+    }
+    projectTypeSpecificOutputAsset {
+        id
+        file {
+            name
+            url
+        }
+    }
     additionalInfoUrl
     clientId
     description

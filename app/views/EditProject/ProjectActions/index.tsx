@@ -10,6 +10,7 @@ import {
 
 import Button from '#components/Button';
 import { ButtonStyleVariant } from '#components/ButtonLayout';
+import Container from '#components/Container';
 import ProjectStatusIcon from '#components/domain/ProjectStatusIcon';
 import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
 import ListLayout from '#components/ListLayout';
@@ -163,7 +164,7 @@ function ProjectActions(props: Props) {
                     styleVariant={buttonStyleVariant}
                     withFullWidth={withFullWidth}
                 >
-                    Withdraw
+                    Archive
                 </Button>
             )}
             {status === ProjectStatusEnum.Published && (
@@ -252,17 +253,22 @@ function ProjectActions(props: Props) {
                     <p>
                         Are you sure you want to change the status of the project?
                     </p>
-                    <ListLayout layout="inline">
-                        <ProjectStatusOutput value={status} />
-                        <PiArrowRight />
-                        <ProjectStatusOutput value={newStatus} />
-                    </ListLayout>
+                    <Container withWelledContent>
+                        <ListLayout layout="inline">
+                            <ProjectStatusOutput value={status} />
+                            <PiArrowRight />
+                            <ProjectStatusOutput value={newStatus} />
+                        </ListLayout>
+                    </Container>
+                    <p>
+                        Please make sure you have saved all the changes before continuing
+                    </p>
                     {(newStatus === ProjectStatusEnum.Withdrawn
                         || newStatus === ProjectStatusEnum.Discarded
                         || newStatus === ProjectStatusEnum.Finished
                     ) && (
                         <p>
-                            Please note that this action is irreversable!
+                            NOTE: This action is irreversable!
                         </p>
                     )}
                 </Modal>

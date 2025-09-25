@@ -4,7 +4,7 @@ import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import SelectInput from '#components/SelectInput';
 import {
-    formatNumber,
+    formatArea,
     valueSelector,
     zoomLevelOptions,
     ZoomLeveOption,
@@ -20,16 +20,6 @@ interface Props<NAME> {
     value: number | undefined | null;
     error?: React.ReactNode;
     disabled?: boolean;
-}
-
-function formatArea(area: number) {
-    return formatNumber(
-        area > 1000000 ? area / 1000000 : area,
-        {
-            prefix: '~',
-            suffix: area > 1000000 ? 'km²' : 'm²',
-        },
-    );
 }
 
 function ZoomLevelSelectInput<const NAME>(props: Props<NAME>) {
