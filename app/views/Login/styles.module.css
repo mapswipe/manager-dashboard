@@ -3,9 +3,8 @@
     height: 100%;
 
     .form {
-        margin: auto;
-        margin-top: 10vh;
+        margin: 2vh auto;
         width: 100%;
-        max-width: 30rem;
+        max-width: 36rem;
     }
 }

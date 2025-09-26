@@ -16,7 +16,7 @@ function Description(props: Props) {
     } = props;
 
     return (
-        <div
+        <p
             className={_cs(
                 styles.description,
                 compact && styles.compact,
@@ -24,7 +24,7 @@ function Description(props: Props) {
             )}
         >
             {children}
-        </div>
+        </p>
     );
 }
 

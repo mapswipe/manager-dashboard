@@ -17,13 +17,13 @@
     }
 
     @media screen and (max-width: 30rem) {
-        --spacing-base: 0.926rem;
+        --spacing-base: 0.953rem;
         --font-size-base: 0.926rem;
     }
 
     --spacing-2xs: calc(var(--spacing-base) * 0.25);
-    --spacing-xs: calc(var(--spacing-base) * 0.5);
-    --spacing-sm: calc(var(--spacing-base) * 0.75);
+    --spacing-xs: calc(var(--spacing-base) * 0.375);
+    --spacing-sm: calc(var(--spacing-base) * 0.625);
     --spacing-md: calc(var(--spacing-base) * 1);
     --spacing-lg: calc(var(--spacing-base) * 1.25);
     --spacing-xl: calc(var(--spacing-base) * 1.5625);
@@ -36,10 +36,10 @@
     --font-size-2xs: calc(var(--font-size-base) * 0.625);
 
     --font-size-lg:  calc(var(--font-size-base) * 1.2);
-    --font-size-xl:  calc(var(--font-size-base) * 1.44);
-    --font-size-2xl: calc(var(--font-size-base) * 1.728);
-    --font-size-3xl: calc(var(--font-size-base) * 2.074);
-    --font-size-4xl: calc(var(--font-size-base) * 2.488);
+    --font-size-xl:  calc(var(--font-size-base) * 1.4);
+    --font-size-2xl: calc(var(--font-size-base) * 1.65);
+    --font-size-3xl: calc(var(--font-size-base) * 2);
+    --font-size-4xl: calc(var(--font-size-base) * 2.5);
 
     --color-primary: #001958;
     --color-text-on-dark: #ffffff;

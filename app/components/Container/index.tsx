@@ -140,6 +140,7 @@ function Container(props: ContainerProps) {
                 >
                     {shouldShowHeadingRow && (
                         <InlineLayout
+                            spacingOffset={-2}
                             spacing={spacing}
                             start={headerIcons}
                             end={headerActions}
@@ -155,9 +156,9 @@ function Container(props: ContainerProps) {
                         </InlineLayout>
                     )}
                     {isDefined(headerDescription) && (
-                        <div className={styles.description}>
+                        <p className={styles.description}>
                             {headerDescription}
-                        </div>
+                        </p>
                     )}
                 </ListLayout>
             )}

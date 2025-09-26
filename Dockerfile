@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1-labs
+# FIXME: remove the above syntax whenever possible
 
 # -------------------------- Dev ---------------------------------------
 FROM node:22-bookworm AS dev
@@ -18,8 +19,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 WORKDIR /code
 
-# -------------------------- Web app build -----------------------------
-FROM dev AS web-app-build
+# -------------------------- Builder ----------------------------------
+FROM dev AS builder
 
 # NOTE: --parents is not yet available in stable syntax, using docker/dockerfile:1-labs
 COPY --parents package.json pnpm-lock.yaml patches/ /code/
@@ -33,6 +34,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
 COPY . /code/
+
+# -------------------------- Web app build -----------------------------
+FROM builder AS web-app-build
 
 # Example configuration (These env variables are used to infer the type only)
 ENV APP_ENVIRONMENT=STAGE
