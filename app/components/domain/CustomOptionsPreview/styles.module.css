@@ -10,8 +10,8 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
+            width: 2.8rem;
+            height: 2.8rem;
             color: var(--color-text-on-dark);
             font-size: 2rem;
         }

@@ -6,8 +6,6 @@ import {
     populateFormat,
 } from '@togglecorp/fujs';
 
-import Container from '#components/Container';
-import Tooltip from '#components/Tooltip';
 import useSpacingToken from '#hooks/useSpacingToken';
 import {
     formatNumber,
@@ -150,6 +148,7 @@ function TextOutput(props: Props) {
                 withCenterAlign && styles.withCenterAlign,
                 withEllipsizedOverflow && styles.withEllipsizedOverflow,
                 spacingClassName,
+                valueType === 'number' && styles.numericValue,
                 className,
             )}
         >
@@ -172,16 +171,6 @@ function TextOutput(props: Props) {
                 className={styles.value}
             >
                 {formattedValue ?? emptyValueDisplay}
-                {withEllipsizedOverflow && (
-                    <Tooltip>
-                        <Container
-                            heading={label}
-                            headingLevel={6}
-                        >
-                            {formattedValue}
-                        </Container>
-                    </Tooltip>
-                )}
             </div>
             {description && (
                 <div>

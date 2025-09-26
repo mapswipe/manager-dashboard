@@ -81,6 +81,7 @@ function VectorTilePreview(props: Props) {
                 <GeoJsonAssetMapSource
                     geoJsonAssetId={aoiGeometryAssetId}
                     zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
+                    withPadding={zoomView === 'aoiBounds'}
                 />
                 <MapOrder
                     ordering={[

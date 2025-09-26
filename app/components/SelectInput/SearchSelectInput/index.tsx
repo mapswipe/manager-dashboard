@@ -35,7 +35,6 @@ function Option(props: OptionProps) {
             styleVariant="transparent"
             withFullWidth
             childrenContainerClassName={styles.label}
-            withoutPadding
         >
             { children }
         </ButtonLayout>

@@ -36,6 +36,7 @@ interface Props {
     zoomLevel?: number;
     sourceKey: string;
     layerKey: string;
+    withPadding?: boolean;
 }
 
 function GeoJsonMapSource(props: Props) {
@@ -44,6 +45,7 @@ function GeoJsonMapSource(props: Props) {
         zoomLevel,
         sourceKey,
         layerKey,
+        withPadding,
     } = props;
 
     const bounds = isDefined(geoJson)
@@ -90,6 +92,7 @@ function GeoJsonMapSource(props: Props) {
                     centerOptions={{
                         zoom: zoomLevel,
                         duration: 0,
+                        padding: withPadding ? 20 : 0,
                     }}
                 />
             )}
@@ -97,6 +100,7 @@ function GeoJsonMapSource(props: Props) {
                 <MapBounds
                     bounds={bounds}
                     duration={0}
+                    padding={withPadding ? 20 : 0}
                 />
             )}
         </>

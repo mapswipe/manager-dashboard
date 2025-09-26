@@ -4,9 +4,10 @@
 
 :root {
     --font-family-monospace: 'Source Code Pro', monospace;
-    --font-family-sans-serif: 'Source Sans 3', sans-serif;
+    --font-family-sans-serif: 'Cabin', sans-serif;
+    --font-family-heading: 'Sofia Sans Semi Condensed', sans-serif;
 
-    --optical-correction-factor: 1.35;
+    --optical-correction-factor: 1.25;
     --spacing-base: 1rem;
     --font-size-base: 1rem;
 
@@ -28,10 +29,12 @@
     --spacing-xl: calc(var(--spacing-base) * 1.5625);
     --spacing-2xl: calc(var(--spacing-base) * 1.953);
 
-    --font-size-2xs: calc(var(--font-size-base) * 0.625);
-    --font-size-xs:  calc(var(--font-size-base) * 0.75);
-    --font-size-sm:  calc(var(--font-size-base) * 0.875);
     --font-size-md:  calc(var(--font-size-base) * 1);
+
+    --font-size-sm:  calc(var(--font-size-base) * 0.875);
+    --font-size-xs:  calc(var(--font-size-base) * 0.75);
+    --font-size-2xs: calc(var(--font-size-base) * 0.625);
+
     --font-size-lg:  calc(var(--font-size-base) * 1.2);
     --font-size-xl:  calc(var(--font-size-base) * 1.44);
     --font-size-2xl: calc(var(--font-size-base) * 1.728);
@@ -106,6 +109,7 @@
 
     --shadow-card: 0 1px 10px -6px var(--color-shadow);
 
+    --duration-transition-fast: .1s;
     --duration-transition-medium: .2s;
 
     --color-background-hover-light: rgba(0, 0, 0, .04);
@@ -143,6 +147,7 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
     margin: 0;
+    line-height: 1.5;
 }
 
 a {

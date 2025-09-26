@@ -76,6 +76,7 @@ function ProjectAssetsList(props: Props) {
                     <Container
                         heading="Processed Tasks"
                         headingLevel={6}
+                        contentLayout="inline"
                     >
                         <a
                             href={projectTypeSpecificOutputAsset.file.url}
@@ -88,6 +89,18 @@ function ProjectAssetsList(props: Props) {
                                 start={<PiDownload />}
                             >
                                 Download GeoJSON
+                            </ButtonLayout>
+                        </a>
+                        <a
+                            href={`https://geojson.io/#data=data:text/x-url,${encodeURIComponent(projectTypeSpecificOutputAsset.file.url)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Preview in geojson.io"
+                        >
+                            <ButtonLayout
+                                end={<PiArrowUpRight />}
+                            >
+                                Open in geojson.io
                             </ButtonLayout>
                         </a>
                     </Container>

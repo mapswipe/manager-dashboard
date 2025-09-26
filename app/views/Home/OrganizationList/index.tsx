@@ -237,7 +237,7 @@ function OrganizationList(props: Props) {
                         >
                             <Tag>
                                 <InlineLayout
-                                    spacing="sm"
+                                    spacing="xs"
                                     start={organization.isArchived ? (
                                         <PiArchive />
                                     ) : (

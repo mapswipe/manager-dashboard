@@ -79,21 +79,21 @@
         --du: var(--duration-transition-medium);
         --de: calc(var(--du) / 4);
         position: absolute;
-        top: 0%;
-        left: 10%;
+        top: 10%;
+        left: 2pt;
         transition: var(--du) var(--de) background-color ease-in-out,
             var(--du) var(--de) width ease-in-out,
             var(--du) var(--de) height ease-in-out,
             var(--du) var(--de) top ease-in-out,
             var(--du) var(--de) left ease-in-out,
             var(--du) box-shadow ease-in-out;
+        border-radius: 0.125rem;
         background-color: transparent;
-        width: 90%;
+        width: calc(100% - 2pt);
         height: 90%;
 
         user-select: none;
         pointer-events: none;
-
     }
 
     &:not(.disabled) {
@@ -101,7 +101,7 @@
 
         &:hover {
             .visual-feedback {
-                --visual-feedback-color: color-mix(in srgb, var(--variant-color) 4%, transparent);
+                --visual-feedback-color: color-mix(in srgb, var(--variant-color) 5%, transparent);
                 top: 0%;
                 left: 0%;
                 transition: var(--du) background-color ease-in-out,
@@ -110,7 +110,6 @@
                     var(--du) left ease-in-out,
                     var(--du) top ease-in-out,
                     var(--du) var(--de) box-shadow ease-in-out;
-                border-radius: 0.125rem;
                 box-shadow: 0 0 0 var(--visual-feedback-offset) var(--visual-feedback-color);
                 background-color: var(--visual-feedback-color);
                 width: 100%;

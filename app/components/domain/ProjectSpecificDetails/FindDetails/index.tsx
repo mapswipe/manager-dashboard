@@ -30,11 +30,14 @@ function FindDetails(props: Props) {
             <ZoomLevelOutput value={data.zoomLevel} />
             <ListLayout layout="grid">
                 <ListLayout layout="block">
-                    <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
+                    <BaseMap
+                        baseTileServer={removeNull(data?.tileServerProperty)}
+                    >
                         <DefaultMapContainer />
                         <GeoJsonAssetMapSource
                             geoJsonAssetId={data?.aoiGeometry}
                             zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                            withPadding={zoomView === 'aoiBounds'}
                         />
                     </BaseMap>
                     <InlineLayout withCenteredContent>

@@ -1,39 +1,42 @@
 .heading {
     --font-size: var(--font-size-xl);
+    --font-weight: var(--font-weight-medium);
     display: flex;
     margin: 0;
-    line-height: 1.125;
+    line-height: 1.25;
     color: var(--color-primary);
+    font-family: var(--font-family-heading);
     font-size: var(--font-size);
+    font-weight: 400;
     overflow-wrap: anywhere;
 
     &.level1 {
-        font-weight: var(--font-weight-light);
+        --font-weight: var(--font-weight-light);
         --font-size: var(--font-size-4xl);
     }
 
     &.level2 {
-        font-weight: var(--font-weight-light);
+        --font-weight: var(--font-weight-light);
         --font-size: var(--font-size-3xl);
     }
 
     &.level3 {
-        font-weight: var(--font-weight-medium);
+        --font-weight: var(--font-weight-medium);
         --font-size: var(--font-size-2xl);
     }
 
     &.level4 {
-        font-weight: var(--font-weight-medium);
+        --font-weight: var(--font-weight-medium);
         --font-size: var(--font-size-xl);
     }
 
     &.level5 {
-        font-weight: var(--font-weight-bold);
+        --font-weight: var(--font-weight-bold);
         --font-size: var(--font-size-lg);
     }
 
     &.level6 {
-        font-weight: var(--font-weight-bold);
+        --font-weight: var(--font-weight-bold);
         --font-size: var(--font-size-md);
     }
 }

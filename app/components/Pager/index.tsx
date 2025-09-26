@@ -172,7 +172,7 @@ function Pager(props: Props) {
             className={_cs(styles.pager, className)}
             withWrap
         >
-            <ListLayout spacing="sm">
+            <ListLayout spacing="xs">
                 {pageItems}
             </ListLayout>
             {isDefined(onPagePerItemChange) && (

@@ -164,7 +164,7 @@ function ProjectActions(props: Props) {
                     styleVariant={buttonStyleVariant}
                     withFullWidth={withFullWidth}
                 >
-                    Archive
+                    Withdraw
                 </Button>
             )}
             {status === ProjectStatusEnum.Published && (

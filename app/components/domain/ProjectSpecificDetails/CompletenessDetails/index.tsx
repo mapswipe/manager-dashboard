@@ -46,6 +46,7 @@ function CompletenessDetails(props: Props) {
                         <GeoJsonAssetMapSource
                             geoJsonAssetId={data.aoiGeometry}
                             zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                            withPadding={zoomView === 'aoiBounds'}
                         />
                     </BaseMap>
                     <InlineLayout withCenteredContent>
