@@ -116,7 +116,7 @@ function RasterTileServerOutput(props: Props) {
             <TextOutput
                 label="Credits"
                 value={credits}
-                withWrap
+                withEllipsizedOverflow
             />
         </Container>
     );

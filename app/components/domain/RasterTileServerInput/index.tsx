@@ -208,6 +208,7 @@ function RasterTileServerInput(props: Props) {
                             <GeoJsonAssetMapSource
                                 geoJsonAssetId={aoiGeoJsonAssetId}
                                 zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
+                                withPadding={zoomView === 'aoiBounds'}
                             />
                         </BaseMap>
                         {isDefined(zoomLevel) && (

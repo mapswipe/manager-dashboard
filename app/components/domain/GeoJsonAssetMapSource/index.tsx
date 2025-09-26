@@ -29,12 +29,14 @@ query ProjectAssetPreview($assetId: ID!) {
 interface Props {
     geoJsonAssetId?: string;
     zoomLevel?: number;
+    withPadding?: boolean;
 }
 
 function GeoJsonAssetMapSource(props: Props) {
     const {
         geoJsonAssetId,
         zoomLevel,
+        withPadding,
     } = props;
 
     const [geoJson, setGeoJson] = useState<object | undefined>();
@@ -89,6 +91,7 @@ function GeoJsonAssetMapSource(props: Props) {
             zoomLevel={zoomLevel}
             sourceKey={sourceKey}
             layerKey={layerKey}
+            withPadding={withPadding}
         />
     );
 }

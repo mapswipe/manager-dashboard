@@ -199,7 +199,6 @@ function NewTutorial() {
         >
             <Container
                 heading="Title"
-                withHeaderBorder
                 withContentBackgroundAndPadding
                 spacing="lg"
             >
@@ -214,7 +213,6 @@ function NewTutorial() {
             </Container>
             <Container
                 heading="Reference Project"
-                withHeaderBorder
                 withContentBackgroundAndPadding
                 spacing="lg"
                 headerDescription="Some information will be inherited from from the selected project"

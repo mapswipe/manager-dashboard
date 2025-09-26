@@ -234,7 +234,7 @@ function Tutorials() {
             )}
         >
             <Container
-                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} tutorial`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} tutorials`}
                 withWrapInHeader
                 headingLevel={6}
                 headerActions={(

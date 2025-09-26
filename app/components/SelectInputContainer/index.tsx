@@ -316,6 +316,7 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
                     )}
                     contentLayout={optionPopupContentLayout}
                     contentNumPreferredGridColumns={optionPopupContentNumPreferredGridColumns}
+                    spacing="none"
                 >
                     <List
                         data={options}

@@ -35,6 +35,7 @@ function CompareDetails(props: Props) {
                     <GeoJsonAssetMapSource
                         geoJsonAssetId={data.aoiGeometry}
                         zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                        withPadding={zoomView === 'aoiBounds'}
                     />
                 </BaseMap>
                 <RasterTileServerOutput
@@ -49,6 +50,7 @@ function CompareDetails(props: Props) {
                     <GeoJsonAssetMapSource
                         geoJsonAssetId={data.aoiGeometry}
                         zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                        withPadding={zoomView === 'aoiBounds'}
                     />
                 </BaseMap>
                 <RasterTileServerOutput

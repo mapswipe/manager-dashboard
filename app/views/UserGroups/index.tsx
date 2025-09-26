@@ -174,7 +174,7 @@ function UserGroups() {
             )}
         >
             <Container
-                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} teams`}
+                heading={`Showing ${formatNumber(totalItems)} of ${formatNumber(totalCount)} usergroups`}
                 withWrapInHeader
                 headingLevel={6}
                 headerActions={(

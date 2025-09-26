@@ -47,11 +47,11 @@ query UserGroupMemberList($filters: ContributorUserGroupMembershipFilter, $pagin
         results {
             id
             userId
+            totalSwipes
+            totalSwipeTime
+            totalMappingProjects
             user {
                 username
-                totalSwipes
-                totalSwipeTime
-                totalMappingProjects
                 id
                 firebaseId
                 createdAt
@@ -268,13 +268,20 @@ function UserGroupListItem(props: Props) {
                 />
             )}
         >
-            {userMemberResponse?.contributorUserGroupMembers?.results.map((contributor) => (
-                <ContributorUserCard
-                    key={contributor.id}
-                    value={contributor.user}
-                    compact
-                />
-            ))}
+            <ListLayout layout="grid">
+                {userMemberResponse?.contributorUserGroupMembers?.results.map((contributor) => (
+                    <ContributorUserCard
+                        key={contributor.id}
+                        value={{
+                            ...contributor.user,
+                            totalSwipes: contributor.totalSwipes,
+                            totalSwipeTime: contributor.totalSwipeTime,
+                            totalMappingProjects: contributor.totalMappingProjects,
+                        }}
+                        compact
+                    />
+                ))}
+            </ListLayout>
             <InlineLayout
                 end={(
                     <Pager

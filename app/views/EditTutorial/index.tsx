@@ -933,7 +933,6 @@ function NewTutorial() {
         >
             <Container
                 heading="General"
-                withHeaderBorder
                 withContentBackgroundAndPadding
                 spacing="lg"
             >
@@ -948,7 +947,6 @@ function NewTutorial() {
             </Container>
             <Container
                 heading="Reference Project"
-                withHeaderBorder
                 withContentBackgroundAndPadding
                 spacing="lg"
             >

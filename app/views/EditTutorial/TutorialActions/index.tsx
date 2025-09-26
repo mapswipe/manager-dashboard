@@ -148,7 +148,7 @@ function TutorialActions(props: Props) {
                     styleVariant={buttonStyleVariant}
                     withFullWidth={withFullWidth}
                 >
-                    Withdraw
+                    Archive
                 </Button>
             )}
             {status === TutorialStatusEnum.Draft && (

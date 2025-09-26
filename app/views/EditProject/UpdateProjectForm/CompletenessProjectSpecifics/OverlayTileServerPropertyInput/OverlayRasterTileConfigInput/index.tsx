@@ -91,6 +91,7 @@ function OverlayRasterTileConfigInput(props: Props) {
                         <GeoJsonAssetMapSource
                             geoJsonAssetId={aoiGeoJsonAssetId}
                             zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
+                            withPadding={zoomView === 'aoiBounds'}
                         />
                         {!(tileConfigValue instanceof type.errors) && (
                             <RasterTileMapSource
