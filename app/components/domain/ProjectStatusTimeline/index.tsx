@@ -60,7 +60,7 @@ function StatusItem(props: StatusProps) {
             <ListLayout
                 layout="block"
                 className={styles.details}
-                spacing="none"
+                spacing="xs"
             >
                 <span className={styles.title}>
                     {label}

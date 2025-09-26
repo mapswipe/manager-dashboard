@@ -30,9 +30,11 @@ import {
 } from 'urql';
 
 import { firebaseAuth } from '#base/configs/firebase';
+import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
+import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import PageLayout from '#components/PageLayout';
 import TextInput from '#components/TextInput';
@@ -332,7 +334,28 @@ function Login() {
         <PageLayout
             heading="Manager Dashboard"
             className={styles.login}
+            headerDescription={(
+                <ListLayout
+                    layout="block"
+                    spacing="sm"
+                >
+                    <p>
+                        Welcome to the MapSwipe Manager Dashboard!
+                    </p>
+                    <p>
+                        A platform for creating, coordinating and supervising the mapping projects.
+                        Log in with your MapSwipe account in order to create new projects.
+                    </p>
+                </ListLayout>
+            )}
         >
+            <Alert
+                name="note"
+                title="You need project manager permissions to use the Manager Dashboard."
+                description="If you don't yet have access, please reach out to the MapSwipe community via Slack."
+                withoutShadow
+                fullWidth
+            />
             <form
                 onSubmit={handleSubmitButtonClick}
                 className={styles.form}

@@ -67,6 +67,7 @@ function InlineLayout(props: Props) {
     const innerSpacingClassName = useSpacingToken({
         spacing,
         modes: gapSpacings,
+        offset: spacingOffset ?? 0,
     });
 
     return (

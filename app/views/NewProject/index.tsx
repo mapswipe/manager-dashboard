@@ -23,6 +23,7 @@ import routes from '#base/configs/routes';
 import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Container from '#components/Container';
+import Description from '#components/Description';
 import ProjectStatusTimeline from '#components/domain/ProjectStatusTimeline';
 import ProjectTypeIcon from '#components/domain/ProjectTypeIcon';
 import InlineLayout from '#components/InlineLayout';
@@ -351,9 +352,9 @@ function NewProject() {
                     spacing="lg"
                 />
                 {isDefined(value.projectType) && (
-                    <div>
+                    <Description>
                         {projectTypeDescriptions[value.projectType]}
-                    </div>
+                    </Description>
                 )}
             </Container>
             <ProjectGeneralInputs

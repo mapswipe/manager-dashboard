@@ -89,7 +89,10 @@ function TutorialListItem(props: Props) {
                 </OverflowMenu>
             )}
             headerDescription={(
-                <ListLayout withWrap>
+                <ListLayout
+                    withWrap
+                    spacing="sm"
+                >
                     <Tag>
                         <TutorialStatusOutput
                             value={status}

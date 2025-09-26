@@ -95,6 +95,7 @@ function Alert<N extends string>(props: Props<N>) {
                 <InlineLayout
                     start={icon[type]}
                     withCenterAlign
+                    spacing="sm"
                     end={nonDismissable && (
                         <Button
                             name={undefined}

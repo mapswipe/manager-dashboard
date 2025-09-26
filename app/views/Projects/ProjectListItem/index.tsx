@@ -88,7 +88,10 @@ function ProjectListItem(props: Props) {
                                 </SmartLink>
                             ) : value.name}
                             headerDescription={(
-                                <ListLayout withWrap>
+                                <ListLayout
+                                    withWrap
+                                    spacing="sm"
+                                >
                                     {isDefined(value.oldId) && (
                                         <Tag colorVariant="danger">
                                             <InlineLayout

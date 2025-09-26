@@ -62,8 +62,7 @@ function SegmentInput<
             icons={icons}
             label={label}
             readOnly={readOnly}
-            spacing={spacing}
-            spacingOffset={-2}
+            spacing="none"
             input={(
                 <ListLayout
                     spacingOffset={-3}
@@ -82,7 +81,7 @@ function SegmentInput<
                                 name={key}
                                 key={String(key)}
                                 onClick={handleSegmentClick}
-                                spacingOffset={-2}
+                                spacingOffset={-1}
                                 spacing={spacing}
                             >
                                 {optionLabel}
