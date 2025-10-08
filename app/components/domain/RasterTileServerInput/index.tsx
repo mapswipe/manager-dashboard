@@ -201,7 +201,7 @@ function RasterTileServerInput(props: Props) {
                             </>
                         )}
                 </ListLayout>
-                {!withoutPreview && (
+                {!withoutPreview && isDefined(aoiGeoJsonAssetId) && (
                     <ListLayout layout="block">
                         <BaseMap baseTileServer={value}>
                             <DefaultMapContainer compact />

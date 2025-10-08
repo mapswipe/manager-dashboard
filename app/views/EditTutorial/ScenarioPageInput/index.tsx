@@ -99,6 +99,8 @@ function ScenarioPageInput(props: Props) {
                 </Button>
             )}
             contentClassName={styles.content}
+            withBackground
+            withPadding
         >
             <ListLayout
                 layout="block"

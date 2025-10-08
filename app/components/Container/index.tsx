@@ -156,9 +156,9 @@ function Container(props: ContainerProps) {
                         </InlineLayout>
                     )}
                     {isDefined(headerDescription) && (
-                        <p className={styles.description}>
+                        <div className={styles.description}>
                             {headerDescription}
-                        </p>
+                        </div>
                     )}
                 </ListLayout>
             )}

@@ -9,9 +9,6 @@ services:
       APP_ENVIRONMENT: ${APP_ENVIRONMENT:-DEV}
       APP_GRAPHQL_API_DOMAIN: ${APP_GRAPHQL_API_DOMAIN:-http://localhost:8000}
       APP_REST_API_DOMAIN: ${APP_REST_API_DOMAIN:-http://localhost:8000}
-      APP_FIREBASE_API_KEY: ${APP_FIREBASE_API_KEY}
-      APP_FIREBASE_AUTH_DOMAIN: ${APP_FIREBASE_AUTH_DOMAIN:-dev-mapswipe.firebaseapp.com}
-      APP_FIREBASE_PROJECT_ID: ${APP_FIREBASE_PROJECT_ID:-dev-mapswipe}
       APP_GRAPHQL_CODEGEN_ENDPOINT: ${APP_GRAPHQL_CODEGEN_ENDPOINT:-./backend/schema.graphql}
     env_file:
       - ../.env

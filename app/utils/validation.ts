@@ -2,6 +2,7 @@ import { type } from 'arktype';
 
 export const CocoObjectImage = type({
     id: type.number,
+    // FIXME: Incorrect spelling
     lisence: type.string.optional(),
     coco_url: type.string.optional(),
     flickr_url: type.string.optional(),

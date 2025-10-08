@@ -4,16 +4,17 @@
     .content {
         display: grid;
         grid-template-columns: 1fr auto;
+        gap: var(--spacing-lg);
+        align-items: start;
 
-        .scenario-inputs {
-            display: grid;
-            grid-template-columns: 10rem 1fr 1fr;
-            gap: var(--spacing-md);
+        >:nth-child(2) {
+            position: sticky;
+            top: var(--spacing-md);
         }
     }
 
     @container (max-width: 40rem) {
-        .content {
+        >.content {
             grid-template-columns: 1fr;
         }
     }

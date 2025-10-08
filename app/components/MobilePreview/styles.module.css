@@ -3,6 +3,7 @@
     border-radius: 2rem;
     background-color: var(--color-primary);
     color: var(--color-text-on-dark);
+    width: fit-content;
 
     --font-weight-bold-mobile: var(--font-weight-bold);
 
