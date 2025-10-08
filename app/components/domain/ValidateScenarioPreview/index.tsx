@@ -100,6 +100,7 @@ function ValidateScenarioPreview(props: Props) {
                     baseTileServer={removeNull(tileServerProperty)}
                     geoJsonLayerOptions={layerOptions}
                     fitInSingleTile
+                    disablePan
                 />
                 <CustomOptionPreview
                     value={customOptions}

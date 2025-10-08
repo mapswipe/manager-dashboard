@@ -1,9 +1,10 @@
 .mobile-preview {
+    margin: 0 auto;
     border: var(--width-separator-mobile-preview) solid var(--color-black);
     border-radius: 2rem;
     background-color: var(--color-primary);
-    color: var(--color-text-on-dark);
     width: fit-content;
+    color: var(--color-text-on-dark);
 
     --font-weight-bold-mobile: var(--font-weight-bold);
 

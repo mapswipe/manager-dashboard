@@ -86,6 +86,7 @@ function CompareScenarioPreview(props: Props) {
                     baseTileServer={removeNull(tileServerProperty)}
                     geoJsonLayerOptions={layerOptions}
                     padding={0}
+                    disablePan
                 />
                 <GeoJsonPreview
                     className={styles.mapContainer}
@@ -93,6 +94,7 @@ function CompareScenarioPreview(props: Props) {
                     baseTileServer={removeNull(tileServerBProperty)}
                     geoJsonLayerOptions={layerOptions}
                     padding={0}
+                    disablePan
                 />
             </MobilePreview>
             <TutorialPreviewScreenSelectInput

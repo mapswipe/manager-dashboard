@@ -1,0 +1,17 @@
+.project-list-item {
+    .container {
+        container-type: inline-size;
+
+        .content {
+            display: grid;
+            grid-template-columns: 12rem 1fr;
+            gap: var(--spacing-md);
+        }
+
+        @container (max-width: 30rem) {
+            >.content {
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+}

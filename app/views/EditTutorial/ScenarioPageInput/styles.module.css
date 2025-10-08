@@ -16,6 +16,13 @@
     @container (max-width: 40rem) {
         >.content {
             grid-template-columns: 1fr;
+            align-items: initial;
+            justify-content: stretch;
+
+            >:nth-child(2) {
+                position: initial;
+                top: initial;
+            }
         }
     }
 }

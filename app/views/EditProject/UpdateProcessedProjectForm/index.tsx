@@ -11,6 +11,7 @@ import {
 import {
     createSubmitHandler,
     getErrorObject,
+    nonFieldError,
     removeNull,
     useForm,
 } from '@togglecorp/toggle-form';
@@ -239,6 +240,11 @@ function UpdateProcessedProjectForm(props: Props) {
                     },
                 );
                 const formErrors = transformErrors(errors);
+
+                if ('status' in formErrors) {
+                    formErrors[nonFieldError] = String(formErrors.status);
+                }
+
                 setError(formErrors);
                 return;
             }
@@ -274,12 +280,11 @@ function UpdateProcessedProjectForm(props: Props) {
         || status === ProjectStatusEnum.Paused;
 
     const limitedFieldsEditable = status === ProjectStatusEnum.Paused;
-
     const readOnly = isDefined(projectData.project.oldId);
-
     const baseInputsDisabled = pending || !baseInputsEditable;
 
-    const updateDisabled = readOnly || !baseInputsEditable || !limitedFieldsEditable;
+    const updateDisabled = readOnly
+        || baseInputsDisabled;
 
     return (
         <PageLayout

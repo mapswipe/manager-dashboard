@@ -42,9 +42,9 @@ const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
         lookFor: {
             required: true,
         },
-        requestingOrganization: {
-            required: true,
-        },
+        // requestingOrganization: {
+        //     required: true,
+        // },
         additionalInfoUrl: {},
         description: {},
         image: {},

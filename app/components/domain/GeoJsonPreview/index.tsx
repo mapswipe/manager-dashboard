@@ -51,6 +51,7 @@ interface Props {
     padding?: number;
     tileSize?: number;
     fitInSingleTile?: boolean;
+    disablePan?: boolean;
 }
 
 function GeoJsonPreview(props: Props) {
@@ -62,6 +63,7 @@ function GeoJsonPreview(props: Props) {
         padding = DEFAULT_MAP_PADDING,
         tileSize,
         fitInSingleTile = false,
+        disablePan,
     } = props;
 
     const bounds = useMemo(() => {
@@ -78,6 +80,7 @@ function GeoJsonPreview(props: Props) {
         <BaseMap
             baseTileServer={baseTileServer}
             tileSize={tileSize}
+            disablePan={disablePan}
         >
             {isDefined(geoJson) && (
                 <MapSource

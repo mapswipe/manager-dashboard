@@ -91,6 +91,7 @@ function FindScenarioPreview(props: Props) {
                     baseTileServer={removeNull(tileServerProperty)}
                     geoJsonLayerOptions={layerOptions}
                     padding={0}
+                    disablePan
                 />
             </MobilePreview>
             <InlineLayout withCenteredContent>
