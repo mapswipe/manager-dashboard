@@ -1,7 +1,4 @@
-import {
-    useMemo,
-    useState,
-} from 'react';
+import { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import {
     PartialForm,
@@ -11,7 +8,7 @@ import { FillLayerSpecification } from 'maplibre-gl';
 
 import GeoJsonPreview from '#components/domain/GeoJsonPreview';
 import Icon from '#components/domain/Icon';
-import TutorialPreviewScreenSelectInput, { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
+import { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
 import MobilePreview from '#components/MobilePreview';
 import {
     ProjectRasterTileServerConfig,
@@ -46,6 +43,7 @@ interface Props {
     tileServerBProperty: ProjectRasterTileServerConfig | undefined;
     projectInstruction: string | undefined | null;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
+    preview: PreviewItem | undefined;
 }
 
 function CompareScenarioPreview(props: Props) {
@@ -55,9 +53,8 @@ function CompareScenarioPreview(props: Props) {
         projectInstruction,
         tileServerProperty,
         tileServerBProperty,
+        preview,
     } = props;
-
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const generatedGeojson = useMemo(() => {
         const tiles = scenario?.tasks?.map((task) => ({
@@ -97,10 +94,6 @@ function CompareScenarioPreview(props: Props) {
                     disablePan
                 />
             </MobilePreview>
-            <TutorialPreviewScreenSelectInput
-                scenario={scenario}
-                onPreviewChange={setPreview}
-            />
         </div>
     );
 }

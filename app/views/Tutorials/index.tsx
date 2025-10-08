@@ -47,6 +47,7 @@ type TutorialFilterValue = {
     organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
     region: ProjectFilter['region'];
     projectType: ListFilter<ProjectFilter, 'projectType'>;
+    createdById: ExactFilter<TutorialFilter, 'createdById'> | undefined;
 
 }
 
@@ -130,6 +131,7 @@ function Tutorials() {
             organization: undefined,
             region: undefined,
             projectType: undefined,
+            createdById: undefined,
         },
         defaultSort: {
             key: 'id',
@@ -153,6 +155,7 @@ function Tutorials() {
                     region: filters.region,
                     projectType: { inList: removeEmptyList(filters.projectType) },
                 },
+                createdById: { exact: filters.createdById },
             },
             pagination: {
                 limit,
@@ -192,12 +195,12 @@ function Tutorials() {
                         placeholder="Search by title"
                     />
                     <UserSelectInput
-                        name="user"
+                        name="createdById"
                         icons={<PiUser />}
                         label="Created by"
                         placeholder="Everyone"
-                        // value={rawFilters.user}
-                        // onChange={setFilterField}
+                        value={rawFilters.createdById}
+                        onChange={setFilterField}
                     />
                     <TextInput
                         name="region"

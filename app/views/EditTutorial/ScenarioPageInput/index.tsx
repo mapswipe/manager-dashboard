@@ -1,4 +1,8 @@
-import { useMemo } from 'react';
+import {
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { IoTrashBin } from 'react-icons/io5';
 import {
     _cs,
@@ -22,8 +26,13 @@ import CompletenessScenarioPreview from '#components/domain/CompletenessScenario
 import FindScenarioPreview from '#components/domain/FindScenarioPreview';
 import IconSelectInput from '#components/domain/IconSelectInput';
 import StreetScenarioPreview from '#components/domain/StreetScenarioPreview';
+import TutorialPreviewScreenSelectInput, {
+    PreviewItem,
+    PreviewKey,
+} from '#components/domain/TutorialPreviewScreenSelectInput';
 import ValidateImageScenarioPreview from '#components/domain/ValidateImageScenarioPreview';
 import ValidateScenarioPreview from '#components/domain/ValidateScenarioPreview';
+import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';
@@ -81,6 +90,21 @@ function ScenarioPageInput(props: Props) {
         [error?.tasks],
     );
 
+    const [preview, setPreview] = useState<PreviewItem | undefined>();
+    const [previewKey, setPreviewKey] = useState<PreviewKey>('instructions');
+
+    const setPreviewToInstruction = useCallback(() => {
+        setPreviewKey('instructions');
+    }, [setPreviewKey]);
+
+    const setPreviewToHint = useCallback(() => {
+        setPreviewKey('hint');
+    }, [setPreviewKey]);
+
+    const setPreviewToSuccess = useCallback(() => {
+        setPreviewKey('success');
+    }, [setPreviewKey]);
+
     return (
         <Container
             className={_cs(styles.scenarioPageInput, className)}
@@ -127,6 +151,7 @@ function ScenarioPageInput(props: Props) {
                                 onChange={setFieldValue}
                                 error={error?.instructionsIcon}
                                 nonClearable
+                                onInputFocus={setPreviewToInstruction}
                             />
                             <TextInput
                                 placeholder="Enter title"
@@ -135,6 +160,7 @@ function ScenarioPageInput(props: Props) {
                                 onChange={setFieldValue}
                                 error={error?.instructionsTitle}
                                 disabled={disabled}
+                                onFocus={setPreviewToInstruction}
                             />
                             <TextArea
                                 name="instructionsDescription"
@@ -144,6 +170,7 @@ function ScenarioPageInput(props: Props) {
                                 error={error?.instructionsDescription}
                                 disabled={disabled}
                                 rows={3}
+                                onFocus={setPreviewToInstruction}
                             />
                         </Container>
                         <Container
@@ -162,6 +189,7 @@ function ScenarioPageInput(props: Props) {
                                 error={error?.hintIcon}
                                 disabled={disabled}
                                 nonClearable
+                                onInputFocus={setPreviewToHint}
                             />
                             <TextInput
                                 placeholder="Enter title"
@@ -170,6 +198,7 @@ function ScenarioPageInput(props: Props) {
                                 onChange={setFieldValue}
                                 error={error?.hintTitle}
                                 disabled={disabled}
+                                onFocus={setPreviewToHint}
                             />
                             <TextArea
                                 placeholder="Enter description"
@@ -179,6 +208,7 @@ function ScenarioPageInput(props: Props) {
                                 error={error?.hintDescription}
                                 disabled={disabled}
                                 rows={3}
+                                onFocus={setPreviewToHint}
                             />
                         </Container>
                         <Container
@@ -197,6 +227,7 @@ function ScenarioPageInput(props: Props) {
                                 error={error?.successIcon}
                                 disabled={disabled}
                                 nonClearable
+                                onInputFocus={setPreviewToSuccess}
                             />
                             <TextInput
                                 placeholder="Enter title"
@@ -205,6 +236,7 @@ function ScenarioPageInput(props: Props) {
                                 onChange={setFieldValue}
                                 error={error?.successTitle}
                                 disabled={disabled}
+                                onFocus={setPreviewToSuccess}
                             />
                             <TextArea
                                 name="successDescription"
@@ -214,6 +246,7 @@ function ScenarioPageInput(props: Props) {
                                 error={error?.successDescription}
                                 disabled={disabled}
                                 rows={3}
+                                onFocus={setPreviewToSuccess}
                             />
                         </Container>
                     </ListLayout>
@@ -244,58 +277,74 @@ function ScenarioPageInput(props: Props) {
                     </Container>
                 )}
             </ListLayout>
-            {/* eslint-disable-next-line no-underscore-dangle */}
-            {projectData?.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (
-                <FindScenarioPreview
-                    scenario={value}
-                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    projectInstruction={projectData.projectInstruction}
-                />
-            )}
-            {/* eslint-disable-next-line no-underscore-dangle */}
-            {projectData?.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType' && (
-                <CompareScenarioPreview
-                    scenario={value}
-                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    tileServerBProperty={projectData.projectTypeSpecifics?.tileServerBProperty}
-                    projectInstruction={projectData.projectInstruction}
-                />
-            )}
-            {/* eslint-disable-next-line no-underscore-dangle */}
-            {projectData?.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType' && (
-                <CompletenessScenarioPreview
-                    scenario={value}
-                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    overlayTileServerProperty={projectData
-                        .projectTypeSpecifics?.overlayTileServerProperty}
-                    projectInstruction={projectData.projectInstruction}
-                />
-            )}
-            {/* eslint-disable-next-line no-underscore-dangle */}
-            {projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType' && (
-                <ValidateScenarioPreview
-                    scenario={value}
-                    tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
-                    projectInstruction={projectData.projectInstruction}
-                    customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
-                />
-            )}
-            {/* eslint-disable-next-line no-underscore-dangle */}
-            {projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
-                <ValidateImageScenarioPreview
-                    scenario={value}
-                    projectInstruction={projectData.projectInstruction}
-                    customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
-                />
-            )}
-            {/* eslint-disable-next-line no-underscore-dangle */}
-            {projectData?.projectTypeSpecifics?.__typename === 'StreetProjectPropertyType' && (
-                <StreetScenarioPreview
-                    scenario={value}
-                    projectInstruction={projectData.projectInstruction}
-                    customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
-                />
-            )}
+            <ListLayout layout="block">
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (
+                    <FindScenarioPreview
+                        scenario={value}
+                        tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                        projectInstruction={projectData.projectInstruction}
+                        preview={preview}
+                    />
+                )}
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType' && (
+                    <CompareScenarioPreview
+                        scenario={value}
+                        tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                        tileServerBProperty={projectData.projectTypeSpecifics?.tileServerBProperty}
+                        projectInstruction={projectData.projectInstruction}
+                        preview={preview}
+                    />
+                )}
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType' && (
+                    <CompletenessScenarioPreview
+                        scenario={value}
+                        tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                        overlayTileServerProperty={projectData
+                            .projectTypeSpecifics?.overlayTileServerProperty}
+                        projectInstruction={projectData.projectInstruction}
+                        preview={preview}
+                    />
+                )}
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType' && (
+                    <ValidateScenarioPreview
+                        scenario={value}
+                        tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                        projectInstruction={projectData.projectInstruction}
+                        customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
+                        preview={preview}
+                    />
+                )}
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType' && (
+                    <ValidateImageScenarioPreview
+                        scenario={value}
+                        projectInstruction={projectData.projectInstruction}
+                        customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
+                        preview={preview}
+                    />
+                )}
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'StreetProjectPropertyType' && (
+                    <StreetScenarioPreview
+                        scenario={value}
+                        projectInstruction={projectData.projectInstruction}
+                        customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
+                        preview={preview}
+                    />
+                )}
+                <InlineLayout withCenteredContent>
+                    <TutorialPreviewScreenSelectInput
+                        previewKey={previewKey}
+                        setPreviewKey={setPreviewKey}
+                        scenario={value}
+                        onPreviewChange={setPreview}
+                    />
+                </InlineLayout>
+            </ListLayout>
         </Container>
     );
 }

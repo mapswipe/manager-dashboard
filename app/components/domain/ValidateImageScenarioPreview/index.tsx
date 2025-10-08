@@ -13,12 +13,11 @@ import { PartialForm } from '@togglecorp/toggle-form';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import Icon from '#components/domain/Icon';
-import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import MobilePreview from '#components/MobilePreview';
 import { TutorialScenarioPageCreateInput } from '#generated/types/graphql';
 
-import TutorialPreviewScreenSelectInput, { PreviewItem } from '../TutorialPreviewScreenSelectInput';
+import { PreviewItem } from '../TutorialPreviewScreenSelectInput';
 
 import styles from './styles.module.css';
 
@@ -27,6 +26,7 @@ interface Props {
     projectInstruction: string | undefined | null;
     customOptions: PartialCustomOptionInputFields[] | undefined;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
+    preview: PreviewItem | undefined;
 }
 
 function ValidateImageScenarioPreview(props: Props) {
@@ -35,9 +35,8 @@ function ValidateImageScenarioPreview(props: Props) {
         scenario,
         projectInstruction,
         customOptions,
+        preview,
     } = props;
-
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const imgRef = useRef<HTMLImageElement>(null);
     const task = scenario?.tasks?.[0]?.projectTypeSpecifics?.validateImage;
@@ -130,12 +129,6 @@ function ValidateImageScenarioPreview(props: Props) {
                     value={customOptions}
                 />
             </MobilePreview>
-            <InlineLayout withCenteredContent>
-                <TutorialPreviewScreenSelectInput
-                    scenario={scenario}
-                    onPreviewChange={setPreview}
-                />
-            </InlineLayout>
         </ListLayout>
     );
 }

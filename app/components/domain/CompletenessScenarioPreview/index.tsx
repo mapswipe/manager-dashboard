@@ -1,7 +1,4 @@
-import {
-    useMemo,
-    useState,
-} from 'react';
+import { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { MapContainer } from '@togglecorp/re-map';
 import {
@@ -15,7 +12,7 @@ import BaseMap from '#components/domain/BaseMap';
 import GeoJsonMapSource from '#components/domain/GeoJsonMapSource';
 import Icon from '#components/domain/Icon';
 import RasterTileMapSource from '#components/domain/RasterTileMapSource';
-import TutorialPreviewScreenSelectInput, { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
+import { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
 import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 import MobilePreview from '#components/MobilePreview';
 import {
@@ -54,6 +51,7 @@ interface Props {
     overlayTileServerProperty: PartialForm<ProjectOverlayTileServerConfig> | undefined;
     projectInstruction: string | undefined | null;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
+    preview: PreviewItem | undefined;
 }
 
 function CompletenessScenarioPreview(props: Props) {
@@ -63,9 +61,8 @@ function CompletenessScenarioPreview(props: Props) {
         projectInstruction,
         tileServerProperty,
         overlayTileServerProperty,
+        preview,
     } = props;
-
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const generatedGeojson = useMemo(() => {
         const tiles = scenario?.tasks?.map((task) => ({
@@ -120,10 +117,6 @@ function CompletenessScenarioPreview(props: Props) {
                     />
                 </BaseMap>
             </MobilePreview>
-            <TutorialPreviewScreenSelectInput
-                scenario={scenario}
-                onPreviewChange={setPreview}
-            />
         </div>
     );
 }

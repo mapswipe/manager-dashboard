@@ -58,6 +58,7 @@ export interface ContainerProps {
     withWelledContent?: boolean;
 
     elementRef?: RefObject<HTMLDivElement>;
+    onFocus?: React.HTMLProps<HTMLDivElement>['onFocus'];
 }
 
 function Container(props: ContainerProps) {
@@ -101,6 +102,7 @@ function Container(props: ContainerProps) {
         withWelledContent,
 
         elementRef,
+        onFocus,
     } = props;
 
     const shouldShowHeadingRow = isDefined(heading)
@@ -122,6 +124,7 @@ function Container(props: ContainerProps) {
 
     return (
         <BlockLayout
+            onFocus={onFocus}
             elementRef={elementRef}
             className={_cs(
                 styles.container,

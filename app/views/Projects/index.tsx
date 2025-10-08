@@ -33,7 +33,6 @@ import {
 } from '#generated/types/graphql';
 import useListManagement, {
     ExactFilter,
-    IdFilter,
     IsNullFilter,
     ListFilter,
 } from '#hooks/useListManagement';
@@ -93,7 +92,8 @@ type ProjectFilterValue = {
     organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
     isFeatured: ExactFilter<ProjectFilter, 'isFeatured'>;
     isPrivate: ExactFilter<ProjectFilter, 'isPrivate'>;
-    team: IdFilter<ProjectFilter, 'team'> | undefined;
+    team: ExactFilter<ProjectFilter, 'teamId'>;
+    createdBy: ExactFilter<ProjectFilter, 'createdById'>;
     showOldProjects: IsNullFilter<ProjectFilter, 'oldId'>;
 }
 
@@ -203,6 +203,7 @@ function Projects() {
             isFeatured: undefined,
             isPrivate: undefined,
             team: undefined,
+            createdBy: undefined,
             showOldProjects: false,
         },
         defaultSort: {
@@ -231,8 +232,9 @@ function Projects() {
                 region: filters.region,
                 isFeatured: { exact: filters.isFeatured },
                 isPrivate: { exact: filters.isFeatured },
-                team: isDefined(filters.team) ? ({ id: filters.team }) : undefined,
+                teamId: { exact: filters.team },
                 oldId: { isNull: !filters.showOldProjects },
+                createdById: { exact: filters.createdBy },
             },
         },
     });
@@ -269,12 +271,12 @@ function Projects() {
                         placeholder="Search by title"
                     />
                     <UserSelectInput
-                        name="user"
+                        name="createdBy"
                         icons={<PiUser />}
                         label="Created by"
                         placeholder="Everyone"
-                        // value={rawFilters.user}
-                        // onChange={setFilterField}
+                        value={rawFilters.createdBy}
+                        onChange={setFilterField}
                     />
                     {/* NOTE: search by region is already included in search by title (name)
                     <TextInput
