@@ -173,7 +173,7 @@ function TextOutput(props: Props) {
                 {formattedValue ?? emptyValueDisplay}
             </div>
             {description && (
-                <div>
+                <div className={styles.description}>
                     {description}
                 </div>
             )}

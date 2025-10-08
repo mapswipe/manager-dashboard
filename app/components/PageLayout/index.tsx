@@ -92,7 +92,7 @@ function PageLayout(props: Props) {
                 <main className={styles.main}>
                     <ListLayout
                         layout="block"
-                        spacing="xl"
+                        spacing="2xl"
                     >
                         {children}
                     </ListLayout>

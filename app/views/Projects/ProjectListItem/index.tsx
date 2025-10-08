@@ -17,8 +17,10 @@ import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
+import { gql } from 'urql';
 
 import SmartLink from '#base/components/SmartLink';
+import Button from '#components/Button';
 import Container from '#components/Container';
 import Description from '#components/Description';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
@@ -39,9 +41,35 @@ import EnumsContext from '#contexts/EnumsContext';
 import {
     ProjectsListQuery,
     ProjectStatusEnum,
+    useUpdateProjectFeaturedMutation,
 } from '#generated/types/graphql';
 import { getInstruction } from '#utils/common';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 import ProjectActions from '#views/EditProject/ProjectActions';
+
+import styles from './styles.module.css';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const UPDATE_PROJECT_FEATURED_MUTATION = gql`
+mutation UpdateProjectFeatured($id: ID!, $clientId: String!, $isFeatured: Boolean!) {
+    ${OPERATION_INFO_FRAGMENT}
+    updateProcessedProject(pk: $id, data: { clientId: $clientId, isFeatured: $isFeatured }) {
+        ... on ProjectTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                isFeatured
+                id
+                clientId
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
 
 interface Props {
     value: ProjectsListQuery['projects']['results'][number];
@@ -52,8 +80,14 @@ function ProjectListItem(props: Props) {
     const [showDetails, setShowDetails] = useState(false);
     const { firebasePushStatusMapping } = useContext(EnumsContext);
 
+    const [
+        { fetching: updateProjectFeaturedPending },
+        updateProjectFeatured,
+    ] = useUpdateProjectFeaturedMutation();
+
     return (
         <ExpandableContainer
+            className={styles.projectListItem}
             name={undefined}
             isExpanded={showDetails}
             onExpansionChange={setShowDetails}
@@ -62,264 +96,293 @@ function ProjectListItem(props: Props) {
             withPadding
             withShadow
             spacing="lg"
+            contentClassName={styles.container}
             alwaysVisibleContent={(
-                <ListLayout
-                    layout="grid"
-                    numPreferredGridColumns={4}
-                >
+                <div className={styles.content}>
                     <ImagePreview
                         src={value.image?.file?.url}
                         alt=""
                     />
-                    <GridLayoutItem columnSpan={3}>
-                        <Container
-                            headingLevel={4}
-                            heading={isNotDefined(value.oldId) ? (
-                                <SmartLink
-                                    route="editProject"
-                                    attrs={{
-                                        id: value.id,
-                                    }}
-                                    withoutPadding
-                                    colorVariant="primary"
-                                    withLinkIcon
-                                >
-                                    {value.name}
-                                </SmartLink>
-                            ) : value.name}
-                            headerDescription={(
-                                <ListLayout
-                                    withWrap
-                                    spacing="sm"
-                                >
-                                    {isDefined(value.oldId) && (
-                                        <Tag colorVariant="danger">
-                                            <InlineLayout
-                                                start={<PiLock />}
-                                                spacingOffset={-2}
-                                                withCenterAlign
-                                            >
-                                                Old project
-                                            </InlineLayout>
-                                        </Tag>
-                                    )}
-                                    <Tag>
-                                        <ProjectTypeOutput value={value.projectType} />
-                                    </Tag>
-                                    <Tag>
-                                        <ProjectStatusOutput value={value.status} />
-                                    </Tag>
-                                    {isDefined(value.team) && (
-                                        <Tag>
-                                            <InlineLayout
-                                                start={<PiLock />}
-                                                spacingOffset={-2}
-                                                withCenterAlign
-                                            >
-                                                Private
-                                            </InlineLayout>
-                                        </Tag>
-                                    )}
-                                    {value.isFeatured && (
-                                        <Tag>
-                                            <InlineLayout
-                                                start={<PiStar />}
-                                                spacingOffset={-2}
-                                                withCenterAlign
-                                            >
-                                                Featured
-                                            </InlineLayout>
-                                        </Tag>
-                                    )}
-                                    {(value.status === ProjectStatusEnum.Published
-                                        || value.status === ProjectStatusEnum.Paused) && (
-                                        <ProgressBar
-                                            total={1}
-                                            value={value.progress}
-                                        />
-                                    )}
-                                </ListLayout>
-                            )}
-                            contentLayout="block"
-                            headerActions={
-                                value.status !== ProjectStatusEnum.Discarded
-                                && value.status !== ProjectStatusEnum.Withdrawn
-                                && value.status !== ProjectStatusEnum.Finished
-                                && isNotDefined(value.oldId)
-                                && (
-                                    <OverflowMenu persistent>
-                                        <ProjectActions
-                                            clientId={value.clientId}
-                                            status={value.status}
-                                            projectId={value.id}
-                                            buttonStyleVariant="transparent"
-                                            withFullWidth
-                                        />
-                                    </OverflowMenu>
-                                )
-                            }
-                        >
+                    <Container
+                        headingLevel={4}
+                        heading={isNotDefined(value.oldId) ? (
+                            <SmartLink
+                                route="editProject"
+                                attrs={{
+                                    id: value.id,
+                                }}
+                                withoutPadding
+                                colorVariant="primary"
+                                withLinkIcon
+                            >
+                                {value.name}
+                            </SmartLink>
+                        ) : value.name}
+                        headerDescription={(
                             <ListLayout
-                                layout="grid"
+                                withWrap
                                 spacing="sm"
                             >
-                                <GridLayoutItem columnSpan={2}>
-                                    <TextOutput
-                                        icon={<PiInfo />}
-                                        label="Instruction"
-                                        value={getInstruction(
-                                            value.projectInstruction,
-                                            value.lookFor,
-                                            value.projectType,
-                                        )}
-                                        withEllipsizedOverflow
-                                        withCenterAlign
-                                    />
-                                </GridLayoutItem>
-                                <TextOutput
-                                    icon={<PiMapPin />}
-                                    label="Region"
-                                    value={value.region}
-                                    withEllipsizedOverflow
-                                    withCenterAlign
-                                />
-                                <TextOutput
-                                    icon={<PiFlag />}
-                                    label="Organization"
-                                    value={value.requestingOrganization.name}
-                                    withEllipsizedOverflow
-                                    withCenterAlign
-                                />
-                                <TextOutput
-                                    icon={<PiCalendar />}
-                                    label="Created on"
-                                    value={value.createdAt}
-                                    valueType="date"
-                                    withEllipsizedOverflow
-                                    withCenterAlign
-                                />
-                                <TextOutput
-                                    icon={<PiUser />}
-                                    label="Created by"
-                                    value={value.createdBy.displayName}
-                                    withEllipsizedOverflow
-                                    withCenterAlign
-                                />
+                                {isDefined(value.oldId) && (
+                                    <Tag colorVariant="danger">
+                                        <InlineLayout
+                                            start={<PiLock />}
+                                            spacingOffset={-2}
+                                            withCenterAlign
+                                        >
+                                            Old project
+                                        </InlineLayout>
+                                    </Tag>
+                                )}
+                                <Tag>
+                                    <ProjectTypeOutput value={value.projectType} />
+                                </Tag>
+                                <Tag>
+                                    <ProjectStatusOutput value={value.status} />
+                                </Tag>
                                 {isDefined(value.team) && (
-                                    <TextOutput
-                                        icon={<PiUsersThree />}
-                                        label="Team"
-                                        value={value.team.name}
-                                        withEllipsizedOverflow
-                                        withCenterAlign
+                                    <Tag>
+                                        <InlineLayout
+                                            start={<PiLock />}
+                                            spacingOffset={-2}
+                                            withCenterAlign
+                                        >
+                                            Private
+                                        </InlineLayout>
+                                    </Tag>
+                                )}
+                                {value.isFeatured && (
+                                    <Tag colorVariant="success">
+                                        <InlineLayout
+                                            start={<PiStar />}
+                                            spacingOffset={-2}
+                                            withCenterAlign
+                                        >
+                                            Featured
+                                        </InlineLayout>
+                                    </Tag>
+                                )}
+                                {(value.status === ProjectStatusEnum.Published
+                                    || value.status === ProjectStatusEnum.Paused) && (
+                                    <ProgressBar
+                                        total={1}
+                                        value={value.progress}
                                     />
                                 )}
                             </ListLayout>
-                            {showDetails && (
-                                <>
-                                    {isDefined(value.tutorial) && (
+                        )}
+                        contentLayout="block"
+                        headerActions={
+                            value.status !== ProjectStatusEnum.Discarded
+                            && value.status !== ProjectStatusEnum.Withdrawn
+                            && value.status !== ProjectStatusEnum.Finished
+                            && isNotDefined(value.oldId)
+                            && (
+                                <OverflowMenu persistent>
+                                    <ProjectActions
+                                        clientId={value.clientId}
+                                        status={value.status}
+                                        projectId={value.id}
+                                        buttonStyleVariant="transparent"
+                                        withFullWidth
+                                    />
+                                    {value.status === ProjectStatusEnum.Published
+                                        && !value.isFeatured && (
+                                        <Button
+                                            name={{
+                                                id: value.id,
+                                                clientId: value.clientId,
+                                                isFeatured: true,
+                                            }}
+                                            styleVariant="transparent"
+                                            withFullWidth
+                                            start={<PiStar />}
+                                            onClick={updateProjectFeatured}
+                                            disabled={updateProjectFeaturedPending}
+                                        >
+                                            Set as featured
+                                        </Button>
+                                    )}
+                                    {value.status === ProjectStatusEnum.Published
+                                        && value.isFeatured && (
+                                        <Button
+                                            name={{
+                                                id: value.id,
+                                                clientId: value.clientId,
+                                                isFeatured: false,
+                                            }}
+                                            styleVariant="transparent"
+                                            withFullWidth
+                                            start={<PiStar />}
+                                            onClick={updateProjectFeatured}
+                                            disabled={updateProjectFeaturedPending}
+                                        >
+                                            Remove from featured
+                                        </Button>
+                                    )}
+                                </OverflowMenu>
+                            )
+                        }
+                    >
+                        <ListLayout
+                            layout="grid"
+                            spacing="sm"
+                        >
+                            <GridLayoutItem columnSpan={2}>
+                                <TextOutput
+                                    icon={<PiInfo />}
+                                    label="Instruction"
+                                    value={getInstruction(
+                                        value.projectInstruction,
+                                        value.lookFor,
+                                        value.projectType,
+                                    )}
+                                    withEllipsizedOverflow
+                                    withCenterAlign
+                                />
+                            </GridLayoutItem>
+                            <TextOutput
+                                icon={<PiMapPin />}
+                                label="Region"
+                                value={value.region}
+                                withEllipsizedOverflow
+                                withCenterAlign
+                            />
+                            <TextOutput
+                                icon={<PiFlag />}
+                                label="Organization"
+                                value={value.requestingOrganization.name}
+                                withEllipsizedOverflow
+                                withCenterAlign
+                            />
+                            <TextOutput
+                                icon={<PiCalendar />}
+                                label="Created on"
+                                value={value.createdAt}
+                                valueType="date"
+                                withEllipsizedOverflow
+                                withCenterAlign
+                            />
+                            <TextOutput
+                                icon={<PiUser />}
+                                label="Created by"
+                                value={value.createdBy.displayName}
+                                withEllipsizedOverflow
+                                withCenterAlign
+                            />
+                            {isDefined(value.team) && (
+                                <TextOutput
+                                    icon={<PiUsersThree />}
+                                    label="Team"
+                                    value={value.team.name}
+                                    withEllipsizedOverflow
+                                    withCenterAlign
+                                />
+                            )}
+                        </ListLayout>
+                        {showDetails && (
+                            <>
+                                {isDefined(value.tutorial) && (
+                                    <TextOutput
+                                        label="Tutorial"
+                                        value={(
+                                            <SmartLink
+                                                route="editTutorial"
+                                                attrs={{ id: value.tutorial.id }}
+                                                withLinkIcon
+                                                withoutPadding
+                                                spacing="xs"
+                                            >
+                                                {value.tutorial.name}
+                                            </SmartLink>
+                                        )}
+                                    />
+                                )}
+                                <ListLayout
+                                    layout="grid"
+                                    spacing="sm"
+                                >
+                                    {isDefined(value.aoiGeometry) && (
                                         <TextOutput
-                                            label="Tutorial"
-                                            value={(
-                                                <SmartLink
-                                                    route="editTutorial"
-                                                    attrs={{ id: value.tutorial.id }}
-                                                    withLinkIcon
+                                            label="Total area"
+                                            value={value.aoiGeometry.totalArea}
+                                            valueType="number"
+                                            suffix=" km²"
+                                        />
+                                    )}
+                                    <TextOutput
+                                        label="Required results"
+                                        value={value.requiredResults}
+                                        valueType="number"
+                                    />
+                                    <TextOutput
+                                        label="Group size"
+                                        value={value.groupSize}
+                                        valueType="number"
+                                    />
+                                    <TextOutput
+                                        label="Verification number"
+                                        value={value.verificationNumber}
+                                        valueType="number"
+                                    />
+                                    <TextOutput
+                                        label="Number of contributors"
+                                        value={value.contributorsCount}
+                                        valueType="number"
+                                    />
+                                </ListLayout>
+                                {(value.status === ProjectStatusEnum.PublishingFailed
+                                    || value.status === ProjectStatusEnum.Published
+                                    || value.status === ProjectStatusEnum.Paused
+                                    || value.status === ProjectStatusEnum.Finished
+                                    || value.status === ProjectStatusEnum.Withdrawn
+                                ) && (
+                                    <GridLayoutItem columnSpan={2}>
+                                        <TextOutput
+                                            label="Firebase ID"
+                                            value={value.firebaseId}
+                                            withEllipsizedOverflow
+                                            description={(
+                                                <PopupButton
+                                                    label={<PiInfo />}
                                                     withoutPadding
-                                                    spacing="xs"
+                                                    withoutDropdownIcon
+                                                    styleVariant="transparent"
+                                                    preferredWidth="18rem"
                                                 >
-                                                    {value.tutorial.name}
-                                                </SmartLink>
+                                                    <TextOutput
+                                                        icon={<PiArrowsClockwise />}
+                                                        label="Firebase last synced"
+                                                        value={value.firebaseLastPushed}
+                                                        withCenterAlign
+                                                        withWrap
+                                                        valueType="date"
+                                                    />
+                                                    <TextOutput
+                                                        label="Firebase push status"
+                                                        value={isDefined(value.firebasePushStatus)
+                                                            // eslint-disable-next-line max-len
+                                                            ? firebasePushStatusMapping?.[value.firebasePushStatus].label
+                                                            : undefined}
+                                                        withCenterAlign
+                                                        withWrap
+                                                        icon={<PiCalendar />}
+                                                    />
+                                                </PopupButton>
                                             )}
                                         />
-                                    )}
-                                    <ListLayout
-                                        layout="grid"
-                                        spacing="sm"
-                                    >
-                                        {isDefined(value.aoiGeometry) && (
-                                            <TextOutput
-                                                label="Total area"
-                                                value={value.aoiGeometry.totalArea}
-                                                valueType="number"
-                                                suffix=" km²"
-                                            />
-                                        )}
-                                        <TextOutput
-                                            label="Required results"
-                                            value={value.requiredResults}
-                                            valueType="number"
-                                        />
-                                        <TextOutput
-                                            label="Group size"
-                                            value={value.groupSize}
-                                            valueType="number"
-                                        />
-                                        <TextOutput
-                                            label="Verification number"
-                                            value={value.verificationNumber}
-                                            valueType="number"
-                                        />
-                                        <TextOutput
-                                            label="Number of contributors"
-                                            value={value.contributorsCount}
-                                            valueType="number"
-                                        />
-                                    </ListLayout>
-                                    {(value.status === ProjectStatusEnum.PublishingFailed
-                                        || value.status === ProjectStatusEnum.Published
-                                        || value.status === ProjectStatusEnum.Paused
-                                        || value.status === ProjectStatusEnum.Finished
-                                        || value.status === ProjectStatusEnum.Withdrawn
-                                    ) && (
-                                        <GridLayoutItem columnSpan={2}>
-                                            <TextOutput
-                                                label="Firebase ID"
-                                                value={value.firebaseId}
-                                                withEllipsizedOverflow
-                                                description={(
-                                                    <PopupButton
-                                                        label={<PiInfo />}
-                                                        withoutPadding
-                                                        withoutDropdownIcon
-                                                        styleVariant="transparent"
-                                                        preferredWidth="18rem"
-                                                    >
-                                                        <TextOutput
-                                                            icon={<PiArrowsClockwise />}
-                                                            label="Firebase last synced"
-                                                            value={value.firebaseLastPushed}
-                                                            withCenterAlign
-                                                            withWrap
-                                                            valueType="date"
-                                                        />
-                                                        <TextOutput
-                                                            label="Firebase push status"
-                                                            // eslint-disable-next-line max-len
-                                                            value={isDefined(value.firebasePushStatus)
-                                                                // eslint-disable-next-line max-len
-                                                                ? firebasePushStatusMapping?.[value.firebasePushStatus].label
-                                                                : undefined}
-                                                            withCenterAlign
-                                                            withWrap
-                                                            icon={<PiCalendar />}
-                                                        />
-                                                    </PopupButton>
-                                                )}
-                                            />
-                                        </GridLayoutItem>
-                                    )}
+                                    </GridLayoutItem>
+                                )}
 
-                                    {isDefined(value.description) && (
-                                        <Description>
-                                            <MarkdownPreview markdown={value.description} />
-                                        </Description>
-                                    )}
-                                </>
-                            )}
-                        </Container>
-                    </GridLayoutItem>
-                </ListLayout>
+                                {isDefined(value.description) && (
+                                    <Description>
+                                        <MarkdownPreview markdown={value.description} />
+                                    </Description>
+                                )}
+                            </>
+                        )}
+                    </Container>
+                </div>
             )}
         >
             <ProjectSpecificDetails

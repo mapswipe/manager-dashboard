@@ -11,7 +11,7 @@ interface Props extends Omit<ContainerProps, 'withBackground' | 'withPadding' | 
     onClose?: () => void;
     // closeOnBlur?: boolean;
     // closeOnEscape?: boolean;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     withAutoHeight?: boolean;
 }
 
@@ -31,9 +31,11 @@ function Modal(props: Props) {
             <Container
                 className={_cs(
                     styles.modal,
+                    size === 'xs' && styles.xsSize,
                     size === 'sm' && styles.smSize,
                     size === 'md' && styles.mdSize,
                     size === 'lg' && styles.lgSize,
+                    size === 'xl' && styles.xlSize,
                     withAutoHeight && styles.withAutoHeight,
                     className,
                 )}

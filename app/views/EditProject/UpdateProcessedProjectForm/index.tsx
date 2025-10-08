@@ -11,6 +11,7 @@ import {
 import {
     createSubmitHandler,
     getErrorObject,
+    nonFieldError,
     removeNull,
     useForm,
 } from '@togglecorp/toggle-form';
@@ -32,8 +33,10 @@ import TutorialSelectInput from '#components/selections/TutorialSelectInput';
 import {
     ProcessedProjectUpdateInput,
     ProjectAssetInputTypeEnum,
+    ProjectCreateInput,
     ProjectDetailsQuery,
     ProjectStatusEnum,
+    ProjectUpdateInput,
     useProjectStatusQuery,
     useUpdateProcessedProjectMutation,
 } from '#generated/types/graphql';
@@ -78,6 +81,10 @@ mutation UpdateProcessedProject($id: ID!, $data: ProcessedProjectUpdateInput!) {
 
 const defaultProcessedProjectFormValue: PartialProcessedProjectUpdateInput = {
 };
+
+const limitedEditDisabledFields = [
+    'requestingOrganization',
+] as const satisfies (keyof (ProjectCreateInput | ProjectUpdateInput))[];
 
 interface Props {
     className?: string;
@@ -233,6 +240,11 @@ function UpdateProcessedProjectForm(props: Props) {
                     },
                 );
                 const formErrors = transformErrors(errors);
+
+                if ('status' in formErrors) {
+                    formErrors[nonFieldError] = String(formErrors.status);
+                }
+
                 setError(formErrors);
                 return;
             }
@@ -260,13 +272,19 @@ function UpdateProcessedProjectForm(props: Props) {
     );
 
     const pending = updateProcessedProjectPending;
-    const baseInputsEditable = isDefined(projectData) && (
-        projectData.project.status === ProjectStatusEnum.ProcessingFailed
-        || projectData.project.status === ProjectStatusEnum.Processed
-    );
 
+    const { status } = projectData.project;
+
+    const baseInputsEditable = status === ProjectStatusEnum.ProcessingFailed
+        || status === ProjectStatusEnum.Processed
+        || status === ProjectStatusEnum.Paused;
+
+    const limitedFieldsEditable = status === ProjectStatusEnum.Paused;
     const readOnly = isDefined(projectData.project.oldId);
     const baseInputsDisabled = pending || !baseInputsEditable;
+
+    const updateDisabled = readOnly
+        || baseInputsDisabled;
 
     return (
         <PageLayout
@@ -296,7 +314,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     onClick={handleUpdateBasicDetailsButtonClick}
                     colorVariant="accent"
                     styleVariant="filled"
-                    disabled={baseInputsDisabled || readOnly}
+                    disabled={updateDisabled}
                     start={<PiFloppyDisk />}
                 >
                     Update project
@@ -335,7 +353,9 @@ function UpdateProcessedProjectForm(props: Props) {
                 value={value}
                 setFieldValue={setFieldValue}
                 error={error}
-                disabled={baseInputsDisabled || readOnly}
+                disabled={limitedFieldsEditable
+                    ? limitedEditDisabledFields
+                    : (baseInputsDisabled || readOnly)}
             />
             <Container
                 heading="Additional"

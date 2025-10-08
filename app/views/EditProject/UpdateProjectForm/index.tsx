@@ -11,6 +11,7 @@ import {
 import {
     createSubmitHandler,
     getErrorObject,
+    nonFieldError,
     removeNull,
     useForm,
     useFormObject,
@@ -295,6 +296,10 @@ function UpdateProjectForm(props: Props) {
                 );
 
                 const transformedErrors = transformErrors(errors);
+
+                if ('status' in transformedErrors) {
+                    transformedErrors[nonFieldError] = String(transformedErrors.status);
+                }
 
                 if ('projectTypeSpecifics' in transformedErrors) {
                     const projectTypeKey = projectTypeToKeyMap[projectData.project.projectType];

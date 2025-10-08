@@ -18,6 +18,7 @@ import {
     ProjectRasterTileServerConfig,
     RasterTileServerNameEnum,
 } from '#generated/types/graphql';
+import { formatNumber } from '#utils/common';
 
 interface Props extends Omit<ContainerProps, 'children'> {
     className?: string;
@@ -104,14 +105,8 @@ function RasterTileServerOutput(props: Props) {
             />
             */}
             <TextOutput
-                label="Min zoom"
-                value={minZoom}
-                valueType="number"
-            />
-            <TextOutput
-                label="Max zoom"
-                value={maxZoom}
-                valueType="number"
+                label="Supported zoom"
+                value={`${formatNumber(minZoom)} - ${formatNumber(maxZoom)}`}
             />
             <TextOutput
                 label="Credits"

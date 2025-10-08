@@ -4,6 +4,7 @@ import {
     PiLock,
     PiMagnifyingGlass,
     PiStar,
+    PiUser,
     PiUsersThree,
 } from 'react-icons/pi';
 import { isDefined } from '@togglecorp/fujs';
@@ -21,6 +22,7 @@ import Pager from '#components/Pager';
 import SelectInput from '#components/SelectInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
+import UserSelectInput from '#components/selections/UserSelectInput';
 import TextInput from '#components/TextInput';
 import EnumsContext from '#contexts/EnumsContext';
 import {
@@ -31,7 +33,6 @@ import {
 } from '#generated/types/graphql';
 import useListManagement, {
     ExactFilter,
-    IdFilter,
     IsNullFilter,
     ListFilter,
 } from '#hooks/useListManagement';
@@ -86,13 +87,13 @@ const sortKeyOptions: SortByOption<keyof ProjectOrder>[] = [
 type ProjectFilterValue = {
     name: ProjectFilter['name'];
     region: ProjectFilter['region'];
-
     projectType: ListFilter<ProjectFilter, 'projectType'>;
     status: ListFilter<ProjectFilter, 'status'>;
     organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
     isFeatured: ExactFilter<ProjectFilter, 'isFeatured'>;
     isPrivate: ExactFilter<ProjectFilter, 'isPrivate'>;
-    team: IdFilter<ProjectFilter, 'team'> | undefined;
+    team: ExactFilter<ProjectFilter, 'teamId'>;
+    createdBy: ExactFilter<ProjectFilter, 'createdById'>;
     showOldProjects: IsNullFilter<ProjectFilter, 'oldId'>;
 }
 
@@ -202,6 +203,7 @@ function Projects() {
             isFeatured: undefined,
             isPrivate: undefined,
             team: undefined,
+            createdBy: undefined,
             showOldProjects: false,
         },
         defaultSort: {
@@ -230,8 +232,9 @@ function Projects() {
                 region: filters.region,
                 isFeatured: { exact: filters.isFeatured },
                 isPrivate: { exact: filters.isFeatured },
-                team: isDefined(filters.team) ? ({ id: filters.team }) : undefined,
+                teamId: { exact: filters.team },
                 oldId: { isNull: !filters.showOldProjects },
+                createdById: { exact: filters.createdBy },
             },
         },
     });
@@ -266,6 +269,14 @@ function Projects() {
                         value={rawFilters.name}
                         onChange={setFilterField}
                         placeholder="Search by title"
+                    />
+                    <UserSelectInput
+                        name="createdBy"
+                        icons={<PiUser />}
+                        label="Created by"
+                        placeholder="Everyone"
+                        value={rawFilters.createdBy}
+                        onChange={setFilterField}
                     />
                     {/* NOTE: search by region is already included in search by title (name)
                     <TextInput
@@ -327,8 +338,9 @@ function Projects() {
                     {rawFilters.isPrivate && (
                         <TeamSelectInput
                             name="team"
+                            label="Team (private project)"
                             icons={<PiUsersThree />}
-                            placeholder="Team (private project)"
+                            placeholder="All"
                             onChange={setFilterField}
                             value={rawFilters.team}
                         />

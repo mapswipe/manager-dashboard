@@ -114,15 +114,15 @@ const projectStatusDetails: Record<ProjectStatusEnum, ProjectStatusDetail> = {
     },
     [ProjectStatusEnum.Published]: {
         label: 'Published',
-        description: 'Project is published and available to the users for swipping',
+        description: 'Project is published and available to the users for swiping',
     },
     [ProjectStatusEnum.Paused]: {
         label: 'Paused',
-        description: 'Project it temporarily made unavailable to the users for swipping',
+        description: 'Project it temporarily made unavailable to the users for swiping',
     },
     [ProjectStatusEnum.Withdrawn]: {
         label: 'Withdrawn',
-        description: 'Project is archived and is no longer available to the users for swipping',
+        description: 'Project is archived and is no longer available to the users for swiping',
     },
     [ProjectStatusEnum.Finished]: {
         label: 'Finished',

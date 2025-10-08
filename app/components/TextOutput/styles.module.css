@@ -37,4 +37,8 @@
             content: ':';
         }
     }
+
+    .description {
+        color: var(--color-text-light);
+    }
 }

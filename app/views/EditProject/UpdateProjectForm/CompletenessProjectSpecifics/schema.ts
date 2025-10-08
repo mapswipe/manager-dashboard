@@ -25,7 +25,7 @@ type CompletenessSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultCompletenessSpecificFormValue: PartialCompletenessSpecificFields = {
-    zoomLevel: 16,
+    zoomLevel: 18,
     tileServerProperty: defaultRasterTileServerInputValue,
     overlayTileServerProperty: defaultOverlayTileServerPropertyInputValue,
 };

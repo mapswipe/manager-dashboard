@@ -37,6 +37,7 @@ interface Props {
     sourceKey: string;
     layerKey: string;
     withPadding?: boolean;
+    layerOptions?: typeof geoJsonLayerOptions;
 }
 
 function GeoJsonMapSource(props: Props) {
@@ -46,6 +47,7 @@ function GeoJsonMapSource(props: Props) {
         sourceKey,
         layerKey,
         withPadding,
+        layerOptions = geoJsonLayerOptions,
     } = props;
 
     const bounds = isDefined(geoJson)
@@ -83,7 +85,7 @@ function GeoJsonMapSource(props: Props) {
                 <MapLayer
                     key={layerKey}
                     layerKey={layerKey}
-                    layerOptions={geoJsonLayerOptions}
+                    layerOptions={layerOptions}
                 />
             </MapSource>
             {isDefined(center) && (

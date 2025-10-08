@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_test:
-    name: 🚴 Build + Lint + Test 🚴  # Match the name below (8398a7/action-slack).
+    name: 🚴 Lint + Typecheck + Build 🚴
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +37,9 @@ jobs:
 
       - name: Lint JS
         run: pnpm lint:js
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Build
         run: pnpm build

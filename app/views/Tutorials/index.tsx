@@ -3,6 +3,7 @@ import {
     PiFlag,
     PiMagnifyingGlass,
     PiMapPin,
+    PiUser,
 } from 'react-icons/pi';
 import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
@@ -16,6 +17,7 @@ import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
+import UserSelectInput from '#components/selections/UserSelectInput';
 import TextInput from '#components/TextInput';
 import EnumsContext from '#contexts/EnumsContext';
 import {
@@ -45,6 +47,7 @@ type TutorialFilterValue = {
     organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
     region: ProjectFilter['region'];
     projectType: ListFilter<ProjectFilter, 'projectType'>;
+    createdById: ExactFilter<TutorialFilter, 'createdById'> | undefined;
 
 }
 
@@ -128,6 +131,7 @@ function Tutorials() {
             organization: undefined,
             region: undefined,
             projectType: undefined,
+            createdById: undefined,
         },
         defaultSort: {
             key: 'id',
@@ -151,6 +155,7 @@ function Tutorials() {
                     region: filters.region,
                     projectType: { inList: removeEmptyList(filters.projectType) },
                 },
+                createdById: { exact: filters.createdById },
             },
             pagination: {
                 limit,
@@ -188,6 +193,14 @@ function Tutorials() {
                         value={rawFilters.name}
                         onChange={setFilterField}
                         placeholder="Search by title"
+                    />
+                    <UserSelectInput
+                        name="createdById"
+                        icons={<PiUser />}
+                        label="Created by"
+                        placeholder="Everyone"
+                        value={rawFilters.createdById}
+                        onChange={setFilterField}
                     />
                     <TextInput
                         name="region"

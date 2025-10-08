@@ -1,7 +1,4 @@
-import {
-    useEffect,
-    useState,
-} from 'react';
+import { useEffect } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { PartialForm } from '@togglecorp/toggle-form';
 
@@ -15,7 +12,7 @@ import {
     labelSelector,
 } from '#utils/common';
 
-type PreviewKey = 'instructions' | 'hint' | 'success';
+export type PreviewKey = 'instructions' | 'hint' | 'success';
 
 interface PreviewOption {
     key: PreviewKey;
@@ -39,6 +36,8 @@ interface Props {
     className?: string;
     scenario: PartialForm<TutorialScenarioPageType> | undefined;
     onPreviewChange: (newValue: PreviewItem) => void;
+    previewKey: PreviewKey;
+    setPreviewKey: React.Dispatch<React.SetStateAction<PreviewKey>>;
 }
 
 function TutorialPreviewScreenSelectInput(props: Props) {
@@ -46,28 +45,28 @@ function TutorialPreviewScreenSelectInput(props: Props) {
         className,
         scenario,
         onPreviewChange,
+        previewKey,
+        setPreviewKey,
     } = props;
-
-    const [currentPreview, setCurrentPreview] = useState<PreviewKey>('instructions');
 
     useEffect(() => {
         if (isNotDefined(scenario)) {
             return;
         }
 
-        if (currentPreview === 'instructions') {
+        if (previewKey === 'instructions') {
             onPreviewChange({
                 icon: scenario.instructionsIcon,
                 title: scenario.instructionsTitle,
                 description: scenario.instructionsDescription,
             });
-        } else if (currentPreview === 'hint') {
+        } else if (previewKey === 'hint') {
             onPreviewChange({
                 icon: scenario.hintIcon,
                 title: scenario.hintTitle,
                 description: scenario.hintDescription,
             });
-        } else if (currentPreview === 'success') {
+        } else if (previewKey === 'success') {
             onPreviewChange({
                 icon: scenario.successIcon,
                 title: scenario.successTitle,
@@ -75,14 +74,14 @@ function TutorialPreviewScreenSelectInput(props: Props) {
                 popupVariant: 'success',
             });
         }
-    }, [scenario, currentPreview, onPreviewChange]);
+    }, [scenario, previewKey, onPreviewChange]);
 
     return (
         <SegmentInput
             className={className}
             name={undefined}
-            value={currentPreview}
-            onChange={setCurrentPreview}
+            value={previewKey}
+            onChange={setPreviewKey}
             options={previewOptions}
             keySelector={keySelector}
             labelSelector={labelSelector}

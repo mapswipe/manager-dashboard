@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { PartialForm } from '@togglecorp/toggle-form';
 
 import Icon from '#components/domain/Icon';
-import TutorialPreviewScreenSelectInput, { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
-import InlineLayout from '#components/InlineLayout';
+import { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
 import ListLayout from '#components/ListLayout';
 import MapillaryImagePreview from '#components/MapillaryImagePreview';
 import MobilePreview from '#components/MobilePreview';
@@ -20,6 +18,7 @@ interface Props {
     projectInstruction: string | undefined | null;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
     customOptions: PartialCustomOptionInputFields[] | undefined;
+    preview: PreviewItem | undefined;
 }
 
 function StreetScenarioPreview(props: Props) {
@@ -28,9 +27,9 @@ function StreetScenarioPreview(props: Props) {
         scenario,
         projectInstruction,
         customOptions,
+        preview,
     } = props;
 
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
     const imageId = scenario?.tasks?.[0].projectTypeSpecifics?.street?.mapillaryImageId;
 
     return (
@@ -54,12 +53,6 @@ function StreetScenarioPreview(props: Props) {
                     value={customOptions}
                 />
             </MobilePreview>
-            <InlineLayout withCenteredContent>
-                <TutorialPreviewScreenSelectInput
-                    scenario={scenario}
-                    onPreviewChange={setPreview}
-                />
-            </InlineLayout>
         </ListLayout>
     );
 }

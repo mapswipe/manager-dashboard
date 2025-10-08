@@ -31,6 +31,7 @@ export interface Props {
     withEndSeparator?: boolean;
 
     elementRef?: RefObject<HTMLDivElement>;
+    onFocus?: React.HTMLProps<HTMLDivElement>['onFocus'];
 }
 
 function BlockLayout(props: Props) {
@@ -48,6 +49,7 @@ function BlockLayout(props: Props) {
         withEndSeparator,
 
         elementRef,
+        onFocus,
     } = props;
 
     const spacingModes = useMemo<SpacingMode[]>(() => {
@@ -76,6 +78,7 @@ function BlockLayout(props: Props) {
                 className,
             )}
             ref={elementRef}
+            onFocus={onFocus}
         >
             {start && (
                 <div

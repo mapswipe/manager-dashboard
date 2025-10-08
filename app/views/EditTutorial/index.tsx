@@ -85,8 +85,16 @@ function stringifyId(value: number | undefined) {
     return String(value);
 }
 
-const PolygonType = type.object.as<GeoJSON.Polygon>();
-const MultiPolygonType = type.object.as<GeoJSON.MultiPolygon>();
+const PositionType = type.number.array();
+
+const PolygonType = type({
+    type: "'Polygon'",
+    coordinates: PositionType.array().array(),
+});
+const MultiPolygonType = type({
+    type: "'MultiPolygon'",
+    coordinates: PositionType.array().array().array(),
+});
 
 const CommonFeaturePropertyType = type({
     screen: type.number,
@@ -1016,7 +1024,6 @@ function NewTutorial() {
                 ))}
             </Container>
             <Container
-                withContentBackgroundAndPadding
                 heading="Scenario Pages"
                 headerDescription={(
                     <>
@@ -1030,6 +1037,8 @@ function NewTutorial() {
                         />
                     </>
                 )}
+                withContentBackgroundAndPadding={isNotDefined(value.scenarios)
+                    || value.scenarios.length === 0}
                 empty={isNotDefined(value.scenarios)
                     || value.scenarios.length === 0}
                 // eslint-disable-next-line max-len

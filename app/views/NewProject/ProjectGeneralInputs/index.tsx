@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
@@ -121,7 +122,7 @@ interface Props {
     value: PartialProjectGeneralInputFields | undefined;
     error: LeafError | ObjectError<PartialProjectGeneralInputFields>;
     setFieldValue: (...entries: EntriesAsList<PartialProjectGeneralInputFields>) => void;
-    disabled?: boolean;
+    disabled?: boolean | (keyof ProjectGeneralInputFields)[];
     name: string | undefined;
 }
 
@@ -137,13 +138,25 @@ function ProjectGeneralInputs(props: Props) {
 
     const error = getErrorObject(formError);
 
-    function getHint(field: keyof ProjectGeneralInputFields) {
+    const getHint = useCallback((field: keyof ProjectGeneralInputFields) => {
         if (isNotDefined(projectType) || isNotDefined(field)) {
             return undefined;
         }
 
         return hintText[field][projectType];
-    }
+    }, [projectType]);
+
+    const isDisabled = useCallback((field: keyof ProjectGeneralInputFields) => {
+        if (isNotDefined(disabled)) {
+            return false;
+        }
+
+        if (Array.isArray(disabled)) {
+            return disabled.includes(field);
+        }
+
+        return disabled;
+    }, [disabled]);
 
     return (
         <Container
@@ -158,7 +171,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.topic}
                     onChange={setFieldValue}
                     error={error?.topic}
-                    disabled={disabled}
+                    disabled={isDisabled('topic')}
                     hint={getHint('topic')}
                 />
                 <TextInput
@@ -167,7 +180,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.region}
                     onChange={setFieldValue}
                     error={error?.region}
-                    disabled={disabled}
+                    disabled={isDisabled('region')}
                     hint={getHint('region')}
                 />
                 <NumberInput
@@ -176,7 +189,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.projectNumber}
                     onChange={setFieldValue}
                     error={error?.projectNumber}
-                    disabled={disabled}
+                    disabled={isDisabled('projectNumber')}
                     hint={getHint('projectNumber')}
                 />
                 <OrganizationSelectInput
@@ -185,7 +198,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.requestingOrganization}
                     onChange={setFieldValue}
                     error={error?.requestingOrganization}
-                    disabled={disabled}
+                    disabled={isDisabled('requestingOrganization')}
                     hint={getHint('requestingOrganization')}
                 />
             </ListLayout>
@@ -202,7 +215,7 @@ function ProjectGeneralInputs(props: Props) {
                 value={value?.description}
                 onChange={setFieldValue}
                 error={error?.description}
-                disabled={disabled}
+                disabled={isDisabled('description')}
                 hint={getHint('description')}
             />
             <ListLayout
@@ -215,7 +228,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.projectInstruction}
                     onChange={setFieldValue}
                     error={error?.projectInstruction}
-                    disabled={disabled}
+                    disabled={isDisabled('projectInstruction')}
                     hint={getHint('projectInstruction')}
                 />
                 <TextInput
@@ -225,7 +238,7 @@ function ProjectGeneralInputs(props: Props) {
                     onChange={setFieldValue}
                     error={error?.lookFor}
                     hint={getHint('lookFor')}
-                    disabled={disabled}
+                    disabled={isDisabled('lookFor')}
                 />
                 <TeamSelectInput
                     label="Select Team (Private)"
@@ -234,7 +247,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.team}
                     onChange={setFieldValue}
                     error={error?.team}
-                    disabled={disabled}
+                    disabled={isDisabled('team')}
                 />
                 <TextInput
                     label="Additional info URL"
@@ -242,7 +255,7 @@ function ProjectGeneralInputs(props: Props) {
                     value={value?.additionalInfoUrl}
                     onChange={setFieldValue}
                     error={error?.additionalInfoUrl}
-                    disabled={disabled}
+                    disabled={isDisabled('additionalInfoUrl')}
                     hint={getHint('additionalInfoUrl')}
                 />
             </ListLayout>

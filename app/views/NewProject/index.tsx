@@ -89,6 +89,7 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
             required: true,
         },
         requestingOrganization: {
+            required: true,
         },
         projectInstruction: {
             required: true,

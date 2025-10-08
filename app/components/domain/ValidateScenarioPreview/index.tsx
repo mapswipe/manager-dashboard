@@ -1,7 +1,4 @@
-import {
-    useMemo,
-    useState,
-} from 'react';
+import { useMemo } from 'react';
 import {
     _cs,
     isDefined,
@@ -17,7 +14,6 @@ import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionI
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import GeoJsonPreview from '#components/domain/GeoJsonPreview';
 import Icon from '#components/domain/Icon';
-import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import MobilePreview from '#components/MobilePreview';
 import {
@@ -25,7 +21,7 @@ import {
     TutorialScenarioPageCreateInput,
 } from '#generated/types/graphql';
 
-import TutorialPreviewScreenSelectInput, { PreviewItem } from '../TutorialPreviewScreenSelectInput';
+import { PreviewItem } from '../TutorialPreviewScreenSelectInput';
 
 import styles from './styles.module.css';
 
@@ -45,6 +41,7 @@ interface Props {
     projectInstruction: string | undefined | null;
     customOptions: PartialCustomOptionInputFields[] | undefined;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
+    preview: PreviewItem | undefined;
 }
 
 function ValidateScenarioPreview(props: Props) {
@@ -54,9 +51,8 @@ function ValidateScenarioPreview(props: Props) {
         tileServerProperty,
         projectInstruction,
         customOptions,
+        preview,
     } = props;
-
-    const [preview, setPreview] = useState<PreviewItem | undefined>();
 
     const generatedGeojson = useMemo<GeoJSON.FeatureCollection>(() => {
         const features: Array<GeoJSON.Feature> = scenario?.tasks?.map((task) => {
@@ -100,17 +96,12 @@ function ValidateScenarioPreview(props: Props) {
                     baseTileServer={removeNull(tileServerProperty)}
                     geoJsonLayerOptions={layerOptions}
                     fitInSingleTile
+                    disablePan
                 />
                 <CustomOptionPreview
                     value={customOptions}
                 />
             </MobilePreview>
-            <InlineLayout withCenteredContent>
-                <TutorialPreviewScreenSelectInput
-                    scenario={scenario}
-                    onPreviewChange={setPreview}
-                />
-            </InlineLayout>
         </ListLayout>
     );
 }

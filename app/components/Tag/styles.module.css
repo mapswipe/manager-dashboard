@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-tag-border);
-    background-color: color-mix(in srgb, var(--color-variant) 8%, transparent);
+    background-color: color-mix(in srgb, var(--color-variant) 10%, transparent);
     width: fit-content;
 
     &.color-variant-text {

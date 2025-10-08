@@ -24,6 +24,7 @@ type FindSpecificFormSchema = ObjectSchema<
 
 export const defaultFindSpecificFormValue: PartialFindSpecificFields = {
     tileServerProperty: defaultRasterTileServerInputValue,
+    zoomLevel: 18,
 };
 
 const findSpecificFormSchema: FindSpecificFormSchema = {

@@ -65,6 +65,7 @@ export type SelectInputContainerProps<
     hasValue: boolean;
     nonClearable?: boolean;
     onClear: () => void;
+    onInputFocus?: React.HTMLProps<HTMLInputElement>['onFocus'];
 }, OMISSION> & Omit<InputContainerProps, 'input' | 'inputId'>;
 
 const emptyList: unknown[] = [];
@@ -111,6 +112,7 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         totalOptionsCount,
         hasValue,
         spacing,
+        onInputFocus,
     } = props;
 
     const inputId = useId();
@@ -127,11 +129,14 @@ function SelectInputContainer<OK extends OptionKey, N, O extends object, P exten
         },
         [onFocusedChange],
     );
-    const handleFocusIn = useCallback(
-        () => {
+    const handleFocusIn = useCallback<React.FocusEventHandler<HTMLInputElement>>(
+        (e) => {
             onFocusedChange(true);
+            if (onInputFocus) {
+                onInputFocus(e);
+            }
         },
-        [onFocusedChange],
+        [onFocusedChange, onInputFocus],
     );
 
     const handleSearchInputChange = useCallback(

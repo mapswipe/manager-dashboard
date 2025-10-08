@@ -23,13 +23,19 @@ const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'ch
     zoom: 0,
     attributionControl: false,
     scrollZoom: false,
+    boxZoom: false,
     doubleClickZoom: false,
+    touchZoomRotate: false,
+    dragRotate: false,
+    pitchWithRotate: false,
+    touchPitch: false,
 };
 
 interface Props {
     baseTileServer: PartialRasterTileServerInputFields | undefined;
     children?: React.ReactNode;
     tileSize?: number;
+    disablePan?: boolean;
 }
 
 function BaseMap(props: Props) {
@@ -37,6 +43,7 @@ function BaseMap(props: Props) {
         baseTileServer,
         children,
         tileSize = 256,
+        disablePan,
     } = props;
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
@@ -117,10 +124,15 @@ function BaseMap(props: Props) {
         };
     }, [url, tileSize, credits, minzoom, maxzoom]);
 
+    const mapOptions = useMemo(() => ({
+        ...defaultMapOptions,
+        dragPan: !disablePan,
+    }), [disablePan]);
+
     return (
         <Map
             mapStyle={mapStyle}
-            mapOptions={defaultMapOptions}
+            mapOptions={mapOptions}
         >
             {children}
         </Map>
