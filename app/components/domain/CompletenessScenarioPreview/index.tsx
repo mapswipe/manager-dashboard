@@ -9,6 +9,7 @@ import {
     removeNull,
 } from '@togglecorp/toggle-form';
 import { type } from 'arktype';
+import { FillLayerSpecification } from 'maplibre-gl';
 
 import BaseMap from '#components/domain/BaseMap';
 import GeoJsonMapSource from '#components/domain/GeoJsonMapSource';
@@ -27,6 +28,25 @@ import {
 import { createGeoJsonFromTiles } from '#utils/geo';
 
 import styles from './styles.module.css';
+
+const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
+    type: 'fill',
+    paint: {
+        'fill-color': [
+            'match',
+            ['get', 'reference'],
+            1,
+            'green',
+            2,
+            'yellow',
+            3,
+            'red',
+            'transparent',
+        ],
+        'fill-outline-color': '#ffffff',
+        'fill-opacity': 0.2,
+    },
+};
 
 interface Props {
     className?: string;
@@ -82,11 +102,6 @@ function CompletenessScenarioPreview(props: Props) {
                     <MapContainer
                         className={styles.mapContainer}
                     />
-                    <GeoJsonMapSource
-                        geoJson={generatedGeojson as GeoJSON.FeatureCollection}
-                        sourceKey="completeness-geojson-source"
-                        layerKey="completeness-geojson-layer"
-                    />
                     {!(vectorTileConfigValue instanceof type.errors) && (
                         <VectorTileMapSource
                             tileConfig={vectorTileConfigValue}
@@ -97,6 +112,12 @@ function CompletenessScenarioPreview(props: Props) {
                             tileConfig={rasterTileConfigValue}
                         />
                     )}
+                    <GeoJsonMapSource
+                        geoJson={generatedGeojson as GeoJSON.FeatureCollection}
+                        sourceKey="completeness-geojson-source"
+                        layerKey="completeness-geojson-layer"
+                        layerOptions={layerOptions}
+                    />
                 </BaseMap>
             </MobilePreview>
             <TutorialPreviewScreenSelectInput

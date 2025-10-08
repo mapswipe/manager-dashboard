@@ -38,7 +38,7 @@ const layerOptions: Omit<FillLayerSpecification, 'id' | 'source'> = {
             'transparent',
         ],
         'fill-outline-color': '#ffffff',
-        'fill-opacity': 0.3,
+        'fill-opacity': 0.2,
     },
 };
 
