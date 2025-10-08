@@ -4,6 +4,7 @@ import {
     PiLock,
     PiMagnifyingGlass,
     PiStar,
+    PiUser,
     PiUsersThree,
 } from 'react-icons/pi';
 import { isDefined } from '@togglecorp/fujs';
@@ -21,6 +22,7 @@ import Pager from '#components/Pager';
 import SelectInput from '#components/SelectInput';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
 import TeamSelectInput from '#components/selections/TeamSelectInput';
+import UserSelectInput from '#components/selections/UserSelectInput';
 import TextInput from '#components/TextInput';
 import EnumsContext from '#contexts/EnumsContext';
 import {
@@ -86,7 +88,6 @@ const sortKeyOptions: SortByOption<keyof ProjectOrder>[] = [
 type ProjectFilterValue = {
     name: ProjectFilter['name'];
     region: ProjectFilter['region'];
-
     projectType: ListFilter<ProjectFilter, 'projectType'>;
     status: ListFilter<ProjectFilter, 'status'>;
     organization: ExactFilter<ProjectFilter, 'requestingOrganizationId'>;
@@ -267,6 +268,14 @@ function Projects() {
                         onChange={setFilterField}
                         placeholder="Search by title"
                     />
+                    <UserSelectInput
+                        name="user"
+                        icons={<PiUser />}
+                        label="Created by"
+                        placeholder="Everyone"
+                        // value={rawFilters.user}
+                        // onChange={setFilterField}
+                    />
                     {/* NOTE: search by region is already included in search by title (name)
                     <TextInput
                         name="region"
@@ -327,8 +336,9 @@ function Projects() {
                     {rawFilters.isPrivate && (
                         <TeamSelectInput
                             name="team"
+                            label="Team (private project)"
                             icons={<PiUsersThree />}
-                            placeholder="Team (private project)"
+                            placeholder="All"
                             onChange={setFilterField}
                             value={rawFilters.team}
                         />

@@ -3,6 +3,7 @@ import {
     PiFlag,
     PiMagnifyingGlass,
     PiMapPin,
+    PiUser,
 } from 'react-icons/pi';
 import { isDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
@@ -16,6 +17,7 @@ import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
 import Pager from '#components/Pager';
 import OrganizationSelectInput from '#components/selections/OrganizationSelectInput';
+import UserSelectInput from '#components/selections/UserSelectInput';
 import TextInput from '#components/TextInput';
 import EnumsContext from '#contexts/EnumsContext';
 import {
@@ -188,6 +190,14 @@ function Tutorials() {
                         value={rawFilters.name}
                         onChange={setFilterField}
                         placeholder="Search by title"
+                    />
+                    <UserSelectInput
+                        name="user"
+                        icons={<PiUser />}
+                        label="Created by"
+                        placeholder="Everyone"
+                        // value={rawFilters.user}
+                        // onChange={setFilterField}
                     />
                     <TextInput
                         name="region"
