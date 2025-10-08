@@ -351,13 +351,13 @@ function OrganizationFormModal(props: Props) {
                     name={undefined}
                     colorVariant="accent"
                     styleVariant="filled"
-                    spacing="sm"
                     onClick={handleSubmitButtonClick}
                     disabled={actionsDisabled}
                 >
                     {isDefined(organizationId) ? 'Update Organization' : 'Add Organization'}
                 </Button>
             )}
+            size="sm"
         >
             <NonFieldError
                 error={error}

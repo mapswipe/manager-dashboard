@@ -9,24 +9,40 @@
         overflow: auto;
     }
 
-    &.sm-size {
-        width: calc(var(--width-page-content-max) * 0.4);
+    &.xs-size {
+        max-width: calc(var(--width-page-content-max) * 0.3);
 
         &:not(.with-auto-height) {
-            max-height: min(20rem, 100% - 2 * var(--spacing-md));
+            max-height: min(16rem, 100% - 2 * var(--spacing-md));
+        }
+    }
+
+    &.sm-size {
+        max-width: calc(var(--width-page-content-max) * 0.4);
+
+        &:not(.with-auto-height) {
+            max-height: min(26rem, 100% - 2 * var(--spacing-md));
         }
     }
 
     &.md-size {
-        width: calc(var(--width-page-content-max) * 0.6);
+        max-width: calc(var(--width-page-content-max) * 0.5);
 
         &:not(.with-auto-height) {
-            max-height: min(40rem, 100% - 2 * var(--spacing-md));
+            max-height: min(36rem, 100% - 2 * var(--spacing-md));
         }
     }
 
     &.lg-size {
-        width: var(--width-page-content-max);
+        max-width: calc(var(--width-page-content-max) * 0.7);
+
+        &:not(.with-auto-height) {
+            max-height: min(46rem, 100% - 2 * var(--spacing-md));
+        }
+    }
+
+    &.xl-size {
+        max-width: var(--width-page-content-max);
 
         &:not(.with-auto-height) {
             max-height: min(60rem, 100% - 2 * var(--spacing-md));
