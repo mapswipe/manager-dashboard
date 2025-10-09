@@ -39,6 +39,14 @@ function ValidateImagePropertyInput(props: Props) {
             numPreferredGridColumns={2}
             minGridColumnSize="6rem"
         >
+            <TextInput
+                label="Image ID"
+                name="imageId"
+                value={value?.imageId}
+                error={error?.imageId}
+                onChange={setFieldValue}
+                disabled={disabled}
+            />
             <GridLayoutItem
                 columnSpan={2}
             >

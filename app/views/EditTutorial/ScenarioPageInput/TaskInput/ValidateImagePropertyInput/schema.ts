@@ -15,6 +15,7 @@ type TaskSchema = ObjectSchema<PartialValidateImagePropertyInputFields>;
 
 const validateImagePropertyInputSchema: TaskSchema = {
     fields: (): ReturnType<TaskSchema['fields']> => ({
+        imageId: {},
         fileName: {},
         width: {},
         height: {},
