@@ -327,8 +327,13 @@ function ProjectListItem(props: Props) {
                                     />
                                     <TextOutput
                                         label="Number of contributors"
-                                        value={value.contributorsCount}
+                                        value={value.numberOfContributorUsers}
                                         valueType="number"
+                                    />
+                                    <TextOutput
+                                        label="Last activity on"
+                                        value={value.lastContributionDate}
+                                        valueType="date"
                                     />
                                 </ListLayout>
                                 {(value.status === ProjectStatusEnum.PublishingFailed
