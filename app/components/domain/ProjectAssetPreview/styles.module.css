@@ -1,9 +1,11 @@
 .project-asset-preview {
     border-radius: var(--radius-card-border);
     background-color: var(--color-background-input);
-    padding: var(--spacing-sm);
     width: 100%;
-    height: 14rem;
+
+    &:has(.image) {
+        padding: var(--spacing-sm);
+    }
 
     .no-preview {
         display: flex;
@@ -19,10 +21,5 @@
         height: 100%;
         object-fit: contain;
         object-position: center center;
-    }
-
-    .geo-json {
-        width: 100%;
-        height: 100%;
     }
 }

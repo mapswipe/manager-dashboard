@@ -15,8 +15,7 @@ import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
 import { standardizeQuadKey } from '#utils/geo';
 
-const FALLBACK_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const FALLBACK_TILE_CREDITS = 'Map data from OpenStreetMap';
+const FALLBACK_TILE_URL = 'https://tiles.versatiles.org/assets/styles/eclipse/style.json';
 
 const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'children'> = {
     center: [0, 0],
@@ -48,32 +47,22 @@ function BaseMap(props: Props) {
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
 
-    const {
-        url,
-        credits,
-        minzoom,
-        maxzoom,
-    } = useMemo(() => {
+    const mapInfo = useMemo(() => {
         const rasterTileServerMapping = listToMap(
             rasterTileServers,
             ({ type: tileType }) => tileType,
         );
 
         if (isNotDefined(baseTileServer)) {
-            return {
-                url: FALLBACK_TILE_URL,
-                credits: FALLBACK_TILE_CREDITS,
-                minzoom: undefined,
-                maxzoom: undefined,
-            };
+            return FALLBACK_TILE_URL;
         }
 
         const { name } = baseTileServer;
 
         if (isNotDefined(name)) {
             return {
-                url: FALLBACK_TILE_URL,
-                credits: FALLBACK_TILE_CREDITS,
+                url: undefined,
+                credits: undefined,
                 minzoom: undefined,
                 maxzoom: undefined,
             };
@@ -96,14 +85,23 @@ function BaseMap(props: Props) {
         };
     }, [baseTileServer, rasterTileServers]);
 
-    const mapStyle = useMemo<maplibregl.StyleSpecification | undefined>(() => {
-        const result = type('string.url')(url);
-
-        if (result instanceof type.errors) {
-            return undefined;
+    const mapStyle = useMemo(() => {
+        if (typeof mapInfo === 'string') {
+            return mapInfo;
         }
 
-        return {
+        const result = type('string.url')(mapInfo.url);
+
+        if (result instanceof type.errors) {
+            const spec: maplibregl.StyleSpecification = {
+                version: 8,
+                sources: {},
+                layers: [],
+            };
+            return spec;
+        }
+
+        const spec: maplibregl.StyleSpecification = {
             version: 8,
             sources: {
                 'base-tile-source': removeNull({
@@ -111,9 +109,9 @@ function BaseMap(props: Props) {
                     // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
                     tiles: [standardizeQuadKey(result)],
                     tileSize,
-                    attribution: credits ?? '',
-                    minzoom: minzoom ?? null,
-                    maxzoom: maxzoom ?? null,
+                    attribution: mapInfo.credits ?? '',
+                    minzoom: mapInfo.minzoom ?? null,
+                    maxzoom: mapInfo.maxzoom ?? null,
                 }),
             },
             layers: [{
@@ -122,7 +120,8 @@ function BaseMap(props: Props) {
                 source: 'base-tile-source',
             }],
         };
-    }, [url, tileSize, credits, minzoom, maxzoom]);
+        return spec;
+    }, [mapInfo, tileSize]);
 
     const mapOptions = useMemo(() => ({
         ...defaultMapOptions,

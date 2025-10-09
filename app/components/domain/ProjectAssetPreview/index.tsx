@@ -125,7 +125,7 @@ function ProjectAssetPreview(props: Props) {
         return (
             <div className={className}>
                 <GeoJsonPreview
-                    className={_cs(styles.geoJson, rendererClassName)}
+                    className={className}
                     // FIXME: We need to also add a validation
                     geoJson={geoJson as unknown as GeoJSON.FeatureCollection}
                     baseTileServer={geoJsonTileServer}

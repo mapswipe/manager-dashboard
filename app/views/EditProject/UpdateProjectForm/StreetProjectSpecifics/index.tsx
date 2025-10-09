@@ -125,7 +125,6 @@ function StreetProjectSpecifics(props: Props) {
                     inputType={ProjectAssetInputTypeEnum.AoiGeometry}
                     disabled={disabled}
                     hint="Upload your project area as GeoJSON File (max. 1MB)"
-                    withoutPreview
                 />
             </Container>
             <StreetMapillaryImageFiltersInput
