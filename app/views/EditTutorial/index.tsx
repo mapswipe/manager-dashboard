@@ -850,7 +850,7 @@ function NewTutorial() {
                                     reference: 1,
                                     projectTypeSpecifics: {
                                         validateImage: {
-                                            // id: image.id,
+                                            imageId: stringifyId(image.id),
                                             fileName: image.file_name,
                                             url,
                                             width: image.width,
@@ -873,7 +873,7 @@ function NewTutorial() {
                                     reference: 1,
                                     projectTypeSpecifics: {
                                         validateImage: {
-                                            // id: image.id,
+                                            imageId: stringifyId(image.id),
                                             fileName: image.file_name,
                                             url,
                                             width: image.width,

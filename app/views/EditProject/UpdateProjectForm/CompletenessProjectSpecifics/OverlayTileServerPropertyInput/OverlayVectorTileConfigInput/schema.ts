@@ -3,7 +3,7 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
-import vectorTileServerFormSchema from '#components/domain/VectorTileServerInput/schema';
+import vectorTileServerFormSchema, { defaultVectorTileServerInputValue } from '#components/domain/VectorTileServerInput/schema';
 import { ProjectOverlayVectorTileServerConfigInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -29,6 +29,7 @@ export const defaultOverlayVectorTileConfigInputValue: PartialOverlayVectorTileC
     lineWidth: 1,
     lineOpacity: 1,
     lineDasharray: [3, 2],
+    tileServer: defaultVectorTileServerInputValue,
 };
 
 const overlayVectorTileConfigFormSchema: OverlayVectorTileConfigFormSchema = {

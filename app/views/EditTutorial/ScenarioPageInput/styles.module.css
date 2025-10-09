@@ -22,6 +22,7 @@
             >:nth-child(2) {
                 position: initial;
                 top: initial;
+                overflow-x: auto;
             }
         }
     }
