@@ -135,12 +135,12 @@ const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
     [ProjectTypeEnum.ValidateImage]: 'Assess how well machine learning detections match real-world features in images, flagging false or inaccurate results. This helps improve model accuracy and dataset quality, supporting better outcomes for social good applications.',
     [ProjectTypeEnum.Completeness]: (
         <ListLayout layout="block">
-            <p>
+            <div>
                 Assess how well OSM data represents buildings in satellite imagery,
                 flagging areas where mapping is incomplete.
                 This helps identify areas needing further mapping efforts to enhance
                 OSM&apos;s accuracy, especially for disaster response and risk assessment.
-            </p>
+            </div>
             <Alert
                 name="street-alert"
                 title="Vector overlay layer"
@@ -153,10 +153,10 @@ const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
     ),
     [ProjectTypeEnum.Street]: (
         <ListLayout layout="block">
-            <p>
+            <div>
                 Explore ground-level images to find relevant features and
                 capture more detailed information on communities.
-            </p>
+            </div>
             <Alert
                 name="street-alert"
                 title="MapSwipe Web only"

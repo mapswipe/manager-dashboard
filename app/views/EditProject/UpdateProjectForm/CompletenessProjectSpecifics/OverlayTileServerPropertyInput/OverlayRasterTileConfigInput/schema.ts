@@ -3,7 +3,7 @@ import {
     PartialForm,
 } from '@togglecorp/toggle-form';
 
-import rasterTileServerFormSchema from '#components/domain/RasterTileServerInput/schema';
+import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/domain/RasterTileServerInput/schema';
 import { ProjectOverlayRasterTileServerConfig } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -20,6 +20,8 @@ type OverlayRasterTileConfigFormFields = ReturnType<
 >;
 
 export const defaultOverlayRasterTileConfigInputValue: PartialOverlayRasterTileConfigInputFields = {
+    opacity: 0.5,
+    tileServer: defaultRasterTileServerInputValue,
 };
 
 export const overlayRasterTileConfigFormSchema: OverlayRasterTileConfigFormSchema = {

@@ -1,4 +1,7 @@
-import { useContext } from 'react';
+import {
+    useCallback,
+    useContext,
+} from 'react';
 import {
     EntriesAsList,
     getErrorObject,
@@ -66,6 +69,39 @@ function OverlayTileServerPropertyInput(props: Props) {
         defaultOverlayVectorTileConfigInputValue,
     );
 
+    const handleOverlayLayerTypeChange = useCallback(
+        (newType: OverlayLayerTypeEnum | undefined) => {
+            setFieldValue(newType, 'type');
+
+            if (newType === OverlayLayerTypeEnum.VectorTile) {
+                setFieldValue(
+                    (oldValue: PartialOverlayVectorTileConfigInputFields | undefined) => {
+                        if (!oldValue) {
+                            return defaultOverlayVectorTileConfigInputValue;
+                        }
+
+                        return oldValue;
+                    },
+                    'vector',
+                );
+            }
+
+            if (newType === OverlayLayerTypeEnum.RasterTile) {
+                setFieldValue(
+                    (oldValue: PartialOverlayRasterTileConfigInputFields | undefined) => {
+                        if (!oldValue) {
+                            return defaultOverlayRasterTileConfigInputValue;
+                        }
+
+                        return oldValue;
+                    },
+                    'raster',
+                );
+            }
+        },
+        [setFieldValue],
+    );
+
     return (
         <Container
             heading="Overlay Layer"
@@ -78,7 +114,7 @@ function OverlayTileServerPropertyInput(props: Props) {
                 labelSelector={labelSelector}
                 value={value?.type}
                 error={error?.type}
-                onChange={setFieldValue}
+                onChange={handleOverlayLayerTypeChange}
                 disabled={disabled}
             />
             {value?.type === OverlayLayerTypeEnum.RasterTile && (

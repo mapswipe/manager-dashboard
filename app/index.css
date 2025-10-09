@@ -83,7 +83,11 @@
     --width-scrollbar: 0.5rem;
     --width-page-content-max: 86rem;
 
-    --size-tile: 180px;
+    --size-tile: 160px;
+
+    @media screen and (max-width: 30rem) {
+        --size-tile: max(120px, 30vw);
+    }
 
     --size-tile-find: var(--size-tile);
     --size-tile-compare: calc(var(--size-tile) * 2);

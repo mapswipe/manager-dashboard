@@ -11,6 +11,8 @@ import {
     wrapCreateBrowserRouterV7,
 } from '@sentry/react';
 
+import PageError from '#base/components/PageError';
+import PreloadMessage from '#base/components/PreloadMessage';
 import routes, { RouteConfig } from '#base/configs/routes';
 import sentryConfig from '#base/configs/sentry';
 
@@ -42,6 +44,8 @@ function mapRoute(routeConfig: RouteConfig) {
 }
 
 const router = wrapCreateBrowserRouterV7(createBrowserRouter)([{
+    errorElement: <PageError />,
+    HydrateFallback: () => <PreloadMessage>Loading Mapswipe...</PreloadMessage>,
     lazy: async () => {
         const { default: Component } = await import('./Root');
         return { Component };
