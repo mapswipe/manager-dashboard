@@ -150,7 +150,8 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
             status
             verificationNumber
             requiredResults
-            contributorsCount
+            numberOfContributorUsers
+            lastContributionDate
             image {
                 id
                 file {

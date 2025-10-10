@@ -129,7 +129,7 @@ function TutorialAssetPreview(props: Props) {
         return (
             <div className={className}>
                 <GeoJsonPreview
-                    className={_cs(styles.geoJson, rendererClassName)}
+                    className={rendererClassName}
                     // FIXME: We need to also add a validation
                     geoJson={geoJson as unknown as GeoJSON.FeatureCollection}
                     baseTileServer={geoJsonTileServer}

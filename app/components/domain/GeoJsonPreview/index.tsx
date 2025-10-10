@@ -7,25 +7,22 @@ import {
     tileToBBOX,
 } from '@mapbox/tilebelt';
 import {
-    _cs,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
     MapBounds,
-    MapContainer,
     MapLayer,
     MapSource,
 } from '@togglecorp/re-map';
 
+import DefaultMapContainer from '#components/DefaultMapContainer';
 import BaseMap from '#components/domain/BaseMap';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
 import {
     BoundingBox,
     getBbox,
 } from '#utils/geo';
-
-import styles from './styles.module.css';
 
 const DEFAULT_MAP_PADDING = 10;
 
@@ -42,7 +39,6 @@ const defaultGeoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'
 };
 
 interface Props {
-    className?: string;
     baseTileServer: PartialRasterTileServerInputFields | undefined;
     geoJson: GeoJSON.Feature<GeoJSON.Geometry>
         | GeoJSON.FeatureCollection<GeoJSON.Geometry>
@@ -52,11 +48,11 @@ interface Props {
     tileSize?: number;
     fitInSingleTile?: boolean;
     disablePan?: boolean;
+    className?: string;
 }
 
 function GeoJsonPreview(props: Props) {
     const {
-        className,
         baseTileServer,
         geoJson,
         geoJsonLayerOptions = defaultGeoJsonLayerOptions,
@@ -64,6 +60,7 @@ function GeoJsonPreview(props: Props) {
         tileSize,
         fitInSingleTile = false,
         disablePan,
+        className,
     } = props;
 
     const bounds = useMemo(() => {
@@ -94,7 +91,7 @@ function GeoJsonPreview(props: Props) {
                     />
                 </MapSource>
             )}
-            <MapContainer className={_cs(styles.geoJsonPreview, className)} />
+            <DefaultMapContainer className={className} />
             {isDefined(bounds) && (
                 <MapBounds
                     bounds={bounds}
