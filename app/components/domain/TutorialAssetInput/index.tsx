@@ -2,10 +2,7 @@ import {
     useCallback,
     useId,
 } from 'react';
-import {
-    isDefined,
-    isNotDefined,
-} from '@togglecorp/fujs';
+import { isDefined } from '@togglecorp/fujs';
 import { ulid } from 'ulid';
 import { gql } from 'urql';
 
@@ -13,7 +10,6 @@ import TutorialAssetPreview from '#components/domain/TutorialAssetPreview';
 import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
-    AssetMimetypeEnum,
     TutorialAssetInputTypeEnum,
     useCreateTutorialAssetMutation,
 } from '#generated/types/graphql';
@@ -89,32 +85,11 @@ function TutorialAssetInput<const NAME>(props: Props<NAME>) {
 
     const handleFileInputChange = useCallback(async (file: File | undefined) => {
         if (file) {
-            const { type } = file;
-
             if (file.size > maxFileSize) {
                 alert.show(
                     'Cannot upload the Tutorial asset!',
                     {
                         description: `File size (${formatFileSize(file.size)}) exceeds the allowed limit (${formatFileSize(maxFileSize)}).`,
-                        variant: 'danger',
-                    },
-                );
-                return;
-            }
-
-            const mimetypeEnumMap: Record<string, AssetMimetypeEnum> = {
-                'image/jpeg': AssetMimetypeEnum.ImageJpeg,
-                'image/png': AssetMimetypeEnum.ImagePng,
-                'image/gif': AssetMimetypeEnum.ImageGif,
-                'application/geo+json': AssetMimetypeEnum.Geojson,
-            };
-
-            const selectedEnum = mimetypeEnumMap[type];
-            if (isNotDefined(selectedEnum)) {
-                alert.show(
-                    'Cannot upload the Tutorial asset!',
-                    {
-                        description: 'Selected file does not match expected type',
                         variant: 'danger',
                     },
                 );

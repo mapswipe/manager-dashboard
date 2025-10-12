@@ -13,7 +13,6 @@ import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import FileInput from '#components/FileInput';
 import InputContainerLayout, { Props as InputContainerLayoutProps } from '#components/InputContainerLayout';
 import {
-    AssetMimetypeEnum,
     ProjectAssetInputTypeEnum,
     useCreateProjectAssetMutation,
 } from '#generated/types/graphql';
@@ -101,32 +100,13 @@ function AssetInput<const NAME>(props: Props<NAME>) {
 
     const handleFileInputChange = useCallback(async (file: File | undefined) => {
         if (file) {
-            const { type } = file;
+            // const { type } = file;
 
             if (file.size > maxFileSize) {
                 alert.show(
                     'Cannot upload the Project asset!',
                     {
                         description: `File size (${formatFileSize(file.size)}) exceeds the allowed limit (${formatFileSize(maxFileSize)}).`,
-                        variant: 'danger',
-                    },
-                );
-                return;
-            }
-
-            const mimetypeEnumMap: Record<string, AssetMimetypeEnum> = {
-                'image/jpeg': AssetMimetypeEnum.ImageJpeg,
-                'image/png': AssetMimetypeEnum.ImagePng,
-                'image/gif': AssetMimetypeEnum.ImageGif,
-                'application/json': AssetMimetypeEnum.Json,
-                'application/geo+json': AssetMimetypeEnum.Geojson,
-            };
-            const selectedEnum = mimetypeEnumMap[type];
-            if (isNotDefined(selectedEnum)) {
-                alert.show(
-                    'Cannot upload the Project asset!',
-                    {
-                        description: 'Selected file does not match expected type',
                         variant: 'danger',
                     },
                 );
