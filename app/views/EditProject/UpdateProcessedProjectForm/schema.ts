@@ -27,26 +27,30 @@ type ProcessedProjectUpdateFormFields = ReturnType<ProcessedProjectUpdateFormSch
 const processedProjectUpdateFormSchema: ProcessedProjectUpdateFormSchema = {
     fields: (): ProcessedProjectUpdateFormFields => ({
         clientId: {},
-        projectNumber: {
-            required: true,
-            // FIXME: add positive integer validation
-        },
         topic: {
             required: true,
             requiredValidation: requiredStringCondition,
         },
+        projectNumber: {
+            required: true,
+            // FIXME: add positive integer validation
+        },
+        requestingOrganization: {
+            required: true,
+        },
         region: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        projectInstruction: {
             required: true,
             requiredValidation: requiredStringCondition,
         },
         lookFor: {
             required: true,
         },
-        requestingOrganization: {
-            required: true,
-        },
-        additionalInfoUrl: {},
         description: {},
+        additionalInfoUrl: {},
         image: {},
         team: {},
         tutorial: {
