@@ -210,6 +210,7 @@ function Login() {
                             variant: 'success',
                         },
                     );
+
                     setUser({
                         id: result.data.login.id,
                         displayName: result.data.login.displayName,

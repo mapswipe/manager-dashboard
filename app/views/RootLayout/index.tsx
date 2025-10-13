@@ -134,6 +134,10 @@ function RootLayout() {
             try {
                 const res = await fetch(
                     resolveUrl(import.meta.env.APP_GRAPHQL_API_DOMAIN, 'health-check/?format=json'),
+                    {
+                        method: 'GET',
+                        credentials: 'include',
+                    },
                 );
                 const serverResponse = await res.json();
 
