@@ -4,7 +4,10 @@ import {
 } from '@togglecorp/toggle-form';
 
 import customOptionSchema from '#components/domain/CustomOptionInput/schema';
-import { ValidateImageProjectPropertyInput } from '#generated/types/graphql';
+import {
+    ValidateImageProjectPropertyInput,
+    ValidateImageSourceTypeEnum,
+} from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
 import {
@@ -23,6 +26,7 @@ type ValidateImageSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultValidateImageSpecificFormValue: PartialValidateImageSpecificFields = {
+    sourceType: ValidateImageSourceTypeEnum.DatasetFile,
 };
 
 const validateSpecificFormSchema: ValidateImageSpecificFormSchema = {

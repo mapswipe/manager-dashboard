@@ -44,6 +44,8 @@ import { type PartialValidateImageSpecificFields } from './schema.ts';
 
 import styles from './styles.module.css';
 
+const DIRECT_IMAGES_ENABLED = false;
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_OBJECT_IMAGE_ASSETS_QUERY = gql`
 query ProjectObjectImageAssets($projectId: ID!, $withoutMimeType: Boolean, $pagination: OffsetPaginationInput!) {
@@ -191,13 +193,16 @@ function ValidateProjectSpecifics(props: Props) {
                     error={error?.sourceType}
                     value={value?.sourceType}
                     onChange={setFieldValue}
+                    disabled={disabled || !DIRECT_IMAGES_ENABLED}
                 />
-                {value?.sourceType === ValidateImageSourceTypeEnum.DirectImages && (
-                    <DirectImagesInput
-                        onUploadModalClose={retriggerObjectImagesAssetRequest}
-                        projectId={projectId}
-                    />
-                )}
+                {value?.sourceType === ValidateImageSourceTypeEnum.DirectImages
+                    && DIRECT_IMAGES_ENABLED
+                    && (
+                        <DirectImagesInput
+                            onUploadModalClose={retriggerObjectImagesAssetRequest}
+                            projectId={projectId}
+                        />
+                    )}
                 {value?.sourceType === ValidateImageSourceTypeEnum.DatasetFile && (
                     <DatasetFileInput
                         onUploadModalClose={retriggerObjectImagesAssetRequest}
