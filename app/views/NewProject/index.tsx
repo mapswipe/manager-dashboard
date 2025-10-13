@@ -88,8 +88,20 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
         projectType: {
             required: true,
         },
+        topic: {
+            required: true,
+            requiredValidation: requiredStringCondition,
+        },
+        projectNumber: {
+            required: true,
+            // FIXME: add positive integer validation
+        },
         requestingOrganization: {
             required: true,
+        },
+        region: {
+            required: true,
+            requiredValidation: requiredStringCondition,
         },
         projectInstruction: {
             required: true,
@@ -99,20 +111,8 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
             required: true,
             requiredValidation: requiredStringCondition,
         },
-        projectNumber: {
-            required: true,
-            // FIXME: add positive integer validation
-        },
-        topic: {
-            required: true,
-            requiredValidation: requiredStringCondition,
-        },
-        region: {
-            required: true,
-            requiredValidation: requiredStringCondition,
-        },
-        team: {},
         description: {},
+        team: {},
         additionalInfoUrl: {},
     }),
 };
