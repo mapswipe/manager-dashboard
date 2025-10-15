@@ -97,7 +97,7 @@ mutation UpdateUserGroup($id: ID!, $data: ContributorUserGroupUpdateInput!) {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const USER_GROUP_DETAILS_QUERY = gql`
 query contributorUserGroupDetails($id: ID!) {
-    contributorUserGroup(id: $id) {
+    contributorUserGroup(userGroupId: { id: $id }) {
         clientId
         id
         modifiedBy {
