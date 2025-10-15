@@ -665,7 +665,12 @@ function NewTutorial() {
                     ],
                 }));
 
-                setFieldValue(scenarioPages, 'scenarios');
+                setFieldValue(
+                    scenarioPages.toSorted((a, b) => (
+                        compareNumber(a.scenarioPageNumber, b.scenarioPageNumber)
+                    )),
+                    'scenarios',
+                );
             }
         } else if (projectType === ProjectTypeEnum.Find) {
             const result = FindTutorialGeoJsonType(geoJson);
@@ -805,7 +810,12 @@ function NewTutorial() {
                     ],
                 }));
 
-                setFieldValue(scenarioPages, 'scenarios');
+                setFieldValue(
+                    scenarioPages.toSorted((a, b) => (
+                        compareNumber(a.scenarioPageNumber, b.scenarioPageNumber)
+                    )),
+                    'scenarios',
+                );
             }
         }
     }, [projectDetailResponse, setError, setFieldValue]);
