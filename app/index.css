@@ -85,12 +85,13 @@
 
     --size-tile: 160px;
 
+    /* FIXME: Change this media section. This will break the tile size */
     @media screen and (max-width: 30rem) {
         --size-tile: max(120px, 30vw);
     }
 
     --size-tile-find: var(--size-tile);
-    --size-tile-compare: calc(var(--size-tile) * 2);
+    --size-tile-compare: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
     --size-tile-validate: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
     --size-tile-validate-image: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
     --size-tile-completeness: var(--size-tile-find);

@@ -78,6 +78,8 @@ function CompareScenarioPreview(props: Props) {
                 contentClassName={styles.previewContent}
             >
                 <GeoJsonPreview
+                    // NOTE: this should match --size-tile-compare
+                    tileSize={280}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson as GeoJSON.FeatureCollection}
                     baseTileServer={removeNull(tileServerProperty)}
@@ -86,6 +88,8 @@ function CompareScenarioPreview(props: Props) {
                     disablePan
                 />
                 <GeoJsonPreview
+                    // NOTE: this should match --size-tile-compare
+                    tileSize={280}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson as GeoJSON.FeatureCollection}
                     baseTileServer={removeNull(tileServerBProperty)}

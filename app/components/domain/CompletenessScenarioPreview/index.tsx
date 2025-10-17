@@ -93,6 +93,8 @@ function CompletenessScenarioPreview(props: Props) {
                 contentClassName={styles.content}
             >
                 <BaseMap
+                    // NOTE: this should match --size-tile-completeness
+                    tileSize={160}
                     baseTileServer={removeNull(tileServerProperty)}
                     disablePan
                 >

@@ -80,8 +80,8 @@ function FindScenarioPreview(props: Props) {
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
-                    // NOTE: this should match --tile-size
-                    tileSize={180}
+                    // NOTE: this should match --size-tile-find
+                    tileSize={160}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}

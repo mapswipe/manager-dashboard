@@ -89,8 +89,8 @@ function ValidateScenarioPreview(props: Props) {
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
-                    // NOTE tiles size must match css varialbe --size-tile-validate
-                    tileSize={320}
+                    // NOTE: this should match --size-tile-validate
+                    tileSize={280}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}
