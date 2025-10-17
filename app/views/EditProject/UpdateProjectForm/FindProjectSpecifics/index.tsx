@@ -63,7 +63,7 @@ function FindProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
-                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel : undefined}
             />
             <ZoomLevelSelectInput
                 name="zoomLevel"

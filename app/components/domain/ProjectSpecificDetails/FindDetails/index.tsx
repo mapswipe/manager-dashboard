@@ -43,7 +43,7 @@ function FindDetails(props: Props) {
                         <GeoJsonAssetMapSource
                             geoJsonAssetId={data?.aoiGeometry}
                             defaultBounds={defaultBounds}
-                            zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
+                            zoomLevel={zoomView === 'zoomLevel' ? tileZ : undefined}
                             withPadding={zoomView === 'aoiBounds'}
                         />
                     </BaseMap>
