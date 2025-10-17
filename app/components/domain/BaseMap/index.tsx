@@ -3,8 +3,10 @@ import {
     useMemo,
 } from 'react';
 import {
+    isDefined,
     isNotDefined,
     listToMap,
+    randomString,
 } from '@togglecorp/fujs';
 import Map from '@togglecorp/re-map';
 import { removeNull } from '@togglecorp/toggle-form';
@@ -47,47 +49,60 @@ function BaseMap(props: Props) {
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
 
-    const mapInfo = useMemo(() => {
-        const rasterTileServerMapping = listToMap(
-            rasterTileServers,
-            ({ type: tileType }) => tileType,
-        );
+    const rasterTileServerMapping = useMemo(() => listToMap(
+        rasterTileServers,
+        ({ type: tileType }) => tileType,
+    ), [rasterTileServers]);
 
-        if (isNotDefined(baseTileServer)) {
+    const name = baseTileServer?.name;
+    const custom = name === RasterTileServerNameEnum.Custom
+        ? baseTileServer?.custom
+        : undefined;
+
+    const tileUrl = isDefined(name) ? rasterTileServerMapping[name]?.url : undefined;
+    const tileCredits = isDefined(name) ? rasterTileServerMapping[name]?.credits : undefined;
+    const minZoom = isDefined(name) ? rasterTileServerMapping[name]?.minZoom : undefined;
+    const maxZoom = isDefined(name) ? rasterTileServerMapping[name]?.maxZoom : undefined;
+
+    const baseTileServerDefined = isDefined(baseTileServer);
+
+    const mapInfo = useMemo(() => {
+        if (!baseTileServerDefined) {
             return FALLBACK_TILE_URL;
         }
 
-        const { name } = baseTileServer;
-
         if (isNotDefined(name)) {
-            return {
-                url: undefined,
-                credits: undefined,
-                minzoom: undefined,
-                maxzoom: undefined,
-            };
+            return undefined;
         }
 
         if (name === RasterTileServerNameEnum.Custom) {
+            if (isNotDefined(custom)) {
+                return undefined;
+            }
+
             return {
-                url: baseTileServer.custom?.url,
-                credits: baseTileServer.custom?.credits,
-                minzoom: baseTileServer.custom?.minZoom,
-                maxzoom: baseTileServer.custom?.maxZoom,
+                url: custom.url,
+                credits: custom.credits,
+                minzoom: custom.minZoom,
+                maxzoom: custom.maxZoom,
             };
         }
 
         return {
-            url: rasterTileServerMapping[name]?.url,
-            credits: rasterTileServerMapping[name]?.credits,
-            minzoom: baseTileServer.custom?.minZoom,
-            maxzoom: baseTileServer.custom?.maxZoom,
+            url: tileUrl,
+            credits: tileCredits,
+            minzoom: minZoom,
+            maxzoom: maxZoom,
         };
-    }, [baseTileServer, rasterTileServers]);
+    }, [baseTileServerDefined, custom, maxZoom, minZoom, name, tileCredits, tileUrl]);
 
     const mapStyle = useMemo(() => {
         if (typeof mapInfo === 'string') {
             return mapInfo;
+        }
+
+        if (isNotDefined(mapInfo)) {
+            return undefined;
         }
 
         const result = type('string.url')(mapInfo.url);
@@ -128,8 +143,21 @@ function BaseMap(props: Props) {
         dragPan: !disablePan,
     }), [disablePan]);
 
+    const mapKey = useMemo(() => (
+        // FIXME(frozenhelium): map key is added here
+        // to completely destroy and create a new map
+        // to avoid race condition while recreating layers and sources
+        randomString()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ), [mapStyle]);
+
+    if (isNotDefined(mapStyle)) {
+        return null;
+    }
+
     return (
         <Map
+            key={mapKey}
             mapStyle={mapStyle}
             mapOptions={mapOptions}
         >

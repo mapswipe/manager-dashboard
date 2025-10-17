@@ -19,6 +19,7 @@ import {
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
+import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import CompareScenarioPreview from '#components/domain/CompareScenarioPreview';
@@ -37,7 +38,10 @@ import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import TextArea from '#components/TextArea';
 import TextInput from '#components/TextInput';
-import { TutorialProjectDetailQuery } from '#generated/types/graphql';
+import {
+    ProjectTypeEnum,
+    TutorialProjectDetailQuery,
+} from '#generated/types/graphql';
 
 import { PartialScenarioPageInputFields } from './schema';
 import TaskInput from './TaskInput';
@@ -131,10 +135,17 @@ function ScenarioPageInput(props: Props) {
                 spacing="lg"
             >
                 <Container
-                    heading="Help description"
                     headingLevel={5}
                     withWelledContent
                 >
+                    {projectData?.projectType === ProjectTypeEnum.Validate && (
+                        <Alert
+                            name="hint-success-unavailability"
+                            title="'Hint' and 'Success' are only visible in web version of MapSwipe"
+                            withoutShadow
+                            fullWidth
+                        />
+                    )}
                     <ListLayout layout="grid" numPreferredGridColumns={3}>
                         <Container
                             heading="Instruction"

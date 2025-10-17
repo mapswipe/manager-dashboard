@@ -78,7 +78,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
-                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel : undefined}
             />
             <OverlayTileServerPropertyInput
                 value={value?.overlayTileServerProperty}
@@ -87,7 +87,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
                 baseTileServer={value?.tileServerProperty}
-                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel : undefined}
             />
         </>
     );

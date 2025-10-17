@@ -1,4 +1,7 @@
-import { useCallback } from 'react';
+import {
+    useCallback,
+    useMemo,
+} from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
@@ -7,6 +10,7 @@ import {
     ObjectError,
     PartialForm,
 } from '@togglecorp/toggle-form';
+import { gql } from 'urql';
 
 import Container from '#components/Container';
 import ListLayout from '#components/ListLayout';
@@ -17,10 +21,20 @@ import TeamSelectInput from '#components/selections/TeamSelectInput';
 import TextInput from '#components/TextInput';
 import {
     ProjectCreateInput,
+    ProjectNameInput,
     ProjectTypeEnum,
     ProjectUpdateInput,
+    useProjectNameQuery,
 } from '#generated/types/graphql';
+import useDebouncedValue from '#hooks/useDebouncedValue';
 import { DeepNonNullable } from '#utils/types';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const PROJECT_NAME_QUERY = gql`
+query ProjectName($params: ProjectNameInput) {
+  projectName(params: $params)
+}
+`;
 
 type ProjectGeneralInputFields = Pick<
 ProjectCreateInput | ProjectUpdateInput,
@@ -123,7 +137,6 @@ interface Props {
     error: LeafError | ObjectError<PartialProjectGeneralInputFields>;
     setFieldValue: (...entries: EntriesAsList<PartialProjectGeneralInputFields>) => void;
     disabled?: boolean | (keyof ProjectGeneralInputFields)[];
-    name: string | undefined;
 }
 
 function ProjectGeneralInputs(props: Props) {
@@ -133,8 +146,37 @@ function ProjectGeneralInputs(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
-        name,
     } = props;
+
+    const projectNameParams = useMemo(() => {
+        if (isNotDefined(value?.topic)
+            || isNotDefined(projectType)
+            || isNotDefined(value.requestingOrganization)
+            || isNotDefined(value.region)
+            || isNotDefined(value.projectNumber)
+        ) {
+            return undefined;
+        }
+
+        return {
+            projectType,
+            topic: value.topic,
+            requestingOrganizationId: value.requestingOrganization,
+            region: value.region,
+            projectNumber: value.projectNumber,
+        } satisfies ProjectNameInput;
+    }, [value, projectType]);
+
+    const debouncedProjectNameParams = useDebouncedValue(projectNameParams);
+
+    const [{
+        data: projectNameResult,
+    }] = useProjectNameQuery({
+        variables: {
+            params: debouncedProjectNameParams,
+        },
+        pause: isNotDefined(debouncedProjectNameParams),
+    });
 
     const error = getErrorObject(formError);
 
@@ -205,7 +247,7 @@ function ProjectGeneralInputs(props: Props) {
             <TextInput
                 label="Project name (readonly)"
                 name={undefined}
-                value={name}
+                value={projectNameResult?.projectName}
                 placeholder="Please select all the fields above to see the preview"
                 readOnly
             />

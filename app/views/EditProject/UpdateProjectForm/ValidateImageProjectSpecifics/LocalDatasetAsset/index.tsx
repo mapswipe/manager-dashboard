@@ -161,7 +161,11 @@ function LocalDatasetAsset(props: Props) {
                 </a>
             )}
             headerDescription={(
-                <ListLayout className={styles.meta}>
+                <ListLayout
+                    className={styles.meta}
+                    withWrap
+                    spacing="xs"
+                >
                     <Tag spacing="sm">
                         <TextOutput
                             value={value.annotations?.length ?? 0}

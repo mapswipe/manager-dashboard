@@ -489,7 +489,6 @@ function UpdateProjectForm(props: Props) {
             )}
             <NonFieldError error={error} />
             <ProjectGeneralInputs
-                name={projectData.project.name}
                 projectType={projectData.project.projectType}
                 value={value}
                 setFieldValue={setFieldValue}
@@ -556,6 +555,10 @@ function UpdateProjectForm(props: Props) {
                         setFieldValue={setValidateImageProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.validateImage}
                         disabled={projectTypeSpecificInputsDisabled || readOnly}
+                        // eslint-disable-next-line no-underscore-dangle
+                        sourceTypeSaved={projectData.project.projectTypeSpecifics
+                            ?.__typename === 'ValidateImageProjectPropertyType'
+                                && !!projectData.project.projectTypeSpecifics}
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Street && (
