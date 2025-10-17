@@ -122,6 +122,7 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
             aoiGeometry {
                 id
                 totalArea
+                bbox
             }
             clientId
             oldId

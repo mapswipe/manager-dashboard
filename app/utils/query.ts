@@ -183,6 +183,7 @@ fragment ProjectDetailFields on ProjectType {
     aoiGeometry {
         id
         totalArea
+        bbox
     }
     aoiGeometryInputAsset {
         id

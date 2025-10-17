@@ -14,10 +14,14 @@ import { CompareProjectPropertyType } from '#generated/types/graphql';
 
 interface Props {
     data: CompareProjectPropertyType | undefined;
+    defaultBounds: GeoJSON.Polygon | undefined | null;
 }
 
 function CompareDetails(props: Props) {
-    const { data } = props;
+    const {
+        data,
+        defaultBounds,
+    } = props;
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     if (isNotDefined(data)) {
@@ -38,6 +42,7 @@ function CompareDetails(props: Props) {
                         geoJsonAssetId={data.aoiGeometry}
                         zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
                         withPadding={zoomView === 'aoiBounds'}
+                        defaultBounds={defaultBounds}
                     />
                 </BaseMap>
                 <RasterTileServerOutput
@@ -53,6 +58,7 @@ function CompareDetails(props: Props) {
                         geoJsonAssetId={data.aoiGeometry}
                         zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
                         withPadding={zoomView === 'aoiBounds'}
+                        defaultBounds={defaultBounds}
                     />
                 </BaseMap>
                 <RasterTileServerOutput
