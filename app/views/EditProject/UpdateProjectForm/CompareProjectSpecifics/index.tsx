@@ -1,3 +1,4 @@
+import { isDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -68,7 +69,7 @@ function CompareProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
-                zoomLevel={value?.zoomLevel}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
             />
             <RasterTileServerInput
                 label="Tile server B"
@@ -77,7 +78,7 @@ function CompareProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerBInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
-                zoomLevel={value?.zoomLevel}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
             />
             <ZoomLevelSelectInput
                 name="zoomLevel"

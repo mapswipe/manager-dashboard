@@ -24,6 +24,8 @@ function CompareDetails(props: Props) {
         return null;
     }
 
+    const tileZ = data.zoomLevel;
+
     return (
         <>
             <ZoomLevelOutput
@@ -34,7 +36,7 @@ function CompareDetails(props: Props) {
                     <DefaultMapContainer compact />
                     <GeoJsonAssetMapSource
                         geoJsonAssetId={data.aoiGeometry}
-                        zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                        zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
                         withPadding={zoomView === 'aoiBounds'}
                     />
                 </BaseMap>
@@ -49,7 +51,7 @@ function CompareDetails(props: Props) {
                     <DefaultMapContainer compact />
                     <GeoJsonAssetMapSource
                         geoJsonAssetId={data.aoiGeometry}
-                        zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                        zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
                         withPadding={zoomView === 'aoiBounds'}
                     />
                 </BaseMap>

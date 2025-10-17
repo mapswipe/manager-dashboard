@@ -1,3 +1,4 @@
+import { isDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -77,7 +78,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
-                zoomLevel={value?.zoomLevel}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
             />
             <OverlayTileServerPropertyInput
                 value={value?.overlayTileServerProperty}
@@ -86,7 +87,7 @@ function CompletenessProjectSpecifics(props: Props) {
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
                 baseTileServer={value?.tileServerProperty}
-                zoomLevel={value?.zoomLevel}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
             />
         </>
     );

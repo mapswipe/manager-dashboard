@@ -59,6 +59,7 @@ function ValidateDetails(props: Props) {
                     <GeoJsonAssetMapSource
                         // FIXME: show AOI for other types as well
                         geoJsonAssetId={removeNull(data?.objectSource.aoiGeometry)}
+                        zoomLevel={undefined}
                         withPadding
                     />
                 </BaseMap>
