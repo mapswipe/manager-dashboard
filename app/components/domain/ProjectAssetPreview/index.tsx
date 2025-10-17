@@ -129,6 +129,7 @@ function ProjectAssetPreview(props: Props) {
                     // FIXME: We need to also add a validation
                     geoJson={geoJson as unknown as GeoJSON.FeatureCollection}
                     baseTileServer={geoJsonTileServer}
+                    withPadding
                 />
             </div>
         );

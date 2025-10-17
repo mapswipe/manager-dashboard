@@ -30,6 +30,7 @@ interface Props {
     geoJsonAssetId?: string;
     zoomLevel?: number;
     withPadding?: boolean;
+    defaultBounds?: GeoJSON.Polygon | null;
 }
 
 function GeoJsonAssetMapSource(props: Props) {
@@ -37,6 +38,7 @@ function GeoJsonAssetMapSource(props: Props) {
         geoJsonAssetId,
         zoomLevel,
         withPadding,
+        defaultBounds,
     } = props;
 
     const [geoJson, setGeoJson] = useState<object | undefined>();
@@ -78,17 +80,18 @@ function GeoJsonAssetMapSource(props: Props) {
         fetchGeoJson();
     }, [geometryAssetResponse]);
 
-    if (isNotDefined(geoJson)) {
-        return null;
-    }
-
     const sourceKey = `geojson-source-${geoJsonAssetId}`;
     const layerKey = `geojson-layer-${geoJsonAssetId}`;
 
     return (
         <GeoJsonMapSource
-            geoJson={geoJson as GeoJSON.FeatureCollection}
-            zoomLevel={zoomLevel}
+            overrideBounds={defaultBounds}
+            geoJson={(
+                geoJsonAssetId
+                    ? geoJson as GeoJSON.FeatureCollection | undefined
+                    : defaultBounds
+            )}
+            overrideZoomLevel={zoomLevel}
             sourceKey={sourceKey}
             layerKey={layerKey}
             withPadding={withPadding}

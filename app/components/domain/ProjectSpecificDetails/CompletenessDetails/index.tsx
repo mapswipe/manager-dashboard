@@ -17,16 +17,22 @@ import { ProjectSpecificDetailsQuery } from '#generated/types/graphql';
 
 interface Props {
     data: ProjectSpecificDetailsQuery['project']['projectTypeSpecifics'];
+    defaultBounds: GeoJSON.Polygon | undefined | null;
 }
 
 function CompletenessDetails(props: Props) {
-    const { data } = props;
+    const {
+        data,
+        defaultBounds,
+    } = props;
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     // eslint-disable-next-line no-underscore-dangle
     if (isNotDefined(data) || data.__typename !== 'CompletenessProjectPropertyType') {
         return null;
     }
+
+    const tileZ = data.zoomLevel;
 
     return (
         <>
@@ -45,8 +51,9 @@ function CompletenessDetails(props: Props) {
                         />
                         <GeoJsonAssetMapSource
                             geoJsonAssetId={data.aoiGeometry}
-                            zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                            zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
                             withPadding={zoomView === 'aoiBounds'}
+                            defaultBounds={defaultBounds}
                         />
                     </BaseMap>
                     <InlineLayout withCenteredContent>

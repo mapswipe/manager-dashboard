@@ -1,7 +1,9 @@
 import {
     ComponentProps,
     useContext,
+    useEffect,
     useMemo,
+    useState,
 } from 'react';
 import {
     isDefined,
@@ -20,6 +22,7 @@ import {
     ProjectOverlayVectorTileServerConfig,
     VectorTileServerNameEnum,
 } from '#generated/types/graphql';
+import useDebouncedValue from '#hooks/useDebouncedValue';
 
 interface Props {
     tileConfig: ProjectOverlayVectorTileServerConfig | undefined;
@@ -73,6 +76,16 @@ function VectorTileMapSource(props: Props) {
             maxZoom: vectorTileServerMapping[name]?.maxZoom,
         };
     }, [tileConfig, vectorTileServers]);
+
+    // FIXME(frozenhelium): This is a hack to fix cases when layer is added before source
+    const [mountLayer, setMountLayer] = useState(false);
+    useEffect(
+        () => {
+            setMountLayer(isDefined(url));
+        },
+        [url],
+    );
+    const debouncedMounted = useDebouncedValue(mountLayer, 1000);
 
     const sourceOptions = useMemo<ComponentProps<typeof MapSource>['sourceOptions']>(() => {
         if (isNotDefined(url)) {
@@ -138,14 +151,14 @@ function VectorTileMapSource(props: Props) {
             sourceKey={sourceKey}
             sourceOptions={sourceOptions}
         >
-            {isDefined(fillLayerOptions) && (
+            {debouncedMounted && isDefined(fillLayerOptions) && (
                 <MapLayer
                     key={fillLayerKey}
                     layerKey={fillLayerKey}
                     layerOptions={fillLayerOptions}
                 />
             )}
-            {isDefined(lineLayerOptions) && (
+            {debouncedMounted && isDefined(lineLayerOptions) && (
                 <MapLayer
                     key={lineLayerKey}
                     layerKey={lineLayerKey}

@@ -1,3 +1,4 @@
+import { isDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -62,7 +63,7 @@ function FindProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.aoiGeometry}
-                zoomLevel={value?.zoomLevel}
+                zoomLevel={isDefined(value?.zoomLevel) ? value.zoomLevel - 1 : undefined}
             />
             <ZoomLevelSelectInput
                 name="zoomLevel"

@@ -14,16 +14,22 @@ import { ProjectSpecificDetailsQuery } from '#generated/types/graphql';
 
 interface Props {
     data: ProjectSpecificDetailsQuery['project']['projectTypeSpecifics'];
+    defaultBounds: GeoJSON.Polygon | undefined | null;
 }
 
 function FindDetails(props: Props) {
-    const { data } = props;
+    const {
+        data,
+        defaultBounds,
+    } = props;
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     // eslint-disable-next-line no-underscore-dangle
     if (isNotDefined(data) || data.__typename !== 'FindProjectPropertyType') {
         return null;
     }
+
+    const tileZ = data.zoomLevel;
 
     return (
         <>
@@ -36,7 +42,8 @@ function FindDetails(props: Props) {
                         <DefaultMapContainer />
                         <GeoJsonAssetMapSource
                             geoJsonAssetId={data?.aoiGeometry}
-                            zoomLevel={zoomView === 'zoomLevel' ? data.zoomLevel : undefined}
+                            defaultBounds={defaultBounds}
+                            zoomLevel={zoomView === 'zoomLevel' ? tileZ - 1 : undefined}
                             withPadding={zoomView === 'aoiBounds'}
                         />
                     </BaseMap>

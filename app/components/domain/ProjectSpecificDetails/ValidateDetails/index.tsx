@@ -18,10 +18,14 @@ import { ValidateProjectPropertyType } from '#generated/types/graphql';
 
 interface Props {
     data: ValidateProjectPropertyType | undefined;
+    defaultBounds: GeoJSON.Polygon | undefined | null;
 }
 
 function ValidateDetails(props: Props) {
-    const { data } = props;
+    const {
+        data,
+        defaultBounds,
+    } = props;
 
     const { validateObjectSourceTypeMapping } = useContext(EnumsContext);
 
@@ -57,8 +61,9 @@ function ValidateDetails(props: Props) {
                 <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
                     <DefaultMapContainer />
                     <GeoJsonAssetMapSource
-                        // FIXME: show AOI for other types as well
                         geoJsonAssetId={removeNull(data?.objectSource.aoiGeometry)}
+                        defaultBounds={defaultBounds}
+                        zoomLevel={undefined}
                         withPadding
                     />
                 </BaseMap>

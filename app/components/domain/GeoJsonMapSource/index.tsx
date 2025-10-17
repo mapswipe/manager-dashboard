@@ -1,7 +1,10 @@
 import {
     ComponentProps,
+    useEffect,
     useMemo,
+    useState,
 } from 'react';
+import { pointToTileFraction } from '@mapbox/tilebelt';
 import {
     isDefined,
     isNotDefined,
@@ -12,7 +15,47 @@ import {
     MapLayer,
     MapSource,
 } from '@togglecorp/re-map';
-import getBbox from '@turf/bbox';
+
+import useDebouncedValue from '#hooks/useDebouncedValue';
+import {
+    BoundingBox,
+    getBbox,
+} from '#utils/geo';
+
+function getTileZ(bbox: BoundingBox) {
+    // check for if bounding box fits into a single tile in width and height
+    // at a given zoom level
+    // start to check for zoom level 19 and
+    // then go to lower levels when needed
+    // zoom level 19 is considered here as the maximum zoom that we support
+    // zoom level 14 is the minimum zoom level
+    let tileZ = 19;
+    while (tileZ >= 14) {
+        // get the tiles for the bbox coordinates
+        const tileAFraction = pointToTileFraction(
+            bbox[0],
+            bbox[1],
+            tileZ,
+        );
+        const tileBFraction = pointToTileFraction(
+            bbox[2],
+            bbox[3],
+            tileZ,
+        );
+
+        // check if bbox fits into one tile at this zoom level
+        // need to check in x and y dimensions
+        const yDifference = Math.abs(tileAFraction[0] - tileBFraction[0]);
+        const xDifference = Math.abs(tileAFraction[1] - tileBFraction[1]);
+
+        if (yDifference < 1 && xDifference < 1) {
+            // x dimension and y dimension fit into a box with the size of one tile
+            break;
+        }
+        tileZ -= 1;
+    }
+    return tileZ;
+}
 
 const geoJsonSourceOptions: Omit<maplibregl.GeoJSONSourceSpecification, 'data'> = {
     type: 'geojson',
@@ -24,7 +67,6 @@ const geoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'] = {
         'line-color': '#ffffff',
         'line-width': 2,
         'line-opacity': 1,
-        // 'line-dasharray': [2, 1],
     },
     layout: {
         visibility: 'visible',
@@ -32,30 +74,76 @@ const geoJsonLayerOptions: ComponentProps<typeof MapLayer>['layerOptions'] = {
 };
 
 interface Props {
-    geoJson: GeoJSON.FeatureCollection;
-    zoomLevel?: number;
+    geoJson: (
+        GeoJSON.FeatureCollection<GeoJSON.Geometry>
+        | GeoJSON.Feature<GeoJSON.Geometry>
+        | GeoJSON.Geometry
+        | undefined | null
+    );
     sourceKey: string;
     layerKey: string;
-    withPadding?: boolean;
     layerOptions?: typeof geoJsonLayerOptions;
+
+    fit?: 'single-tile' | 'default';
+    overrideZoomLevel?: number;
+    overrideBounds?: GeoJSON.Polygon | null;
+    withPadding?: boolean;
 }
 
 function GeoJsonMapSource(props: Props) {
     const {
         geoJson,
-        zoomLevel,
+        overrideZoomLevel,
         sourceKey,
         layerKey,
         withPadding,
         layerOptions = geoJsonLayerOptions,
+        overrideBounds,
+        fit = 'default',
     } = props;
 
-    const bounds = isDefined(geoJson)
-        ? (getBbox(geoJson as GeoJSON.GeoJSON) as [number, number, number, number])
-        : undefined;
+    // FIXME(frozenhelium): This is a hack to fix cases when layer is added before source
+    const [mountLayer, setMountLayer] = useState(false);
+    useEffect(
+        () => {
+            setMountLayer(isDefined(geoJson));
+        },
+        [geoJson],
+    );
+    const debouncedMounted = useDebouncedValue(mountLayer);
+
+    const bounds = useMemo(
+        () => {
+            if (isDefined(overrideBounds)) {
+                return getBbox(overrideBounds);
+            }
+
+            if (isDefined(geoJson)) {
+                return getBbox(geoJson as GeoJSON.GeoJSON);
+            }
+
+            return undefined;
+        },
+        [geoJson, overrideBounds],
+    );
+
+    const zoomLevel = useMemo(
+        () => {
+            if (isDefined(overrideZoomLevel)) {
+                return overrideZoomLevel;
+            }
+
+            if (isDefined(bounds) && fit === 'single-tile') {
+                return getTileZ(bounds) - 1;
+            }
+
+            return undefined;
+        },
+        [bounds, overrideZoomLevel, fit],
+    );
 
     const center = useMemo<[number, number] | undefined>(() => {
-        if (isNotDefined(bounds) || isNotDefined(zoomLevel)) {
+        if (isNotDefined(bounds)) {
             return undefined;
         }
 
@@ -68,27 +156,34 @@ function GeoJsonMapSource(props: Props) {
         const centerY = (y1 + y2) / 2;
 
         return [centerX, centerY];
-    }, [bounds, zoomLevel]);
-
-    if (isNotDefined(geoJson)) {
-        return null;
-    }
+    }, [bounds]);
 
     return (
         <>
-            <MapSource
-                key={sourceKey}
-                sourceKey={sourceKey}
-                sourceOptions={geoJsonSourceOptions}
-                geoJson={geoJson as GeoJSON.FeatureCollection}
-            >
-                <MapLayer
-                    key={layerKey}
-                    layerKey={layerKey}
-                    layerOptions={layerOptions}
+            {isDefined(geoJson) && (
+                <MapSource
+                    key={sourceKey}
+                    sourceKey={sourceKey}
+                    sourceOptions={geoJsonSourceOptions}
+                    geoJson={geoJson as GeoJSON.FeatureCollection}
+                >
+                    {debouncedMounted && (
+                        <MapLayer
+                            key={layerKey}
+                            layerKey={layerKey}
+                            layerOptions={layerOptions}
+                        />
+                    )}
+                </MapSource>
+            )}
+            {isNotDefined(zoomLevel) && isDefined(bounds) && (
+                <MapBounds
+                    bounds={bounds}
+                    duration={0}
+                    padding={withPadding ? 20 : 0}
                 />
-            </MapSource>
-            {isDefined(center) && (
+            )}
+            {isDefined(zoomLevel) && isDefined(center) && (
                 <MapCenter
                     center={center}
                     centerOptions={{
@@ -96,13 +191,6 @@ function GeoJsonMapSource(props: Props) {
                         duration: 0,
                         padding: withPadding ? 20 : 0,
                     }}
-                />
-            )}
-            {isNotDefined(center) && isDefined(bounds) && (
-                <MapBounds
-                    bounds={bounds}
-                    duration={0}
-                    padding={withPadding ? 20 : 0}
                 />
             )}
         </>

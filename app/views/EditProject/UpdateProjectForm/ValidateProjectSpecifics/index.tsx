@@ -133,6 +133,7 @@ function ValidateProjectSpecifics(props: Props) {
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
+                zoomLevel={undefined}
             />
         </>
     );

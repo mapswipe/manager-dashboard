@@ -1,9 +1,12 @@
 import {
     ComponentProps,
     useContext,
+    useEffect,
     useMemo,
+    useState,
 } from 'react';
 import {
+    isDefined,
     isNotDefined,
     listToMap,
 } from '@togglecorp/fujs';
@@ -18,6 +21,7 @@ import {
     ProjectOverlayRasterTileServerConfig,
     RasterTileServerNameEnum,
 } from '#generated/types/graphql';
+import useDebouncedValue from '#hooks/useDebouncedValue';
 import { standardizeQuadKey } from '#utils/geo';
 
 interface Props {
@@ -67,6 +71,16 @@ function RasterTileMapSource(props: Props) {
         };
     }, [tileConfig, rasterTileServers]);
 
+    // FIXME(frozenhelium): This is a hack to fix cases when layer is added before source
+    const [mountLayer, setMountLayer] = useState(false);
+    useEffect(
+        () => {
+            setMountLayer(isDefined(url));
+        },
+        [url],
+    );
+    const debouncedMounted = useDebouncedValue(mountLayer, 1000);
+
     const sourceOptions = useMemo<ComponentProps<typeof MapSource>['sourceOptions']>(() => {
         if (isNotDefined(url)) {
             return undefined;
@@ -112,11 +126,13 @@ function RasterTileMapSource(props: Props) {
             sourceKey={sourceKey}
             sourceOptions={sourceOptions}
         >
-            <MapLayer
-                key={rasterLayerKey}
-                layerKey={rasterLayerKey}
-                layerOptions={rasterLayerOptions}
-            />
+            {debouncedMounted && (
+                <MapLayer
+                    key={rasterLayerKey}
+                    layerKey={rasterLayerKey}
+                    layerOptions={rasterLayerOptions}
+                />
+            )}
         </MapSource>
     );
 }

@@ -19,7 +19,7 @@ const FALLBACK_TILE_URL = 'https://tiles.versatiles.org/assets/styles/eclipse/st
 
 const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'children'> = {
     center: [0, 0],
-    zoom: 0,
+    zoom: 1,
     attributionControl: false,
     scrollZoom: false,
     boxZoom: false,
@@ -41,7 +41,7 @@ function BaseMap(props: Props) {
     const {
         baseTileServer,
         children,
-        tileSize = 256,
+        tileSize = 512,
         disablePan,
     } = props;
 

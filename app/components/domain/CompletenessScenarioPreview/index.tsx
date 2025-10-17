@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { MapContainer } from '@togglecorp/re-map';
 import {
     PartialForm,
     removeNull,
@@ -8,8 +7,7 @@ import {
 import { type } from 'arktype';
 import { FillLayerSpecification } from 'maplibre-gl';
 
-import BaseMap from '#components/domain/BaseMap';
-import GeoJsonMapSource from '#components/domain/GeoJsonMapSource';
+import GeoJsonPreview from '#components/domain/GeoJsonPreview';
 import Icon from '#components/domain/Icon';
 import RasterTileMapSource from '#components/domain/RasterTileMapSource';
 import { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput';
@@ -92,13 +90,15 @@ function CompletenessScenarioPreview(props: Props) {
                 popupDescription={preview?.description || '{description}'}
                 contentClassName={styles.content}
             >
-                <BaseMap
+                <GeoJsonPreview
+                    // NOTE: this should match --size-tile-completeness
+                    tileSize={160}
+                    className={styles.mapContainer}
+                    geoJson={generatedGeojson}
                     baseTileServer={removeNull(tileServerProperty)}
+                    geoJsonLayerOptions={layerOptions}
                     disablePan
                 >
-                    <MapContainer
-                        className={styles.mapContainer}
-                    />
                     {!(vectorTileConfigValue instanceof type.errors) && (
                         <VectorTileMapSource
                             tileConfig={vectorTileConfigValue}
@@ -109,13 +109,7 @@ function CompletenessScenarioPreview(props: Props) {
                             tileConfig={rasterTileConfigValue}
                         />
                     )}
-                    <GeoJsonMapSource
-                        geoJson={generatedGeojson as GeoJSON.FeatureCollection}
-                        sourceKey="completeness-geojson-source"
-                        layerKey="completeness-geojson-layer"
-                        layerOptions={layerOptions}
-                    />
-                </BaseMap>
+                </GeoJsonPreview>
             </MobilePreview>
         </div>
     );

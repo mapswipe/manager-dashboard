@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { gql } from 'urql';
 
@@ -21,6 +22,11 @@ query ProjectSpecificDetails($id: ID!) {
     project(id: $id) {
         id
         projectType
+        aoiGeometry {
+            id
+            totalArea
+            bbox
+        }
         projectTypeSpecifics {
             ...ProjectTypeSpecificFields
         }
@@ -58,6 +64,20 @@ function ProjectSpecificDetails(props: Props) {
         pause: isNotDefined(projectId),
     });
 
+    const defaultBounds = useMemo(
+        (): GeoJSON.Polygon | undefined => {
+            const coordinates = projectData?.project.aoiGeometry?.bbox;
+            if (isNotDefined(coordinates)) {
+                return undefined;
+            }
+            return {
+                type: 'Polygon',
+                coordinates,
+            };
+        },
+        [projectData],
+    );
+
     if (isNotDefined(projectData?.project.projectTypeSpecifics)) {
         return null;
     }
@@ -77,24 +97,28 @@ function ProjectSpecificDetails(props: Props) {
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'FindProjectPropertyType' && (
                 <FindDetails
+                    defaultBounds={defaultBounds}
                     data={projectData.project.projectTypeSpecifics}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'CompareProjectPropertyType' && (
                 <CompareDetails
+                    defaultBounds={defaultBounds}
                     data={projectData.project.projectTypeSpecifics}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'CompletenessProjectPropertyType' && (
                 <CompletenessDetails
+                    defaultBounds={defaultBounds}
                     data={projectData.project.projectTypeSpecifics}
                 />
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType' && (
                 <ValidateDetails
+                    defaultBounds={defaultBounds}
                     data={projectData.project.projectTypeSpecifics}
                 />
             )}

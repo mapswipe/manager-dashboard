@@ -22,6 +22,7 @@ query TutorialProjectDetail($projectId: ID!) {
         aoiGeometry {
             id
             totalArea
+            bbox
         }
         aoiGeometryInputAsset {
             id
