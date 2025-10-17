@@ -1,8 +1,6 @@
 import {
     ComponentProps,
-    useEffect,
     useMemo,
-    useState,
 } from 'react';
 import { pointToTileFraction } from '@mapbox/tilebelt';
 import {
@@ -16,7 +14,6 @@ import {
     MapSource,
 } from '@togglecorp/re-map';
 
-import useDebouncedValue from '#hooks/useDebouncedValue';
 import {
     BoundingBox,
     getBbox,
@@ -102,16 +99,6 @@ function GeoJsonMapSource(props: Props) {
         fit = 'default',
     } = props;
 
-    // FIXME(frozenhelium): This is a hack to fix cases when layer is added before source
-    const [mountLayer, setMountLayer] = useState(false);
-    useEffect(
-        () => {
-            setMountLayer(isDefined(geoJson));
-        },
-        [geoJson],
-    );
-    const debouncedMounted = useDebouncedValue(mountLayer);
-
     const bounds = useMemo(
         () => {
             if (isDefined(overrideBounds)) {
@@ -167,13 +154,11 @@ function GeoJsonMapSource(props: Props) {
                     sourceOptions={geoJsonSourceOptions}
                     geoJson={geoJson as GeoJSON.FeatureCollection}
                 >
-                    {debouncedMounted && (
-                        <MapLayer
-                            key={layerKey}
-                            layerKey={layerKey}
-                            layerOptions={layerOptions}
-                        />
-                    )}
+                    <MapLayer
+                        key={layerKey}
+                        layerKey={layerKey}
+                        layerOptions={layerOptions}
+                    />
                 </MapSource>
             )}
             {isNotDefined(zoomLevel) && isDefined(bounds) && (
