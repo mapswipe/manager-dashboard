@@ -5,6 +5,10 @@ import {
 } from 'react';
 import { IoAdd } from 'react-icons/io5';
 import {
+    PiArrowSquareOut,
+    PiImage,
+} from 'react-icons/pi';
+import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -18,25 +22,36 @@ import {
 import { ulid } from 'ulid';
 import { gql } from 'urql';
 
+import Alert from '#components/Alert/index.tsx';
 import Button from '#components/Button/index.tsx';
 import Container from '#components/Container/index.tsx';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema.ts';
+import InlineLayout from '#components/InlineLayout/index.tsx';
 import ListLayout from '#components/ListLayout/index.tsx';
+import Modal from '#components/Modal/index.tsx';
 import NonFieldError from '#components/NonFieldError/index.tsx';
 import Pager from '#components/Pager/index.tsx';
 import RadioInput from '#components/RadioInput/index.tsx';
 import EnumsContext from '#contexts/EnumsContext.ts';
 import {
     useProjectObjectImageAssetsQuery,
+    useRemoveAllObjectImageAssetsMutation,
     ValidateImageSourceTypeEnum,
 } from '#generated/types/graphql.ts';
+import useAlert from '#hooks/useAlert.ts';
+import useConfirmation from '#hooks/useConfirmation.ts';
 import {
     DEFAULT_PAGE,
     defaultPagePerItemOptions,
     keySelector,
     labelSelector,
 } from '#utils/common.ts';
+import {
+    checkAndAlertGraphQLResultError,
+    transformErrors,
+} from '#utils/error.ts';
+import { OPERATION_INFO_FRAGMENT } from '#utils/query.ts';
 
 import DatasetFileInput from './DatasetFileInput/index.tsx';
 import DirectImagesInput from './DirectImagesInput/index.tsx';
@@ -80,12 +95,33 @@ query ProjectObjectImageAssets($projectId: ID!, $withoutMimeType: Boolean, $pagi
 }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const REMOVE_ALL_OBJECT_IMAGE_ASSETS_MUTATION = gql`
+${OPERATION_INFO_FRAGMENT}
+mutation RemoveAllObjectImageAssets($projectId: ID!) {
+    deleteProjectAssets(assetInputType: OBJECT_IMAGE, projectId: $projectId) {
+        ...on ProjectAssetsDeleteTypeMutationResponseType {
+            __typename
+            errors
+            ok
+            result {
+                count
+            }
+        }
+        ... on OperationInfo {
+            ...OperationInfoFields
+        }
+    }
+}
+`;
+
 interface Props {
     projectId: string;
     value: PartialValidateImageSpecificFields | undefined | null;
     error: LeafError | ObjectError<PartialValidateImageSpecificFields>;
     setFieldValue: (...entries: EntriesAsList<PartialValidateImageSpecificFields>) => void;
     disabled?: boolean;
+    sourceTypeSaved?: boolean;
 }
 
 function ValidateProjectSpecifics(props: Props) {
@@ -95,16 +131,21 @@ function ValidateProjectSpecifics(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
+        sourceTypeSaved,
     } = props;
 
+    const alert = useAlert();
     const { validateImageSourceTypeOptions: sourceTypeOptions } = useContext(EnumsContext);
     const [activeAssetsPage, setActiveAssetsPage] = useState(DEFAULT_PAGE);
     const [assetsPerPage, setAssetsPerPage] = useState(20);
 
     const [
-        {
-            data: objectImageAssetsResponse,
-        },
+        { fetching: removeAllObjectImageAssetsPending },
+        removeAllObjectImageAssets,
+    ] = useRemoveAllObjectImageAssetsMutation();
+
+    const [
+        { data: objectImageAssetsResponse },
         retriggerObjectImagesAssetRequest,
     ] = useProjectObjectImageAssetsQuery({
         pause: isNotDefined(value?.sourceType),
@@ -117,6 +158,63 @@ function ValidateProjectSpecifics(props: Props) {
             withoutMimeType: value?.sourceType !== ValidateImageSourceTypeEnum.DirectImages,
         },
     });
+
+    const {
+        showConfirmation: showRemoveImagesConfimation,
+        setShowConfirmationTrue: setShowRemoveImagesConfirmationTrue,
+        onConfirmButtonClick: confirmRemoveImages,
+        onDenyButtonClick: denyRemoveImages,
+    } = useConfirmation(
+        async () => {
+            const result = await removeAllObjectImageAssets({ projectId });
+
+            if (checkAndAlertGraphQLResultError(result, alert)) {
+                return;
+            }
+
+            if (isNotDefined(result.data)
+                // eslint-disable-next-line no-underscore-dangle
+                || result.data.deleteProjectAssets.__typename !== 'ProjectAssetsDeleteTypeMutationResponseType') {
+                alert.show(
+                    'Failed to remove the images!',
+                    {
+                        description: 'Unexpected response from the server!',
+                        variant: 'danger',
+                    },
+                );
+
+                return;
+            }
+
+            const {
+                ok,
+                errors,
+            } = result.data.deleteProjectAssets;
+
+            if (!ok) {
+                const formErrors = transformErrors(errors);
+                const errorMessage = isDefined(formErrors)
+                    ? Object.values(formErrors).join(', ')
+                    : 'Unknown error occured';
+
+                alert.show(
+                    'Failed to remove the images!',
+                    {
+                        description: errorMessage,
+                        variant: 'danger',
+                        debugMessage: JSON.stringify(errors, null, 2),
+                    },
+                );
+                return;
+            }
+
+            retriggerObjectImagesAssetRequest();
+            alert.show(
+                'Successfully remove the images!',
+                { variant: 'success' },
+            );
+        },
+    );
 
     const {
         setValue: setCustomOptionValue,
@@ -141,6 +239,7 @@ function ValidateProjectSpecifics(props: Props) {
     }, [setFieldValue]);
 
     const error = getErrorObject(formError);
+    const numUploadedImages = objectImageAssetsResponse?.projectAssets.totalCount ?? 0;
 
     return (
         <>
@@ -207,6 +306,7 @@ function ValidateProjectSpecifics(props: Props) {
                     <DatasetFileInput
                         onUploadModalClose={retriggerObjectImagesAssetRequest}
                         projectId={projectId}
+                        disabled={numUploadedImages > 0}
                     />
                 )}
                 {isDefined(objectImageAssetsResponse) && (
@@ -227,6 +327,17 @@ function ValidateProjectSpecifics(props: Props) {
                         empty={objectImageAssetsResponse.projectAssets.totalCount === 0}
                         emptyMessage="No images has been uploaded yet!"
                         withWelledContent
+                        headerActions={value?.sourceType === ValidateImageSourceTypeEnum.DatasetFile
+                            && numUploadedImages > 0 && (
+                            <Button
+                                name={undefined}
+                                colorVariant="danger"
+                                onClick={setShowRemoveImagesConfirmationTrue}
+                                disabled={removeAllObjectImageAssetsPending}
+                            >
+                                Remove all
+                            </Button>
+                        )}
                     >
                         <ListLayout
                             layout="grid"
@@ -262,9 +373,23 @@ function ValidateProjectSpecifics(props: Props) {
                                         withShadow
                                         spacing="sm"
                                     >
-                                        <div className={styles.fileName}>
-                                            {asset.assetTypeSpecifics.image.fileName}
-                                        </div>
+                                        <InlineLayout
+                                            start={<PiImage />}
+                                            spacing="sm"
+                                            end={isDefined(asset.externalUrl) && (
+                                                <a
+                                                    href={asset.externalUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <PiArrowSquareOut />
+                                                </a>
+                                            )}
+                                        >
+                                            <div className={styles.fileName}>
+                                                {asset.assetTypeSpecifics.image.fileName}
+                                            </div>
+                                        </InlineLayout>
                                     </Container>
                                 );
                             })}
@@ -272,6 +397,46 @@ function ValidateProjectSpecifics(props: Props) {
                     </Container>
                 )}
             </Container>
+            {!sourceTypeSaved && (
+                <Alert
+                    name="save-project-message"
+                    fullWidth
+                    title="Save project changes!"
+                    description="Please note that the uploaded images will only be ready to process after the changes are saved."
+                    withoutShadow
+                />
+            )}
+            {showRemoveImagesConfimation && (
+                <Modal
+                    size="sm"
+                    withAutoHeight
+                    heading="Confirmation"
+                    footerActions={(
+                        <ListLayout withWrap>
+                            <Button
+                                name={undefined}
+                                onClick={denyRemoveImages}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                name={undefined}
+                                onClick={confirmRemoveImages}
+                                colorVariant="danger"
+                            >
+                                Yes
+                            </Button>
+                        </ListLayout>
+                    )}
+                >
+                    <div>
+                        Area you sure yout want to remove all of the current images?
+                    </div>
+                    <div>
+                        Please note that this action is irreversable!
+                    </div>
+                </Modal>
+            )}
         </>
     );
 }

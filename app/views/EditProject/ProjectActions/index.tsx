@@ -77,7 +77,7 @@ function ProjectActions(props: Props) {
                 alert.show(
                     'Failed to update the Project status!',
                     {
-                        description: 'Unexpectected response from the server!',
+                        description: 'Unexpected response from the server!',
                         variant: 'danger',
                     },
                 );

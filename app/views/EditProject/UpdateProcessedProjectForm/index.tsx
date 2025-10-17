@@ -348,7 +348,6 @@ function UpdateProcessedProjectForm(props: Props) {
             )}
             <NonFieldError error={error} />
             <ProjectGeneralInputs
-                name={projectData.project.name}
                 projectType={projectData.project.projectType}
                 value={value}
                 setFieldValue={setFieldValue}

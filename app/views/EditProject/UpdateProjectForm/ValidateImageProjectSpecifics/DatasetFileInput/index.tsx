@@ -42,12 +42,14 @@ type Category = typeof CocoCategoryType.infer;
 interface Props {
     projectId: string;
     onUploadModalClose: () => void;
+    disabled?: boolean;
 }
 
 function DatasetFileInput(props: Props) {
     const {
         projectId,
         onUploadModalClose,
+        disabled,
     } = props;
 
     const [
@@ -141,17 +143,18 @@ function DatasetFileInput(props: Props) {
         }
     }, [alert]);
 
-    const handleUploadDatasetCancel = useCallback(() => {
-        setSelectedDataset(undefined);
-        onUploadModalClose();
-    }, [onUploadModalClose]);
-
     const {
         value,
         startUpload,
         pauseUpload,
         uploadPending,
     } = useBulkUploadProvider();
+
+    const handleUploadDatasetCancel = useCallback(() => {
+        pauseUpload();
+        setSelectedDataset(undefined);
+        onUploadModalClose();
+    }, [onUploadModalClose, pauseUpload]);
 
     const numAssetsUploaded = Object.values(value.statusMap).filter((status) => status === 'success').length;
 
@@ -190,11 +193,11 @@ function DatasetFileInput(props: Props) {
                 value={undefined}
                 onChange={handleDatasetFileSelect}
                 selectButtonLabel="Select a COCO file"
-                disabled={isDefined(selectedDataset)}
+                disabled={isDefined(selectedDataset) || disabled}
                 withoutStatus
                 accept=".json"
             />
-            {isDefined(filteredDataset) && (
+            {!disabled && isDefined(filteredDataset) && (
                 <Modal
                     heading="Upload dataset"
                     headerDescription={(
@@ -210,7 +213,7 @@ function DatasetFileInput(props: Props) {
                                 />
                             )}
                         >
-                            <ListLayout>
+                            <ListLayout withWrap>
                                 <TextOutput
                                     value={filteredDataset.length}
                                     valueType="number"
@@ -238,16 +241,29 @@ function DatasetFileInput(props: Props) {
                             >
                                 Pause
                             </Button>
-                            <Button
-                                name={undefined}
-                                styleVariant="filled"
-                                colorVariant="accent"
-                                start={<PiCloudArrowUp />}
-                                onClick={startUpload}
-                                disabled={uploadPending}
-                            >
-                                Start upload
-                            </Button>
+                            {numAssetsUploaded === filteredDataset.length && (
+                                <Button
+                                    name={undefined}
+                                    styleVariant="filled"
+                                    colorVariant="accent"
+                                    onClick={handleUploadDatasetCancel}
+                                    disabled={uploadPending}
+                                >
+                                    Done
+                                </Button>
+                            )}
+                            {numAssetsUploaded !== filteredDataset.length && (
+                                <Button
+                                    name={undefined}
+                                    styleVariant="filled"
+                                    colorVariant="accent"
+                                    start={<PiCloudArrowUp />}
+                                    onClick={startUpload}
+                                    disabled={uploadPending}
+                                >
+                                    Upload
+                                </Button>
+                            )}
                         </>
                     )}
                     size="lg"
