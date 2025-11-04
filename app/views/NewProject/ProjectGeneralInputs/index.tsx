@@ -32,7 +32,7 @@ import { DeepNonNullable } from '#utils/types';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_NAME_QUERY = gql`
 query ProjectName($params: ProjectNameInput) {
-  projectName(params: $params)
+    projectName(params: $params)
 }
 `;
 
