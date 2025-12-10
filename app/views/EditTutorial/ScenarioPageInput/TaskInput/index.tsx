@@ -17,12 +17,14 @@ import {
 
 import { PartialComparePropertyInputFields } from './ComparePropertyInput/schema';
 import { PartialCompletenessPropertyInputFields } from './CompletenessPropertyInput/schema';
+import { PartialConflationPropertyInputFields } from './ConflationPropertyInput/schema';
 import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
 import { PartialStreetPropertyInputFields } from './StreetPropertyInput/schema';
 import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
 import ComparePropertyInput from './ComparePropertyInput';
 import CompletenessPropertyInput from './CompletenessPropertyInput';
+import ConflationPropertyInput from './ConflationPropertyInput';
 import FindPropertyInput from './FindPropertyInput';
 import {
     PartialProjectTypeSpecifics,
@@ -108,6 +110,12 @@ function TaskInput(props: Props) {
         {},
     );
 
+    const setConflationProjectSpecificsFieldValue = useFormObject<'conflation', PartialConflationPropertyInputFields>(
+        'conflation' as const,
+        setProjectSpecificFieldValue,
+        {},
+    );
+
     return (
         <div className={_cs(styles.taskInput, className)}>
             <div className={styles.content}>
@@ -185,6 +193,14 @@ function TaskInput(props: Props) {
                         value={value.projectTypeSpecifics?.street}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.street}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Conflation && (
+                    <ConflationPropertyInput
+                        value={value.projectTypeSpecifics?.conflation}
+                        setFieldValue={setConflationProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.conflation}
                         disabled
                     />
                 )}
