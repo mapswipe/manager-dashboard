@@ -8,8 +8,10 @@ import {
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
+import ConflationOptionSelectInput from '#components/domain/ConflationOptionSelectInput';
 import CustomOptionSelectInput from '#components/domain/CustomOptionSelectInput';
 import TileOptionSelectInput from '#components/domain/TileOptionSelectInput';
+
 import {
     ProjectTypeEnum,
     TutorialProjectDetailQuery,
@@ -116,38 +118,34 @@ function TaskInput(props: Props) {
         {},
     );
 
+    const componentMap: Record<string, any> = {
+        ValidateProjectPropertyType: CustomOptionSelectInput,
+        ValidateImageProjectPropertyType: CustomOptionSelectInput,
+        ConflationProjectPropertyType: ConflationOptionSelectInput,
+    };
+
+    /* eslint-disable-next-line no-underscore-dangle */
+    const typeName = projectData?.projectTypeSpecifics?.__typename;
+    const OptionComponent = typeName && componentMap[typeName]
+        ? componentMap[typeName]
+        : TileOptionSelectInput;
+
     return (
         <div className={_cs(styles.taskInput, className)}>
             <div className={styles.content}>
                 <div>
                     {`#${index + 1}`}
                 </div>
-                {/* eslint-disable-next-line no-underscore-dangle */}
-                {(projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType'
-                    // eslint-disable-next-line no-underscore-dangle
-                    || projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType')
-                    ? (
-                        <CustomOptionSelectInput
-                            placeholder="Reference"
-                            name="reference"
-                            value={value.reference}
-                            onChange={setFieldValue}
-                            error={error?.reference}
-                            disabled={disabled}
-                            options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
-                            nonClearable
-                        />
-                    ) : (
-                        <TileOptionSelectInput
-                            placeholder="Reference"
-                            name="reference"
-                            value={value.reference}
-                            onChange={setFieldValue}
-                            error={error?.reference}
-                            disabled={disabled}
-                            nonClearable
-                        />
-                    )}
+                <OptionComponent
+                    placeholder="Reference"
+                    name="reference"
+                    value={value.reference}
+                    onChange={setFieldValue}
+                    error={error?.reference}
+                    disabled={disabled}
+                    options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
+                    nonClearable
+                />
                 {projectData?.projectType === ProjectTypeEnum.Find && (
                     <FindPropertyInput
                         value={value.projectTypeSpecifics?.find}
