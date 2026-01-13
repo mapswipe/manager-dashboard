@@ -37,7 +37,7 @@ import { PartialValidateObjectSourceInputFields } from './schema';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TEST_AOI_OBJECTS_QUERY = gql`
-query TestAoiObjects($assetId: ID, $projectId: ID, $ohsomeFilter: String) {
+query TestAoiObjects($assetId: ID!, $projectId: ID!, $ohsomeFilter: String!) {
     testAoiObjects(assetId: $assetId, projectId: $projectId, ohsomeFilter: $ohsomeFilter) {
         ok
         error
@@ -51,7 +51,7 @@ query TestAoiObjects($assetId: ID, $projectId: ID, $ohsomeFilter: String) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TEST_TASKING_MANAGER_PROJECT_QUERY = gql`
-query TestTaskingManagerProject($hotTmId: String, $ohsomeFilter: String) {
+query TestTaskingManagerProject($hotTmId: String!, $ohsomeFilter: String!) {
     testTaskingManagerProject(hotTmId: $hotTmId, ohsomeFilter: $ohsomeFilter) {
         ok
         error
@@ -93,8 +93,8 @@ function ObjectSourceInput(props: Props) {
     ] = useTestAoiObjectsQuery({
         variables: {
             projectId,
-            assetId: value?.aoiGeometry,
-            ohsomeFilter: value?.ohsomeFilter,
+            assetId: value?.aoiGeometry ?? '',
+            ohsomeFilter: value?.ohsomeFilter ?? '',
         },
         pause: true,
     });
@@ -108,8 +108,8 @@ function ObjectSourceInput(props: Props) {
         triggerTestTaskingManagerProject,
     ] = useTestTaskingManagerProjectQuery({
         variables: {
-            hotTmId: value?.taskingManagerProjectId,
-            ohsomeFilter: value?.ohsomeFilter,
+            hotTmId: value?.taskingManagerProjectId ?? '',
+            ohsomeFilter: value?.ohsomeFilter ?? '',
         },
         pause: true,
     });
