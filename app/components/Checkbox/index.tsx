@@ -3,6 +3,10 @@ import { _cs } from '@togglecorp/fujs';
 
 import ButtonLayout from '#components/ButtonLayout';
 import DefaultCheckmark, { Props as CheckmarkProps } from '#components/Checkmark';
+import InputError from '#components/InputError';
+import InputHint from '#components/InputHint';
+import ListLayout from '#components/ListLayout';
+import { SpacingType } from '#utils/styles';
 
 import styles from './styles.module.css';
 
@@ -19,6 +23,9 @@ export interface Props<NAME> {
     value: boolean | undefined | null;
     onChange: (value: boolean, name: NAME) => void;
     name: NAME;
+    hint?: React.ReactNode;
+    error?: React.ReactNode;
+    spacing?: SpacingType;
 }
 
 function Checkbox<const NAME>(props: Props<NAME>) {
@@ -35,6 +42,9 @@ function Checkbox<const NAME>(props: Props<NAME>) {
         labelClassName,
         indeterminate,
         name,
+        hint,
+        error,
+        spacing,
         ...otherProps
     } = props;
 
@@ -46,50 +56,65 @@ function Checkbox<const NAME>(props: Props<NAME>) {
         [name, onChange],
     );
 
-    const className = _cs(
-        classNameFromProps,
-        indeterminate && styles.indeterminate,
-        !indeterminate && value && styles.checked,
-        readOnly && styles.readOnly,
-    );
-
     return (
         <label // eslint-disable-line jsx-a11y/label-has-associated-control
             className={styles.checkbox}
             title={tooltip}
         >
-            <ButtonLayout
-                className={className}
-                start={(
-                    <Checkmark
-                        className={_cs(checkmarkClassName, styles.checkmark)}
-                        value={value ?? false}
-                        indeterminate={indeterminate}
-                    />
-                )}
-                spacingOffset={-2}
-                withoutPadding
-                disabled={disabled}
-                styleVariant="transparent"
+            <ListLayout
+                className={classNameFromProps}
+                spacing={spacing}
+                spacingOffset={-1}
+                layout="block"
             >
-                <input
-                    onChange={handleChange}
-                    className={styles.input}
-                    type="checkbox"
-                    checked={value ?? false}
-                    disabled={disabled || readOnly}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...otherProps}
-                />
-                <div
+                <ButtonLayout
                     className={_cs(
-                        // styles.label,
-                        labelClassName,
+                        indeterminate && styles.indeterminate,
+                        !indeterminate && value && styles.checked,
+                        readOnly && styles.readOnly,
                     )}
+                    start={(
+                        <Checkmark
+                            className={_cs(checkmarkClassName, styles.checkmark)}
+                            value={value ?? false}
+                            indeterminate={indeterminate}
+                        />
+                    )}
+                    spacingOffset={-2}
+                    withoutPadding
+                    disabled={disabled}
+                    styleVariant="transparent"
                 >
-                    { label }
-                </div>
-            </ButtonLayout>
+                    <input
+                        onChange={handleChange}
+                        className={styles.input}
+                        type="checkbox"
+                        checked={value ?? false}
+                        disabled={disabled || readOnly}
+                        // eslint-disable-next-line react/jsx-props-no-spreading
+                        {...otherProps}
+                    />
+                    <div
+                        className={_cs(
+                            // styles.label,
+                            labelClassName,
+                        )}
+                    >
+                        { label }
+                    </div>
+                </ButtonLayout>
+                {/* FIXME: Style these */}
+                {error && (
+                    <InputError>
+                        {error}
+                    </InputError>
+                )}
+                {!error && hint && (
+                    <InputHint>
+                        {hint}
+                    </InputHint>
+                )}
+            </ListLayout>
         </label>
     );
 }
