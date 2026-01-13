@@ -153,6 +153,7 @@ function RasterTileServerInput(props: Props) {
                         error={error?.name}
                         disabled={disabled}
                         radioListLayout="block"
+                        hint="Select the tile server providing satellite imagery tiles for your project. Make sure you have permission if using custom imagery."
                     />
                     {isDefined(value)
                         && isDefined(value.name)
@@ -184,7 +185,7 @@ function RasterTileServerInput(props: Props) {
                                 <TextInput
                                     name="credits"
                                     label="Imagery Credits"
-                                    hint="Insert appropriate imagery credits"
+                                    hint="Insert appropriate imagery credits if you are using a custom tile server."
                                     value={value.custom?.credits}
                                     error={getErrorObject(error?.custom)?.credits}
                                     onChange={setCustomRasterTileServerFieldValue}

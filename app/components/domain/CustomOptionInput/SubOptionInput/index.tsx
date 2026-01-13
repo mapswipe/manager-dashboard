@@ -81,6 +81,7 @@ function SubOptionInput(props: Props) {
                     error={error?.value}
                     disabled={disabled}
                     spacing="sm"
+                    hint="Choose a value for each sub-option"
                 />
                 <GridLayoutItem columnSpan={2}>
                     <TextInput
@@ -91,6 +92,7 @@ function SubOptionInput(props: Props) {
                         error={error?.description}
                         disabled={disabled}
                         spacing="sm"
+                        hint="Provide a brief description for each sub-option"
                     />
                 </GridLayoutItem>
             </ListLayout>

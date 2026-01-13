@@ -395,7 +395,7 @@ function UpdateProcessedProjectForm(props: Props) {
                     error={error?.tutorial}
                     disabled={baseInputsDisabled || readOnly}
                     projectType={projectData.project.projectType}
-                    hint="Please note that you'll only be able to select the tutorial of same project type"
+                    hint="Please note that you'll only be able to select the tutorial of same project type."
                 />
             </Container>
         </PageLayout>

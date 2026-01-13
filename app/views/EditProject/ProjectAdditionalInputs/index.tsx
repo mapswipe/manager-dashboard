@@ -63,7 +63,7 @@ function ProjectAdditionalInputs(props: Props) {
                         onChange={setFieldValue}
                         error={error?.verificationNumber}
                         disabled={disabled}
-                        hint="How many people do you want to see every tile before you consider it finished? (default is 3 - more is recommended for harder tasks, but this will also make project take longer)"
+                        hint="How many people do you want to see every task before you consider it finished? Default is 3, but 5 or more is recommended for harder tasks. Note that the higher the number the longer the project will take to complete."
                     />
                     <NumberInput
                         label="Group size"
@@ -72,7 +72,7 @@ function ProjectAdditionalInputs(props: Props) {
                         onChange={setFieldValue}
                         error={error?.groupSize}
                         disabled={disabled}
-                        hint="How big should a mapping session be? Group size refers to the number of tasks per mapping session."
+                        hint="How big should an activity session be? Group size refers to the number of tasks per session."
                     />
                     <NumberInput
                         label="Max tasks per user"

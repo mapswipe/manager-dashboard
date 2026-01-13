@@ -83,7 +83,7 @@ function ZoomLevelSelectInput<const NAME>(props: Props<NAME>) {
             error={error}
             disabled={disabled}
             nonClearable
-            hint="We use the Tile Map Service zoom levels. Please check for your area which zoom level is available. If you use a custom tile server you may be able to use even higher zoom levels."
+            hint="We use the zoom levels that the tile server provides. Please check for your area which zoom level is available before you create a project."
         />
     );
 }

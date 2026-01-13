@@ -315,7 +315,7 @@ function ObjectSourceInput(props: Props) {
                     value={value.aoiGeometry}
                     error={error?.aoiGeometry}
                     inputType={ProjectAssetInputTypeEnum.AoiGeometry}
-                    hint="Upload your project area as GeoJSON File (max. 1MB)"
+                    hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
                     disabled={disabled}
                     withoutPreview
                 />
