@@ -12,7 +12,6 @@ import {
 import Button from '#components/Button';
 import Container, { ContainerProps } from '#components/Container';
 import TextOutput from '#components/TextOutput';
-import EnumsContext from '#contexts/EnumsContext';
 import TileServerContext from '#contexts/TileServerContext';
 import {
     ProjectRasterTileServerConfig,
@@ -37,8 +36,16 @@ function RasterTileServerOutput(props: Props) {
         ...containerProps
     } = props;
 
-    const { rasterTileServerNameMapping } = useContext(EnumsContext);
     const { raster: rasterTileServers } = useContext(TileServerContext);
+
+    const rasterTileServerNameMapping = useMemo(
+        () => listToMap(
+            rasterTileServers,
+            (item) => item.type,
+            (item) => item,
+        ),
+        [rasterTileServers],
+    );
 
     const {
         url,
@@ -106,7 +113,7 @@ function RasterTileServerOutput(props: Props) {
             */}
             <TextOutput
                 label="Supported zoom"
-                value={`${formatNumber(minZoom)} - ${formatNumber(maxZoom)}`}
+                value={`${formatNumber(minZoom) ?? '--'} to ${formatNumber(maxZoom) ?? '--'}`}
             />
             <TextOutput
                 label="Credits"

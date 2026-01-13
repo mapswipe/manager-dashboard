@@ -41,6 +41,7 @@ query TileServers {
             credits
             maxZoom
             minZoom
+            disabled
         }
         vector {
             label
@@ -75,14 +76,6 @@ query AllEnums {
             label
         }
         ProjectTypeEnum {
-            key
-            label
-        }
-        RasterTileServerNameEnum {
-            key
-            label
-        }
-        VectorTileServerNameEnum {
             key
             label
         }
@@ -201,8 +194,6 @@ function RootLayout() {
         validateImageSourceTypeOptions: allEnumsResponse?.enums.ValidateImageSourceTypeEnum ?? [],
         projectStatusOptions: allEnumsResponse?.enums.ProjectStatusEnum ?? [],
         projectTypeOptions: allEnumsResponse?.enums.ProjectTypeEnum ?? [],
-        rasterTileServerNameOptions: allEnumsResponse?.enums.RasterTileServerNameEnum ?? [],
-        vectorTileServerNameOptions: allEnumsResponse?.enums.VectorTileServerNameEnum ?? [],
         tutorialInformationPageBlockTypeOptions: allEnumsResponse
             ?.enums.TutorialInformationPageBlockTypeEnum ?? [],
         iconOptions: allEnumsResponse?.enums.IconEnum ?? [],
@@ -223,14 +214,6 @@ function RootLayout() {
         ),
         projectTypeMapping: listToMap(
             allEnumsResponse?.enums.ProjectTypeEnum,
-            ({ key }) => key,
-        ),
-        rasterTileServerNameMapping: listToMap(
-            allEnumsResponse?.enums.RasterTileServerNameEnum,
-            ({ key }) => key,
-        ),
-        vectorTileServerNameMapping: listToMap(
-            allEnumsResponse?.enums.VectorTileServerNameEnum,
             ({ key }) => key,
         ),
         tutorialInformationPageBlockTypeMapping: listToMap(

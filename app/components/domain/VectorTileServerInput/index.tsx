@@ -22,7 +22,6 @@ import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
-import EnumsContext from '#contexts/EnumsContext';
 import TileServerContext from '#contexts/TileServerContext';
 import { VectorTileServerNameEnum } from '#generated/types/graphql';
 import {
@@ -37,6 +36,18 @@ import {
     VectorTileInputKeys,
     vectorTileServerNameToTileInputKey,
 } from './schema';
+
+interface Option {
+    type: VectorTileServerNameEnum;
+    label: string;
+}
+
+function imageryKeySelector(item: Option) {
+    return item.type;
+}
+function imageryLabelSelector(item: Option) {
+    return item.label;
+}
 
 interface Props {
     label?: React.ReactNode;
@@ -56,8 +67,6 @@ function VectorTileServerInput(props: Props) {
     } = props;
 
     const error = getErrorObject(formError);
-
-    const { vectorTileServerNameOptions } = useContext(EnumsContext);
 
     const fieldName = (isDefined(value)
         && isDefined(value.name)
@@ -83,6 +92,7 @@ function VectorTileServerInput(props: Props) {
     );
 
     const { vector: vectorTileServers } = useContext(TileServerContext);
+
     const tileServerMapping = useMemo(() => (
         listToMap(vectorTileServers, ({ type }) => type)
     ), [vectorTileServers]);
@@ -120,13 +130,14 @@ function VectorTileServerInput(props: Props) {
             <RadioInput
                 label="Imagery Server"
                 name="name"
-                options={vectorTileServerNameOptions}
-                keySelector={keySelector}
-                labelSelector={labelSelector}
+                options={vectorTileServers}
+                keySelector={imageryKeySelector}
+                labelSelector={imageryLabelSelector}
                 value={value?.name}
                 error={error?.name}
                 onChange={handleImageryServerChange}
                 disabled={disabled}
+                hint="Select the overlay source"
             />
             {isDefined(value)
                 && isDefined(value.name)
@@ -140,6 +151,7 @@ function VectorTileServerInput(props: Props) {
                             error={getErrorObject(error?.[fieldName])?.credits}
                             onChange={setCommonTileServerFieldValue}
                             disabled={disabled}
+                            hint="Insert appropriate imagery credits if you are using a custom tile server."
                         />
                         <SelectInput
                             label="Source layer"
@@ -150,6 +162,7 @@ function VectorTileServerInput(props: Props) {
                             options={sourceLayerOptions}
                             keySelector={keySelector}
                             labelSelector={labelSelector}
+                            hint="Select the vector features that you want contributors to check for the presence of"
                         />
                     </>
                 )}
@@ -161,7 +174,7 @@ function VectorTileServerInput(props: Props) {
                         <TextInput
                             name="url"
                             label="Imagery Server URL"
-                            hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
+                            hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} as placeholders and that already includes the api key."
                             value={value.custom?.url}
                             error={getErrorObject(error?.custom)?.url}
                             onChange={setCustomTileServerFieldValue}
@@ -170,7 +183,7 @@ function VectorTileServerInput(props: Props) {
                         <TextInput
                             name="credits"
                             label="Imagery Credits"
-                            hint="Insert appropriate imagery credits"
+                            hint="Insert appropriate imagery credits if you are using a custom tile server."
                             value={value.custom?.credits}
                             error={getErrorObject(error?.[fieldName])?.credits}
                             onChange={setCustomTileServerFieldValue}
@@ -182,6 +195,7 @@ function VectorTileServerInput(props: Props) {
                             value={value.custom?.sourceLayer}
                             error={getErrorObject(error?.[fieldName])?.sourceLayer}
                             onChange={setCustomTileServerFieldValue}
+                            hint="Select the vector features that you want contributors to check for the presence of"
                         />
                         <ListLayout layout="grid">
                             <NumberInput

@@ -23,13 +23,8 @@ import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
-import EnumsContext from '#contexts/EnumsContext';
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
-import {
-    keySelector,
-    labelSelector,
-} from '#utils/common';
 
 import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
@@ -41,6 +36,18 @@ import {
     rasterTileServerNameToTileInputKey,
     TileInputKeys,
 } from './schema';
+
+interface Option {
+    type: RasterTileServerNameEnum;
+    label: string;
+}
+
+function imageryKeySelector(item: Option) {
+    return item.type;
+}
+function imageryLabelSelector(item: Option) {
+    return item.label;
+}
 
 interface Props {
     label?: React.ReactNode;
@@ -75,8 +82,13 @@ function RasterTileServerInput(props: Props) {
 
     const error = getErrorObject(formError);
 
-    const { rasterTileServerNameOptions } = useContext(EnumsContext);
+    const { raster: rasterTileServerNameOptions } = useContext(TileServerContext);
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
+
+    const workingRasterTileServerNameOptions = useMemo(
+        () => rasterTileServerNameOptions.filter((option) => !option.disabled) ?? [],
+        [rasterTileServerNameOptions],
+    );
 
     const fieldName = (isDefined(value)
         && isDefined(value.name)
@@ -133,14 +145,15 @@ function RasterTileServerInput(props: Props) {
                     <RadioInput
                         label="Imagery server"
                         name="name"
-                        options={rasterTileServerNameOptions ?? []}
+                        options={workingRasterTileServerNameOptions}
                         value={value?.name}
                         onChange={handleImageryServerChange}
-                        keySelector={keySelector}
-                        labelSelector={labelSelector}
+                        keySelector={imageryKeySelector}
+                        labelSelector={imageryLabelSelector}
                         error={error?.name}
                         disabled={disabled}
                         radioListLayout="block"
+                        hint="Select the tile server providing satellite imagery tiles for your project. Make sure you have permission if using custom imagery."
                     />
                     {isDefined(value)
                         && isDefined(value.name)
@@ -172,7 +185,7 @@ function RasterTileServerInput(props: Props) {
                                 <TextInput
                                     name="credits"
                                     label="Imagery Credits"
-                                    hint="Insert appropriate imagery credits"
+                                    hint="Insert appropriate imagery credits if you are using a custom tile server."
                                     value={value.custom?.credits}
                                     error={getErrorObject(error?.custom)?.credits}
                                     onChange={setCustomRasterTileServerFieldValue}

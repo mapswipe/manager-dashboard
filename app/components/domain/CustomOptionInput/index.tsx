@@ -115,6 +115,7 @@ function CustomOptionInput(props: Props) {
                         error={error?.title}
                         disabled={disabled}
                         spacing="sm"
+                        hint="Provide 'Title' for each answer option (e.g. Yes, No, Offset)"
                     />
                     <NumberInput
                         label="Value"
@@ -124,6 +125,7 @@ function CustomOptionInput(props: Props) {
                         error={error?.value}
                         disabled={disabled}
                         spacing="sm"
+                        hint="Choose the value for each answer choice (e.g. 1 - Yes, 0 - No, 3 - Offset)"
                     />
                     <IconSelectInput
                         label="Icon"
@@ -134,6 +136,7 @@ function CustomOptionInput(props: Props) {
                         nonClearable
                         disabled={disabled}
                         spacing="sm"
+                        hint="Choose the icon for each answer choice (e.g. Checkmark - Yes, Close - No, Flag - Offset)"
                     />
                     <ColorSelectInput
                         label="Color"
@@ -143,6 +146,7 @@ function CustomOptionInput(props: Props) {
                         error={error?.iconColor}
                         disabled={disabled}
                         spacing="sm"
+                        hint="Choose the color for each answer choice (e.g. Green - Yes, Red - No, Orange - Offset)"
                     />
                     <GridLayoutItem columnSpan={2}>
                         <TextArea
@@ -153,6 +157,7 @@ function CustomOptionInput(props: Props) {
                             error={error?.description}
                             disabled={disabled}
                             spacing="sm"
+                            placeholder="Provide a brief description for each answer option (e.g. for Yes - The mapped outline does match the building footprint)"
                         />
                     </GridLayoutItem>
                 </ListLayout>

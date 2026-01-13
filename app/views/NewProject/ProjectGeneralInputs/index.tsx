@@ -62,12 +62,12 @@ const hintText: Record<
         [ProjectTypeEnum.Street]: 'Enter the description for your project. (markdown syntax is supported)',
     },
     topic: {
-        [ProjectTypeEnum.Find]: 'Enter the title of your project. It should begin with project type. (e.g., "Find Features") ',
-        [ProjectTypeEnum.Compare]: 'Enter the title of your project. It should begin with project type. (e.g., "Compare Dates")',
-        [ProjectTypeEnum.Validate]: 'Enter the title of your project. It should begin with project type. (e.g., "Validate Footprints")',
-        [ProjectTypeEnum.ValidateImage]: 'Enter the title of your project. It should begin with project type. (e.g., "Assess Images")',
-        [ProjectTypeEnum.Completeness]: 'Enter the title of your project. It should begin with project type. (e.g., "Check Completeness")',
-        [ProjectTypeEnum.Street]: 'Enter the title of your project. It should begin with project type. (e.g., "View Streets") ',
+        [ProjectTypeEnum.Find]: 'Enter the title of your project.',
+        [ProjectTypeEnum.Compare]: 'Enter the title of your project.',
+        [ProjectTypeEnum.Validate]: 'Enter the title of your project.',
+        [ProjectTypeEnum.ValidateImage]: 'Enter the title of your project.',
+        [ProjectTypeEnum.Completeness]: 'Enter the title of your project.',
+        [ProjectTypeEnum.Street]: 'Enter the title of your project.',
     },
     projectInstruction: {
         [ProjectTypeEnum.Find]: 'What should the users look for (e.g. You are looking for: buildings, destroyed buildings, cars, trees, etc.)',
@@ -89,7 +89,7 @@ const hintText: Record<
         [ProjectTypeEnum.Find]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Compare]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Validate]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
-        [ProjectTypeEnum.ValidateImage]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app).',
+        [ProjectTypeEnum.ValidateImage]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Completeness]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Street]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
     },
@@ -105,7 +105,7 @@ const hintText: Record<
         [ProjectTypeEnum.Find]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Compare]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Validate]: 'Enter the region/location of your project (eg: City, Country)',
-        [ProjectTypeEnum.ValidateImage]: 'Enter the project location in the format "city/region, country".',
+        [ProjectTypeEnum.ValidateImage]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Completeness]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Street]: 'Enter the region/location of your project (eg: City, Country)',
     },
@@ -113,17 +113,17 @@ const hintText: Record<
         [ProjectTypeEnum.Find]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Compare]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Validate]: 'Which group, institution or community is requesting this project?',
-        [ProjectTypeEnum.ValidateImage]: 'Which group, institution, or community is requesting this project?',
+        [ProjectTypeEnum.ValidateImage]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Completeness]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Street]: 'Which group, institution or community is requesting this project?',
     },
     team: {
-        [ProjectTypeEnum.Find]: 'Please note that if \'private\', this project will only be visible to the selected  team members',
-        [ProjectTypeEnum.Compare]: 'Please note that if selected, this project will only be visible to the team members',
-        [ProjectTypeEnum.Validate]: 'Please note that if selected, this project will only be visible to the team members',
-        [ProjectTypeEnum.ValidateImage]: 'Please note that if selected, this project will only be visible to the team members.',
-        [ProjectTypeEnum.Completeness]: 'Please note that if \'private\', this project will only be visible to the selected  team members',
-        [ProjectTypeEnum.Street]: 'Please note that if \'private\', this project will only be visible to the selected  team members',
+        [ProjectTypeEnum.Find]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.Compare]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.Validate]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.ValidateImage]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.Completeness]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.Street]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
     },
 };
 
@@ -249,6 +249,7 @@ function ProjectGeneralInputs(props: Props) {
                 name={undefined}
                 value={projectNameResult?.projectName}
                 placeholder="Please select all the fields above to see the preview"
+                hint="We will generate your project name based on your inputs above."
                 readOnly
             />
             <MarkdownEditor

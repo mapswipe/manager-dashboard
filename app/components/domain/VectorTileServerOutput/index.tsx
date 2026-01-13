@@ -12,7 +12,6 @@ import {
 import Button from '#components/Button';
 import Container from '#components/Container';
 import TextOutput from '#components/TextOutput';
-import EnumsContext from '#contexts/EnumsContext';
 import TileServerContext from '#contexts/TileServerContext';
 import {
     ProjectVectorTileServerConfig,
@@ -32,8 +31,16 @@ function VectorTileServerOutput(props: Props) {
         value,
     } = props;
 
-    const { vectorTileServerNameMapping } = useContext(EnumsContext);
     const { vector: vectorTileServers } = useContext(TileServerContext);
+
+    const vectorTileServerNameMapping = useMemo(
+        () => listToMap(
+            vectorTileServers,
+            (item) => item.type,
+            (item) => item,
+        ),
+        [vectorTileServers],
+    );
 
     const {
         url,
