@@ -7,8 +7,6 @@ export interface EnumsContextProps {
     validateImageSourceTypeOptions: AllEnumsQuery['enums']['ValidateImageSourceTypeEnum'],
     projectStatusOptions: AllEnumsQuery['enums']['ProjectStatusEnum'],
     projectTypeOptions: AllEnumsQuery['enums']['ProjectTypeEnum'],
-    rasterTileServerNameOptions: AllEnumsQuery['enums']['RasterTileServerNameEnum'],
-    vectorTileServerNameOptions: AllEnumsQuery['enums']['VectorTileServerNameEnum'],
     tutorialInformationPageBlockTypeOptions: AllEnumsQuery['enums']['TutorialInformationPageBlockTypeEnum'],
     iconOptions: AllEnumsQuery['enums']['IconEnum'],
     overlayLayerTypeOptions: AllEnumsQuery['enums']['OverlayLayerTypeEnum'],
@@ -30,14 +28,6 @@ export interface EnumsContextProps {
     projectTypeMapping: Record<
         AllEnumsQuery['enums']['ProjectTypeEnum'][number]['key'],
         AllEnumsQuery['enums']['ProjectTypeEnum'][number]
-    > | undefined;
-    rasterTileServerNameMapping: Record<
-        AllEnumsQuery['enums']['RasterTileServerNameEnum'][number]['key'],
-        AllEnumsQuery['enums']['RasterTileServerNameEnum'][number]
-    > | undefined;
-    vectorTileServerNameMapping: Record<
-        AllEnumsQuery['enums']['VectorTileServerNameEnum'][number]['key'],
-        AllEnumsQuery['enums']['VectorTileServerNameEnum'][number]
     > | undefined;
     tutorialInformationPageBlockTypeMapping: Record<
         AllEnumsQuery['enums']['TutorialInformationPageBlockTypeEnum'][number]['key'],
@@ -66,8 +56,6 @@ export const defaultAllEnumsValue: EnumsContextProps = {
     validateImageSourceTypeOptions: [],
     projectStatusOptions: [],
     projectTypeOptions: [],
-    rasterTileServerNameOptions: [],
-    vectorTileServerNameOptions: [],
     tutorialInformationPageBlockTypeOptions: [],
     iconOptions: [],
     overlayLayerTypeOptions: [],
@@ -78,8 +66,6 @@ export const defaultAllEnumsValue: EnumsContextProps = {
     validateImageSourceTypeMapping: undefined,
     projectStatusMapping: undefined,
     projectTypeMapping: undefined,
-    rasterTileServerNameMapping: undefined,
-    vectorTileServerNameMapping: undefined,
     tutorialInformationPageBlockTypeMapping: undefined,
     iconMapping: undefined,
     overlayLayerTypeMapping: undefined,

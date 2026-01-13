@@ -22,7 +22,6 @@ import NumberInput from '#components/NumberInput';
 import RadioInput from '#components/RadioInput';
 import SelectInput from '#components/SelectInput';
 import TextInput from '#components/TextInput';
-import EnumsContext from '#contexts/EnumsContext';
 import TileServerContext from '#contexts/TileServerContext';
 import { VectorTileServerNameEnum } from '#generated/types/graphql';
 import {
@@ -37,6 +36,18 @@ import {
     VectorTileInputKeys,
     vectorTileServerNameToTileInputKey,
 } from './schema';
+
+interface Option {
+    type: VectorTileServerNameEnum;
+    label: string;
+}
+
+function imageryKeySelector(item: Option) {
+    return item.type;
+}
+function imageryLabelSelector(item: Option) {
+    return item.label;
+}
 
 interface Props {
     label?: React.ReactNode;
@@ -56,8 +67,6 @@ function VectorTileServerInput(props: Props) {
     } = props;
 
     const error = getErrorObject(formError);
-
-    const { vectorTileServerNameOptions } = useContext(EnumsContext);
 
     const fieldName = (isDefined(value)
         && isDefined(value.name)
@@ -83,6 +92,7 @@ function VectorTileServerInput(props: Props) {
     );
 
     const { vector: vectorTileServers } = useContext(TileServerContext);
+
     const tileServerMapping = useMemo(() => (
         listToMap(vectorTileServers, ({ type }) => type)
     ), [vectorTileServers]);
@@ -120,9 +130,9 @@ function VectorTileServerInput(props: Props) {
             <RadioInput
                 label="Imagery Server"
                 name="name"
-                options={vectorTileServerNameOptions}
-                keySelector={keySelector}
-                labelSelector={labelSelector}
+                options={vectorTileServers}
+                keySelector={imageryKeySelector}
+                labelSelector={imageryLabelSelector}
                 value={value?.name}
                 error={error?.name}
                 onChange={handleImageryServerChange}
