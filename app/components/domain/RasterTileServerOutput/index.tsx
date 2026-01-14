@@ -40,7 +40,10 @@ function RasterTileServerOutput(props: Props) {
 
     const rasterTileServerNameMapping = useMemo(
         () => listToMap(
-            rasterTileServers,
+            [
+                ...rasterTileServers,
+                { type: RasterTileServerNameEnum.Custom, label: 'Custom' },
+            ],
             (item) => item.type,
             (item) => item,
         ),

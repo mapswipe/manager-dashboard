@@ -86,7 +86,10 @@ function RasterTileServerInput(props: Props) {
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
 
     const workingRasterTileServerNameOptions = useMemo(
-        () => rasterTileServerNameOptions.filter((option) => !option.disabled) ?? [],
+        () => [
+            ...rasterTileServerNameOptions.filter((option) => !option.disabled) ?? [],
+            { type: RasterTileServerNameEnum.Custom, label: 'Custom' },
+        ],
         [rasterTileServerNameOptions],
     );
 
@@ -113,6 +116,7 @@ function RasterTileServerInput(props: Props) {
     );
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
+
     const tileServerMapping = useMemo(() => (
         listToMap(rasterTileServers, ({ type }) => type)
     ), [rasterTileServers]);
