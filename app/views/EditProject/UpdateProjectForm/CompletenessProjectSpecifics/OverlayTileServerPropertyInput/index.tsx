@@ -116,6 +116,7 @@ function OverlayTileServerPropertyInput(props: Props) {
                 error={error?.type}
                 onChange={handleOverlayLayerTypeChange}
                 disabled={disabled}
+                hint="Select the layer that you want to compare for completeness."
             />
             {value?.type === OverlayLayerTypeEnum.RasterTile && (
                 <OverlayRasterTileConfigInput

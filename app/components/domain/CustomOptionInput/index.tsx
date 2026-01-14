@@ -157,7 +157,7 @@ function CustomOptionInput(props: Props) {
                             error={error?.description}
                             disabled={disabled}
                             spacing="sm"
-                            placeholder="Provide a brief description for each answer option (e.g. for Yes - The mapped outline does match the building footprint)"
+                            hint="Provide a brief description for each answer option (e.g. for Yes - The mapped outline does match the building footprint)"
                         />
                     </GridLayoutItem>
                 </ListLayout>
