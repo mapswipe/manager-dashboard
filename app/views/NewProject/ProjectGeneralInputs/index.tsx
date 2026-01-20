@@ -274,24 +274,32 @@ function ProjectGeneralInputs(props: Props) {
                 layout="grid"
                 spacing="lg"
             >
-                <TextInput
-                    label="Instruction"
-                    name="projectInstruction"
-                    value={value?.projectInstruction}
-                    onChange={setFieldValue}
-                    error={error?.projectInstruction}
-                    disabled={isDisabled('projectInstruction')}
-                    hint={getHint('projectInstruction')}
-                />
-                <TextInput
-                    label="Look for (legacy)"
-                    name="lookFor"
-                    value={value?.lookFor}
-                    onChange={setFieldValue}
-                    error={error?.lookFor}
-                    hint={getHint('lookFor')}
-                    disabled={isDisabled('lookFor')}
-                />
+                {/*
+                    Remove instruction and lookFor inputs if project type is conflation,
+                    as values are hard-coded on form submission
+                */}
+                {projectType !== ProjectTypeEnum.Conflation && (
+                    <>
+                        <TextInput
+                            label="Instruction"
+                            name="projectInstruction"
+                            value={value?.projectInstruction}
+                            onChange={setFieldValue}
+                            error={error?.projectInstruction}
+                            disabled={isDisabled('projectInstruction')}
+                            hint={getHint('projectInstruction')}
+                        />
+                        <TextInput
+                            label="Look for (legacy)"
+                            name="lookFor"
+                            value={value?.lookFor}
+                            onChange={setFieldValue}
+                            error={error?.lookFor}
+                            hint={getHint('lookFor')}
+                            disabled={isDisabled('lookFor')}
+                        />
+                    </>
+                )}
                 <TeamSelectInput
                     label="Select Team (Private)"
                     name="team"

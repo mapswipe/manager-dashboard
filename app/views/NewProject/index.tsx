@@ -214,6 +214,17 @@ function NewProject() {
         async (submittedFormValues: PartialProjectCreateInputFields) => {
             const finalValues = submittedFormValues as ProjectCreateInput;
 
+            /*
+                Conflation projects: instructions change per task depending
+                on the presence of OSM features. Currently, only building
+                features are supported.
+            */
+
+            if (finalValues.projectType === ProjectTypeEnum.Conflation) {
+                finalValues.lookFor = 'building';
+                finalValues.projectInstruction = 'Compare buildings';
+            }
+
             try {
                 const result = await createNewProject({
                     data: finalValues,
