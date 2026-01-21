@@ -11,7 +11,6 @@ import { ulid } from 'ulid';
 import ConflationOptionSelectInput from '#components/domain/ConflationOptionSelectInput';
 import CustomOptionSelectInput from '#components/domain/CustomOptionSelectInput';
 import TileOptionSelectInput from '#components/domain/TileOptionSelectInput';
-
 import {
     ProjectTypeEnum,
     TutorialProjectDetailQuery,

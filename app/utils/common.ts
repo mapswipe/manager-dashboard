@@ -27,7 +27,6 @@ export const COLOR_CONFLATION_OPTION_YES = 'green';
 export const COLOR_CONFLATION_OPTION_NOT_SURE = 'grey';
 export const COLOR_CONFLATION_OPTION_SKIP = 'orange';
 
-
 export const VALUE_TILE_OPTION_NO = 0;
 export const VALUE_TILE_OPTION_YES = 1;
 export const VALUE_TILE_OPTION_MAYBE = 2;
