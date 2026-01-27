@@ -99,13 +99,11 @@ const projectCreateFormSchema: ProjectCreateFormSchema = {
             requiredValidation: requiredStringCondition,
         },
         projectInstruction: {
-            required: (form) => form.projectType !== ProjectTypeEnum.Conflation,
             requiredValidation: (value, form) => (form.projectType !== ProjectTypeEnum.Conflation
                 ? requiredStringCondition(value)
                 : undefined),
         },
         lookFor: {
-            required: (form) => form.projectType !== ProjectTypeEnum.Conflation,
             requiredValidation: (value, form) => (form.projectType !== ProjectTypeEnum.Conflation
                 ? requiredStringCondition(value)
                 : undefined),

@@ -117,17 +117,52 @@ function TaskInput(props: Props) {
         {},
     );
 
-    const componentMap: Record<string, any> = {
-        ValidateProjectPropertyType: CustomOptionSelectInput,
-        ValidateImageProjectPropertyType: CustomOptionSelectInput,
-        ConflationProjectPropertyType: ConflationOptionSelectInput,
-    };
-
     /* eslint-disable-next-line no-underscore-dangle */
     const typeName = projectData?.projectTypeSpecifics?.__typename;
-    const OptionComponent = typeName && componentMap[typeName]
-        ? componentMap[typeName]
-        : TileOptionSelectInput;
+
+    let referenceInput;
+
+    if (
+        typeName === 'ValidateProjectPropertyType'
+        || typeName === 'ValidateImageProjectPropertyType'
+    ) {
+        referenceInput = (
+            <CustomOptionSelectInput
+                placeholder="Reference"
+                name="reference"
+                value={value.reference}
+                onChange={setFieldValue}
+                error={error?.reference}
+                disabled={disabled}
+                options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
+                nonClearable
+            />
+        );
+    } else if (typeName === 'ConflationProjectPropertyType') {
+        referenceInput = (
+            <ConflationOptionSelectInput
+                placeholder="Reference"
+                name="reference"
+                value={value.reference}
+                onChange={setFieldValue}
+                error={error?.reference}
+                disabled={disabled}
+                nonClearable
+            />
+        );
+    } else {
+        referenceInput = (
+            <TileOptionSelectInput
+                placeholder="Reference"
+                name="reference"
+                value={value.reference}
+                onChange={setFieldValue}
+                error={error?.reference}
+                disabled={disabled}
+                nonClearable
+            />
+        );
+    }
 
     return (
         <div className={_cs(styles.taskInput, className)}>
@@ -135,16 +170,7 @@ function TaskInput(props: Props) {
                 <div>
                     {`#${index + 1}`}
                 </div>
-                <OptionComponent
-                    placeholder="Reference"
-                    name="reference"
-                    value={value.reference}
-                    onChange={setFieldValue}
-                    error={error?.reference}
-                    disabled={disabled}
-                    options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
-                    nonClearable
-                />
+                {referenceInput}
                 {projectData?.projectType === ProjectTypeEnum.Find && (
                     <FindPropertyInput
                         value={value.projectTypeSpecifics?.find}
