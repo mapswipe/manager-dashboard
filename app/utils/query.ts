@@ -316,6 +316,11 @@ fragment TutorialDetailFields on TutorialType {
                     tileY
                     tileZ
                 }
+                ... on ConflationTutorialTaskPropertyType {
+                    __typename
+                    identifier
+                    objectGeometry
+                }
                 ... on ValidateTutorialTaskPropertyType {
                     __typename
                     identifier
