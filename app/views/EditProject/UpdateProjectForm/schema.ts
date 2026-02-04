@@ -1,3 +1,4 @@
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     ObjectSchema,
     PartialForm,
@@ -15,6 +16,7 @@ import { DeepNonNullable } from '#utils/types';
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
 import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
+import locateFeaturesSpecificFormSchema from './LocateFeaturesProjectSpecifics/schema.ts';
 import streetSpecificFormSchema from './StreetProjectSpecifics/schema.ts';
 import validateImageSpecificFormSchema from './ValidateImageProjectSpecifics/schema.ts';
 import validateSpecificFormSchema from './ValidateProjectSpecifics/schema';
@@ -76,82 +78,77 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
         image: {},
         projectTypeSpecifics: {
             fields: (): ProjectTypeSpecificFormFields => {
-                if (context?.projectType === ProjectTypeEnum.Find) {
-                    return {
-                        street: { forceValue: undefinedValue },
-                        find: findSpecificFormSchema,
-                        compare: { forceValue: undefinedValue },
-                        completeness: { forceValue: undefinedValue },
-                        validate: { forceValue: undefinedValue },
-                        validateImage: { forceValue: undefinedValue },
-                    };
-                }
-
-                if (context?.projectType === ProjectTypeEnum.Compare) {
-                    return {
-                        street: { forceValue: undefinedValue },
-                        compare: compareSpecificFormSchema,
-                        find: { forceValue: undefinedValue },
-                        completeness: { forceValue: undefinedValue },
-                        validate: { forceValue: undefinedValue },
-                        validateImage: { forceValue: undefinedValue },
-                    };
-                }
-
-                if (context?.projectType === ProjectTypeEnum.Completeness) {
-                    return {
-                        street: { forceValue: undefinedValue },
-                        completeness: completenessSpecificFormSchema,
-                        find: { forceValue: undefinedValue },
-                        compare: { forceValue: undefinedValue },
-                        validate: { forceValue: undefinedValue },
-                        validateImage: { forceValue: undefinedValue },
-                    };
-                }
-
-                if (context?.projectType === ProjectTypeEnum.Validate) {
-                    return {
-                        street: { forceValue: undefinedValue },
-                        validate: validateSpecificFormSchema,
-                        completeness: { forceValue: undefinedValue },
-                        find: { forceValue: undefinedValue },
-                        compare: { forceValue: undefinedValue },
-                        validateImage: { forceValue: undefinedValue },
-                    };
-                }
-
-                if (context?.projectType === ProjectTypeEnum.ValidateImage) {
-                    return {
-                        street: { forceValue: undefinedValue },
-                        validateImage: validateImageSpecificFormSchema,
-                        completeness: { forceValue: undefinedValue },
-                        find: { forceValue: undefinedValue },
-                        compare: { forceValue: undefinedValue },
-                        validate: { forceValue: undefinedValue },
-                    };
-                }
-
-                if (context?.projectType === ProjectTypeEnum.Street) {
-                    return {
-                        street: streetSpecificFormSchema,
-                        validateImage: { forceValue: undefinedValue },
-                        completeness: { forceValue: undefinedValue },
-                        find: { forceValue: undefinedValue },
-                        compare: { forceValue: undefinedValue },
-                        validate: { forceValue: undefinedValue },
-                    };
-                }
-
-                // context?.projectType satisfies never;
-
-                return {
+                const defaultValue = {
                     street: { forceValue: undefinedValue },
                     find: { forceValue: undefinedValue },
                     compare: { forceValue: undefinedValue },
                     completeness: { forceValue: undefinedValue },
                     validate: { forceValue: undefinedValue },
                     validateImage: { forceValue: undefinedValue },
-                };
+                } satisfies ProjectTypeSpecificFormFields;
+
+                if (isNotDefined(context)) {
+                    return defaultValue;
+                }
+
+                const { projectType } = context;
+
+                if (isNotDefined(projectType)) {
+                    return defaultValue;
+                }
+
+                if (projectType === ProjectTypeEnum.Find) {
+                    return {
+                        ...defaultValue,
+                        find: findSpecificFormSchema,
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Compare) {
+                    return {
+                        ...defaultValue,
+                        compare: compareSpecificFormSchema,
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Completeness) {
+                    return {
+                        ...defaultValue,
+                        completeness: completenessSpecificFormSchema,
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Validate) {
+                    return {
+                        ...defaultValue,
+                        validate: validateSpecificFormSchema,
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.ValidateImage) {
+                    return {
+                        ...defaultValue,
+                        validateImage: validateImageSpecificFormSchema,
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Street) {
+                    return {
+                        ...defaultValue,
+                        street: streetSpecificFormSchema,
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Locate) {
+                    return {
+                        ...defaultValue,
+                        locate: locateFeaturesSpecificFormSchema,
+                    };
+                }
+
+                projectType satisfies never;
+
+                return defaultValue;
             },
         },
     }),

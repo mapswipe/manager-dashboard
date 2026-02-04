@@ -3,9 +3,14 @@
 
     .content {
         display: grid;
-        grid-template-columns: max-content 9rem auto;
-        gap: var(--spacing-md);
+        grid-template-columns: max-content 12rem auto;
+        gap: var(--spacing-sm);
         align-items: baseline;
+
+        .sn {
+            width: 1rem;
+            text-align: end;
+        }
     }
 
     @container (max-width: 30rem) {

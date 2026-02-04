@@ -23,5 +23,19 @@ query ProjectDetails($id: ID!) {
         title
         value
     }
+    defaultStreetCustomOptions: defaultCustomOptions(projectType: STREET) {
+        description
+        icon
+        iconColor
+        title
+        value
+    }
+    defaultLocateFeaturesCustomOptions: defaultCustomOptions(projectType: LOCATE) {
+        description
+        icon
+        iconColor
+        title
+        value
+    }
 }
 `;

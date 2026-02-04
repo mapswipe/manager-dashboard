@@ -12,6 +12,7 @@ export interface EnumsContextProps {
     overlayLayerTypeOptions: AllEnumsQuery['enums']['OverlayLayerTypeEnum'],
     tutorialStatusOptions: AllEnumsQuery['enums']['TutorialStatusEnum'],
     firebasePushStatusOptions: AllEnumsQuery['enums']['FirebasePushStatusEnum'],
+    subGridSizeOptions: AllEnumsQuery['enums']['SubGridSizeEnum'],
 
     validateObjectSourceTypeMapping: Record<
         AllEnumsQuery['enums']['ValidateObjectSourceTypeEnum'][number]['key'],
@@ -61,6 +62,7 @@ export const defaultAllEnumsValue: EnumsContextProps = {
     overlayLayerTypeOptions: [],
     tutorialStatusOptions: [],
     firebasePushStatusOptions: [],
+    subGridSizeOptions: [],
 
     validateObjectSourceTypeMapping: undefined,
     validateImageSourceTypeMapping: undefined,

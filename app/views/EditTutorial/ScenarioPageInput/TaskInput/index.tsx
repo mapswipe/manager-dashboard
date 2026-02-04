@@ -1,4 +1,8 @@
-import { _cs } from '@togglecorp/fujs';
+import { useMemo } from 'react';
+import {
+    _cs,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     getErrorObject,
     ObjectError,
@@ -18,12 +22,14 @@ import {
 import { PartialComparePropertyInputFields } from './ComparePropertyInput/schema';
 import { PartialCompletenessPropertyInputFields } from './CompletenessPropertyInput/schema';
 import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
+import { PartialLocateFeaturesPropertyInputFields } from './LocateFeaturesPropertyInput/schema';
 import { PartialStreetPropertyInputFields } from './StreetPropertyInput/schema';
 import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
 import ComparePropertyInput from './ComparePropertyInput';
 import CompletenessPropertyInput from './CompletenessPropertyInput';
 import FindPropertyInput from './FindPropertyInput';
+import LocateFeaturesPropertyInput from './LocateFeaturesPropertyInput';
 import {
     PartialProjectTypeSpecifics,
     PartialTaskInputFields,
@@ -108,38 +114,83 @@ function TaskInput(props: Props) {
         {},
     );
 
+    const setLocateFeaturesProjectSpecificsFieldValue = useFormObject<'locate', PartialLocateFeaturesPropertyInputFields>(
+        'locate' as const,
+        setProjectSpecificFieldValue,
+        {},
+    );
+
+    const referenceInput = useMemo(
+        () => {
+            const specifics = projectData?.projectTypeSpecifics;
+
+            if (isNotDefined(specifics)) {
+                return null;
+            }
+
+            // eslint-disable-next-line no-underscore-dangle
+            if (specifics.__typename === 'ValidateProjectPropertyType'
+                // eslint-disable-next-line no-underscore-dangle
+                || specifics.__typename === 'ValidateImageProjectPropertyType'
+                // eslint-disable-next-line no-underscore-dangle
+                || specifics.__typename === 'StreetProjectPropertyType'
+                // eslint-disable-next-line no-underscore-dangle
+                || specifics.__typename === 'LocateProjectPropertyType'
+            ) {
+                return (
+                    <CustomOptionSelectInput
+                        placeholder="Reference"
+                        name="reference"
+                        value={value.reference}
+                        onChange={setFieldValue}
+                        error={error?.reference}
+                        disabled={disabled}
+                        options={removeNull(specifics.customOptions)}
+                        nonClearable
+                    />
+                );
+            }
+
+            // eslint-disable-next-line no-underscore-dangle
+            if (specifics.__typename === 'FindProjectPropertyType'
+                // eslint-disable-next-line no-underscore-dangle
+                || specifics.__typename === 'CompareProjectPropertyType'
+                // eslint-disable-next-line no-underscore-dangle
+                || specifics.__typename === 'CompletenessProjectPropertyType'
+            ) {
+                return (
+                    <TileOptionSelectInput
+                        placeholder="Reference"
+                        name="reference"
+                        value={value.reference}
+                        onChange={setFieldValue}
+                        error={error?.reference}
+                        disabled={disabled}
+                        nonClearable
+                    />
+                );
+            }
+
+            specifics satisfies never;
+
+            return null;
+        },
+        [
+            disabled,
+            error?.reference,
+            projectData?.projectTypeSpecifics,
+            setFieldValue,
+            value.reference,
+        ],
+    );
+
     return (
         <div className={_cs(styles.taskInput, className)}>
             <div className={styles.content}>
-                <div>
-                    {`#${index + 1}`}
+                <div className={styles.sn}>
+                    {`${index + 1}.`}
                 </div>
-                {/* eslint-disable-next-line no-underscore-dangle */}
-                {(projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType'
-                    // eslint-disable-next-line no-underscore-dangle
-                    || projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType')
-                    ? (
-                        <CustomOptionSelectInput
-                            placeholder="Reference"
-                            name="reference"
-                            value={value.reference}
-                            onChange={setFieldValue}
-                            error={error?.reference}
-                            disabled={disabled}
-                            options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
-                            nonClearable
-                        />
-                    ) : (
-                        <TileOptionSelectInput
-                            placeholder="Reference"
-                            name="reference"
-                            value={value.reference}
-                            onChange={setFieldValue}
-                            error={error?.reference}
-                            disabled={disabled}
-                            nonClearable
-                        />
-                    )}
+                {referenceInput}
                 {projectData?.projectType === ProjectTypeEnum.Find && (
                     <FindPropertyInput
                         value={value.projectTypeSpecifics?.find}
@@ -185,6 +236,14 @@ function TaskInput(props: Props) {
                         value={value.projectTypeSpecifics?.street}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.street}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Locate && (
+                    <LocateFeaturesPropertyInput
+                        value={value.projectTypeSpecifics?.locate}
+                        setFieldValue={setLocateFeaturesProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.locate}
                         disabled
                     />
                 )}

@@ -1,8 +1,10 @@
 import {
     bboxToTile,
+    getChildren,
     tileToGeoJSON,
 } from '@mapbox/tilebelt';
 import {
+    compareNumber,
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
@@ -42,6 +44,54 @@ export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
 export function standardizeQuadKey(url: string) {
     // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
     return url.replace('{quad_key}', '{quadkey}');
+}
+
+export function createSubGridGeoJsonFromTile(
+    x: number,
+    y: number,
+    z: number,
+    subgridSize: 1 | 2 | 3,
+    reference: (number | undefined)[] | undefined,
+) {
+    let childrenTiles = getChildren(
+        [x, y, z],
+    );
+
+    if (subgridSize > 1) {
+        new Array(subgridSize - 1).keys().forEach(() => {
+            childrenTiles = childrenTiles.flatMap((tile) => (
+                getChildren(tile)
+            ));
+        });
+    }
+
+    // 1, 2  ->  1.1 1.2  2.1 2.2
+    // 3, 4      1.3 1.4  2.3 2.4
+    //
+    //           3.1 3.2  4.1 4.2
+    //           3.3 3.4  4.3 4.4
+    // For this, list would look like [1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2,3, ...]
+    // Ordering it to [1.1, 1.2, 2.1, 2.2, 1.3, 1.4, 2.3, ...]
+    // Fixing the order of subgrids (since they're created recursively)
+    childrenTiles.sort(
+        (a, b) => compareNumber(a[1], b[1]) || compareNumber(a[0], b[0]),
+    );
+
+    const geojson: GeoJSON.GeoJSON = {
+        type: 'FeatureCollection' as const,
+        features: childrenTiles.map((tile, i) => ({
+            type: 'Feature' as const,
+            geometry: tileToGeoJSON(tile),
+            properties: {
+                tile_x: x,
+                tile_y: y,
+                tile_z: z,
+                reference: reference?.[i],
+            },
+        })),
+    };
+
+    return geojson;
 }
 
 export function createGeoJsonFromTiles(

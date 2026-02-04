@@ -162,6 +162,7 @@ const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
             />
         </ListLayout>
     ),
+    [ProjectTypeEnum.Locate]: 'Locate features',
 };
 
 function NewProject() {
@@ -173,7 +174,19 @@ function NewProject() {
         createNewProject,
     ] = useNewProjectMutation();
 
-    const { projectTypeOptions } = useContext(EnumsContext);
+    const { projectTypeOptions: fullProjectTypeOptions } = useContext(EnumsContext);
+
+    const projectTypeOptions = useMemo(() => {
+        const { APP_ENVIRONMENT } = import.meta.env;
+
+        if (APP_ENVIRONMENT !== 'PROD') {
+            return fullProjectTypeOptions;
+        }
+
+        return fullProjectTypeOptions?.filter(
+            (option) => option.key !== ProjectTypeEnum.Locate,
+        );
+    }, [fullProjectTypeOptions]);
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),

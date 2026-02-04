@@ -1,0 +1,17 @@
+.locate-features-scenario-preview {
+    isolation: isolate;
+
+    .content {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 var(--spacing-lg);
+
+        .map-container {
+            z-index: 0;
+            width: var(--size-tile-validate);
+            height: var(--size-tile-validate);
+        }
+    }
+}

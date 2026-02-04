@@ -9,6 +9,7 @@ import {
 import {
     ProjectTypeEnum,
     ProjectTypeSpecificInput,
+    SubGridSizeEnum,
 } from '#generated/types/graphql';
 
 export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
@@ -156,6 +157,7 @@ export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpeci
     [ProjectTypeEnum.Validate]: 'validate',
     [ProjectTypeEnum.ValidateImage]: 'validateImage',
     [ProjectTypeEnum.Street]: 'street',
+    [ProjectTypeEnum.Locate]: 'locate',
 };
 
 interface NumericValueOption {
@@ -596,3 +598,9 @@ export function formatArea(area: number) {
         },
     );
 }
+
+export const subgridSizeToValueMap: Record<SubGridSizeEnum, 1 | 2 | 3> = {
+    [SubGridSizeEnum.Size_2X2]: 1,
+    [SubGridSizeEnum.Size_4X4]: 2,
+    [SubGridSizeEnum.Size_8X8]: 3,
+};

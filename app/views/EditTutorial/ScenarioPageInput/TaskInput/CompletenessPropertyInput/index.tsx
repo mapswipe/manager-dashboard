@@ -35,6 +35,7 @@ function CompletenessPropertyInput(props: Props) {
             layout="grid"
             numPreferredGridColumns={3}
             minGridColumnSize="6rem"
+            spacing="sm"
         >
             <NumberInput
                 name="tileX"

@@ -49,7 +49,10 @@ import {
     ValidateImageTutorialTaskPropertyInput,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import { readFileAsText } from '#utils/common';
+import {
+    readFileAsText,
+    subgridSizeToValueMap,
+} from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -62,6 +65,7 @@ import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
 import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
 import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
 import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
+import { LocateFeaturesPropertyInputFields } from './ScenarioPageInput/TaskInput/LocateFeaturesPropertyInput/schema';
 import { StreetPropertyInputFields } from './ScenarioPageInput/TaskInput/StreetPropertyInput/schema';
 import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
 import InformationPageInput from './InformationPageInput';
@@ -127,6 +131,15 @@ const CompareFeaturePropertyType = type.merge(
     CommonFeaturePropertyType,
     TileFeaturePropertyType,
     {
+        // This is not used anymore
+        // task_id: 'string',
+    },
+);
+const LocateFeaturesPropertyType = type.merge(
+    TileFeaturePropertyType,
+    {
+        screen: type.number,
+        references: type.number.array(),
         // This is not used anymore
         // task_id: 'string',
     },
@@ -197,6 +210,14 @@ const CompareTutorialGeoJsonType = type({
     features: type({
         geometry: PolygonType.or(MultiPolygonType),
         properties: CompareFeaturePropertyType,
+    }).array(),
+});
+
+const LocateFeaturesTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: LocateFeaturesPropertyType,
     }).array(),
 });
 
@@ -381,6 +402,16 @@ function NewTutorial() {
                             ...task,
                             projectTypeSpecifics: {
                                 street: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'LocateTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                locate: task.projectTypeSpecifics,
                             },
                         };
                     }
@@ -816,6 +847,57 @@ function NewTutorial() {
                     )),
                     'scenarios',
                 );
+            }
+        } else if (projectType === ProjectTypeEnum.Locate) {
+            const result = LocateFeaturesTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const featuresByScreen = listToGroupList(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                );
+
+                // eslint-disable-next-line no-underscore-dangle
+                const subgridSize = projectDetailResponse.project.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType'
+                    ? projectDetailResponse.project.projectTypeSpecifics.subGridSize
+                    : undefined;
+
+                const subGridValue = isDefined(subgridSize)
+                    ? subgridSizeToValueMap[subgridSize]
+                    : 0;
+
+                const numSubGrids = (2 ** subGridValue) ** 2;
+
+                const scenarioPages: PartialScenarioPageInputFields[] = unique(
+                    result.features,
+                    (feature) => feature.properties.screen,
+                ).toSorted(
+                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
+                ).map(({ properties }) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: properties.screen,
+                    tasks: featuresByScreen[properties.screen].flatMap((feature) => (
+                        Array.from(new Array(numSubGrids).keys()).map((index) => ({
+                            clientId: ulid(),
+                            reference: feature.properties.references[index],
+                            taskPartitionIndex: index,
+                            projectTypeSpecifics: {
+                                locate: {
+                                    tileX: feature.properties.tile_x,
+                                    tileY: feature.properties.tile_y,
+                                    tileZ: feature.properties.tile_z,
+                                } satisfies LocateFeaturesPropertyInputFields,
+                            },
+                        }))
+                    )),
+                }));
+
+                setFieldValue(scenarioPages, 'scenarios');
             }
         }
     }, [projectDetailResponse, setError, setFieldValue]);
