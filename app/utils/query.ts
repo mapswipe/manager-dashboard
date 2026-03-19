@@ -141,11 +141,15 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         mapillaryImageFilters {
             creatorId
             endTime
-            isPano
+            panoOnly
             organizationId
             randomizeOrder
             samplingThreshold
             startTime
+        }
+        imageProvider {
+            name
+            url
         }
     }
     ... on LocateProjectPropertyType {

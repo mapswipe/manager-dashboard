@@ -11,7 +11,7 @@ import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
 
-import { PartialStreetMapillaryImageFiltersInputFields } from './schema';
+import { PartialStreetMapillaryImageFiltersInputFields } from './schema.ts';
 
 interface Props {
     value: PartialStreetMapillaryImageFiltersInputFields | undefined | null;
@@ -34,7 +34,7 @@ function StreetMapillaryImageFiltersInput(props: Props) {
 
     return (
         <Container
-            heading="Mapillary Image Filters"
+            heading="Street-level Image Filters"
             headingLevel={4}
         >
             <ListLayout layout="grid">
@@ -63,16 +63,16 @@ function StreetMapillaryImageFiltersInput(props: Props) {
                     error={error?.creatorId}
                     onChange={setFieldValue}
                     disabled={disabled}
-                    hint="Provide a valid Mapillary creator ID to filter for images belonging to a specific Mapillary user."
+                    hint="Provide a valid ID to filter for images belonging to a specific Mapillary/Panoramax user."
                 />
                 <TextInput
                     name="organizationId"
-                    label="Mapillary Organization ID"
+                    label="Organization ID"
                     value={value?.organizationId}
                     error={error?.organizationId}
                     onChange={setFieldValue}
                     disabled={disabled}
-                    hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization."
+                    hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization (only Mapillary)."
                 />
                 <NumberInput
                     name="samplingThreshold"
@@ -81,15 +81,15 @@ function StreetMapillaryImageFiltersInput(props: Props) {
                     error={error?.samplingThreshold}
                     onChange={setFieldValue}
                     disabled={disabled}
-                    hint="What should be the minimum distance (in km) between images on the same Mapillary sequence? Empty indicates that all images on each sequence are used."
+                    hint="What should be the minimum distance (in m) between images on the same Mapillary sequence? Empty indicates that all images on each sequence are used."
                 />
             </ListLayout>
             <Checkbox
-                name="isPano"
+                name="panoOnly"
                 label="Only use 360 degree panaroma images"
-                value={value?.isPano}
-                error={error?.isPano}
+                value={value?.panoOnly}
                 onChange={setFieldValue}
+                error={error?.panoOnly}
                 disabled={disabled}
                 hint="If unchecked, both 360 degree panorama and classic images are used in the project"
             />

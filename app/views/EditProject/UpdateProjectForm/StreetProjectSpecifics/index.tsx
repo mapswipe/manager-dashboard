@@ -16,6 +16,11 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import StreetImageProviderInput from '#components/domain/StreetImageProviderInput';
+import {
+    defaultStreetImageProviderValue,
+    PartialStreetImageProviderInputFields,
+} from '#components/domain/StreetImageProviderInput/schema';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
@@ -72,6 +77,12 @@ function StreetProjectSpecifics(props: Props) {
         'mapillaryImageFilters' as const,
         setFieldValue,
         defaultStreetMapillaryImageFiltersInputFormValue,
+    );
+
+    const setStreetImageProviderFieldValue = useFormObject<'imageProvider', PartialStreetImageProviderInputFields>(
+        'imageProvider' as const,
+        setFieldValue,
+        defaultStreetImageProviderValue,
     );
 
     return (
@@ -132,6 +143,12 @@ function StreetProjectSpecifics(props: Props) {
                 setFieldValue={setStreetMapillaryImageFiltersInputFieldValue}
                 disabled={disabled}
                 error={error?.mapillaryImageFilters}
+            />
+            <StreetImageProviderInput
+                value={value?.imageProvider}
+                error={error?.imageProvider}
+                setFieldValue={setStreetImageProviderFieldValue}
+                disabled={disabled}
             />
         </>
     );

@@ -6,7 +6,12 @@ import { PreviewItem } from '#components/domain/TutorialPreviewScreenSelectInput
 import ListLayout from '#components/ListLayout';
 import MapillaryImagePreview from '#components/MapillaryImagePreview';
 import MobilePreview from '#components/MobilePreview';
-import { TutorialScenarioPageCreateInput } from '#generated/types/graphql';
+import PanoramaxImagePreview from '#components/PanoramaxImagePreview';
+import {
+    StreetImageProvider,
+    StreetImageProviderNameEnum,
+    TutorialScenarioPageCreateInput,
+} from '#generated/types/graphql';
 
 import { PartialCustomOptionInputFields } from '../CustomOptionInput/schema';
 import CustomOptionPreview from '../CustomOptionsPreview';
@@ -19,6 +24,7 @@ interface Props {
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
     customOptions: PartialCustomOptionInputFields[] | undefined;
     preview: PreviewItem | undefined;
+    imageProvider: StreetImageProvider | null | undefined;
 }
 
 function StreetScenarioPreview(props: Props) {
@@ -28,6 +34,7 @@ function StreetScenarioPreview(props: Props) {
         projectInstruction,
         customOptions,
         preview,
+        imageProvider,
     } = props;
 
     const imageId = scenario?.tasks?.[0].projectTypeSpecifics?.street?.mapillaryImageId;
@@ -45,10 +52,19 @@ function StreetScenarioPreview(props: Props) {
                 popupVariant={preview?.popupVariant}
                 contentClassName={styles.content}
             >
-                <MapillaryImagePreview
-                    imageId={imageId}
-                    className={styles.streetPreview}
-                />
+                {imageProvider?.name === StreetImageProviderNameEnum.Mapillary && (
+                    <MapillaryImagePreview
+                        imageId={imageId}
+                        className={styles.streetPreview}
+                    />
+                )}
+                {imageProvider?.name === StreetImageProviderNameEnum.Panoramax && (
+                    <PanoramaxImagePreview
+                        imageId={imageId}
+                        className={styles.streetPreview}
+                        url={imageProvider?.url}
+                    />
+                )}
                 <CustomOptionPreview
                     value={customOptions}
                 />

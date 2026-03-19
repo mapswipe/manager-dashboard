@@ -4,6 +4,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import customOptionSchema from '#components/domain/CustomOptionInput/schema';
+import streetImageProviderSchema, { defaultStreetImageProviderValue } from '#components/domain/StreetImageProviderInput/schema';
 import { StreetProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -25,6 +26,7 @@ type StreetSpecificFormSchema = ObjectSchema<
 
 export const defaultStreetSpecificFormValue: PartialStreetSpecificFields = {
     mapillaryImageFilters: defaultStreetMapillaryImageFiltersInputFormValue,
+    imageProvider: defaultStreetImageProviderValue,
 };
 
 const streetSpecificFormSchema: StreetSpecificFormSchema = {
@@ -35,6 +37,7 @@ const streetSpecificFormSchema: StreetSpecificFormSchema = {
         },
         aoiGeometry: {},
         mapillaryImageFilters: streetMapillaryimageFiltersFormSchema,
+        imageProvider: streetImageProviderSchema,
     }),
 };
 

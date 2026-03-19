@@ -36,7 +36,7 @@ function StreetDetails(props: Props) {
                 </Container>
             </ListLayout>
             <Container
-                heading="Mapillary Image Filters"
+                heading="Street-level Image Filters"
                 headingLevel={5}
             >
                 <ListLayout
@@ -56,7 +56,7 @@ function StreetDetails(props: Props) {
                         value={data.mapillaryImageFilters.creatorId}
                     />
                     <TextOutput
-                        label="Mapillary Organization ID"
+                        label="Organization ID"
                         value={data.mapillaryImageFilters.organizationId}
                     />
                     <TextOutput
@@ -71,7 +71,7 @@ function StreetDetails(props: Props) {
                 >
                     <TextOutput
                         label="Only use 360 degree panaroma images"
-                        value={data.mapillaryImageFilters.isPano}
+                        value={data.mapillaryImageFilters.panoOnly}
                         valueType="boolean"
                     />
                     <TextOutput
@@ -79,6 +79,23 @@ function StreetDetails(props: Props) {
                         value={data.mapillaryImageFilters.randomizeOrder}
                         valueType="boolean"
                     />
+                </ListLayout>
+                <ListLayout
+                    layout="block"
+                    spacing="sm"
+                >
+                    <TextOutput
+                        label="Image provider name"
+                        value={data.imageProvider?.name}
+                        valueType="text"
+                    />
+                    {data.imageProvider?.url && (
+                        <TextOutput
+                            label="Panoramax API URL"
+                            value={data.imageProvider.url}
+                            valueType="text"
+                        />
+                    )}
                 </ListLayout>
             </Container>
         </>

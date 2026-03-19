@@ -17,12 +17,11 @@ type StreetMapillaryImageFiltersFormSchema = ObjectSchema<
 // eslint-disable-next-line max-len
 export const defaultStreetMapillaryImageFiltersInputFormValue: PartialStreetMapillaryImageFiltersInputFields = {
     randomizeOrder: false,
-    isPano: false,
 };
 
 const streetMapillaryimageFiltersFormSchema: StreetMapillaryImageFiltersFormSchema = {
     fields: (): ReturnType<StreetMapillaryImageFiltersFormSchema['fields']> => ({
-        isPano: {},
+        panoOnly: {},
         creatorId: {},
         organizationId: {},
         startTime: {},
