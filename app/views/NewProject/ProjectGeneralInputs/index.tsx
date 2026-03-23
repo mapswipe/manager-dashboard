@@ -60,6 +60,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Enter the description for your project. (markdown syntax is supported)',
         [ProjectTypeEnum.Completeness]: 'Enter the description for your project. (markdown syntax is supported)',
         [ProjectTypeEnum.Street]: 'Enter the description for your project. (markdown syntax is supported)',
+        [ProjectTypeEnum.Conflation]: 'Enter the description for your project. (markdown syntax is supported)',
     },
     topic: {
         [ProjectTypeEnum.Find]: 'Enter the title of your project.',
@@ -68,6 +69,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Enter the title of your project.',
         [ProjectTypeEnum.Completeness]: 'Enter the title of your project.',
         [ProjectTypeEnum.Street]: 'Enter the title of your project.',
+        [ProjectTypeEnum.Conflation]: 'Enter the title of your project.',
     },
     projectInstruction: {
         [ProjectTypeEnum.Find]: 'What should the users look for (e.g. You are looking for: buildings, destroyed buildings, cars, trees, etc.)',
@@ -76,6 +78,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'What should the users look to assess? (e.g., You are looking for trees)',
         [ProjectTypeEnum.Completeness]: undefined,
         [ProjectTypeEnum.Street]: undefined,
+        [ProjectTypeEnum.Conflation]: undefined,
     },
     lookFor: {
         [ProjectTypeEnum.Find]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
@@ -84,6 +87,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
         [ProjectTypeEnum.Completeness]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
         [ProjectTypeEnum.Street]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
+        [ProjectTypeEnum.Conflation]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
     },
     additionalInfoUrl: {
         [ProjectTypeEnum.Find]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
@@ -92,6 +96,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Completeness]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Street]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
+        [ProjectTypeEnum.Conflation]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
     },
     projectNumber: {
         [ProjectTypeEnum.Find]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
@@ -100,6 +105,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
         [ProjectTypeEnum.Completeness]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
         [ProjectTypeEnum.Street]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
+        [ProjectTypeEnum.Conflation]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
     },
     region: {
         [ProjectTypeEnum.Find]: 'Enter the region/location of your project (eg: City, Country)',
@@ -108,6 +114,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Completeness]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Street]: 'Enter the region/location of your project (eg: City, Country)',
+        [ProjectTypeEnum.Conflation]: 'Enter the region/location of your project (eg: City, Country)',
     },
     requestingOrganization: {
         [ProjectTypeEnum.Find]: 'Which group, institution or community is requesting this project?',
@@ -116,6 +123,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Completeness]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Street]: 'Which group, institution or community is requesting this project?',
+        [ProjectTypeEnum.Conflation]: 'Which group, institution or community is requesting this project?',
     },
     team: {
         [ProjectTypeEnum.Find]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
@@ -124,6 +132,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
         [ProjectTypeEnum.Completeness]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
         [ProjectTypeEnum.Street]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.Conflation]: 'Please note that if \'private\', this project will only be visible to the selected  team members. Data results will still be public.',
     },
 };
 
@@ -265,24 +274,32 @@ function ProjectGeneralInputs(props: Props) {
                 layout="grid"
                 spacing="lg"
             >
-                <TextInput
-                    label="Instruction"
-                    name="projectInstruction"
-                    value={value?.projectInstruction}
-                    onChange={setFieldValue}
-                    error={error?.projectInstruction}
-                    disabled={isDisabled('projectInstruction')}
-                    hint={getHint('projectInstruction')}
-                />
-                <TextInput
-                    label="Look for (legacy)"
-                    name="lookFor"
-                    value={value?.lookFor}
-                    onChange={setFieldValue}
-                    error={error?.lookFor}
-                    hint={getHint('lookFor')}
-                    disabled={isDisabled('lookFor')}
-                />
+                {/*
+                    Remove instruction and lookFor inputs if project type is conflation,
+                    as values are hard-coded on form submission
+                */}
+                {projectType !== ProjectTypeEnum.Conflation && (
+                    <>
+                        <TextInput
+                            label="Instruction"
+                            name="projectInstruction"
+                            value={value?.projectInstruction}
+                            onChange={setFieldValue}
+                            error={error?.projectInstruction}
+                            disabled={isDisabled('projectInstruction')}
+                            hint={getHint('projectInstruction')}
+                        />
+                        <TextInput
+                            label="Look for (legacy)"
+                            name="lookFor"
+                            value={value?.lookFor}
+                            onChange={setFieldValue}
+                            error={error?.lookFor}
+                            hint={getHint('lookFor')}
+                            disabled={isDisabled('lookFor')}
+                        />
+                    </>
+                )}
                 <TeamSelectInput
                     label="Select Team (Private)"
                     name="team"

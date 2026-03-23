@@ -18,6 +18,7 @@ import {
 
 import comparePropertyInputSchema from './ComparePropertyInput/schema';
 import completenessPropertyInputSchema from './CompletenessPropertyInput/schema';
+import conflationPropertyInputSchema from './ConflationPropertyInput/schema';
 import findPropertyInputSchema from './FindPropertyInput/schema';
 import streetPropertyInputSchema from './StreetPropertyInput/schema';
 import validateImagePropertyInputSchema from './ValidateImagePropertyInput/schema';
@@ -66,6 +67,7 @@ const taskSchema: TaskSchema = {
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
                         street: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -77,6 +79,7 @@ const taskSchema: TaskSchema = {
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
                         street: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -88,6 +91,19 @@ const taskSchema: TaskSchema = {
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
                         street: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (projectType === ProjectTypeEnum.Conflation) {
+                    return {
+                        validate: { forceValue: undefinedValue },
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
+                        street: { forceValue: undefinedValue },
+                        conflation: conflationPropertyInputSchema,
                     };
                 }
 
@@ -99,6 +115,7 @@ const taskSchema: TaskSchema = {
                         completeness: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
                         street: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -110,6 +127,7 @@ const taskSchema: TaskSchema = {
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         street: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -121,6 +139,7 @@ const taskSchema: TaskSchema = {
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -133,6 +152,7 @@ const taskSchema: TaskSchema = {
                     validate: { forceValue: undefinedValue },
                     validateImage: { forceValue: undefinedValue },
                     street: { forceValue: undefinedValue },
+                    conflation: { forceValue: undefinedValue },
                 };
             },
         },

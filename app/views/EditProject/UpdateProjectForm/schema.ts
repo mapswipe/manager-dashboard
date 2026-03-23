@@ -14,6 +14,7 @@ import { DeepNonNullable } from '#utils/types';
 
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
 import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
+import conflationSpecificFormSchema from './ConflationProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
 import streetSpecificFormSchema from './StreetProjectSpecifics/schema.ts';
 import validateImageSpecificFormSchema from './ValidateImageProjectSpecifics/schema.ts';
@@ -84,6 +85,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -95,6 +97,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         completeness: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -106,6 +109,19 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
+                    };
+                }
+
+                if (context?.projectType === ProjectTypeEnum.Conflation) {
+                    return {
+                        street: { forceValue: undefinedValue },
+                        validate: { forceValue: undefinedValue },
+                        completeness: { forceValue: undefinedValue },
+                        find: { forceValue: undefinedValue },
+                        compare: { forceValue: undefinedValue },
+                        validateImage: { forceValue: undefinedValue },
+                        conflation: conflationSpecificFormSchema,
                     };
                 }
 
@@ -117,6 +133,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validateImage: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -128,6 +145,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -139,6 +157,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                         find: { forceValue: undefinedValue },
                         compare: { forceValue: undefinedValue },
                         validate: { forceValue: undefinedValue },
+                        conflation: { forceValue: undefinedValue },
                     };
                 }
 
@@ -151,6 +170,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                     completeness: { forceValue: undefinedValue },
                     validate: { forceValue: undefinedValue },
                     validateImage: { forceValue: undefinedValue },
+                    conflation: { forceValue: undefinedValue },
                 };
             },
         },

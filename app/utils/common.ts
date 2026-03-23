@@ -22,6 +22,11 @@ export const COLOR_TILE_OPTION_YES = 'green';
 export const COLOR_TILE_OPTION_MAYBE = 'orange';
 export const COLOR_TILE_OPTION_BAD_IMAGERY = 'red';
 
+export const COLOR_CONFLATION_OPTION_NO = 'red';
+export const COLOR_CONFLATION_OPTION_YES = 'green';
+export const COLOR_CONFLATION_OPTION_NOT_SURE = 'grey';
+export const COLOR_CONFLATION_OPTION_SKIP = 'orange';
+
 export const VALUE_TILE_OPTION_NO = 0;
 export const VALUE_TILE_OPTION_YES = 1;
 export const VALUE_TILE_OPTION_MAYBE = 2;
@@ -53,6 +58,29 @@ export const defaultTileOptions: TileSelectOption[] = [
         value: VALUE_TILE_OPTION_BAD_IMAGERY,
         label: 'Bad Imagery',
         color: COLOR_TILE_OPTION_BAD_IMAGERY,
+    },
+];
+
+export const conflationTileOptions: TileSelectOption[] = [
+    {
+        value: VALUE_TILE_OPTION_NO,
+        label: 'No | OSM',
+        color: COLOR_CONFLATION_OPTION_NO,
+    },
+    {
+        value: VALUE_TILE_OPTION_YES,
+        label: 'Yes | fAIr',
+        color: COLOR_CONFLATION_OPTION_YES,
+    },
+    {
+        value: VALUE_TILE_OPTION_MAYBE,
+        label: 'Not sure | Neither',
+        color: COLOR_CONFLATION_OPTION_NOT_SURE,
+    },
+    {
+        value: VALUE_TILE_OPTION_BAD_IMAGERY,
+        label: 'Skip',
+        color: COLOR_CONFLATION_OPTION_SKIP,
     },
 ];
 
@@ -156,6 +184,7 @@ export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpeci
     [ProjectTypeEnum.Validate]: 'validate',
     [ProjectTypeEnum.ValidateImage]: 'validateImage',
     [ProjectTypeEnum.Street]: 'street',
+    [ProjectTypeEnum.Conflation]: 'conflation',
 };
 
 interface NumericValueOption {

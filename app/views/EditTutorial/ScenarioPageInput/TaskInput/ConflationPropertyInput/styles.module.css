@@ -1,0 +1,8 @@
+.conflation-property-input {
+    .geometry {
+        textarea {
+            font-family: var(--font-family-monospace);
+            font-size: var(--font-size-2xs);
+        }
+    }
+}

@@ -8,6 +8,7 @@ import {
 } from '@togglecorp/toggle-form';
 import { ulid } from 'ulid';
 
+import ConflationOptionSelectInput from '#components/domain/ConflationOptionSelectInput';
 import CustomOptionSelectInput from '#components/domain/CustomOptionSelectInput';
 import TileOptionSelectInput from '#components/domain/TileOptionSelectInput';
 import {
@@ -17,12 +18,14 @@ import {
 
 import { PartialComparePropertyInputFields } from './ComparePropertyInput/schema';
 import { PartialCompletenessPropertyInputFields } from './CompletenessPropertyInput/schema';
+import { PartialConflationPropertyInputFields } from './ConflationPropertyInput/schema';
 import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
 import { PartialStreetPropertyInputFields } from './StreetPropertyInput/schema';
 import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
 import ComparePropertyInput from './ComparePropertyInput';
 import CompletenessPropertyInput from './CompletenessPropertyInput';
+import ConflationPropertyInput from './ConflationPropertyInput';
 import FindPropertyInput from './FindPropertyInput';
 import {
     PartialProjectTypeSpecifics,
@@ -108,38 +111,66 @@ function TaskInput(props: Props) {
         {},
     );
 
+    const setConflationProjectSpecificsFieldValue = useFormObject<'conflation', PartialConflationPropertyInputFields>(
+        'conflation' as const,
+        setProjectSpecificFieldValue,
+        {},
+    );
+
+    /* eslint-disable-next-line no-underscore-dangle */
+    const typeName = projectData?.projectTypeSpecifics?.__typename;
+
+    let referenceInput;
+
+    if (
+        typeName === 'ValidateProjectPropertyType'
+        || typeName === 'ValidateImageProjectPropertyType'
+    ) {
+        referenceInput = (
+            <CustomOptionSelectInput
+                placeholder="Reference"
+                name="reference"
+                value={value.reference}
+                onChange={setFieldValue}
+                error={error?.reference}
+                disabled={disabled}
+                options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
+                nonClearable
+            />
+        );
+    } else if (typeName === 'ConflationProjectPropertyType') {
+        referenceInput = (
+            <ConflationOptionSelectInput
+                placeholder="Reference"
+                name="reference"
+                value={value.reference}
+                onChange={setFieldValue}
+                error={error?.reference}
+                disabled={disabled}
+                nonClearable
+            />
+        );
+    } else {
+        referenceInput = (
+            <TileOptionSelectInput
+                placeholder="Reference"
+                name="reference"
+                value={value.reference}
+                onChange={setFieldValue}
+                error={error?.reference}
+                disabled={disabled}
+                nonClearable
+            />
+        );
+    }
+
     return (
         <div className={_cs(styles.taskInput, className)}>
             <div className={styles.content}>
                 <div>
                     {`#${index + 1}`}
                 </div>
-                {/* eslint-disable-next-line no-underscore-dangle */}
-                {(projectData?.projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType'
-                    // eslint-disable-next-line no-underscore-dangle
-                    || projectData?.projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType')
-                    ? (
-                        <CustomOptionSelectInput
-                            placeholder="Reference"
-                            name="reference"
-                            value={value.reference}
-                            onChange={setFieldValue}
-                            error={error?.reference}
-                            disabled={disabled}
-                            options={removeNull(projectData?.projectTypeSpecifics?.customOptions)}
-                            nonClearable
-                        />
-                    ) : (
-                        <TileOptionSelectInput
-                            placeholder="Reference"
-                            name="reference"
-                            value={value.reference}
-                            onChange={setFieldValue}
-                            error={error?.reference}
-                            disabled={disabled}
-                            nonClearable
-                        />
-                    )}
+                {referenceInput}
                 {projectData?.projectType === ProjectTypeEnum.Find && (
                     <FindPropertyInput
                         value={value.projectTypeSpecifics?.find}
@@ -185,6 +216,14 @@ function TaskInput(props: Props) {
                         value={value.projectTypeSpecifics?.street}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.street}
+                        disabled
+                    />
+                )}
+                {projectData?.projectType === ProjectTypeEnum.Conflation && (
+                    <ConflationPropertyInput
+                        value={value.projectTypeSpecifics?.conflation}
+                        setFieldValue={setConflationProjectSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.conflation}
                         disabled
                     />
                 )}

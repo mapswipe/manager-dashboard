@@ -56,7 +56,7 @@ fragment VectorTileServerPropertyFields on ProjectVectorTileServerConfig {
 export const PROJECT_TYPE_SPECIFIC_FRAGMENT = gql`
 ${TILE_SERVER_PROPERTY_FRAGMENT}
 ${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
-fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyTypeStreetProjectPropertyType {
+fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyTypeStreetProjectPropertyTypeConflationProjectPropertyType {
     ... on CompareProjectPropertyType {
         __typename
         aoiGeometry
@@ -144,6 +144,15 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
             randomizeOrder
             samplingThreshold
             startTime
+        }
+    }
+    ... on ConflationProjectPropertyType {
+        __typename
+        objectSource {
+            objectGeojsonUrl
+        }
+        tileServerProperty {
+            ...RasterTileServerPropertyFields
         }
     }
 }
@@ -306,6 +315,11 @@ fragment TutorialDetailFields on TutorialType {
                     tileX
                     tileY
                     tileZ
+                }
+                ... on ConflationTutorialTaskPropertyType {
+                    __typename
+                    identifier
+                    objectGeometry
                 }
                 ... on ValidateTutorialTaskPropertyType {
                     __typename

@@ -61,6 +61,7 @@ import { PartialInformationPageInputFields } from './InformationPageInput/schema
 import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
 import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
 import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
+import { ConflationPropertyInputFields } from './ScenarioPageInput/TaskInput/ConflationPropertyInput/schema';
 import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
 import { StreetPropertyInputFields } from './ScenarioPageInput/TaskInput/StreetPropertyInput/schema';
 import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
@@ -146,11 +147,28 @@ const StreetFeaturePropertyType = type({
     id: 'string',
 });
 
+const ConflationFeaturePropertyType = type.merge(
+    CommonFeaturePropertyType,
+    {
+        // This is not used anymore
+        // id: '"string" | "number"',
+        id: type.number,
+    },
+);
+
 const ValidateTutorialGeoJsonType = type({
     type: '"FeatureCollection"',
     features: type({
         geometry: PolygonType.or(MultiPolygonType),
         properties: ValidateFeaturePropertyType,
+    }).array(),
+});
+
+const ConflationTutorialGeoJsonType = type({
+    type: '"FeatureCollection"',
+    features: type({
+        geometry: PolygonType.or(MultiPolygonType),
+        properties: ConflationFeaturePropertyType,
     }).array(),
 });
 
@@ -381,6 +399,16 @@ function NewTutorial() {
                             ...task,
                             projectTypeSpecifics: {
                                 street: task.projectTypeSpecifics,
+                            },
+                        };
+                    }
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (task.projectTypeSpecifics?.__typename === 'ConflationTutorialTaskPropertyType') {
+                        return {
+                            ...task,
+                            projectTypeSpecifics: {
+                                conflation: task.projectTypeSpecifics,
                             },
                         };
                     }
@@ -660,6 +688,42 @@ function NewTutorial() {
                                     identifier: feature.properties.id,
                                     objectGeometry: JSON.stringify(feature.geometry, null, 4),
                                 } satisfies ValidatePropertyInputFields,
+                            },
+                        },
+                    ],
+                }));
+
+                setFieldValue(
+                    scenarioPages.toSorted((a, b) => (
+                        compareNumber(a.scenarioPageNumber, b.scenarioPageNumber)
+                    )),
+                    'scenarios',
+                );
+            }
+        } else if (projectType === ProjectTypeEnum.Conflation) {
+            const result = ConflationTutorialGeoJsonType(geoJson);
+            if (result instanceof type.errors) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: result.summary,
+                    },
+                });
+            } else {
+                const scenarioPages = result.features.map((feature, i) => ({
+                    clientId: ulid(),
+                    scenarioPageNumber: isDefined(feature.properties.screen)
+                        ? feature.properties.screen
+                        : i + 1,
+                    tasks: [
+                        {
+                            clientId: ulid(),
+                            reference: feature.properties.reference,
+                            projectTypeSpecifics: {
+                                // FIXME: Why objectGeometry is string?
+                                conflation: {
+                                    identifier: feature.properties.id,
+                                    objectGeometry: JSON.stringify(feature.geometry, null, 4),
+                                } satisfies ConflationPropertyInputFields,
                             },
                         },
                     ],
