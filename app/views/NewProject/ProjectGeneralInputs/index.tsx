@@ -78,6 +78,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'What should the users look to assess? (e.g., You are looking for trees)',
         [ProjectTypeEnum.Completeness]: undefined,
         [ProjectTypeEnum.Street]: undefined,
+        [ProjectTypeEnum.Conflation]: undefined,
     },
     lookFor: {
         [ProjectTypeEnum.Find]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
@@ -86,6 +87,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
         [ProjectTypeEnum.Completeness]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
         [ProjectTypeEnum.Street]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
+        [ProjectTypeEnum.Conflation]: '[This field is used only for legacy app!] What should the users look for? (e.g., buildings, cars, trees)',
     },
     additionalInfoUrl: {
         [ProjectTypeEnum.Find]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
@@ -94,6 +96,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Completeness]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
         [ProjectTypeEnum.Street]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
+        [ProjectTypeEnum.Conflation]: 'Provide an optional link to a resource with additional information on the project (only visible in the MapSwipe web app)',
     },
     projectNumber: {
         [ProjectTypeEnum.Find]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
