@@ -38,6 +38,10 @@ function StreetScenarioPreview(props: Props) {
     } = props;
 
     const imageId = scenario?.tasks?.[0].projectTypeSpecifics?.street?.mapillaryImageId;
+    const isPanoramaxProvider = [
+        StreetImageProviderNameEnum.Panoramax,
+        StreetImageProviderNameEnum.PanoramaxCustom,
+    ].includes(imageProvider?.name as StreetImageProviderNameEnum);
 
     return (
         <ListLayout
@@ -58,7 +62,7 @@ function StreetScenarioPreview(props: Props) {
                         className={styles.streetPreview}
                     />
                 )}
-                {imageProvider?.name === StreetImageProviderNameEnum.Panoramax && (
+                {isPanoramaxProvider && (
                     <PanoramaxImagePreview
                         imageId={imageId}
                         className={styles.streetPreview}
