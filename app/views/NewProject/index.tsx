@@ -156,7 +156,23 @@ const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
                 name="street-alert"
                 title="MapSwipe Web only"
                 type="warning"
-                description="Street project are currently only available in the MapSwipe web app."
+                description="Street projects are currently only available in the MapSwipe web app."
+                fullWidth
+                withoutShadow
+            />
+        </ListLayout>
+    ),
+    [ProjectTypeEnum.Conflation]: (
+        <ListLayout layout="block">
+            <div>
+                Validate AI generated features and compare with
+                existing features on OpenStreetMap.
+            </div>
+            <Alert
+                name="street-alert"
+                title="MapSwipe Web only"
+                type="warning"
+                description="Conflate feature projects are currently only available in the MapSwipe web app."
                 fullWidth
                 withoutShadow
             />

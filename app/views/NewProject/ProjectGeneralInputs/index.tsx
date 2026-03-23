@@ -60,6 +60,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Enter the description for your project. (markdown syntax is supported)',
         [ProjectTypeEnum.Completeness]: 'Enter the description for your project. (markdown syntax is supported)',
         [ProjectTypeEnum.Street]: 'Enter the description for your project. (markdown syntax is supported)',
+        [ProjectTypeEnum.Conflation]: 'Enter the description for your project. (markdown syntax is supported)',
     },
     topic: {
         [ProjectTypeEnum.Find]: 'Enter the title of your project.',
@@ -68,6 +69,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Enter the title of your project.',
         [ProjectTypeEnum.Completeness]: 'Enter the title of your project.',
         [ProjectTypeEnum.Street]: 'Enter the title of your project.',
+        [ProjectTypeEnum.Conflation]: 'Enter the title of your project.',
     },
     projectInstruction: {
         [ProjectTypeEnum.Find]: 'What should the users look for (e.g. You are looking for: buildings, destroyed buildings, cars, trees, etc.)',
@@ -100,6 +102,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
         [ProjectTypeEnum.Completeness]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
         [ProjectTypeEnum.Street]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
+        [ProjectTypeEnum.Conflation]: 'Is this project part of a bigger campaign with multiple projects? If so, increment this number up by one each time you create a new project in the series. ',
     },
     region: {
         [ProjectTypeEnum.Find]: 'Enter the region/location of your project (eg: City, Country)',
@@ -108,6 +111,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Completeness]: 'Enter the region/location of your project (eg: City, Country)',
         [ProjectTypeEnum.Street]: 'Enter the region/location of your project (eg: City, Country)',
+        [ProjectTypeEnum.Conflation]: 'Enter the region/location of your project (eg: City, Country)',
     },
     requestingOrganization: {
         [ProjectTypeEnum.Find]: 'Which group, institution or community is requesting this project?',
@@ -116,6 +120,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Completeness]: 'Which group, institution or community is requesting this project?',
         [ProjectTypeEnum.Street]: 'Which group, institution or community is requesting this project?',
+        [ProjectTypeEnum.Conflation]: 'Which group, institution or community is requesting this project?',
     },
     team: {
         [ProjectTypeEnum.Find]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
@@ -124,6 +129,7 @@ const hintText: Record<
         [ProjectTypeEnum.ValidateImage]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
         [ProjectTypeEnum.Completeness]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
         [ProjectTypeEnum.Street]: 'Please note that if \'private\', this project will only be visible to the assigned team members. Data results will still be public.',
+        [ProjectTypeEnum.Conflation]: 'Please note that if \'private\', this project will only be visible to the selected  team members. Data results will still be public.',
     },
 };
 

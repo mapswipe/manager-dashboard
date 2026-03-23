@@ -55,6 +55,11 @@ import {
     defaultCompletenessSpecificFormValue,
     PartialCompletenessSpecificFields,
 } from './CompletenessProjectSpecifics/schema.ts';
+import ConflationProjectSpecifics from './ConflationProjectSpecifics/index.tsx';
+import {
+    defaultConflationSpecificFormValue,
+    PartialConflationSpecificFields,
+} from './ConflationProjectSpecifics/schema.ts';
 import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
@@ -132,6 +137,10 @@ function UpdateProjectForm(props: Props) {
     const defaultProjectTypeSpecificsValue = useMemo<PartialProjectTypeSpecificInput>(() => {
         if (projectData.project.projectType === ProjectTypeEnum.Find) {
             return defaultFindSpecificFormValue;
+        }
+
+        if (projectData.project.projectType === ProjectTypeEnum.Conflation) {
+            return defaultConflationSpecificFormValue;
         }
 
         if (projectData.project.projectType === ProjectTypeEnum.Compare) {
@@ -373,7 +382,7 @@ function UpdateProjectForm(props: Props) {
     const setValidateImageProjectSpecificsFieldValue = useFormObject<'validateImage', PartialValidateImageSpecificFields>(
         'validateImage',
         setProjectSpecificFieldValue,
-        defaultValidateSpecificFormValue,
+        defaultValidateImageSpecificFormValue,
     );
 
     const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessSpecificFields>(
@@ -385,7 +394,13 @@ function UpdateProjectForm(props: Props) {
     const setStreetProjectSpecificsFieldValue = useFormObject<'street', PartialStreetSpecificFields>(
         'street',
         setProjectSpecificFieldValue,
-        defaultValidateSpecificFormValue,
+        defaultStreetSpecificFormValue,
+    );
+
+    const setConflationSpecificsFieldValue = useFormObject<'conflation', PartialConflationSpecificFields>(
+        'conflation',
+        setProjectSpecificFieldValue,
+        defaultConflationSpecificFormValue,
     );
 
     const pending = updateProjectPending;
@@ -416,6 +431,8 @@ function UpdateProjectForm(props: Props) {
         ?.validateImage as PartialValidateSpecificFields | undefined;
     const streetProjectTypeSpecifics = value.projectTypeSpecifics
         ?.street as PartialStreetSpecificFields | undefined;
+    const conflationProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.conflation as PartialConflationSpecificFields | undefined;
 
     return (
         <PageLayout
@@ -567,6 +584,14 @@ function UpdateProjectForm(props: Props) {
                         value={streetProjectTypeSpecifics}
                         setFieldValue={setStreetProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.street}
+                        disabled={projectTypeSpecificInputsDisabled || readOnly}
+                    />
+                )}
+                {projectContext.projectType === ProjectTypeEnum.Conflation && (
+                    <ConflationProjectSpecifics
+                        value={conflationProjectTypeSpecifics}
+                        setFieldValue={setConflationSpecificsFieldValue}
+                        error={getErrorObject(error?.projectTypeSpecifics)?.conflation}
                         disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
