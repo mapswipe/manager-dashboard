@@ -7,9 +7,11 @@ import {
 
 import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
+import { PartialStreetImageProviderInputFields } from '#components/domain/StreetImageProviderInput/schema';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
+import { StreetImageProviderNameEnum } from '#generated/types/graphql';
 
 import { PartialStreetMapillaryImageFiltersInputFields } from './schema.ts';
 
@@ -20,6 +22,7 @@ interface Props {
         ...entries: EntriesAsList<PartialStreetMapillaryImageFiltersInputFields>
     ) => void;
     disabled?: boolean;
+    imageProvider?: PartialStreetImageProviderInputFields | undefined | null;
 }
 
 function StreetMapillaryImageFiltersInput(props: Props) {
@@ -28,6 +31,7 @@ function StreetMapillaryImageFiltersInput(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
+        imageProvider,
     } = props;
 
     const error = getErrorObject(formError);
@@ -65,15 +69,17 @@ function StreetMapillaryImageFiltersInput(props: Props) {
                     disabled={disabled}
                     hint="Provide a valid ID to filter for images belonging to a specific Mapillary/Panoramax user."
                 />
-                <TextInput
-                    name="organizationId"
-                    label="Organization ID"
-                    value={value?.organizationId}
-                    error={error?.organizationId}
-                    onChange={setFieldValue}
-                    disabled={disabled}
-                    hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization (only Mapillary)."
-                />
+                {imageProvider?.name === StreetImageProviderNameEnum.Mapillary && (
+                    <TextInput
+                        name="organizationId"
+                        label="Organization ID"
+                        value={value?.organizationId}
+                        error={error?.organizationId}
+                        onChange={setFieldValue}
+                        disabled={disabled}
+                        hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization."
+                    />
+                )}
                 <NumberInput
                     name="samplingThreshold"
                     label="Image Sampling Threshold"

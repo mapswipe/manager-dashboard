@@ -143,6 +143,7 @@ function StreetProjectSpecifics(props: Props) {
                 setFieldValue={setStreetMapillaryImageFiltersInputFieldValue}
                 disabled={disabled}
                 error={error?.mapillaryImageFilters}
+                imageProvider={value?.imageProvider}
             />
             <StreetImageProviderInput
                 value={value?.imageProvider}
