@@ -6,7 +6,10 @@ import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
-import { StreetProjectPropertyType } from '#generated/types/graphql';
+import {
+    StreetImageProviderNameEnum,
+    StreetProjectPropertyType,
+} from '#generated/types/graphql';
 
 interface Props {
     data: StreetProjectPropertyType | undefined;
@@ -89,7 +92,10 @@ function StreetDetails(props: Props) {
                         value={data.imageProvider?.name}
                         valueType="text"
                     />
-                    {data.imageProvider?.url && (
+                    {(
+                        data.imageProvider?.name === StreetImageProviderNameEnum.PanoramaxCustom
+                        && data.imageProvider?.url
+                    ) && (
                         <TextOutput
                             label="Panoramax API URL"
                             value={data.imageProvider.url}
