@@ -35,6 +35,7 @@ function FindPropertyInput(props: Props) {
             layout="grid"
             numPreferredGridColumns={3}
             minGridColumnSize="6rem"
+            spacing="sm"
         >
             <NumberInput
                 name="tileX"
@@ -43,6 +44,7 @@ function FindPropertyInput(props: Props) {
                 onChange={setFieldValue}
                 error={error?.tileX}
                 disabled={disabled}
+                spacing="sm"
             />
             <NumberInput
                 name="tileY"

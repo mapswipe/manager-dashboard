@@ -8,17 +8,17 @@ import {
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 
-import { PartialComparePropertyInputFields } from './schema';
+import { PartialLocateFeaturesPropertyInputFields } from './schema';
 
 interface Props {
     className?: string;
-    value: PartialComparePropertyInputFields | undefined;
-    setFieldValue: (...entries: EntriesAsList<PartialComparePropertyInputFields>) => void;
-    error: LeafError | ObjectError<PartialComparePropertyInputFields>;
+    value: PartialLocateFeaturesPropertyInputFields | undefined;
+    setFieldValue: (...entries: EntriesAsList<PartialLocateFeaturesPropertyInputFields>) => void;
+    error: LeafError | ObjectError<PartialLocateFeaturesPropertyInputFields>;
     disabled?: boolean;
 }
 
-function ComparePropertyInput(props: Props) {
+function LocateFeaturesPropertyInput(props: Props) {
     const {
         className,
         value,
@@ -65,4 +65,4 @@ function ComparePropertyInput(props: Props) {
     );
 }
 
-export default ComparePropertyInput;
+export default LocateFeaturesPropertyInput;

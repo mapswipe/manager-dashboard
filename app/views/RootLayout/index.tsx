@@ -107,6 +107,10 @@ query AllEnums {
             key
             label
         }
+        SubGridSizeEnum {
+            key
+            label
+        }
     }
 }
 `;
@@ -200,6 +204,7 @@ function RootLayout() {
         overlayLayerTypeOptions: allEnumsResponse?.enums.OverlayLayerTypeEnum ?? [],
         tutorialStatusOptions: allEnumsResponse?.enums.TutorialStatusEnum ?? [],
         firebasePushStatusOptions: allEnumsResponse?.enums.FirebasePushStatusEnum ?? [],
+        subGridSizeOptions: allEnumsResponse?.enums.SubGridSizeEnum ?? [],
         validateObjectSourceTypeMapping: listToMap(
             allEnumsResponse?.enums.ValidateObjectSourceTypeEnum,
             ({ key }) => key,

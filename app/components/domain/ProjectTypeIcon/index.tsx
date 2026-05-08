@@ -1,3 +1,4 @@
+import { PiGridFour } from 'react-icons/pi';
 import { _cs } from '@togglecorp/fujs';
 
 import { ProjectTypeEnum } from '#generated/types/graphql';
@@ -117,6 +118,10 @@ function ProjectTypeIcon(props: Props) {
                 </g>
             </svg>
         );
+    }
+
+    if (type === ProjectTypeEnum.Locate) {
+        return <PiGridFour className={className} />;
     }
 
     const remainingTypes = type;

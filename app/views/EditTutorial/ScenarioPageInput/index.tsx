@@ -26,6 +26,7 @@ import CompareScenarioPreview from '#components/domain/CompareScenarioPreview';
 import CompletenessScenarioPreview from '#components/domain/CompletenessScenarioPreview';
 import FindScenarioPreview from '#components/domain/FindScenarioPreview';
 import IconSelectInput from '#components/domain/IconSelectInput';
+import LocateFeaturesScenarioPreview from '#components/domain/LocateFeaturesScenarioPreview';
 import StreetScenarioPreview from '#components/domain/StreetScenarioPreview';
 import TutorialPreviewScreenSelectInput, {
     PreviewItem,
@@ -146,7 +147,10 @@ function ScenarioPageInput(props: Props) {
                             fullWidth
                         />
                     )}
-                    <ListLayout layout="grid" numPreferredGridColumns={3}>
+                    <ListLayout
+                        layout="grid"
+                        numPreferredGridColumns={3}
+                    >
                         <Container
                             heading="Instruction"
                             headingLevel={5}
@@ -274,17 +278,22 @@ function ScenarioPageInput(props: Props) {
                         )}
                         empty={isNotDefined(value.tasks) || value.tasks.length === 0}
                     >
-                        {value.tasks?.map((task, taskIndex) => (
-                            <TaskInput
-                                key={task.clientId}
-                                index={taskIndex}
-                                value={task}
-                                onChange={setTasksFieldValue}
-                                error={getErrorObject(taskErrors?.[task.clientId])}
-                                disabled={disabled}
-                                projectData={projectData}
-                            />
-                        ))}
+                        <ListLayout
+                            layout="block"
+                            spacing="sm"
+                        >
+                            {value.tasks?.map((task, taskIndex) => (
+                                <TaskInput
+                                    key={task.clientId}
+                                    index={taskIndex}
+                                    value={task}
+                                    onChange={setTasksFieldValue}
+                                    error={getErrorObject(taskErrors?.[task.clientId])}
+                                    disabled={disabled}
+                                    projectData={projectData}
+                                />
+                            ))}
+                        </ListLayout>
                     </Container>
                 )}
             </ListLayout>
@@ -345,6 +354,17 @@ function ScenarioPageInput(props: Props) {
                         projectInstruction={projectData.projectInstruction}
                         customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                         preview={preview}
+                    />
+                )}
+                {/* eslint-disable-next-line no-underscore-dangle */}
+                {projectData?.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType' && (
+                    <LocateFeaturesScenarioPreview
+                        scenario={value}
+                        tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                        projectInstruction={projectData.projectInstruction}
+                        preview={preview}
+                        subgridSize={projectData.projectTypeSpecifics?.subGridSize}
+                        customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                     />
                 )}
                 <InlineLayout withCenteredContent>

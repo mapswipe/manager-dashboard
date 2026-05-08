@@ -11,6 +11,7 @@ import ProjectTypeOutput from '../ProjectTypeOutput';
 import CompareDetails from './CompareDetails';
 import CompletenessDetails from './CompletenessDetails';
 import FindDetails from './FindDetails';
+import LocateFeaturesDetails from './LocateFeatures';
 import StreetDetails from './StreetDetails';
 import ValidateDetails from './ValidateDetails';
 import ValidateImageDetails from './ValidateImageDetails';
@@ -132,6 +133,13 @@ function ProjectSpecificDetails(props: Props) {
             {projectData?.project.projectTypeSpecifics?.__typename === 'StreetProjectPropertyType' && (
                 <StreetDetails
                     data={projectData.project.projectTypeSpecifics}
+                />
+            )}
+            {/* eslint-disable-next-line no-underscore-dangle */}
+            {projectData?.project.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType' && (
+                <LocateFeaturesDetails
+                    data={projectData.project.projectTypeSpecifics}
+                    defaultBounds={defaultBounds}
                 />
             )}
         </Container>

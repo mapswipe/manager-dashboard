@@ -67,6 +67,16 @@ function CompareScenarioPreview(props: Props) {
         return createGeoJsonFromTiles(tiles);
     }, [scenario]);
 
+    const tileServerPropertySafe = useMemo(
+        () => removeNull(tileServerProperty),
+        [tileServerProperty],
+    );
+
+    const tileServerBPropertySafe = useMemo(
+        () => removeNull(tileServerBProperty),
+        [tileServerBProperty],
+    );
+
     return (
         <div className={_cs(styles.compareScenarioPreview, className)}>
             <MobilePreview
@@ -82,7 +92,7 @@ function CompareScenarioPreview(props: Props) {
                     tileSize={280}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
-                    baseTileServer={removeNull(tileServerProperty)}
+                    baseTileServer={tileServerPropertySafe}
                     geoJsonLayerOptions={layerOptions}
                     disablePan
                 />
@@ -91,7 +101,7 @@ function CompareScenarioPreview(props: Props) {
                     tileSize={280}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
-                    baseTileServer={removeNull(tileServerBProperty)}
+                    baseTileServer={tileServerBPropertySafe}
                     geoJsonLayerOptions={layerOptions}
                     disablePan
                 />

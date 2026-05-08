@@ -66,6 +66,11 @@ function FindScenarioPreview(props: Props) {
         return createGeoJsonFromTiles(tiles);
     }, [scenario]);
 
+    const tileServerPropertySafe = useMemo(
+        () => removeNull(tileServerProperty),
+        [tileServerProperty],
+    );
+
     return (
         <ListLayout
             className={_cs(styles.findScenarioPreview, className)}
@@ -84,7 +89,7 @@ function FindScenarioPreview(props: Props) {
                     tileSize={160}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
-                    baseTileServer={removeNull(tileServerProperty)}
+                    baseTileServer={tileServerPropertySafe}
                     geoJsonLayerOptions={layerOptions}
                     disablePan
                 />

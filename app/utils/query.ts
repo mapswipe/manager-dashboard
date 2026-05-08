@@ -24,6 +24,8 @@ fragment RasterTileServerPropertyFields on ProjectRasterTileServerConfig {
     custom {
         credits
         url
+        minZoom
+        maxZoom
     }
 }
 `;
@@ -56,7 +58,7 @@ fragment VectorTileServerPropertyFields on ProjectVectorTileServerConfig {
 export const PROJECT_TYPE_SPECIFIC_FRAGMENT = gql`
 ${TILE_SERVER_PROPERTY_FRAGMENT}
 ${VECTOR_TILE_SERVER_PROPERTY_FRAGMENT}
-fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyTypeStreetProjectPropertyType {
+fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPropertyTypeValidateProjectPropertyTypeValidateImageProjectPropertyTypeCompletenessProjectPropertyTypeStreetProjectPropertyTypeLocateProjectPropertyType {
     ... on CompareProjectPropertyType {
         __typename
         aoiGeometry
@@ -144,6 +146,20 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
             randomizeOrder
             samplingThreshold
             startTime
+        }
+    }
+    ... on LocateProjectPropertyType {
+        __typename
+        aoiGeometry
+        tileServerProperty {
+            ...RasterTileServerPropertyFields
+        }
+        zoomLevel
+        subGridSize
+        exportMetaKey
+        exportMetaValue
+        customOptions {
+            ...ProjectCustomOptionFields
         }
     }
 }
@@ -288,6 +304,7 @@ fragment TutorialDetailFields on TutorialType {
             clientId
             reference
             scenarioId
+            taskPartitionIndex
             projectTypeSpecifics {
                 ... on FindTutorialTaskPropertyType {
                     __typename
@@ -332,6 +349,12 @@ fragment TutorialDetailFields on TutorialType {
                     __typename
                     mapillaryImageId
                     geometry
+                }
+                ... on LocateTutorialTaskPropertyType {
+                    __typename
+                    tileX
+                    tileY
+                    tileZ
                 }
             }
         }

@@ -38,6 +38,7 @@ function ValidateImagePropertyInput(props: Props) {
             layout="grid"
             numPreferredGridColumns={2}
             minGridColumnSize="6rem"
+            spacing="sm"
         >
             <TextInput
                 label="Image ID"
@@ -47,9 +48,7 @@ function ValidateImagePropertyInput(props: Props) {
                 onChange={setFieldValue}
                 disabled={disabled}
             />
-            <GridLayoutItem
-                columnSpan={2}
-            >
+            <GridLayoutItem columnSpan={2}>
                 <TextInput
                     icons="URL:"
                     name="url"
