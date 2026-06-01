@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import {
     _cs,
+    isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
@@ -74,9 +75,26 @@ function LocateFeaturesScenarioPreview(props: Props) {
         } satisfies Omit<FillLayerSpecification, 'id' | 'source'>;
     }, [customOptions]);
 
-    const references = useMemo(() => (
-        scenario?.tasks?.map(({ reference }) => reference)
-    ), [scenario?.tasks]);
+    const references = useMemo(() => {
+        const tasks = scenario?.tasks;
+        if (isNotDefined(tasks)) {
+            return undefined;
+        }
+
+        // createSubGridGeoJsonFromTile maps references positionally onto the
+        // row-major sub-grid cells, where cell i corresponds to
+        // taskPartitionIndex i. Task order from the server is not guaranteed to
+        // match partition order on reload, so we index by taskPartitionIndex
+        // rather than rely on the array position.
+        const orderedReferences: (number | undefined)[] = [];
+        tasks.forEach((task) => {
+            if (isDefined(task.taskPartitionIndex)) {
+                orderedReferences[task.taskPartitionIndex] = task.reference;
+            }
+        });
+
+        return orderedReferences;
+    }, [scenario?.tasks]);
 
     const firstTask = scenario?.tasks?.[0];
     const [tileX, tileY, tileZ] = useMemo(() => {
@@ -134,8 +152,8 @@ function LocateFeaturesScenarioPreview(props: Props) {
                 contentClassName={styles.content}
             >
                 <GeoJsonPreview
-                    // NOTE: this should match --size-tile-locateFeatures
-                    tileSize={280}
+                    // NOTE: this should match --size-tile-locate
+                    tileSize={320}
                     className={styles.mapContainer}
                     geoJson={generatedGeojson}
                     baseTileServer={tileServerPropertySafe}

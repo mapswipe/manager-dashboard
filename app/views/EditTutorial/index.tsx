@@ -218,7 +218,30 @@ const LocateFeaturesTutorialGeoJsonType = type({
     features: type({
         geometry: PolygonType.or(MultiPolygonType),
         properties: LocateFeaturesPropertyType,
-    }).array(),
+    }).array().narrow((features, ctx) => {
+        // Each Locate feature is one parent tile rendered as a single scenario
+        // screen, so a screen must not appear on more than one feature.
+        const screens = features.map(({ properties }) => properties.screen);
+        const groupedScreens = listToGroupList(
+            screens,
+            (screen) => screen,
+            (screen) => screen,
+        );
+
+        const duplicateScreens = Object.values(groupedScreens)
+            .filter((group) => group.length > 1)
+            .map((group) => group[0]);
+
+        if (duplicateScreens.length === 0) {
+            return true;
+        }
+
+        ctx.error({
+            problem: `expected each screen to appear only once (duplicated screen(s): ${duplicateScreens.join(', ')})`,
+        });
+
+        return false;
+    }),
 });
 
 const CompletenessTutorialGeoJsonType = type({
@@ -856,49 +879,96 @@ function NewTutorial() {
                         [nonFieldError]: result.summary,
                     },
                 });
-            } else {
-                const featuresByScreen = listToGroupList(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                );
-
-                // eslint-disable-next-line no-underscore-dangle
-                const subgridSize = projectDetailResponse.project.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType'
-                    ? projectDetailResponse.project.projectTypeSpecifics.subGridSize
-                    : undefined;
-
-                const subGridValue = isDefined(subgridSize)
-                    ? subgridSizeToValueMap[subgridSize]
-                    : 0;
-
-                const numSubGrids = (2 ** subGridValue) ** 2;
-
-                const scenarioPages: PartialScenarioPageInputFields[] = unique(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                ).toSorted(
-                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
-                ).map(({ properties }) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: properties.screen,
-                    tasks: featuresByScreen[properties.screen].flatMap((feature) => (
-                        Array.from(new Array(numSubGrids).keys()).map((index) => ({
-                            clientId: ulid(),
-                            reference: feature.properties.references[index],
-                            taskPartitionIndex: index,
-                            projectTypeSpecifics: {
-                                locate: {
-                                    tileX: feature.properties.tile_x,
-                                    tileY: feature.properties.tile_y,
-                                    tileZ: feature.properties.tile_z,
-                                } satisfies LocateFeaturesPropertyInputFields,
-                            },
-                        }))
-                    )),
-                }));
-
-                setFieldValue(scenarioPages, 'scenarios');
+                return;
             }
+
+            // eslint-disable-next-line no-underscore-dangle
+            const subgridSize = projectDetailResponse.project.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType'
+                ? projectDetailResponse.project.projectTypeSpecifics.subGridSize
+                : undefined;
+
+            // The number of sub-grid cells (and hence tasks) per feature is
+            // derived from the project's sub-grid size, so we cannot proceed
+            // without it -- otherwise we'd silently create a single task per
+            // feature and drop the rest of the references.
+            if (isNotDefined(subgridSize)) {
+                setError({
+                    scenarios: {
+                        [nonFieldError]: 'Could not determine the sub-grid size for this project. Please configure the project before uploading scenarios.',
+                    },
+                });
+                return;
+            }
+
+            const numSubGrids = (2 ** subgridSizeToValueMap[subgridSize]) ** 2;
+
+            // Each feature should carry one reference per sub-grid cell. If it
+            // provides more, we clip to the first numSubGrids (below) and warn;
+            // if it provides fewer, the missing cells default to 0.
+            result.features.forEach((feature) => {
+                if (feature.properties.references.length > numSubGrids) {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `Feature on screen ${feature.properties.screen} has ${feature.properties.references.length} references but the sub-grid only has ${numSubGrids} cells; extra references were ignored.`,
+                    );
+                }
+
+                if (feature.properties.references.length < numSubGrids) {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `Feature on screen ${feature.properties.screen} has ${feature.properties.references.length} references but the sub-grid needs ${numSubGrids} cells; missing references were filled in.`,
+                    );
+                }
+            });
+
+            // Screens are unique (enforced by the schema above) and should be
+            // serial (1, 2, 3, …). Warn -- but don't block -- on gaps so the
+            // author can fix the scenario numbering.
+            const sortedScreens = result.features
+                .map((feature) => feature.properties.screen)
+                .toSorted((a, b) => compareNumber(a, b));
+
+            const screensAreSerial = sortedScreens.every(
+                (screen, index) => screen === index + 1,
+            );
+            if (!screensAreSerial) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    `Locate scenario screens are expected to be serial (1, 2, 3, …). Found: ${sortedScreens.join(', ')}.`,
+                );
+            }
+
+            const featuresByScreen = listToGroupList(
+                result.features,
+                (feature) => feature.properties.screen,
+            );
+
+            const scenarioPages: PartialScenarioPageInputFields[] = unique(
+                result.features,
+                (feature) => feature.properties.screen,
+            ).toSorted(
+                (a, b) => compareNumber(a.properties.screen, b.properties.screen),
+            ).map(({ properties }) => ({
+                clientId: ulid(),
+                scenarioPageNumber: properties.screen,
+                tasks: featuresByScreen[properties.screen].flatMap((feature) => (
+                    Array.from(new Array(numSubGrids).keys()).map((index) => ({
+                        clientId: ulid(),
+                        // FIXME(frozenhelium): maybe the default value should be first option?
+                        reference: feature.properties.references[index] ?? 0,
+                        taskPartitionIndex: index,
+                        projectTypeSpecifics: {
+                            locate: {
+                                tileX: feature.properties.tile_x,
+                                tileY: feature.properties.tile_y,
+                                tileZ: feature.properties.tile_z,
+                            } satisfies LocateFeaturesPropertyInputFields,
+                        },
+                    }))
+                )),
+            }));
+
+            setFieldValue(scenarioPages, 'scenarios');
         }
     }, [projectDetailResponse, setError, setFieldValue]);
 

@@ -10,8 +10,8 @@
 
         .map-container {
             z-index: 0;
-            width: var(--size-tile-validate);
-            height: var(--size-tile-validate);
+            width: var(--size-tile-locate);
+            height: var(--size-tile-locate);
         }
     }
 }
