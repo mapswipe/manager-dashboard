@@ -528,7 +528,7 @@ function NewTutorial() {
             // eslint-disable-next-line no-underscore-dangle
             const validReferenceValues = projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType'
                 ? getValidReferenceValues(projectTypeSpecifics.customOptions)
-                : undefined;
+                : [];
 
             result = transformValidateGeoJson(geoJson, validReferenceValues);
         } else if (projectType === ProjectTypeEnum.Find) {
@@ -541,7 +541,7 @@ function NewTutorial() {
             // eslint-disable-next-line no-underscore-dangle
             const validReferenceValues = projectTypeSpecifics?.__typename === 'StreetProjectPropertyType'
                 ? getValidReferenceValues(projectTypeSpecifics.customOptions)
-                : undefined;
+                : [];
 
             result = transformStreetGeoJson(geoJson, validReferenceValues);
         } else if (projectType === ProjectTypeEnum.Locate) {
@@ -552,7 +552,7 @@ function NewTutorial() {
                 : undefined;
             const validReferenceValues = isLocateProperty
                 ? getValidReferenceValues(projectTypeSpecifics.customOptions)
-                : undefined;
+                : [];
 
             result = transformLocateGeoJson(geoJson, subgridSize, validReferenceValues);
         } else {

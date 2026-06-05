@@ -4,6 +4,7 @@ import {
     isDefined,
     isNotDefined,
     listToGroupList,
+    Maybe,
     unique,
 } from '@togglecorp/fujs';
 import { type } from 'arktype';
@@ -152,21 +153,22 @@ export type TutorialGeoJsonTransformResult = {
 
 const noOptionsError = 'Could not determine the valid reference values for this project. Please configure the custom options for the project before uploading scenarios.';
 
+// FIXME: Get this from the server
 const tileOptionValues = defaultTileOptions.map((option) => option.value);
 
 interface ReferenceCustomOption {
-    value?: number | null | undefined;
-    subOptions?: ({ value?: number | null | undefined } | null | undefined)[] | null | undefined;
+    value?: Maybe<number>;
+    subOptions?: Maybe<Maybe<{ value?: Maybe<number> }>[]>;
 }
 
 // NOTE: mirrors the option flattening in CustomOptionSelectInput: both the
 // option values and the sub-option values are selectable as a reference, but
 // an option without a value is skipped along with its sub-options.
 export function getValidReferenceValues(
-    customOptions: readonly (ReferenceCustomOption | null | undefined)[] | null | undefined,
-): number[] | undefined {
+    customOptions: Maybe<Maybe<ReferenceCustomOption>[]>,
+): number[] {
     if (isNotDefined(customOptions)) {
-        return undefined;
+        return [];
     }
 
     const values = customOptions.flatMap((option) => {
@@ -181,7 +183,7 @@ export function getValidReferenceValues(
         return [option.value, ...subOptionValues];
     });
 
-    return values.length > 0 ? values : undefined;
+    return values;
 }
 
 function checkScreensUnique(screens: number[]): string[] {
@@ -196,7 +198,7 @@ function checkScreensUnique(screens: number[]): string[] {
 
 function checkScreensSerial(screens: number[]): string[] {
     const sortedScreens = unique(screens, (screen) => screen)
-        .toSorted((a, b) => compareNumber(a, b));
+        .toSorted(compareNumber);
 
     const screensAreSerial = sortedScreens.every(
         (screen, index) => screen === index + 1,
@@ -210,7 +212,11 @@ function checkScreensSerial(screens: number[]): string[] {
 }
 
 function checkScreenFeatureCount(screens: number[], expectedCount: number): string[] {
-    const groupedScreens = listToGroupList(screens, (screen) => screen);
+    // FIXME: We can identify mismatches using listToGroupList transformer
+    const groupedScreens = listToGroupList(
+        screens,
+        (screen) => screen,
+    );
 
     const mismatches = Object.values(groupedScreens).map((group) => {
         if (group.length === expectedCount) {
@@ -231,7 +237,7 @@ function checkScreenFeatureCount(screens: number[], expectedCount: number): stri
         ({ screen, numEntries }) => `${numEntries} for screen ${screen}`,
     ).join(', ');
 
-    return [`expected to have ${expectedCount} instances of every screen (found ${description})`];
+    return [`expected to have ${expectedCount} instance(s) of every screen (found ${description})`];
 }
 
 function checkReferenceValues(
@@ -261,6 +267,7 @@ function checkTileGroupedFeatures(
     const screens = features.map((feature) => feature.properties.screen);
 
     return [
+        ...checkScreenFeatureCount(screens, 6),
         ...checkScreensSerial(screens),
         ...checkReferenceValues(
             features.map((feature) => ({
@@ -275,7 +282,7 @@ function checkTileGroupedFeatures(
 // Validation common to the project types where each feature is its own
 // scenario screen and the reference values come from the project's custom
 // options.
-function checkPerFeatureScenarios(
+function checkSingletonFeatures(
     features: { properties: { screen: number, reference: number } }[],
     validReferenceValues: number[] | undefined,
 ): string[] {
@@ -290,7 +297,6 @@ function checkPerFeatureScenarios(
         problems.push(noOptionsError);
         return problems;
     }
-
     problems.push(...checkReferenceValues(
         features.map((feature) => ({
             screen: feature.properties.screen,
@@ -316,6 +322,7 @@ function buildTileGroupedScenarioPages(
     features: { properties: TileGroupedFeatureProperties }[],
     buildSpecifics: (properties: TileGroupedFeatureProperties) => PartialProjectTypeSpecifics,
 ): PartialScenarioPageInputFields[] {
+    // FIXME: We can easily process using listToGroupList transformer
     const featuresByScreen = listToGroupList(
         features,
         (feature) => feature.properties.screen,
@@ -339,7 +346,7 @@ function buildTileGroupedScenarioPages(
 
 // Maps each feature to its own scenario page with a single task (used by the
 // project types where one feature represents one screen).
-function buildPerFeatureScenarioPages<
+function buildSingletonScenarioPages<
     FEATURE extends { properties: { screen: number, reference: number } },
 >(
     features: FEATURE[],
@@ -371,14 +378,14 @@ export function transformValidateGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkPerFeatureScenarios(result.features, validReferenceValues);
+    const problems = checkSingletonFeatures(result.features, validReferenceValues);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
 
     return {
         ok: true,
-        scenarioPages: buildPerFeatureScenarioPages(
+        scenarioPages: buildSingletonScenarioPages(
             result.features,
             (feature) => ({
                 // FIXME: Why objectGeometry is string?
@@ -399,13 +406,7 @@ export function transformFindGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = [
-        ...checkScreenFeatureCount(
-            result.features.map((feature) => feature.properties.screen),
-            6,
-        ),
-        ...checkTileGroupedFeatures(result.features),
-    ];
+    const problems = checkTileGroupedFeatures(result.features);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
@@ -490,14 +491,14 @@ export function transformStreetGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkPerFeatureScenarios(result.features, validReferenceValues);
+    const problems = checkSingletonFeatures(result.features, validReferenceValues);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
 
     return {
         ok: true,
-        scenarioPages: buildPerFeatureScenarioPages(
+        scenarioPages: buildSingletonScenarioPages(
             result.features,
             (feature) => ({
                 street: {
@@ -559,10 +560,11 @@ export function transformLocateGeoJson(
         ));
     }
 
-    if (isNotDefined(numSubGrids) || problems.length > 0) {
+    if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
 
+    // FIXME: We can easily process using listToGroupList transformer
     const featuresByScreen = listToGroupList(
         result.features,
         (feature) => feature.properties.screen,
