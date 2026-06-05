@@ -83,7 +83,10 @@ export default defineConfig(({ mode }) => {
 
         },
         test: {
-            environment: 'happy-dom',
+            // NOTE: happy-dom is configured nowhere in dependencies; use node
+            // until DOM-based tests are actually added
+            environment: 'node',
+            dir: 'app',
         },
     };
 });
