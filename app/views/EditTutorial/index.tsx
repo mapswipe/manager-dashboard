@@ -12,12 +12,10 @@ import {
 } from 'react-icons/pi';
 import { useParams } from 'react-router';
 import {
-    compareNumber,
     isDefined,
     isNotDefined,
     listToGroupList,
     listToMap,
-    unique,
 } from '@togglecorp/fujs';
 import {
     createSubmitHandler,
@@ -49,10 +47,7 @@ import {
     ValidateImageTutorialTaskPropertyInput,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
-import {
-    readFileAsText,
-    subgridSizeToValueMap,
-} from '#utils/common';
+import { readFileAsText } from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -61,13 +56,6 @@ import {
 import { CocoType } from '#utils/validation';
 
 import { PartialInformationPageInputFields } from './InformationPageInput/schema';
-import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
-import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
-import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
-import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
-import { LocateFeaturesPropertyInputFields } from './ScenarioPageInput/TaskInput/LocateFeaturesPropertyInput/schema';
-import { StreetPropertyInputFields } from './ScenarioPageInput/TaskInput/StreetPropertyInput/schema';
-import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
 import InformationPageInput from './InformationPageInput';
 import ScenarioPageInput from './ScenarioPageInput';
 import tutorialUpdateSchema, {
@@ -75,6 +63,16 @@ import tutorialUpdateSchema, {
     TutorialFormContext,
 } from './schema';
 import TutorialActions from './TutorialActions';
+import {
+    getValidReferenceValues,
+    transformCompareGeoJson,
+    transformCompletenessGeoJson,
+    transformFindGeoJson,
+    transformLocateGeoJson,
+    transformStreetGeoJson,
+    transformValidateGeoJson,
+    TutorialGeoJsonTransformResult,
+} from './utils';
 
 import styles from './styles.module.css';
 
@@ -89,155 +87,7 @@ function stringifyId(value: number | undefined) {
     return String(value);
 }
 
-const PositionType = type.number.array();
-
-const PolygonType = type({
-    type: "'Polygon'",
-    coordinates: PositionType.array().array(),
-});
-const MultiPolygonType = type({
-    type: "'MultiPolygon'",
-    coordinates: PositionType.array().array().array(),
-});
-
-const CommonFeaturePropertyType = type({
-    screen: type.number,
-    reference: type.number,
-});
-const TileFeaturePropertyType = type({
-    tile_x: type.number,
-    tile_y: type.number,
-    tile_z: type.number,
-});
-
-const ValidateFeaturePropertyType = type.merge(
-    CommonFeaturePropertyType,
-    {
-        // This is not used anymore
-        // id: '"string" | "number"',
-        id: type.number,
-    },
-);
-
-const FindFeaturePropertyType = type.merge(
-    CommonFeaturePropertyType,
-    TileFeaturePropertyType,
-    {
-        // This is not used anymore
-        // task_id: 'string',
-    },
-);
-const CompareFeaturePropertyType = type.merge(
-    CommonFeaturePropertyType,
-    TileFeaturePropertyType,
-    {
-        // This is not used anymore
-        // task_id: 'string',
-    },
-);
-const LocateFeaturesPropertyType = type.merge(
-    TileFeaturePropertyType,
-    {
-        screen: type.number,
-        references: type.number.array(),
-        // This is not used anymore
-        // task_id: 'string',
-    },
-);
-
-const CompletenessFeaturePropertyType = type.merge(
-    CommonFeaturePropertyType,
-    TileFeaturePropertyType,
-    {
-        // This is not used anymore
-        // task_id: 'string',
-    },
-);
-
-const StreetFeaturePropertyType = type({
-    '...': CommonFeaturePropertyType,
-    id: 'string',
-});
-
-const ValidateTutorialGeoJsonType = type({
-    type: '"FeatureCollection"',
-    features: type({
-        geometry: PolygonType.or(MultiPolygonType),
-        properties: ValidateFeaturePropertyType,
-    }).array(),
-});
-
-const FindTutorialGeoJsonType = type({
-    type: '"FeatureCollection"',
-    features: type({
-        geometry: PolygonType.or(MultiPolygonType),
-        properties: FindFeaturePropertyType,
-    }).array().narrow((features, ctx) => {
-        // FIXME: add similar validations to other types
-        const screens = features.map(({ properties }) => properties.screen);
-        const groupedScreens = listToGroupList(
-            screens,
-            (screen) => screen,
-            (screen) => screen,
-        );
-
-        const errors = Object.values(groupedScreens).map((group) => {
-            if (group.length === 6) {
-                return undefined;
-            }
-
-            return {
-                screen: group[0],
-                numEntries: group.length,
-            };
-        }).filter(isDefined);
-
-        if (errors.length === 0) {
-            return true;
-        }
-
-        const errorDescription = errors.map(({ screen, numEntries }) => `${numEntries} for screen ${screen}`).join(', ');
-        ctx.error({
-            problem: `expected to have 6 instances of every screen(found ${errorDescription})`,
-        });
-
-        return false;
-    }),
-});
-
-const CompareTutorialGeoJsonType = type({
-    type: '"FeatureCollection"',
-    features: type({
-        geometry: PolygonType.or(MultiPolygonType),
-        properties: CompareFeaturePropertyType,
-    }).array(),
-});
-
-const LocateFeaturesTutorialGeoJsonType = type({
-    type: '"FeatureCollection"',
-    features: type({
-        geometry: PolygonType.or(MultiPolygonType),
-        properties: LocateFeaturesPropertyType,
-    }).array(),
-});
-
-const CompletenessTutorialGeoJsonType = type({
-    type: '"FeatureCollection"',
-    features: type({
-        geometry: PolygonType.or(MultiPolygonType),
-        properties: CompletenessFeaturePropertyType,
-    }).array(),
-});
-
 const ValidateImageJsonType = CocoType;
-
-const StreetTutorialGeoJsonType = type({
-    type: '"FeatureCollection"',
-    features: type({
-        geometry: PolygonType.or(MultiPolygonType),
-        properties: StreetFeaturePropertyType,
-    }).array(),
-});
 
 function createMapping<T extends { clientId: string }>(items: T[]) {
     return listToMap(items, ({ clientId }) => clientId);
@@ -665,241 +515,64 @@ function NewTutorial() {
 
         const {
             projectType,
+            projectTypeSpecifics,
         } = projectDetailResponse.project;
 
-        if (projectType === ProjectTypeEnum.Validate) {
-            const result = ValidateTutorialGeoJsonType(geoJson);
-            if (result instanceof type.errors) {
-                setError({
-                    scenarios: {
-                        [nonFieldError]: result.summary,
-                    },
-                });
-            } else {
-                const scenarioPages = result.features.map((feature, i) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: isDefined(feature.properties.screen)
-                        ? feature.properties.screen
-                        : i + 1,
-                    tasks: [
-                        {
-                            clientId: ulid(),
-                            reference: feature.properties.reference,
-                            projectTypeSpecifics: {
-                                // FIXME: Why objectGeometry is string?
-                                validate: {
-                                    identifier: feature.properties.id,
-                                    objectGeometry: JSON.stringify(feature.geometry, null, 4),
-                                } satisfies ValidatePropertyInputFields,
-                            },
-                        },
-                    ],
-                }));
-
-                setFieldValue(
-                    scenarioPages.toSorted((a, b) => (
-                        compareNumber(a.scenarioPageNumber, b.scenarioPageNumber)
-                    )),
-                    'scenarios',
-                );
-            }
-        } else if (projectType === ProjectTypeEnum.Find) {
-            const result = FindTutorialGeoJsonType(geoJson);
-            if (result instanceof type.errors) {
-                setError({
-                    scenarios: {
-                        [nonFieldError]: result.summary,
-                    },
-                });
-            } else {
-                const featuresByScreen = listToGroupList(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                );
-                const scenarioPages: PartialScenarioPageInputFields[] = unique(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                ).toSorted(
-                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
-                ).map(({ properties }) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: properties.screen,
-                    tasks: featuresByScreen[properties.screen].map((feature) => ({
-                        clientId: ulid(),
-                        reference: feature.properties.reference,
-                        projectTypeSpecifics: {
-                            find: {
-                                tileX: feature.properties.tile_x,
-                                tileY: feature.properties.tile_y,
-                                tileZ: feature.properties.tile_z,
-                            } satisfies FindPropertyInputFields,
-                        },
-                    })),
-                }));
-
-                setFieldValue(scenarioPages, 'scenarios');
-            }
-        } else if (projectType === ProjectTypeEnum.Compare) {
-            const result = CompareTutorialGeoJsonType(geoJson);
-            if (result instanceof type.errors) {
-                setError({
-                    scenarios: {
-                        [nonFieldError]: result.summary,
-                    },
-                });
-            } else {
-                const featuresByScreen = listToGroupList(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                );
-
-                const scenarioPages = unique(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                ).toSorted(
-                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
-                ).map(({ properties }) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: properties.screen,
-                    tasks: featuresByScreen[properties.screen].map((feature) => ({
-                        clientId: ulid(),
-                        reference: feature.properties.reference,
-                        projectTypeSpecifics: {
-                            compare: {
-                                tileX: feature.properties.tile_x,
-                                tileY: feature.properties.tile_y,
-                                tileZ: feature.properties.tile_z,
-                            } satisfies ComparePropertyInputFields,
-                        },
-                    })),
-                }));
-
-                setFieldValue(scenarioPages, 'scenarios');
-            }
-        } else if (projectType === ProjectTypeEnum.Completeness) {
-            const result = CompletenessTutorialGeoJsonType(geoJson);
-            if (result instanceof type.errors) {
-                setError({
-                    scenarios: {
-                        [nonFieldError]: result.summary,
-                    },
-                });
-            } else {
-                const featuresByScreen = listToGroupList(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                );
-
-                const scenarioPages = unique(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                ).toSorted(
-                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
-                ).map(({ properties }) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: properties.screen,
-                    tasks: featuresByScreen[properties.screen].map((feature) => ({
-                        clientId: ulid(),
-                        reference: feature.properties.reference,
-                        projectTypeSpecifics: {
-                            completeness: {
-                                tileX: feature.properties.tile_x,
-                                tileY: feature.properties.tile_y,
-                                tileZ: feature.properties.tile_z,
-                            } satisfies CompletenessPropertyInputFields,
-                        },
-                    })),
-                }));
-
-                setFieldValue(scenarioPages, 'scenarios');
-            }
-        } else if (projectType === ProjectTypeEnum.Street) {
-            const result = StreetTutorialGeoJsonType(geoJson);
-            if (result instanceof type.errors) {
-                setError({
-                    scenarios: {
-                        [nonFieldError]: result.summary,
-                    },
-                });
-            } else {
-                const scenarioPages = result.features.map((feature, i) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: isDefined(feature.properties.screen)
-                        ? feature.properties.screen
-                        : i + 1,
-                    tasks: [
-                        {
-                            clientId: ulid(),
-                            reference: feature.properties.reference,
-                            projectTypeSpecifics: {
-                                street: {
-                                    mapillaryImageId: feature.properties.id,
-                                    geometry: JSON.stringify(feature.geometry, null, 4),
-                                } satisfies StreetPropertyInputFields,
-                            },
-                        },
-                    ],
-                }));
-
-                setFieldValue(
-                    scenarioPages.toSorted((a, b) => (
-                        compareNumber(a.scenarioPageNumber, b.scenarioPageNumber)
-                    )),
-                    'scenarios',
-                );
-            }
-        } else if (projectType === ProjectTypeEnum.Locate) {
-            const result = LocateFeaturesTutorialGeoJsonType(geoJson);
-            if (result instanceof type.errors) {
-                setError({
-                    scenarios: {
-                        [nonFieldError]: result.summary,
-                    },
-                });
-            } else {
-                const featuresByScreen = listToGroupList(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                );
-
-                // eslint-disable-next-line no-underscore-dangle
-                const subgridSize = projectDetailResponse.project.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType'
-                    ? projectDetailResponse.project.projectTypeSpecifics.subGridSize
-                    : undefined;
-
-                const subGridValue = isDefined(subgridSize)
-                    ? subgridSizeToValueMap[subgridSize]
-                    : 0;
-
-                const numSubGrids = (2 ** subGridValue) ** 2;
-
-                const scenarioPages: PartialScenarioPageInputFields[] = unique(
-                    result.features,
-                    (feature) => feature.properties.screen,
-                ).toSorted(
-                    (a, b) => compareNumber(a.properties.screen, b.properties.screen),
-                ).map(({ properties }) => ({
-                    clientId: ulid(),
-                    scenarioPageNumber: properties.screen,
-                    tasks: featuresByScreen[properties.screen].flatMap((feature) => (
-                        Array.from(new Array(numSubGrids).keys()).map((index) => ({
-                            clientId: ulid(),
-                            reference: feature.properties.references[index],
-                            taskPartitionIndex: index,
-                            projectTypeSpecifics: {
-                                locate: {
-                                    tileX: feature.properties.tile_x,
-                                    tileY: feature.properties.tile_y,
-                                    tileZ: feature.properties.tile_z,
-                                } satisfies LocateFeaturesPropertyInputFields,
-                            },
-                        }))
-                    )),
-                }));
-
-                setFieldValue(scenarioPages, 'scenarios');
-            }
+        if (projectType === ProjectTypeEnum.ValidateImage) {
+            return;
         }
+
+        let result: TutorialGeoJsonTransformResult | undefined;
+
+        if (projectType === ProjectTypeEnum.Validate) {
+            // eslint-disable-next-line no-underscore-dangle
+            const validReferenceValues = projectTypeSpecifics?.__typename === 'ValidateProjectPropertyType'
+                ? getValidReferenceValues(projectTypeSpecifics.customOptions)
+                : [];
+
+            result = transformValidateGeoJson(geoJson, validReferenceValues);
+        } else if (projectType === ProjectTypeEnum.Find) {
+            result = transformFindGeoJson(geoJson);
+        } else if (projectType === ProjectTypeEnum.Compare) {
+            result = transformCompareGeoJson(geoJson);
+        } else if (projectType === ProjectTypeEnum.Completeness) {
+            result = transformCompletenessGeoJson(geoJson);
+        } else if (projectType === ProjectTypeEnum.Street) {
+            // eslint-disable-next-line no-underscore-dangle
+            const validReferenceValues = projectTypeSpecifics?.__typename === 'StreetProjectPropertyType'
+                ? getValidReferenceValues(projectTypeSpecifics.customOptions)
+                : [];
+
+            result = transformStreetGeoJson(geoJson, validReferenceValues);
+        } else if (projectType === ProjectTypeEnum.Locate) {
+            // eslint-disable-next-line no-underscore-dangle
+            const isLocateProperty = projectTypeSpecifics?.__typename === 'LocateProjectPropertyType';
+            const subgridSize = isLocateProperty
+                ? projectTypeSpecifics.subGridSize
+                : undefined;
+            const validReferenceValues = isLocateProperty
+                ? getValidReferenceValues(projectTypeSpecifics.customOptions)
+                : [];
+
+            result = transformLocateGeoJson(geoJson, subgridSize, validReferenceValues);
+        } else {
+            projectType satisfies never;
+        }
+
+        if (isNotDefined(result)) {
+            return;
+        }
+
+        if (!result.ok) {
+            setError({
+                scenarios: {
+                    [nonFieldError]: result.error,
+                },
+            });
+            return;
+        }
+
+        setFieldValue(result.scenarioPages, 'scenarios');
     }, [projectDetailResponse, setError, setFieldValue]);
 
     const handleDatasetFileSelect = useCallback(async (file: File | undefined) => {

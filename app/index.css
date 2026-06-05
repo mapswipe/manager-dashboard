@@ -95,6 +95,7 @@
     --size-tile-validate: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
     --size-tile-validate-image: calc(var(--size-tile) * 2 - var(--spacing-lg) * 2);
     --size-tile-completeness: var(--size-tile-find);
+    --size-tile-locate: calc(var(--size-tile) * 2);
 
     --width-mobile-preview: calc(var(--size-tile) * 2);
     --height-mobile-preview: calc(var(--width-mobile-preview) * 19 / 9);
