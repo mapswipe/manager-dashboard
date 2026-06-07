@@ -91,10 +91,6 @@ query AllEnums {
             key
             label
         }
-        ValidateImageSourceTypeEnum {
-            key
-            label
-        }
         OverlayLayerTypeEnum {
             key
             label
@@ -195,7 +191,6 @@ function RootLayout() {
 
     const enumContextValue = useMemo(() => ({
         validateObjectSourceTypeOptions: allEnumsResponse?.enums.ValidateObjectSourceTypeEnum ?? [],
-        validateImageSourceTypeOptions: allEnumsResponse?.enums.ValidateImageSourceTypeEnum ?? [],
         projectStatusOptions: allEnumsResponse?.enums.ProjectStatusEnum ?? [],
         projectTypeOptions: allEnumsResponse?.enums.ProjectTypeEnum ?? [],
         tutorialInformationPageBlockTypeOptions: allEnumsResponse
@@ -207,10 +202,6 @@ function RootLayout() {
         subGridSizeOptions: allEnumsResponse?.enums.SubGridSizeEnum ?? [],
         validateObjectSourceTypeMapping: listToMap(
             allEnumsResponse?.enums.ValidateObjectSourceTypeEnum,
-            ({ key }) => key,
-        ),
-        validateImageSourceTypeMapping: listToMap(
-            allEnumsResponse?.enums.ValidateImageSourceTypeEnum,
             ({ key }) => key,
         ),
         projectStatusMapping: listToMap(

@@ -4,7 +4,6 @@ import { AllEnumsQuery } from '#generated/types/graphql';
 
 export interface EnumsContextProps {
     validateObjectSourceTypeOptions: AllEnumsQuery['enums']['ValidateObjectSourceTypeEnum'],
-    validateImageSourceTypeOptions: AllEnumsQuery['enums']['ValidateImageSourceTypeEnum'],
     projectStatusOptions: AllEnumsQuery['enums']['ProjectStatusEnum'],
     projectTypeOptions: AllEnumsQuery['enums']['ProjectTypeEnum'],
     tutorialInformationPageBlockTypeOptions: AllEnumsQuery['enums']['TutorialInformationPageBlockTypeEnum'],
@@ -17,10 +16,6 @@ export interface EnumsContextProps {
     validateObjectSourceTypeMapping: Record<
         AllEnumsQuery['enums']['ValidateObjectSourceTypeEnum'][number]['key'],
         AllEnumsQuery['enums']['ValidateObjectSourceTypeEnum'][number]
-    > | undefined;
-    validateImageSourceTypeMapping: Record<
-        AllEnumsQuery['enums']['ValidateImageSourceTypeEnum'][number]['key'],
-        AllEnumsQuery['enums']['ValidateImageSourceTypeEnum'][number]
     > | undefined;
     projectStatusMapping: Record<
         AllEnumsQuery['enums']['ProjectStatusEnum'][number]['key'],
@@ -54,7 +49,6 @@ export interface EnumsContextProps {
 
 export const defaultAllEnumsValue: EnumsContextProps = {
     validateObjectSourceTypeOptions: [],
-    validateImageSourceTypeOptions: [],
     projectStatusOptions: [],
     projectTypeOptions: [],
     tutorialInformationPageBlockTypeOptions: [],
@@ -65,7 +59,6 @@ export const defaultAllEnumsValue: EnumsContextProps = {
     subGridSizeOptions: [],
 
     validateObjectSourceTypeMapping: undefined,
-    validateImageSourceTypeMapping: undefined,
     projectStatusMapping: undefined,
     projectTypeMapping: undefined,
     tutorialInformationPageBlockTypeMapping: undefined,
