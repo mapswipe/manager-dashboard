@@ -1,0 +1,14 @@
+.available-icon {
+    color: var(--color-success);
+    font-size: var(--font-size-lg);
+}
+
+.unavailable-icon {
+    color: var(--color-danger);
+    font-size: var(--font-size-lg);
+}
+
+.caveat-icon {
+    color: var(--color-accent);
+    font-size: var(--font-size-lg);
+}

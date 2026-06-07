@@ -5,6 +5,11 @@ import {
 } from 'react';
 import { MdArrowForward } from 'react-icons/md';
 import {
+    PiCheckCircleDuotone,
+    PiInfoDuotone,
+    PiXCircleDuotone,
+} from 'react-icons/pi';
+import {
     generatePath,
     useNavigate,
 } from 'react-router';
@@ -24,7 +29,6 @@ import { ulid } from 'ulid';
 import { gql } from 'urql';
 
 import routes from '#base/configs/routes';
-import Alert from '#components/Alert';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import Description from '#components/Description';
@@ -53,6 +57,8 @@ import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 import { DeepNonNullable } from '#utils/types';
 
 import ProjectGeneralInputs from './ProjectGeneralInputs';
+
+import styles from './styles.module.css';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CREATE_PROJECT_MUTATION = gql`
@@ -123,47 +129,79 @@ function projectTypeLabelSelector(value: AppEnumCollectionProjectTypeEnum) {
     );
 }
 
-const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
+const projectTypeDescriptions: Record<ProjectTypeEnum, string> = {
     [ProjectTypeEnum.Find]: 'Swipe through satellite images to identify & select those that contain the requested features such as buildings, roadways, waterways and more.',
     [ProjectTypeEnum.Compare]: 'Review before and after satellite images to detect changes in the environment that help inform damage assessment, climate change, or inaccurate data.',
     [ProjectTypeEnum.Validate]: 'Assess building footprints for accuracy where buildings have been previously traced by remote mappers or through AI to identify where remapping is needed.',
     [ProjectTypeEnum.ValidateImage]: 'Assess how well machine learning detections match real-world features in images, flagging false or inaccurate results. This helps improve model accuracy and dataset quality, supporting better outcomes for social good applications.',
-    [ProjectTypeEnum.Completeness]: (
-        <ListLayout layout="block">
-            <div>
-                Assess how well OSM data represents buildings in satellite imagery,
-                flagging areas where mapping is incomplete.
-                This helps identify areas needing further mapping efforts to enhance
-                OSM&apos;s accuracy, especially for disaster response and risk assessment.
-            </div>
-            <Alert
-                name="street-alert"
-                title="Vector overlay layer"
-                type="warning"
-                description="Please be aware that the vector overlay layer is only available in the MapSwipe web app."
-                fullWidth
-                withoutShadow
-            />
-        </ListLayout>
-    ),
-    [ProjectTypeEnum.Street]: (
-        <ListLayout layout="block">
-            <div>
-                Explore ground-level images to find relevant features and
-                capture more detailed information on communities.
-            </div>
-            <Alert
-                name="street-alert"
-                title="MapSwipe Web only"
-                type="warning"
-                description="Street project are currently only available in the MapSwipe web app."
-                fullWidth
-                withoutShadow
-            />
-        </ListLayout>
-    ),
-    [ProjectTypeEnum.Locate]: 'Locate objects',
+    [ProjectTypeEnum.Completeness]: 'Assess how well OSM data represents buildings in satellite imagery, flagging areas where mapping is incomplete. This helps identify areas needing further mapping efforts to enhance OSM\'s accuracy, especially for disaster response and risk assessment.',
+    [ProjectTypeEnum.Street]: 'Explore ground-level images to find relevant features and capture more detailed information on communities.',
+    [ProjectTypeEnum.Locate]: 'Mark the subgrid cells within satellite image tiles that contain requested features such as rooftops, solar panels, or trees, helping train machine learning models to localize features more accurately.',
 };
+
+interface ProjectTypeAvailability {
+    mobile: boolean;
+    web: boolean;
+    caveat?: string;
+}
+
+const projectTypeAvailability: Record<ProjectTypeEnum, ProjectTypeAvailability> = {
+    [ProjectTypeEnum.Find]: { mobile: true, web: true },
+    [ProjectTypeEnum.Compare]: { mobile: true, web: true },
+    [ProjectTypeEnum.Validate]: { mobile: true, web: true },
+    [ProjectTypeEnum.ValidateImage]: { mobile: true, web: true },
+    [ProjectTypeEnum.Completeness]: {
+        mobile: true,
+        web: true,
+        caveat: 'Vector overlay layer is not supported in the mobile app',
+    },
+    [ProjectTypeEnum.Street]: { mobile: false, web: true },
+    [ProjectTypeEnum.Locate]: { mobile: true, web: true },
+};
+
+interface ProjectTypeAvailabilityOutputProps {
+    availability: ProjectTypeAvailability;
+}
+
+function ProjectTypeAvailabilityOutput(props: ProjectTypeAvailabilityOutputProps) {
+    const { availability } = props;
+
+    const platforms = [
+        { label: 'Mobile app', available: availability.mobile },
+        { label: 'Web app', available: availability.web },
+    ];
+
+    return (
+        <Container
+            headingLevel={5}
+            heading="Availability"
+        >
+            {platforms.map((platform) => (
+                <InlineLayout
+                    key={platform.label}
+                    spacing="sm"
+                    withCenterAlign
+                    start={platform.available ? (
+                        <PiCheckCircleDuotone className={styles.availableIcon} />
+                    ) : (
+                        <PiXCircleDuotone className={styles.unavailableIcon} />
+                    )}
+                >
+                    {platform.label}
+                </InlineLayout>
+            ))}
+            {isDefined(availability.caveat) && (
+                <InlineLayout
+                    spacing="sm"
+                    withCenterAlign
+                    start={<PiInfoDuotone className={styles.caveatIcon} />}
+                >
+                    {availability.caveat}
+                </InlineLayout>
+            )}
+        </Container>
+    );
+}
 
 function NewProject() {
     const navigate = useNavigate();
@@ -334,7 +372,14 @@ function NewProject() {
                 />
                 {isDefined(value.projectType) && (
                     <Description>
-                        {projectTypeDescriptions[value.projectType]}
+                        <ListLayout layout="block">
+                            <div>
+                                {projectTypeDescriptions[value.projectType]}
+                            </div>
+                            <ProjectTypeAvailabilityOutput
+                                availability={projectTypeAvailability[value.projectType]}
+                            />
+                        </ListLayout>
                     </Description>
                 )}
             </Container>
