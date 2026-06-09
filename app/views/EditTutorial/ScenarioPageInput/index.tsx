@@ -26,7 +26,7 @@ import CompareScenarioPreview from '#components/domain/CompareScenarioPreview';
 import CompletenessScenarioPreview from '#components/domain/CompletenessScenarioPreview';
 import FindScenarioPreview from '#components/domain/FindScenarioPreview';
 import IconSelectInput from '#components/domain/IconSelectInput';
-import LocateFeaturesScenarioPreview from '#components/domain/LocateFeaturesScenarioPreview';
+import LocateObjectScenarioPreview from '#components/domain/LocateObjectScenarioPreview';
 import StreetScenarioPreview from '#components/domain/StreetScenarioPreview';
 import TutorialPreviewScreenSelectInput, {
     PreviewItem,
@@ -358,7 +358,7 @@ function ScenarioPageInput(props: Props) {
                 )}
                 {/* eslint-disable-next-line no-underscore-dangle */}
                 {projectData?.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType' && (
-                    <LocateFeaturesScenarioPreview
+                    <LocateObjectScenarioPreview
                         scenario={value}
                         tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
                         projectInstruction={projectData.projectInstruction}

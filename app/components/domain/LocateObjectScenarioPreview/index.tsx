@@ -37,7 +37,7 @@ interface Props {
     customOptions: PartialCustomOptionInputFields[] | undefined;
 }
 
-function LocateFeaturesScenarioPreview(props: Props) {
+function LocateObjectScenarioPreview(props: Props) {
     const {
         className,
         scenario,
@@ -140,7 +140,7 @@ function LocateFeaturesScenarioPreview(props: Props) {
 
     return (
         <ListLayout
-            className={_cs(styles.locateFeaturesScenarioPreview, className)}
+            className={_cs(styles.locateObjectScenarioPreview, className)}
             layout="block"
         >
             <MobilePreview
@@ -165,4 +165,4 @@ function LocateFeaturesScenarioPreview(props: Props) {
     );
 }
 
-export default LocateFeaturesScenarioPreview;
+export default LocateObjectScenarioPreview;

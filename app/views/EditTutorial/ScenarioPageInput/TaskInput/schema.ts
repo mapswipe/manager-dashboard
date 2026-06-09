@@ -19,7 +19,7 @@ import {
 import comparePropertyInputSchema from './ComparePropertyInput/schema';
 import completenessPropertyInputSchema from './CompletenessPropertyInput/schema';
 import findPropertyInputSchema from './FindPropertyInput/schema';
-import locateFeaturesPropertyInputSchema from './LocateFeaturesPropertyInput/schema';
+import locateObjectPropertyInputSchema from './LocateObjectPropertyInput/schema';
 import streetPropertyInputSchema from './StreetPropertyInput/schema';
 import validateImagePropertyInputSchema from './ValidateImagePropertyInput/schema';
 import validatePropertyInputSchema from './ValidatePropertyInput/schema';
@@ -110,7 +110,7 @@ const taskSchema: TaskSchema = {
                 if (projectType === ProjectTypeEnum.Locate) {
                     return {
                         ...defaultSchema,
-                        locate: locateFeaturesPropertyInputSchema,
+                        locate: locateObjectPropertyInputSchema,
                     };
                 }
 

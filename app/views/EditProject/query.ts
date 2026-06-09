@@ -30,7 +30,7 @@ query ProjectDetails($id: ID!) {
         title
         value
     }
-    defaultLocateFeaturesCustomOptions: defaultCustomOptions(projectType: LOCATE) {
+    defaultLocateObjectCustomOptions: defaultCustomOptions(projectType: LOCATE) {
         description
         icon
         iconColor

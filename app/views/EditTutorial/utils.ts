@@ -20,7 +20,7 @@ import { PartialScenarioPageInputFields } from './ScenarioPageInput/schema';
 import { ComparePropertyInputFields } from './ScenarioPageInput/TaskInput/ComparePropertyInput/schema';
 import { CompletenessPropertyInputFields } from './ScenarioPageInput/TaskInput/CompletenessPropertyInput/schema';
 import { FindPropertyInputFields } from './ScenarioPageInput/TaskInput/FindPropertyInput/schema';
-import { LocateFeaturesPropertyInputFields } from './ScenarioPageInput/TaskInput/LocateFeaturesPropertyInput/schema';
+import { LocateObjectPropertyInputFields } from './ScenarioPageInput/TaskInput/LocateObjectPropertyInput/schema';
 import { PartialProjectTypeSpecifics } from './ScenarioPageInput/TaskInput/schema';
 import { StreetPropertyInputFields } from './ScenarioPageInput/TaskInput/StreetPropertyInput/schema';
 import { ValidatePropertyInputFields } from './ScenarioPageInput/TaskInput/ValidatePropertyInput/schema';
@@ -71,7 +71,7 @@ const CompareFeaturePropertyType = type.merge(
         // task_id: 'string',
     },
 );
-const LocateFeaturesPropertyType = type.merge(
+const LocateObjectPropertyType = type.merge(
     TileFeaturePropertyType,
     {
         screen: type.number,
@@ -119,11 +119,11 @@ const CompareTutorialGeoJsonType = type({
     }).array(),
 });
 
-const LocateFeaturesTutorialGeoJsonType = type({
+const LocateObjectTutorialGeoJsonType = type({
     type: '"FeatureCollection"',
     features: type({
         geometry: PolygonType.or(MultiPolygonType),
-        properties: LocateFeaturesPropertyType,
+        properties: LocateObjectPropertyType,
     }).array(),
 });
 
@@ -515,7 +515,7 @@ export function transformLocateGeoJson(
     subgridSize: SubGridSizeEnum | undefined,
     validReferenceValues: number[] | undefined,
 ): TutorialGeoJsonTransformResult {
-    const result = LocateFeaturesTutorialGeoJsonType(geoJson);
+    const result = LocateObjectTutorialGeoJsonType(geoJson);
     if (result instanceof type.errors) {
         return { ok: false, error: result.summary };
     }
@@ -588,7 +588,7 @@ export function transformLocateGeoJson(
                         tileX: feature.properties.tile_x,
                         tileY: feature.properties.tile_y,
                         tileZ: feature.properties.tile_z,
-                    } satisfies LocateFeaturesPropertyInputFields,
+                    } satisfies LocateObjectPropertyInputFields,
                 },
             }))
         )),

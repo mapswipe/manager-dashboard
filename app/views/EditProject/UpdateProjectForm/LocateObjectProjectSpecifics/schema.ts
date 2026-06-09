@@ -16,23 +16,23 @@ import {
     type UpdateProjectContext,
 } from '../schema';
 
-export type PartialLocateFeaturesSpecificFields = PartialForm<
+export type PartialLocateObjectSpecificFields = PartialForm<
     DeepNonNullable<LocateProjectPropertyInput>,
     'clientId'
 >;
-type LocateFeaturesSpecificFormSchema = ObjectSchema<
-    PartialLocateFeaturesSpecificFields,
+type LocateObjectSpecificFormSchema = ObjectSchema<
+    PartialLocateObjectSpecificFields,
     PartialProjectUpdateInput,
     UpdateProjectContext
 >;
 
-export const defaultLocateFeaturesSpecificFormValue: PartialLocateFeaturesSpecificFields = {
+export const defaultLocateObjectSpecificFormValue: PartialLocateObjectSpecificFields = {
     tileServerProperty: defaultRasterTileServerInputValue,
     zoomLevel: 18,
 };
 
-const locateFeaturesSpecificFormSchema: LocateFeaturesSpecificFormSchema = {
-    fields: (): ReturnType<LocateFeaturesSpecificFormSchema['fields']> => ({
+const locateObjectSpecificFormSchema: LocateObjectSpecificFormSchema = {
+    fields: (): ReturnType<LocateObjectSpecificFormSchema['fields']> => ({
         zoomLevel: {
             required: true,
             validations: [greaterThanOrEqualToCondition(14), lessThanOrEqualToCondition(22)],
@@ -54,4 +54,4 @@ const locateFeaturesSpecificFormSchema: LocateFeaturesSpecificFormSchema = {
     }),
 };
 
-export default locateFeaturesSpecificFormSchema;
+export default locateObjectSpecificFormSchema;

@@ -22,14 +22,14 @@ import {
 import { PartialComparePropertyInputFields } from './ComparePropertyInput/schema';
 import { PartialCompletenessPropertyInputFields } from './CompletenessPropertyInput/schema';
 import { PartialFindPropertyInputFields } from './FindPropertyInput/schema';
-import { PartialLocateFeaturesPropertyInputFields } from './LocateFeaturesPropertyInput/schema';
+import { PartialLocateObjectPropertyInputFields } from './LocateObjectPropertyInput/schema';
 import { PartialStreetPropertyInputFields } from './StreetPropertyInput/schema';
 import { PartialValidateImagePropertyInputFields } from './ValidateImagePropertyInput/schema';
 import { PartialValidatePropertyInputFields } from './ValidatePropertyInput/schema';
 import ComparePropertyInput from './ComparePropertyInput';
 import CompletenessPropertyInput from './CompletenessPropertyInput';
 import FindPropertyInput from './FindPropertyInput';
-import LocateFeaturesPropertyInput from './LocateFeaturesPropertyInput';
+import LocateObjectPropertyInput from './LocateObjectPropertyInput';
 import {
     PartialProjectTypeSpecifics,
     PartialTaskInputFields,
@@ -114,7 +114,7 @@ function TaskInput(props: Props) {
         {},
     );
 
-    const setLocateFeaturesProjectSpecificsFieldValue = useFormObject<'locate', PartialLocateFeaturesPropertyInputFields>(
+    const setLocateObjectProjectSpecificsFieldValue = useFormObject<'locate', PartialLocateObjectPropertyInputFields>(
         'locate' as const,
         setProjectSpecificFieldValue,
         {},
@@ -240,9 +240,9 @@ function TaskInput(props: Props) {
                     />
                 )}
                 {projectData?.projectType === ProjectTypeEnum.Locate && (
-                    <LocateFeaturesPropertyInput
+                    <LocateObjectPropertyInput
                         value={value.projectTypeSpecifics?.locate}
-                        setFieldValue={setLocateFeaturesProjectSpecificsFieldValue}
+                        setFieldValue={setLocateObjectProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.locate}
                         disabled
                     />

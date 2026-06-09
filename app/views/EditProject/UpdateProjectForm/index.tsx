@@ -59,11 +59,11 @@ import {
     defaultFindSpecificFormValue,
     PartialFindSpecificFields,
 } from './FindProjectSpecifics/schema';
-import LocateFeaturesProjectSpecifics from './LocateFeaturesProjectSpecifics/index.tsx';
+import LocateObjectProjectSpecifics from './LocateObjectProjectSpecifics/index.tsx';
 import {
-    defaultLocateFeaturesSpecificFormValue,
-    PartialLocateFeaturesSpecificFields,
-} from './LocateFeaturesProjectSpecifics/schema.ts';
+    defaultLocateObjectSpecificFormValue,
+    PartialLocateObjectSpecificFields,
+} from './LocateObjectProjectSpecifics/schema.ts';
 import StreetProjectSpecifics from './StreetProjectSpecifics/index.tsx';
 import {
     defaultStreetSpecificFormValue,
@@ -178,8 +178,8 @@ function UpdateProjectForm(props: Props) {
         }
         if (projectData.project.projectType === ProjectTypeEnum.Locate) {
             return {
-                ...defaultLocateFeaturesSpecificFormValue,
-                customOptions: projectData.defaultLocateFeaturesCustomOptions.map(
+                ...defaultLocateObjectSpecificFormValue,
+                customOptions: projectData.defaultLocateObjectCustomOptions.map(
                     (customOption) => ({
                         clientId: ulid(),
                         ...customOption,
@@ -403,10 +403,10 @@ function UpdateProjectForm(props: Props) {
         defaultStreetSpecificFormValue,
     );
 
-    const setLocateFeaturesProjectSpecificsFieldValue = useFormObject<'locate', PartialLocateFeaturesSpecificFields>(
+    const setLocateObjectProjectSpecificsFieldValue = useFormObject<'locate', PartialLocateObjectSpecificFields>(
         'locate',
         setProjectSpecificFieldValue,
-        defaultLocateFeaturesSpecificFormValue,
+        defaultLocateObjectSpecificFormValue,
     );
 
     const pending = updateProjectPending;
@@ -437,8 +437,8 @@ function UpdateProjectForm(props: Props) {
         ?.validateImage as PartialValidateSpecificFields | undefined;
     const streetProjectTypeSpecifics = value.projectTypeSpecifics
         ?.street as PartialStreetSpecificFields | undefined;
-    const locateFeaturesProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.locate as PartialLocateFeaturesSpecificFields | undefined;
+    const locateObjectProjectTypeSpecifics = value.projectTypeSpecifics
+        ?.locate as PartialLocateObjectSpecificFields | undefined;
 
     return (
         <PageLayout
@@ -594,10 +594,10 @@ function UpdateProjectForm(props: Props) {
                     />
                 )}
                 {projectContext.projectType === ProjectTypeEnum.Locate && (
-                    <LocateFeaturesProjectSpecifics
+                    <LocateObjectProjectSpecifics
                         projectId={projectData.project.id}
-                        value={locateFeaturesProjectTypeSpecifics}
-                        setFieldValue={setLocateFeaturesProjectSpecificsFieldValue}
+                        value={locateObjectProjectTypeSpecifics}
+                        setFieldValue={setLocateObjectProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.locate}
                         disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
