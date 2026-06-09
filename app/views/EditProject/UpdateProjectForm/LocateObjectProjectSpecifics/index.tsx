@@ -1,5 +1,11 @@
-import { useContext } from 'react';
-import { isDefined } from '@togglecorp/fujs';
+import {
+    useCallback,
+    useContext,
+} from 'react';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -7,9 +13,13 @@ import {
     ObjectError,
     useFormObject,
 } from '@togglecorp/toggle-form';
+import { ulid } from 'ulid';
 
+import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
+import { type PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import RasterTileServerInput from '#components/domain/RasterTileServerInput';
 import {
     defaultRasterTileServerInputValue,
@@ -20,7 +30,10 @@ import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import ZoomLevelSelectInput from '#components/ZoomLevelSelectInput';
 import EnumsContext from '#contexts/EnumsContext';
-import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
+import {
+    ProjectAssetInputTypeEnum,
+    type ProjectDetailsQuery,
+} from '#generated/types/graphql';
 import {
     keySelector,
     labelSelector,
@@ -28,11 +41,19 @@ import {
 
 import { type PartialLocateObjectSpecificFields } from './schema';
 
+type DefaultCustomOption = ProjectDetailsQuery['defaultLocateObjectCustomOptions'][number];
+
+// NOTE: In the LOCATE custom options, value 2 corresponds to the "Multiple
+// Features" option, which managers can optionally exclude to keep only the
+// "Single Feature" and "No" options.
+const MULTIPLE_FEATURES_VALUE = 2;
+
 interface Props {
     projectId: string;
     value: PartialLocateObjectSpecificFields | undefined | null;
     error: LeafError | ObjectError<PartialLocateObjectSpecificFields>;
     setFieldValue: (...entries: EntriesAsList<PartialLocateObjectSpecificFields>) => void;
+    defaultMultipleFeaturesOption: DefaultCustomOption | undefined;
     disabled?: boolean;
 }
 
@@ -42,6 +63,7 @@ function LocateObjectProjectSpecifics(props: Props) {
         value,
         error: formError,
         setFieldValue,
+        defaultMultipleFeaturesOption,
         disabled,
     } = props;
 
@@ -54,6 +76,40 @@ function LocateObjectProjectSpecifics(props: Props) {
         setFieldValue,
         defaultRasterTileServerInputValue,
     );
+
+    const includeMultipleFeatures = value?.customOptions?.some(
+        (option) => option.value === MULTIPLE_FEATURES_VALUE,
+    ) ?? false;
+
+    const handleMultipleFeaturesToggle = useCallback((include: boolean) => {
+        setFieldValue(
+            (oldOptions: PartialCustomOptionInputFields[] | undefined) => {
+                const baseOptions = oldOptions ?? [];
+
+                if (!include) {
+                    return baseOptions.filter(
+                        (option) => option.value !== MULTIPLE_FEATURES_VALUE,
+                    );
+                }
+
+                const alreadyPresent = baseOptions.some(
+                    (option) => option.value === MULTIPLE_FEATURES_VALUE,
+                );
+                if (alreadyPresent || isNotDefined(defaultMultipleFeaturesOption)) {
+                    return baseOptions;
+                }
+
+                return [
+                    ...baseOptions,
+                    {
+                        clientId: ulid(),
+                        ...defaultMultipleFeaturesOption,
+                    },
+                ];
+            },
+            'customOptions' as const,
+        );
+    }, [setFieldValue, defaultMultipleFeaturesOption]);
 
     return (
         <>
@@ -98,6 +154,26 @@ function LocateObjectProjectSpecifics(props: Props) {
                     keySelector={keySelector}
                     labelSelector={labelSelector}
                     error={error?.subGridSize}
+                />
+            </Container>
+            <Container
+                heading="Answer options"
+                headingLevel={5}
+                headerDescription="Choose which answer options appear on the tiles. Disable 'Multiple Features' to keep only the first two options."
+            >
+                <Checkbox
+                    name="includeMultipleFeatures"
+                    label="Include 'Multiple Features' option"
+                    value={includeMultipleFeatures}
+                    onChange={handleMultipleFeaturesToggle}
+                    // NOTE: re-adding the option needs the canonical default from
+                    // the backend; without it the toggle could not function, so
+                    // we disable it rather than let a click silently no-op.
+                    disabled={disabled || isNotDefined(defaultMultipleFeaturesOption)}
+                />
+                <CustomOptionPreview
+                    variant="tile"
+                    value={value?.customOptions}
                 />
             </Container>
             <Container

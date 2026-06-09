@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
+import Container from '#components/Container';
 import DefaultMapContainer from '#components/DefaultMapContainer';
 import BaseMap from '#components/domain/BaseMap';
+import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '#components/domain/MapZoomViewSelectInput';
 import RasterTileServerOutput from '#components/domain/RasterTileServerOutput';
@@ -65,6 +67,15 @@ function LocateObjectDetails(props: Props) {
                 label="Sub grid size"
                 value={data.subGridSize}
             />
+            <Container
+                heading="Answer options"
+                headingLevel={5}
+            >
+                <CustomOptionPreview
+                    variant="tile"
+                    value={removeNull(data.customOptions)}
+                />
+            </Container>
         </>
     );
 }

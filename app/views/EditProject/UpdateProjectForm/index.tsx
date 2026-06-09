@@ -632,6 +632,10 @@ function UpdateProjectForm(props: Props) {
                         value={locateObjectProjectTypeSpecifics}
                         setFieldValue={setLocateObjectProjectSpecificsFieldValue}
                         error={getErrorObject(error?.projectTypeSpecifics)?.locate}
+                        defaultMultipleFeaturesOption={projectData
+                            .defaultLocateObjectCustomOptions.find(
+                                (option) => option.value === 2,
+                            )}
                         disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}

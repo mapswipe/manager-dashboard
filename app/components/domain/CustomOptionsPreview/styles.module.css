@@ -50,4 +50,35 @@
             }
         }
     }
+
+    &.tile-variant {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
+        padding: var(--spacing-md);
+
+        .option {
+            align-items: center;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            text-align: center;
+
+            .tile {
+                flex-shrink: 0;
+                border: var(--width-separator-thin) solid var(--color-separator);
+                border-radius: 0.4rem;
+                width: 2.8rem;
+                height: 2.8rem;
+
+                &.transparent {
+                    border-style: dashed;
+                    background-color: var(--color-background);
+                }
+            }
+
+            .label {
+                font-size: var(--font-size-sm);
+            }
+        }
+    }
 }
