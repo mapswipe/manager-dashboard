@@ -162,7 +162,7 @@ const projectTypeDescriptions: Record<ProjectTypeEnum, React.ReactNode> = {
             />
         </ListLayout>
     ),
-    [ProjectTypeEnum.Locate]: 'Locate features',
+    [ProjectTypeEnum.Locate]: 'Locate objects',
 };
 
 function NewProject() {

@@ -16,7 +16,7 @@ import { DeepNonNullable } from '#utils/types';
 import compareSpecificFormSchema from './CompareProjectSpecifics/schema';
 import completenessSpecificFormSchema from './CompletenessProjectSpecifics/schema';
 import findSpecificFormSchema from './FindProjectSpecifics/schema';
-import locateFeaturesSpecificFormSchema from './LocateFeaturesProjectSpecifics/schema.ts';
+import locateObjectSpecificFormSchema from './LocateObjectProjectSpecifics/schema.ts';
 import streetSpecificFormSchema from './StreetProjectSpecifics/schema.ts';
 import validateImageSpecificFormSchema from './ValidateImageProjectSpecifics/schema.ts';
 import validateSpecificFormSchema from './ValidateProjectSpecifics/schema';
@@ -142,7 +142,7 @@ const projectUpdateFormSchema: ProjectUpdateFormSchema = {
                 if (projectType === ProjectTypeEnum.Locate) {
                     return {
                         ...defaultValue,
-                        locate: locateFeaturesSpecificFormSchema,
+                        locate: locateObjectSpecificFormSchema,
                     };
                 }
 

@@ -26,17 +26,17 @@ import {
     labelSelector,
 } from '#utils/common';
 
-import { type PartialLocateFeaturesSpecificFields } from './schema';
+import { type PartialLocateObjectSpecificFields } from './schema';
 
 interface Props {
     projectId: string;
-    value: PartialLocateFeaturesSpecificFields | undefined | null;
-    error: LeafError | ObjectError<PartialLocateFeaturesSpecificFields>;
-    setFieldValue: (...entries: EntriesAsList<PartialLocateFeaturesSpecificFields>) => void;
+    value: PartialLocateObjectSpecificFields | undefined | null;
+    error: LeafError | ObjectError<PartialLocateObjectSpecificFields>;
+    setFieldValue: (...entries: EntriesAsList<PartialLocateObjectSpecificFields>) => void;
     disabled?: boolean;
 }
 
-function LocateFeaturesProjectSpecifics(props: Props) {
+function LocateObjectProjectSpecifics(props: Props) {
     const {
         projectId,
         value,
@@ -125,4 +125,4 @@ function LocateFeaturesProjectSpecifics(props: Props) {
     );
 }
 
-export default LocateFeaturesProjectSpecifics;
+export default LocateObjectProjectSpecifics;

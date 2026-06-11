@@ -18,7 +18,7 @@ interface Props {
     defaultBounds: GeoJSON.Polygon | undefined | null;
 }
 
-function LocateFeaturesDetails(props: Props) {
+function LocateObjectDetails(props: Props) {
     const {
         data,
         defaultBounds,
@@ -69,4 +69,4 @@ function LocateFeaturesDetails(props: Props) {
     );
 }
 
-export default LocateFeaturesDetails;
+export default LocateObjectDetails;

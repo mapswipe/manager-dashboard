@@ -11,7 +11,7 @@ import ProjectTypeOutput from '../ProjectTypeOutput';
 import CompareDetails from './CompareDetails';
 import CompletenessDetails from './CompletenessDetails';
 import FindDetails from './FindDetails';
-import LocateFeaturesDetails from './LocateFeatures';
+import LocateObjectDetails from './LocateObject';
 import StreetDetails from './StreetDetails';
 import ValidateDetails from './ValidateDetails';
 import ValidateImageDetails from './ValidateImageDetails';
@@ -137,7 +137,7 @@ function ProjectSpecificDetails(props: Props) {
             )}
             {/* eslint-disable-next-line no-underscore-dangle */}
             {projectData?.project.projectTypeSpecifics?.__typename === 'LocateProjectPropertyType' && (
-                <LocateFeaturesDetails
+                <LocateObjectDetails
                     data={projectData.project.projectTypeSpecifics}
                     defaultBounds={defaultBounds}
                 />
