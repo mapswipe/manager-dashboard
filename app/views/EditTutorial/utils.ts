@@ -263,11 +263,12 @@ function checkReferenceValues(
 // share a screen and the reference values come from the default tile options.
 function checkTileGroupedFeatures(
     features: { properties: { screen: number, reference: number } }[],
+    expectedCount: number,
 ): string[] {
     const screens = features.map((feature) => feature.properties.screen);
 
     return [
-        ...checkScreenFeatureCount(screens, 6),
+        ...checkScreenFeatureCount(screens, expectedCount),
         ...checkScreensSerial(screens),
         ...checkReferenceValues(
             features.map((feature) => ({
@@ -406,7 +407,7 @@ export function transformFindGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features);
+    const problems = checkTileGroupedFeatures(result.features, 6);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
@@ -434,7 +435,7 @@ export function transformCompareGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features);
+    const problems = checkTileGroupedFeatures(result.features, 1);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
@@ -462,7 +463,7 @@ export function transformCompletenessGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features);
+    const problems = checkTileGroupedFeatures(result.features, 1);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
