@@ -1,6 +1,5 @@
 import {
     useCallback,
-    useContext,
     useState,
 } from 'react';
 import { IoAdd } from 'react-icons/io5';
@@ -32,20 +31,15 @@ import ListLayout from '#components/ListLayout/index.tsx';
 import Modal from '#components/Modal/index.tsx';
 import NonFieldError from '#components/NonFieldError/index.tsx';
 import Pager from '#components/Pager/index.tsx';
-import RadioInput from '#components/RadioInput/index.tsx';
-import EnumsContext from '#contexts/EnumsContext.ts';
 import {
     useProjectObjectImageAssetsQuery,
     useRemoveAllObjectImageAssetsMutation,
-    ValidateImageSourceTypeEnum,
 } from '#generated/types/graphql.ts';
 import useAlert from '#hooks/useAlert.ts';
 import useConfirmation from '#hooks/useConfirmation.ts';
 import {
     DEFAULT_PAGE,
     defaultPagePerItemOptions,
-    keySelector,
-    labelSelector,
 } from '#utils/common.ts';
 import {
     checkAndAlertGraphQLResultError,
@@ -54,19 +48,16 @@ import {
 import { OPERATION_INFO_FRAGMENT } from '#utils/query.ts';
 
 import DatasetFileInput from './DatasetFileInput/index.tsx';
-import DirectImagesInput from './DirectImagesInput/index.tsx';
 import { type PartialValidateImageSpecificFields } from './schema.ts';
 
 import styles from './styles.module.css';
 
-const DIRECT_IMAGES_ENABLED = false;
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PROJECT_OBJECT_IMAGE_ASSETS_QUERY = gql`
-query ProjectObjectImageAssets($projectId: ID!, $withoutMimeType: Boolean, $pagination: OffsetPaginationInput!) {
+query ProjectObjectImageAssets($projectId: ID!, $pagination: OffsetPaginationInput!) {
     projectAssets(
         pagination: $pagination
-    filters: {projectId: {exact: $projectId}, inputType: {exact: OBJECT_IMAGE}, mimetype: {isNull: $withoutMimeType}}
+    filters: {projectId: {exact: $projectId}, inputType: {exact: OBJECT_IMAGE}, mimetype: {isNull: true}}
     ) {
         totalCount
         results {
@@ -135,7 +126,6 @@ function ValidateProjectSpecifics(props: Props) {
     } = props;
 
     const alert = useAlert();
-    const { validateImageSourceTypeOptions: sourceTypeOptions } = useContext(EnumsContext);
     const [activeAssetsPage, setActiveAssetsPage] = useState(DEFAULT_PAGE);
     const [assetsPerPage, setAssetsPerPage] = useState(20);
 
@@ -155,7 +145,6 @@ function ValidateProjectSpecifics(props: Props) {
                 offset: (activeAssetsPage - 1) * assetsPerPage,
                 limit: assetsPerPage,
             },
-            withoutMimeType: value?.sourceType !== ValidateImageSourceTypeEnum.DirectImages,
         },
     });
 
@@ -283,32 +272,11 @@ function ValidateProjectSpecifics(props: Props) {
                 headingLevel={4}
                 heading="Images"
             >
-                <RadioInput
-                    name="sourceType"
-                    label="Source type"
-                    options={sourceTypeOptions}
-                    keySelector={keySelector}
-                    labelSelector={labelSelector}
-                    error={error?.sourceType}
-                    value={value?.sourceType}
-                    onChange={setFieldValue}
-                    disabled={disabled || !DIRECT_IMAGES_ENABLED}
+                <DatasetFileInput
+                    onUploadModalClose={retriggerObjectImagesAssetRequest}
+                    projectId={projectId}
+                    disabled={numUploadedImages > 0}
                 />
-                {value?.sourceType === ValidateImageSourceTypeEnum.DirectImages
-                    && DIRECT_IMAGES_ENABLED
-                    && (
-                        <DirectImagesInput
-                            onUploadModalClose={retriggerObjectImagesAssetRequest}
-                            projectId={projectId}
-                        />
-                    )}
-                {value?.sourceType === ValidateImageSourceTypeEnum.DatasetFile && (
-                    <DatasetFileInput
-                        onUploadModalClose={retriggerObjectImagesAssetRequest}
-                        projectId={projectId}
-                        disabled={numUploadedImages > 0}
-                    />
-                )}
                 {isDefined(objectImageAssetsResponse) && (
                     <Container
                         heading="Uploaded images"
@@ -327,8 +295,7 @@ function ValidateProjectSpecifics(props: Props) {
                         empty={objectImageAssetsResponse.projectAssets.totalCount === 0}
                         emptyMessage="No images has been uploaded yet!"
                         withWelledContent
-                        headerActions={value?.sourceType === ValidateImageSourceTypeEnum.DatasetFile
-                            && numUploadedImages > 0 && (
+                        headerActions={numUploadedImages > 0 && (
                             <Button
                                 name={undefined}
                                 colorVariant="danger"

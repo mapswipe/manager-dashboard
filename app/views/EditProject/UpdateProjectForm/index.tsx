@@ -34,6 +34,7 @@ import {
     ProjectUpdateInput,
     useProjectStatusQuery,
     useUpdateProjectMutation,
+    ValidateImageSourceTypeEnum,
 } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert.ts';
 import useOptions from '#hooks/useOptions';
@@ -222,7 +223,6 @@ function UpdateProjectForm(props: Props) {
         const {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             id,
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             status,
 
             projectType,
@@ -242,6 +242,38 @@ function UpdateProjectForm(props: Props) {
         }
         setOrganizationOptions([requestingOrganization]);
 
+        // NOTE: The "Direct images" source type has been removed
+        // Projects saved with it are switched to "Dataset file";
+        // saving the project persists the change.
+        let normalizedProjectTypeSpecifics = projectTypeSpecifics;
+        if (
+            // eslint-disable-next-line no-underscore-dangle
+            projectTypeSpecifics?.__typename === 'ValidateImageProjectPropertyType'
+            && projectTypeSpecifics.sourceType === ValidateImageSourceTypeEnum.DirectImages
+        ) {
+            normalizedProjectTypeSpecifics = {
+                ...projectTypeSpecifics,
+                sourceType: ValidateImageSourceTypeEnum.DatasetFile,
+            };
+
+            const canSave = isNotDefined(projectData.project.oldId) && (
+                status === ProjectStatusEnum.Draft
+                || status === ProjectStatusEnum.ProcessingFailed
+                || status === ProjectStatusEnum.Processed
+            );
+
+            alert.show(
+                'Discontinued source type!',
+                {
+                    name: 'direct-images-discontinued',
+                    description: canSave
+                        ? 'This project was configured with the discontinued "Direct images" source type and has been switched to "Dataset file". Previously uploaded images will no longer be used. Save the project to persist this change.'
+                        : 'This project was configured with the discontinued "Direct images" source type, which is no longer supported. The project is currently not editable, so the source type cannot be updated to "Dataset file" here.',
+                    variant: 'warning',
+                },
+            );
+        }
+
         setValue({
             ...other,
             requestingOrganization: requestingOrganization.id,
@@ -251,7 +283,7 @@ function UpdateProjectForm(props: Props) {
             // status,
             projectTypeSpecifics: {
                 // TODO: replace with the default value
-                [projectTypeToKeyMap[projectType]]: projectTypeSpecifics
+                [projectTypeToKeyMap[projectType]]: normalizedProjectTypeSpecifics
                     ?? defaultProjectTypeSpecificsValue,
             },
         });
@@ -262,6 +294,7 @@ function UpdateProjectForm(props: Props) {
         setTeamOptions,
         setOrganizationOptions,
         defaultProjectTypeSpecificsValue,
+        alert,
     ]);
 
     const error = getErrorObject(formError);
@@ -388,7 +421,7 @@ function UpdateProjectForm(props: Props) {
     const setValidateImageProjectSpecificsFieldValue = useFormObject<'validateImage', PartialValidateImageSpecificFields>(
         'validateImage',
         setProjectSpecificFieldValue,
-        defaultValidateSpecificFormValue,
+        defaultValidateImageSpecificFormValue,
     );
 
     const setCompletenessProjectSpecificsFieldValue = useFormObject<'completeness', PartialCompletenessSpecificFields>(
@@ -434,7 +467,7 @@ function UpdateProjectForm(props: Props) {
     const completenessProjectTypeSpecifics = value.projectTypeSpecifics
         ?.completeness as PartialCompletenessSpecificFields | undefined;
     const validateImageProjectTypeSpecifics = value.projectTypeSpecifics
-        ?.validateImage as PartialValidateSpecificFields | undefined;
+        ?.validateImage as PartialValidateImageSpecificFields | undefined;
     const streetProjectTypeSpecifics = value.projectTypeSpecifics
         ?.street as PartialStreetSpecificFields | undefined;
     const locateObjectProjectTypeSpecifics = value.projectTypeSpecifics

@@ -5,13 +5,3 @@
         font-size: var(--font-size-sm);
     }
 }
-
-.selected-files {
-    .file {
-        .file-name {
-            overflow-wrap: anywhere;
-            font-family: var(--font-family-monospace);
-            font-size: var(--font-size-sm);
-        }
-    }
-}
