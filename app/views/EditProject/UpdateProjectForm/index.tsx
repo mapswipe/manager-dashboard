@@ -636,6 +636,10 @@ function UpdateProjectForm(props: Props) {
                             .defaultLocateObjectCustomOptions.find(
                                 (option) => option.value === 2,
                             )}
+                        defaultSingleFeatureOption={projectData
+                            .defaultLocateObjectCustomOptions.find(
+                                (option) => option.value === 1,
+                            )}
                         disabled={projectTypeSpecificInputsDisabled || readOnly}
                     />
                 )}
