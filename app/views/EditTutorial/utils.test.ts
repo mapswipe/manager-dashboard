@@ -52,13 +52,13 @@ describe('getValidReferenceValues', () => {
     it('skips options without a value along with their sub-options', () => {
         expect(getValidReferenceValues([
             { subOptions: [{ value: 5 }] },
-        ])).toBeUndefined();
+        ])).toEqual([]);
     });
 
-    it('returns undefined for missing or empty options', () => {
-        expect(getValidReferenceValues(undefined)).toBeUndefined();
-        expect(getValidReferenceValues(null)).toBeUndefined();
-        expect(getValidReferenceValues([])).toBeUndefined();
+    it('returns an empty array for missing or empty options', () => {
+        expect(getValidReferenceValues(undefined)).toEqual([]);
+        expect(getValidReferenceValues(null)).toEqual([]);
+        expect(getValidReferenceValues([])).toEqual([]);
     });
 });
 
@@ -236,7 +236,7 @@ describe('transformFindGeoJson', () => {
             return;
         }
 
-        expect(result.error).toContain('expected to have 6 instances');
+        expect(result.error).toContain('expected to have 6 instance(s)');
     });
 
     it('rejects non-serial screens', () => {
@@ -306,7 +306,44 @@ describe('transformStreetGeoJson', () => {
 });
 
 describe('transformCompareGeoJson', () => {
-    it('accepts repeated screens and maps compare specifics', () => {
+    it('maps each feature to its own scenario page, sorted by screen', () => {
+        const result = transformCompareGeoJson(createFeatureCollection([
+            {
+                screen: 2,
+                reference: 1,
+                tile_x: 3,
+                tile_y: 4,
+                tile_z: 18,
+            },
+            {
+                screen: 1,
+                reference: 0,
+                tile_x: 1,
+                tile_y: 2,
+                tile_z: 18,
+            },
+        ]));
+
+        expect(result.ok).toBe(true);
+        if (!result.ok) {
+            return;
+        }
+
+        expect(result.scenarioPages.map(
+            (page) => page.scenarioPageNumber,
+        )).toEqual([1, 2]);
+        expect(result.scenarioPages[0].tasks).toHaveLength(1);
+        expect(result.scenarioPages[1].tasks).toHaveLength(1);
+
+        const [task] = result.scenarioPages[0].tasks ?? [];
+        expect(task.projectTypeSpecifics?.compare).toEqual({
+            tileX: 1,
+            tileY: 2,
+            tileZ: 18,
+        });
+    });
+
+    it('rejects screens with more than one feature', () => {
         const result = transformCompareGeoJson(createFeatureCollection([
             {
                 screen: 1,
@@ -324,20 +361,12 @@ describe('transformCompareGeoJson', () => {
             },
         ]));
 
-        expect(result.ok).toBe(true);
-        if (!result.ok) {
+        expect(result.ok).toBe(false);
+        if (result.ok) {
             return;
         }
 
-        expect(result.scenarioPages).toHaveLength(1);
-        expect(result.scenarioPages[0].tasks).toHaveLength(2);
-
-        const [task] = result.scenarioPages[0].tasks ?? [];
-        expect(task.projectTypeSpecifics?.compare).toEqual({
-            tileX: 1,
-            tileY: 2,
-            tileZ: 18,
-        });
+        expect(result.error).toContain('expected to have 1 instance(s)');
     });
 
     it('rejects non-serial screens', () => {
@@ -361,7 +390,44 @@ describe('transformCompareGeoJson', () => {
 });
 
 describe('transformCompletenessGeoJson', () => {
-    it('accepts repeated screens and maps completeness specifics', () => {
+    // tile_x encodes the screen so mis-grouped tasks are detectable
+    const makeScreen = (screen: number) => Array.from(
+        new Array(6).keys(),
+    ).map((i) => ({
+        screen,
+        reference: i % 2,
+        tile_x: screen * 100 + i,
+        tile_y: 20 + i,
+        tile_z: 18,
+    }));
+
+    it('groups features by screen into sorted scenario pages', () => {
+        const result = transformCompletenessGeoJson(createFeatureCollection([
+            ...makeScreen(2),
+            ...makeScreen(1),
+        ]));
+
+        expect(result.ok).toBe(true);
+        if (!result.ok) {
+            return;
+        }
+
+        expect(result.scenarioPages.map(
+            (page) => page.scenarioPageNumber,
+        )).toEqual([1, 2]);
+
+        expect(result.scenarioPages[0].tasks).toHaveLength(6);
+        expect(result.scenarioPages[1].tasks).toHaveLength(6);
+
+        const [task] = result.scenarioPages[0].tasks ?? [];
+        expect(task.projectTypeSpecifics?.completeness).toEqual({
+            tileX: 100,
+            tileY: 20,
+            tileZ: 18,
+        });
+    });
+
+    it('rejects screens without exactly 6 features', () => {
         const result = transformCompletenessGeoJson(createFeatureCollection([
             {
                 screen: 1,
@@ -370,40 +436,21 @@ describe('transformCompletenessGeoJson', () => {
                 tile_y: 2,
                 tile_z: 18,
             },
-            {
-                screen: 1,
-                reference: 1,
-                tile_x: 3,
-                tile_y: 4,
-                tile_z: 18,
-            },
         ]));
 
-        expect(result.ok).toBe(true);
-        if (!result.ok) {
+        expect(result.ok).toBe(false);
+        if (result.ok) {
             return;
         }
 
-        expect(result.scenarioPages).toHaveLength(1);
-        expect(result.scenarioPages[0].tasks).toHaveLength(2);
-
-        const [task] = result.scenarioPages[0].tasks ?? [];
-        expect(task.projectTypeSpecifics?.completeness).toEqual({
-            tileX: 1,
-            tileY: 2,
-            tileZ: 18,
-        });
+        expect(result.error).toContain('expected to have 6 instance(s)');
     });
 
     it('rejects reference values outside the tile options', () => {
+        const [first, ...others] = makeScreen(1);
         const result = transformCompletenessGeoJson(createFeatureCollection([
-            {
-                screen: 1,
-                reference: 9,
-                tile_x: 1,
-                tile_y: 2,
-                tile_z: 18,
-            },
+            { ...first, reference: 9 },
+            ...others,
         ]));
 
         expect(result.ok).toBe(false);

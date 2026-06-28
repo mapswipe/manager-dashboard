@@ -463,7 +463,7 @@ export function transformCompletenessGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features, 1);
+    const problems = checkTileGroupedFeatures(result.features, 6);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
