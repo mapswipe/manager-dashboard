@@ -1,0 +1,18 @@
+# NOTE: Everything nests under `app:` — the alias of the web-app-serve-helm
+# dependency in Chart.yaml — so the values reach the subchart.
+#
+# ingress.hostname / ingress.ingressClassName are deliberately NOT set here:
+# they are deploy-time values supplied under `app.*` by the deployment
+# (ArgoCD valuesObject / --values).
+app:
+  fullnameOverride: manager-dashboard
+
+  image:
+    # NOTE: CI (web-app-serve-action) replaces these with the just-built image
+    name: SET-BY-CICD-IMAGE
+    tag: SET-BY-CICD-TAG
+
+  ingress:
+    # NOTE: pre-seeded — the CI provenance writer fails if this parent node
+    # is missing
+    annotations: {}
