@@ -66,4 +66,26 @@ ENV APPLY_CONFIG__SOURCE_DIRECTORY=/code/build/
 
 COPY --from=web-app-build /code/build "$APPLY_CONFIG__SOURCE_DIRECTORY"
 
+# Ship a hardened custom apply-config (grep ^APP_) instead of the base image's
+# stock default-app-apply-config.sh. The stock script does not escape sed
+# replacement metacharacters, so APP_MAPILLARY_API_KEY (a `MLY|...|...` token)
+# broke `sed s|…|…|` and the container exited on startup; and it never resolves
+# unfilled markers, so any var not set at runtime leaked the literal
+# WEB_APP_SERVE_PLACEHOLDER__* string — a truthy value — into the bundle
+# (Sentry initialising with a bogus DSN, Firebase with a bogus API key).
+# Our script escapes the metachars, resolves unfilled quoted-JS placeholders to
+# `undefined` (falsy), and warns on stderr about every leftover marker.
+# See ./web-app-serve/apply-config.sh.
+COPY ./web-app-serve/apply-config.sh /web-app-serve/app-apply-config.sh
+RUN chmod +x /web-app-serve/app-apply-config.sh
+ENV APPLY_CONFIG__APPLY_CONFIG_PATH=/web-app-serve/app-apply-config.sh
+
+# Drop the *.gz twins the build emits (vite-plugin-compression2). apply-config
+# substitutes placeholders with sed and cannot rewrite compressed bytes, so these
+# would be served as publicly fetchable copies still carrying the raw
+# WEB_APP_SERVE_PLACEHOLDER__* markers. Nothing reads them either — this image's
+# nginx compresses on the fly (gzip on) rather than serving pre-compressed files
+# (no gzip_static).
+RUN find "$APPLY_CONFIG__SOURCE_DIRECTORY" -name '*.gz' -delete
+
 RUN echo '{ "files": { "maxSize": 2097152 }, "formatter": { "includes": ["**/*.js", "**/*.html"] } }' > biome.json

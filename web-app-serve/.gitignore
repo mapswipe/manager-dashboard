@@ -1,1 +1,6 @@
 .env
+
+# helm dependency artifacts (created by `helm dependency update` when running the
+# local chart check) — CI resolves the dependency itself, so neither is committed
+helm/charts/
+helm/Chart.lock

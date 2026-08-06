@@ -1,4 +1,5 @@
-name: mapswipe-manager-dashboard-serve
+# NOTE: The name is mandatory and should be unique
+name: ${COMPOSE_PROJECT_NAME:-mapswipe-manager-dashboard-serve}
 
 services:
   web-app-serve:
@@ -6,7 +7,25 @@ services:
       context: ../
       target: web-app-serve
     environment:
-      APPLY_CONFIG__ENABLE_DEBUG: true
-    env_file: .env
+      # web-app-serve config: dumps unreplaced placeholders + diffs at /__debug/
+      APPLY_CONFIG__ENABLE_DEBUG: "true"
+      # Dynamic configs (local defaults; override via an optional local .env)
+      APP_ENVIRONMENT: "${APP_ENVIRONMENT:-DEV}"
+      # NOTE: bare origins — the app appends the path itself
+      # (`${APP_GRAPHQL_API_DOMAIN}/graphql/`, resolveUrl(APP_REST_API_DOMAIN, …)),
+      # matching the root docker-compose.yml and CI
+      APP_REST_API_DOMAIN: "${APP_REST_API_DOMAIN:-http://localhost:8000}"
+      APP_GRAPHQL_API_DOMAIN: "${APP_GRAPHQL_API_DOMAIN:-http://localhost:8000}"
+      APP_SENTRY_DSN: "${APP_SENTRY_DSN:-}"
+      APP_SENTRY_TRACES_SAMPLE_RATE: "${APP_SENTRY_TRACES_SAMPLE_RATE:-0.2}"
+      APP_FIREBASE_API_KEY: "${APP_FIREBASE_API_KEY:-}"
+      APP_FIREBASE_AUTH_DOMAIN: "${APP_FIREBASE_AUTH_DOMAIN:-mapswipe-mock.firebaseapp.com}"
+      APP_FIREBASE_PROJECT_ID: "${APP_FIREBASE_PROJECT_ID:-mapswipe-mock}"
+      APP_FIREBASE_AUTH_EMULATOR_URL: "${APP_FIREBASE_AUTH_EMULATOR_URL:-http://localhost:9099}"
+      APP_MAPILLARY_API_KEY: "${APP_MAPILLARY_API_KEY:-}"
+    # NOTE: See the repo-root "Dockerfile" for the full set of dynamic env variables.
+    env_file:
+      - path: .env
+        required: false
     ports:
       - '8050:80'
