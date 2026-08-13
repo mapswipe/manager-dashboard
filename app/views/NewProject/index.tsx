@@ -212,19 +212,7 @@ function NewProject() {
         createNewProject,
     ] = useNewProjectMutation();
 
-    const { projectTypeOptions: fullProjectTypeOptions } = useContext(EnumsContext);
-
-    const projectTypeOptions = useMemo(() => {
-        const { APP_ENVIRONMENT } = import.meta.env;
-
-        if (APP_ENVIRONMENT !== 'PROD') {
-            return fullProjectTypeOptions;
-        }
-
-        return fullProjectTypeOptions?.filter(
-            (option) => option.key !== ProjectTypeEnum.Locate,
-        );
-    }, [fullProjectTypeOptions]);
+    const { projectTypeOptions } = useContext(EnumsContext);
 
     const defaultBaseProjectFormValue = useMemo<PartialProjectCreateInputFields>(() => ({
         clientId: ulid(),
