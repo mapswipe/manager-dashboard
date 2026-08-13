@@ -1,6 +1,6 @@
 {
     "name": "mapswipe-manager-dashboard",
-    "version": "1.0.0",
+    "version": "0.3.5",
     "description": "Manager Dashboard for the MapSwipe",
     "type": "module",
     "license": "ISC",
