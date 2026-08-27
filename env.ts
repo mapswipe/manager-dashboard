@@ -16,7 +16,14 @@ const urlStringOptions: Parameters<typeof Schema.string>[number] = {
 export default defineConfig({
     validator: 'builtin',
     schema: {
-        APP_ENVIRONMENT: Schema.enum.optional(['DEV', 'CI', 'ALPHA', 'STAGE', 'PROD'] as const),
+        APP_ENVIRONMENT: (key: string, value: string) => {
+            const regex = /^(PROD|STAGE|testing|CI|alpha-\d+|ALPHA-\d+|SANDBOX-\d+|DEV)$/;
+            const valid = !!value && (value.match(regex) !== null);
+            if (!valid) {
+                throw new Error(`Value for environment variable "${key}" must match regex "${regex}", instead received "${value}"`);
+            }
+            return value as ('PROD' | 'STAGE' | 'testing' | 'CI' | `alpha-${number}` | 'DEV' | `ALPHA-${number}`);
+        },
 
         APP_REST_API_DOMAIN: Schema.string(urlStringOptions),
         APP_GRAPHQL_API_DOMAIN: Schema.string(urlStringOptions),
