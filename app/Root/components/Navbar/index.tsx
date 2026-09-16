@@ -7,6 +7,7 @@ import { _cs } from '@togglecorp/fujs';
 import { signOut } from 'firebase/auth';
 import { gql } from 'urql';
 
+import SmartLink from '#base/components/SmartLink';
 import SmartNavLink from '#base/components/SmartNavLink';
 import { firebaseAuth } from '#base/configs/firebase';
 import Button from '#components/Button';
@@ -44,6 +45,7 @@ function Navbar(props: Props) {
     const {
         user,
         setUser,
+        authenticated,
     } = useContext(UserContext);
     const healthCheckData = useContext(HealthCheckContext);
     const alert = useAlert();
@@ -90,14 +92,16 @@ function Navbar(props: Props) {
                 className={styles.content}
                 withCenterAlign
                 start={(
-                    <>
+                    <SmartLink
+                        route={authenticated ? 'home' : 'login'}
+                        withoutPadding
+                    >
                         <img
                             className={styles.logo}
                             src={mapSwipeLogo}
                             alt="MapSwipe"
                         />
-                        <div />
-                    </>
+                    </SmartLink>
                 )}
                 end={user && (
                     <ListLayout spacing="sm">
