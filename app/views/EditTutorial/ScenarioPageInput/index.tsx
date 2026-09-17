@@ -353,6 +353,7 @@ function ScenarioPageInput(props: Props) {
                         scenario={value}
                         projectInstruction={projectData.projectInstruction}
                         customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
+                        imageProvider={projectData.projectTypeSpecifics.imageProvider}
                         preview={preview}
                     />
                 )}

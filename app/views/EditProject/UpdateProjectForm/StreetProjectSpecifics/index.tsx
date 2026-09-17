@@ -16,16 +16,21 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import StreetImageProviderInput from '#components/domain/StreetImageProviderInput';
+import {
+    defaultStreetImageProviderValue,
+    PartialStreetImageProviderInputFields,
+} from '#components/domain/StreetImageProviderInput/schema';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
 import {
-    defaultStreetMapillaryImageFiltersInputFormValue,
-    PartialStreetMapillaryImageFiltersInputFields,
-} from './StreetMapillaryImageFiltersInput/schema';
+    defaultStreetImageFiltersInputFormValue,
+    PartialStreetImageFiltersInputFields,
+} from './StreetImageFiltersInput/schema';
 import { type PartialStreetSpecificFields } from './schema';
-import StreetMapillaryImageFiltersInput from './StreetMapillaryImageFiltersInput';
+import StreetImageFiltersInput from './StreetImageFiltersInput';
 
 interface Props {
     projectId: string;
@@ -68,10 +73,16 @@ function StreetProjectSpecifics(props: Props) {
         );
     }, [setFieldValue]);
 
-    const setStreetMapillaryImageFiltersInputFieldValue = useFormObject<'mapillaryImageFilters', PartialStreetMapillaryImageFiltersInputFields>(
+    const setStreetImageFiltersInputFieldValue = useFormObject<'mapillaryImageFilters', PartialStreetImageFiltersInputFields>(
         'mapillaryImageFilters' as const,
         setFieldValue,
-        defaultStreetMapillaryImageFiltersInputFormValue,
+        defaultStreetImageFiltersInputFormValue,
+    );
+
+    const setStreetImageProviderFieldValue = useFormObject<'imageProvider', PartialStreetImageProviderInputFields>(
+        'imageProvider' as const,
+        setFieldValue,
+        defaultStreetImageProviderValue,
     );
 
     return (
@@ -127,11 +138,18 @@ function StreetProjectSpecifics(props: Props) {
                     hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
                 />
             </Container>
-            <StreetMapillaryImageFiltersInput
+            <StreetImageFiltersInput
                 value={value?.mapillaryImageFilters}
-                setFieldValue={setStreetMapillaryImageFiltersInputFieldValue}
+                setFieldValue={setStreetImageFiltersInputFieldValue}
                 disabled={disabled}
                 error={error?.mapillaryImageFilters}
+                imageProvider={value?.imageProvider}
+            />
+            <StreetImageProviderInput
+                value={value?.imageProvider}
+                error={error?.imageProvider}
+                setFieldValue={setStreetImageProviderFieldValue}
+                disabled={disabled}
             />
         </>
     );
