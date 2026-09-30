@@ -196,6 +196,7 @@ function Projects() {
         setFilterField,
         resetFilters,
     } = useListManagement<ProjectFilterValue, keyof ProjectOrder>({
+        syncWithUrl: true,
         defaultFilters: {
             name: undefined,
             projectType: undefined,

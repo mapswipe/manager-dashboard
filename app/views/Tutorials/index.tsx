@@ -125,6 +125,7 @@ function Tutorials() {
         setFilterField,
         resetFilters,
     } = useListManagement<TutorialFilterValue, keyof TutorialOrder>({
+        syncWithUrl: true,
         defaultFilters: {
             name: undefined,
             status: undefined,

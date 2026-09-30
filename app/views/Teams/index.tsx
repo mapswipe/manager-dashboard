@@ -76,6 +76,7 @@ function Teams() {
         setFilterField,
         resetFilters,
     } = useListManagement<TeamFilterValue, keyof ContributorTeamOrder>({
+        syncWithUrl: true,
         defaultFilters: {
             name: undefined,
             isArchived: undefined,

@@ -91,6 +91,7 @@ function UserGroups() {
         setFilterField,
         resetFilters,
     } = useListManagement<UserGroupFilterValue, keyof ContributorUserGroupOrder>({
+        syncWithUrl: true,
         defaultFilters: {
             name: undefined,
             isArchived: undefined,

@@ -81,6 +81,7 @@ function Contributors() {
         setFilterField,
         resetFilters,
     } = useListManagement<ContributorUserFilterValue, keyof ContributorUserOrder>({
+        syncWithUrl: true,
         pageSize: 10,
         defaultFilters: {
             username: undefined,

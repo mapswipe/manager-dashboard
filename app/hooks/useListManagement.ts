@@ -1,9 +1,16 @@
 import {
     type SetStateAction,
     useCallback,
+    useEffect,
     useMemo,
     useReducer,
+    useRef,
 } from 'react';
+import { useSearchParams } from 'react-router';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import { type EntriesAsList } from '@togglecorp/toggle-form';
 
 import { Ordering } from '#generated/types/graphql';
@@ -16,6 +23,11 @@ import {
 
 interface ResetFilterAction {
     type: 'reset-filter';
+}
+
+interface SetListStateAction<FILTERS, SORT> {
+    type: 'set-state';
+    value: ListState<FILTERS, SORT>;
 }
 
 interface SetFilterAction<FILTERS extends object> {
@@ -77,6 +89,7 @@ interface ListState<FILTER, SORT> {
 
 type ListStateActions<FILTERS extends object, SORT extends object> = (
     ResetFilterAction
+    | SetListStateAction<FILTERS, SORT>
     | SetFilterAction<FILTERS>
     | SetPageAction
     | SetSortAction<SORT>
@@ -88,6 +101,135 @@ interface Option<FILTERS, SORT> {
     defaultPage?: number,
     pageSize?: number,
     debounceTime?: number,
+    syncWithUrl?: boolean,
+}
+
+const PAGE_PARAM = 'page';
+const SORT_PARAM = 'sort';
+
+function isSameValue(foo: unknown, bar: unknown) {
+    if (!hasSomeDefinedValue(foo) && !hasSomeDefinedValue(bar)) {
+        return true;
+    }
+    return JSON.stringify(foo) === JSON.stringify(bar);
+}
+
+function getOwnedKeys(defaultFilters: object) {
+    return [...Object.keys(defaultFilters), PAGE_PARAM, SORT_PARAM];
+}
+
+// NOTE: returns only the params managed by this hook, in a stable order
+function getOwnedParams(params: URLSearchParams, ownedKeys: string[]) {
+    const ownedParams = new URLSearchParams();
+    ownedKeys.forEach((key) => {
+        const value = params.get(key);
+        if (isDefined(value)) {
+            ownedParams.set(key, value);
+        }
+    });
+    return ownedParams;
+}
+
+function parseFilters<FILTERS extends object>(
+    params: URLSearchParams,
+    defaultFilters: FILTERS,
+): FILTERS {
+    const filters = { ...defaultFilters };
+    (Object.keys(defaultFilters) as (keyof FILTERS & string)[]).forEach((key) => {
+        const rawValue = params.get(key);
+        if (isNotDefined(rawValue)) {
+            return;
+        }
+        try {
+            const value = JSON.parse(rawValue);
+            if (value === null) {
+                return;
+            }
+            const defaultValue = defaultFilters[key];
+            if (
+                isDefined(defaultValue)
+                && (
+                    typeof value !== typeof defaultValue
+                    || Array.isArray(value) !== Array.isArray(defaultValue)
+                )
+            ) {
+                return;
+            }
+            filters[key] = value;
+        } catch {
+            // NOTE: invalid value, fallback to default
+        }
+    });
+    return filters;
+}
+
+function parsePage(params: URLSearchParams, defaultPage: number) {
+    const rawValue = params.get(PAGE_PARAM);
+    if (isNotDefined(rawValue)) {
+        return defaultPage;
+    }
+    const page = Number(rawValue);
+    return Number.isInteger(page) && page >= 1 ? page : defaultPage;
+}
+
+function parseSort<SORT>(params: URLSearchParams, defaultSort: SORT | undefined) {
+    const rawValue = params.get(SORT_PARAM);
+    if (isNotDefined(rawValue)) {
+        return defaultSort;
+    }
+    const descending = rawValue.startsWith('-');
+    const key = descending ? rawValue.slice(1) : rawValue;
+    if (key.length === 0) {
+        return defaultSort;
+    }
+    return {
+        key,
+        ordering: descending ? Ordering.Desc : Ordering.Asc,
+    } as SORT;
+}
+
+function serializeSort(sort: SortState<unknown> | undefined) {
+    if (isNotDefined(sort)) {
+        return undefined;
+    }
+    const descending = sort.ordering === Ordering.Desc
+        || sort.ordering === Ordering.DescNullsFirst
+        || sort.ordering === Ordering.DescNullsLast;
+    return `${descending ? '-' : ''}${String(sort.key)}`;
+}
+
+function serializeState<FILTERS extends object, SORT extends SortState<unknown>>(
+    state: ListState<FILTERS, SORT>,
+    defaults: ListState<FILTERS, SORT>,
+) {
+    const params = new URLSearchParams();
+    (Object.keys(defaults.filters) as (keyof FILTERS & string)[]).forEach((key) => {
+        const value = state.filters[key];
+        if (!isSameValue(value, defaults.filters[key]) && hasSomeDefinedValue(value)) {
+            params.set(key, JSON.stringify(value));
+        }
+    });
+    if (state.page !== defaults.page) {
+        params.set(PAGE_PARAM, String(state.page));
+    }
+    const sort = serializeSort(state.sort);
+    if (isDefined(sort) && sort !== serializeSort(defaults.sort)) {
+        params.set(SORT_PARAM, sort);
+    }
+    // NOTE: insertion order matches getOwnedKeys so that it can be compared
+    // with getOwnedParams
+    return params;
+}
+
+function parseState<FILTERS extends object, SORT>(
+    params: URLSearchParams,
+    defaults: ListState<FILTERS, SORT>,
+): ListState<FILTERS, SORT> {
+    return {
+        filters: parseFilters(params, defaults.filters),
+        sort: parseSort(params, defaults.sort),
+        page: parsePage(params, defaults.page),
+    };
 }
 
 function useListManagement<
@@ -103,21 +245,29 @@ function useListManagement<
         defaultPage = DEFAULT_PAGE,
         pageSize = DEFAULT_PAGE_SIZE,
         debounceTime = 200,
+        syncWithUrl = false,
     } = options;
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const defaults: ListState<FILTERS, SORT> = {
+        filters: defaultFilters,
+        sort: defaultSort,
+        page: defaultPage,
+    };
 
     type Reducer = (
         prevState: ListState<FILTERS, SORT>,
         action: ListStateActions<FILTERS, SORT>,
     ) => ListState<FILTERS, SORT>;
 
-    const [state, dispatch] = useReducer<Reducer>(
+    const [state, dispatch] = useReducer<Reducer, undefined>(
         (prevState, action) => {
             if (action.type === 'reset-filter') {
-                return {
-                    filters: defaultFilters,
-                    sort: defaultSort,
-                    page: defaultPage,
-                };
+                return defaults;
+            }
+            if (action.type === 'set-state') {
+                return action.value;
             }
             if (action.type === 'set-filter') {
                 return {
@@ -146,12 +296,25 @@ function useListManagement<
 
             return prevState;
         },
-        {
-            filters: defaultFilters,
-            sort: defaultSort,
-            page: defaultPage,
-        } satisfies ListState<FILTERS, SORT>,
+        undefined,
+        () => (syncWithUrl ? parseState(searchParams, defaults) : defaults),
     );
+
+    // NOTE: using refs so that the effects do not re-run on every render
+    // as the options are usually passed as inline objects
+    const defaultsRef = useRef(defaults);
+    defaultsRef.current = defaults;
+    const searchParamsRef = useRef(searchParams);
+    searchParamsRef.current = searchParams;
+
+    // NOTE: owned params last written to (or read from) the URL by this hook
+    // Used to differentiate our own writes from external navigation
+    const lastSyncedParamsRef = useRef<string | undefined>(undefined);
+    if (isNotDefined(lastSyncedParamsRef.current)) {
+        lastSyncedParamsRef.current = syncWithUrl
+            ? getOwnedParams(searchParams, getOwnedKeys(defaultFilters)).toString()
+            : '';
+    }
 
     const setFilters = useCallback(
         (value: SetStateAction<FILTERS>) => {
@@ -233,6 +396,57 @@ function useListManagement<
     );
 
     const debouncedState = useDebouncedValue(state, debounceTime);
+
+    // Sync external URL changes (eg. navigation, back/forward) to state
+    useEffect(
+        () => {
+            if (!syncWithUrl) {
+                return;
+            }
+            const currentDefaults = defaultsRef.current;
+            const ownedKeys = getOwnedKeys(currentDefaults.filters);
+            const ownedParams = getOwnedParams(searchParams, ownedKeys).toString();
+            if (ownedParams === lastSyncedParamsRef.current) {
+                return;
+            }
+            lastSyncedParamsRef.current = ownedParams;
+            dispatch({
+                type: 'set-state',
+                value: parseState(searchParams, currentDefaults),
+            });
+        },
+        [syncWithUrl, searchParams],
+    );
+
+    // Sync state to URL
+    useEffect(
+        () => {
+            if (!syncWithUrl) {
+                return;
+            }
+            const currentDefaults = defaultsRef.current;
+            const ownedKeys = getOwnedKeys(currentDefaults.filters);
+
+            const nextOwnedParams = serializeState(debouncedState, currentDefaults);
+            const nextOwnedParamsString = nextOwnedParams.toString();
+            lastSyncedParamsRef.current = nextOwnedParamsString;
+
+            const currentOwnedParams = getOwnedParams(searchParamsRef.current, ownedKeys);
+            if (currentOwnedParams.toString() === nextOwnedParamsString) {
+                return;
+            }
+
+            const nextParams = new URLSearchParams(searchParamsRef.current);
+            ownedKeys.forEach((key) => {
+                nextParams.delete(key);
+            });
+            nextOwnedParams.forEach((value, key) => {
+                nextParams.set(key, value);
+            });
+            setSearchParams(nextParams, { replace: true });
+        },
+        [syncWithUrl, debouncedState, setSearchParams],
+    );
 
     const filtersApplied = useMemo(
         () => hasSomeDefinedValue(debouncedState.filters),
