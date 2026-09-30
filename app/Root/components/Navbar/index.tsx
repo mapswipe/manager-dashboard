@@ -21,6 +21,7 @@ import { useLogoutMutation } from '#generated/types/graphql';
 import useAlert from '#hooks/useAlert';
 import useBooleanState from '#hooks/useBooleanState';
 import mapSwipeLogo from '#resources/images/mapswipe-logo.svg';
+import { resetDismissedBanners } from '#utils/common';
 import {
     alertCombinedError,
     checkAndAlertGraphQLResultError,
@@ -72,6 +73,7 @@ function Navbar(props: Props) {
             }
 
             setUser(undefined);
+            resetDismissedBanners();
             alert.show(
                 'Logout successful!',
                 {

@@ -99,7 +99,10 @@ function Contributors() {
     }] = useContributorUserListQuery({
         variables: {
             filters: {
-                username: { iContains: filters.username },
+                AND: isDefined(filters.username) ? {
+                    username: { iContains: filters.username },
+                    OR: { firebaseId: { exact: filters.username } },
+                } : undefined,
                 teamId: { exact: filters.team },
             },
             order: isDefined(sort) ? ({
@@ -125,7 +128,7 @@ function Contributors() {
                         icons={<PiMagnifyingGlass />}
                         value={rawFilters.username}
                         onChange={setFilterField}
-                        placeholder="Search by name"
+                        placeholder="Search by name or Firebase ID"
                     />
                     <TeamSelectInput
                         name="team"

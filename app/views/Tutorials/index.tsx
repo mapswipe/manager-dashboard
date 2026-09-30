@@ -149,7 +149,10 @@ function Tutorials() {
                 [sort.key]: sort.ordering,
             }) : undefined,
             filters: {
-                name: filters.name,
+                AND: isDefined(filters.name) ? {
+                    name: filters.name,
+                    OR: { firebaseId: { exact: filters.name } },
+                } : undefined,
                 status: { inList: removeEmptyList(filters.status) },
                 project: {
                     requestingOrganizationId: { exact: filters.organization },
@@ -193,7 +196,7 @@ function Tutorials() {
                         icons={<PiMagnifyingGlass />}
                         value={rawFilters.name}
                         onChange={setFilterField}
-                        placeholder="Search by title"
+                        placeholder="Search by title or Firebase ID"
                     />
                     <UserSelectInput
                         name="createdById"

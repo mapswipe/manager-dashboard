@@ -7,14 +7,19 @@ import {
 } from '@togglecorp/fujs';
 
 import {
+    ProjectsListQuery,
     ProjectTypeEnum,
     ProjectTypeSpecificInput,
     SubGridSizeEnum,
 } from '#generated/types/graphql';
+import { removeFromStorage } from '#utils/storage';
 
 export const DEFAULT_ALERT_DISMISS_DURATION = 4500;
 export const DEFAULT_PAGE_SIZE = 5;
 export const DEFAULT_PAGE = 1;
+
+export const MAPSWIPE_WEBSITE_URL = 'https://mapswipe.org';
+const MAPSWIPE_DATA_DOCUMENTATION_URL = 'https://docs.mapswipe.org/docs/about_data';
 
 export const OPACITY_TILE_SELECTED = 0.2;
 
@@ -27,6 +32,8 @@ export const VALUE_TILE_OPTION_NO = 0;
 export const VALUE_TILE_OPTION_YES = 1;
 export const VALUE_TILE_OPTION_MAYBE = 2;
 export const VALUE_TILE_OPTION_BAD_IMAGERY = 3;
+
+const BANNER_STORAGE_KEY_PREFIX = 'dismissed-banner:';
 
 export interface TileSelectOption {
     value: number,
@@ -604,3 +611,114 @@ export const subgridSizeToValueMap: Record<SubGridSizeEnum, 1 | 2 | 3> = {
     [SubGridSizeEnum.Size_4X4]: 2,
     [SubGridSizeEnum.Size_8X8]: 3,
 };
+
+export function getBannerStorageKey(key: string) {
+    return `${BANNER_STORAGE_KEY_PREFIX}${key}`;
+}
+
+export function resetDismissedBanners() {
+    Object.keys(localStorage)
+        .filter((key) => key.startsWith(BANNER_STORAGE_KEY_PREFIX))
+        .forEach(removeFromStorage);
+}
+
+export type ProjectListItem = ProjectsListQuery['projects']['results'][number];
+
+type ExportKey = 'exportAggregatedResults'
+    | 'exportAggregatedResultsWithGeometry'
+    | 'exportAreaOfInterest'
+    | 'exportGroups'
+    | 'exportHistory'
+    | 'exportResults'
+    | 'exportTasks'
+    | 'exportUsers'
+    | 'exportHotTaskingManagerGeometries'
+    | 'exportModerateToHighAgreementYesMaybeGeometries';
+
+export type ProjectExports = Pick<ProjectListItem, ExportKey>;
+
+const exportOptions: {
+    key: ExportKey;
+    label: string;
+    documentationUrl?: string;
+}[] = [
+    {
+        key: 'exportAggregatedResults',
+        label: 'Aggregated results',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/aggregated_results/`,
+    },
+    {
+        key:
+        'exportAggregatedResultsWithGeometry',
+        label: 'Aggregated results (with geometry)',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/aggregated_results_with_geometry/`,
+    },
+    {
+        key:
+        'exportAreaOfInterest',
+        label: 'Area of interest',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/area_of_interest/`,
+    },
+    {
+        key:
+         'exportGroups',
+        label: 'Groups',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/groups/`,
+    },
+    {
+        key:
+        'exportHistory',
+        label: 'History',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/history/`,
+    },
+    {
+        key:
+        'exportResults',
+        label: 'Results',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/results/`,
+    },
+    {
+        key:
+        'exportTasks',
+        label: 'Tasks',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/tasks/`,
+    },
+    {
+        key:
+         'exportUsers',
+        label: 'Users',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/users/`,
+    },
+    {
+        key:
+        'exportHotTaskingManagerGeometries',
+        label: 'HOT Tasking Manager geometries',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/hot_tm/`,
+    },
+    {
+        key:
+        'exportModerateToHighAgreementYesMaybeGeometries',
+        label: 'Moderate to high agreement (yes/maybe) geometries',
+        documentationUrl: `${MAPSWIPE_DATA_DOCUMENTATION_URL}/yes_maybe/`,
+    },
+];
+
+export function getAvailableExports(project: ProjectExports) {
+    return exportOptions
+        .map(({ key, label, documentationUrl }) => {
+            const asset = project[key];
+            if (isNotDefined(asset?.file)) {
+                return undefined;
+            }
+            return {
+                key,
+                label,
+                documentationUrl,
+                url: asset.file.url,
+                name: asset.file.name,
+                fileSize: asset.fileSize,
+                mimetype: asset.mimetype,
+            };
+        })
+        .filter(isDefined);
+}

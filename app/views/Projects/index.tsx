@@ -15,6 +15,7 @@ import Button from '#components/Button';
 import Checkbox from '#components/Checkbox';
 import Checklist from '#components/Checklist';
 import Container from '#components/Container';
+import DismissibleBanner from '#components/DismissibleBanner';
 import OrderingInput from '#components/domain/OrderingInput';
 import SortByInput, { SortByOption } from '#components/domain/SortByInput';
 import PageLayout from '#components/PageLayout';
@@ -171,6 +172,97 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
                 id
                 name
             }
+            exportAggregatedResultsWithGeometry {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+            }
+            exportAggregatedResults {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+            }
+            exportAreaOfInterest {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+            }
+            exportGroups {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+            }
+            exportHistory {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+                modifiedAt
+            }
+            exportResults {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+            }
+            exportTasks {
+                id
+                fileSize
+                file {
+                    name
+                    url
+                }
+                mimetype
+            }
+            exportUsers {
+                id
+                file {
+                    url
+                    name
+                }
+                mimetype
+                fileSize
+            }
+            exportHotTaskingManagerGeometries {
+                id
+                file {
+                    url
+                    name
+                }
+                mimetype
+                fileSize
+            }
+            exportModerateToHighAgreementYesMaybeGeometries {
+                id
+                file {
+                    url
+                    name
+                }
+                mimetype
+                fileSize
+            }
         }
         pageInfo {
             limit
@@ -179,6 +271,9 @@ query ProjectsList($filters: ProjectFilter, $order: ProjectOrder, $pagination: O
     }
 }
 `;
+
+// NOTE: the exports banner is hidden for everyone after this date
+const EXPORTS_BANNER_EXPIRY_DATE = new Date('2026-12-31T23:59:59');
 
 function Projects() {
     const {
@@ -228,7 +323,10 @@ function Projects() {
                 [sort.key]: sort.ordering,
             }) : undefined,
             filters: {
-                name: filters.name,
+                AND: isDefined(filters.name) ? {
+                    name: filters.name,
+                    OR: { firebaseId: { exact: filters.name } },
+                } : undefined,
                 projectType: { inList: removeEmptyList(filters.projectType) },
                 status: { inList: removeEmptyList(filters.status) },
                 requestingOrganizationId: { exact: filters.organization },
@@ -271,7 +369,7 @@ function Projects() {
                         icons={<PiMagnifyingGlass />}
                         value={rawFilters.name}
                         onChange={setFilterField}
-                        placeholder="Search by title"
+                        placeholder="Search by title or Firebase ID"
                     />
                     <UserSelectInput
                         name="createdBy"
@@ -400,6 +498,16 @@ function Projects() {
                     />
                 )}
             >
+                <DismissibleBanner
+                    storageKey="projects-exports"
+                    expiryDate={EXPORTS_BANNER_EXPIRY_DATE}
+                >
+                    Project data is now available to download. Open
+                    {' '}
+                    <strong>Show details &amp; exports</strong>
+                    {' '}
+                    on any project to see all files.
+                </DismissibleBanner>
                 {!pending && filteredProjectList.map((project) => (
                     <ProjectListItem
                         key={project.id}
