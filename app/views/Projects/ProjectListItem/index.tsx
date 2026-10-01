@@ -23,6 +23,7 @@ import SmartLink from '#base/components/SmartLink';
 import Button from '#components/Button';
 import Container from '#components/Container';
 import Description from '#components/Description';
+import ProjectExportsList from '#components/domain/ProjectExportsList';
 import ProjectSpecificDetails from '#components/domain/ProjectSpecificDetails';
 import ProjectStatusOutput from '#components/domain/ProjectStatusOutput';
 import ProjectTypeOutput from '#components/domain/ProjectTypeOutput';
@@ -43,7 +44,11 @@ import {
     ProjectStatusEnum,
     useUpdateProjectFeaturedMutation,
 } from '#generated/types/graphql';
-import { getInstruction } from '#utils/common';
+import {
+    getAvailableExports,
+    getInstruction,
+    MAPSWIPE_WEBSITE_URL,
+} from '#utils/common';
 import { OPERATION_INFO_FRAGMENT } from '#utils/query';
 import ProjectActions from '#views/EditProject/ProjectActions';
 
@@ -85,12 +90,16 @@ function ProjectListItem(props: Props) {
         updateProjectFeatured,
     ] = useUpdateProjectFeaturedMutation();
 
+    const hasExports = getAvailableExports(value).length > 0;
+
     return (
         <ExpandableContainer
             className={styles.projectListItem}
             name={undefined}
             isExpanded={showDetails}
             onExpansionChange={setShowDetails}
+            showDetailsButtonLabel={hasExports ? 'Show details & exports' : undefined}
+            hideDetailsButtonLabel={hasExports ? 'Hide details & exports' : undefined}
             contentLayout="block"
             withBackground
             withPadding
@@ -298,6 +307,23 @@ function ProjectListItem(props: Props) {
                                         )}
                                     />
                                 )}
+                                {value.status === ProjectStatusEnum.Published && (
+                                    <TextOutput
+                                        label="Project Page"
+                                        value={(
+                                            <SmartLink
+                                                external
+                                                href={`${MAPSWIPE_WEBSITE_URL}/en/projects/${value.firebaseId}/`}
+                                                className={styles.externalLink}
+                                                withoutPadding
+                                                spacing="xs"
+                                                withLinkIcon
+                                            >
+                                                View on MapSwipe website
+                                            </SmartLink>
+                                        )}
+                                    />
+                                )}
                                 <ListLayout
                                     layout="grid"
                                     spacing="sm"
@@ -378,12 +404,12 @@ function ProjectListItem(props: Props) {
                                         />
                                     </GridLayoutItem>
                                 )}
-
                                 {isDefined(value.description) && (
                                     <Description>
                                         <MarkdownPreview markdown={value.description} />
                                     </Description>
                                 )}
+                                <ProjectExportsList project={value} />
                             </>
                         )}
                     </Container>
