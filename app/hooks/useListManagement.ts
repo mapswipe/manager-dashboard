@@ -118,7 +118,6 @@ function getOwnedKeys(defaultFilters: object) {
     return [...Object.keys(defaultFilters), PAGE_PARAM, SORT_PARAM];
 }
 
-// NOTE: returns only the params managed by this hook, in a stable order
 function getOwnedParams(params: URLSearchParams, ownedKeys: string[]) {
     const ownedParams = new URLSearchParams();
     ownedKeys.forEach((key) => {
@@ -140,25 +139,21 @@ function parseFilters<FILTERS extends object>(
         if (isNotDefined(rawValue)) {
             return;
         }
-        try {
-            const value = JSON.parse(rawValue);
-            if (value === null) {
-                return;
-            }
-            const defaultValue = defaultFilters[key];
-            if (
-                isDefined(defaultValue)
+        const value = JSON.parse(rawValue);
+        if (value === null) {
+            return;
+        }
+        const defaultValue = defaultFilters[key];
+        if (
+            isDefined(defaultValue)
                 && (
                     typeof value !== typeof defaultValue
                     || Array.isArray(value) !== Array.isArray(defaultValue)
                 )
-            ) {
-                return;
-            }
-            filters[key] = value;
-        } catch {
-            // NOTE: invalid value, fallback to default
+        ) {
+            return;
         }
+        filters[key] = value;
     });
     return filters;
 }
@@ -216,8 +211,6 @@ function serializeState<FILTERS extends object, SORT extends SortState<unknown>>
     if (isDefined(sort) && sort !== serializeSort(defaults.sort)) {
         params.set(SORT_PARAM, sort);
     }
-    // NOTE: insertion order matches getOwnedKeys so that it can be compared
-    // with getOwnedParams
     return params;
 }
 
@@ -300,15 +293,11 @@ function useListManagement<
         () => (syncWithUrl ? parseState(searchParams, defaults) : defaults),
     );
 
-    // NOTE: using refs so that the effects do not re-run on every render
-    // as the options are usually passed as inline objects
     const defaultsRef = useRef(defaults);
     defaultsRef.current = defaults;
     const searchParamsRef = useRef(searchParams);
     searchParamsRef.current = searchParams;
 
-    // NOTE: owned params last written to (or read from) the URL by this hook
-    // Used to differentiate our own writes from external navigation
     const lastSyncedParamsRef = useRef<string | undefined>(undefined);
     if (isNotDefined(lastSyncedParamsRef.current)) {
         lastSyncedParamsRef.current = syncWithUrl
@@ -397,7 +386,6 @@ function useListManagement<
 
     const debouncedState = useDebouncedValue(state, debounceTime);
 
-    // Sync external URL changes (eg. navigation, back/forward) to state
     useEffect(
         () => {
             if (!syncWithUrl) {
@@ -418,7 +406,6 @@ function useListManagement<
         [syncWithUrl, searchParams],
     );
 
-    // Sync state to URL
     useEffect(
         () => {
             if (!syncWithUrl) {
