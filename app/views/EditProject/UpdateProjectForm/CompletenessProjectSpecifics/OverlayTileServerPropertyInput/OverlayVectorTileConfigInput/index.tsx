@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
     EntriesAsList,
     getErrorObject,
@@ -49,6 +50,8 @@ function OverlayVectorTileConfigInput(props: Props) {
         zoomLevel,
     } = props;
 
+    const [tileServerWarning, setTileServerWarning] = useState<string | undefined>();
+
     const error = getErrorObject(formError);
 
     const setVectorTileServerFieldValue = useFormObject<'tileServer', PartialVectorTileServerInputFields>(
@@ -71,12 +74,14 @@ function OverlayVectorTileConfigInput(props: Props) {
                     error={error?.tileServer}
                     setFieldValue={setVectorTileServerFieldValue}
                     disabled={disabled}
+                    customUrlWarning={tileServerWarning}
                 />
                 <VectorTilePreview
                     vectorTileConfig={value}
                     baseTileServer={baseTileServer}
                     aoiGeometryAssetId={aoiGeometryAssetId}
                     zoomLevel={zoomLevel}
+                    onTileServerWarningChange={setTileServerWarning}
                 />
             </ListLayout>
             <Container

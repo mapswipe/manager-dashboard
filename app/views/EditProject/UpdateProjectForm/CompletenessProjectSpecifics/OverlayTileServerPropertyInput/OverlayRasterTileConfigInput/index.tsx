@@ -23,10 +23,14 @@ import {
     defaultRasterTileServerInputValue,
     PartialRasterTileServerInputFields,
 } from '#components/domain/RasterTileServerInput/schema';
+import TileCorsErrorWatcher from '#components/domain/TileCorsErrorWatcher';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
-import { ProjectOverlayRasterTileServerConfig } from '#generated/types/graphql';
+import {
+    ProjectOverlayRasterTileServerConfig,
+    RasterTileServerNameEnum,
+} from '#generated/types/graphql';
 
 import { PartialOverlayRasterTileConfigInputFields } from './schema';
 
@@ -52,6 +56,7 @@ function OverlayRasterTileConfigInput(props: Props) {
     } = props;
 
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
+    const [tileServerWarning, setTileServerWarning] = useState<string | undefined>();
 
     const error = getErrorObject(formError);
 
@@ -84,6 +89,7 @@ function OverlayRasterTileConfigInput(props: Props) {
                     disabled={disabled}
                     aoiGeoJsonAssetId={aoiGeoJsonAssetId}
                     withoutPreview
+                    customUrlWarning={tileServerWarning}
                 />
                 <ListLayout layout="block">
                     <BaseMap baseTileServer={baseTileServer}>
@@ -96,6 +102,13 @@ function OverlayRasterTileConfigInput(props: Props) {
                         {!(tileConfigValue instanceof type.errors) && (
                             <RasterTileMapSource
                                 tileConfig={tileConfigValue}
+                            />
+                        )}
+                        {value?.tileServer?.name === RasterTileServerNameEnum.Custom && (
+                            <TileCorsErrorWatcher
+                                sourceId={`overlay-raster-source-${value.tileServer.name}`}
+                                tileUrl={value.tileServer.custom?.url}
+                                onChange={setTileServerWarning}
                             />
                         )}
                         <MapOrder
