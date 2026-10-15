@@ -55,6 +55,7 @@ interface Props {
     error: LeafError | ObjectError<PartialVectorTileServerInputFields>;
     setFieldValue: (...entries: EntriesAsList<PartialVectorTileServerInputFields>) => void;
     disabled?: boolean;
+    customUrlWarning?: string;
 }
 
 function VectorTileServerInput(props: Props) {
@@ -64,6 +65,7 @@ function VectorTileServerInput(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
+        customUrlWarning,
     } = props;
 
     const error = getErrorObject(formError);
@@ -177,6 +179,7 @@ function VectorTileServerInput(props: Props) {
                             hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} as placeholders and that already includes the api key."
                             value={value.custom?.url}
                             error={getErrorObject(error?.custom)?.url}
+                            warning={customUrlWarning}
                             onChange={setCustomTileServerFieldValue}
                             disabled={disabled}
                         />
