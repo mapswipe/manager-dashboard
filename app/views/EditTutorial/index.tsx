@@ -12,6 +12,7 @@ import {
 } from 'react-icons/pi';
 import { useParams } from 'react-router';
 import {
+    compareNumber,
     isDefined,
     isNotDefined,
     listToGroupList,
@@ -195,7 +196,13 @@ function NewTutorial() {
             // project: projectId,
             scenarios: scenarios.map((scenario) => ({
                 ...scenario,
-                tasks: scenario.tasks.map((task) => {
+                tasks: (
+                    scenario.tasks.some((task) => isDefined(task.taskPartitionIndex))
+                        ? scenario.tasks.toSorted(
+                            (a, b) => compareNumber(a.taskPartitionIndex, b.taskPartitionIndex),
+                        )
+                        : scenario.tasks
+                ).map((task) => {
                     // eslint-disable-next-line no-underscore-dangle
                     if (task.projectTypeSpecifics?.__typename === 'FindTutorialTaskPropertyType') {
                         return {

@@ -22,11 +22,11 @@ interface PydanticError {
 }
 
 interface ServerError {
-    array_errors: unknown[] | null,
+    array_errors: ServerError[] | null,
     client_id: string | null,
     field: string,
     messages: string | string[] | null,
-    object_errors: unknown[] | null,
+    object_errors: ServerError[] | null,
     pydantic_errors: PydanticError[],
 }
 
@@ -75,9 +75,19 @@ export function transformErrors(errors: ServerError[]) {
                 return messages;
             }
 
-            if (array_errors) {
-                // eslint-disable-next-line no-console
-                console.error('Array errors not handled', array_errors);
+            if (array_errors && array_errors.length > 0) {
+                return listToMap(
+                    array_errors.filter((arrayError) => isDefined(arrayError.client_id)),
+                    ({ client_id }) => client_id as string,
+                    (arrayError) => {
+                        if (isDefined(arrayError.messages)) {
+                            return Array.isArray(arrayError.messages)
+                                ? arrayError.messages.join(', ')
+                                : arrayError.messages;
+                        }
+                        return transformErrors(arrayError.object_errors ?? []);
+                    },
+                );
             }
 
             if (object_errors) {
