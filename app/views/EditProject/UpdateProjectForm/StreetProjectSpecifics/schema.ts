@@ -4,6 +4,7 @@ import {
 } from '@togglecorp/toggle-form';
 
 import customOptionSchema from '#components/domain/CustomOptionInput/schema';
+import streetImageProviderSchema, { defaultStreetImageProviderValue } from '#components/domain/StreetImageProviderInput/schema';
 import { StreetProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -11,7 +12,7 @@ import {
     type PartialProjectUpdateInput,
     type UpdateProjectContext,
 } from '../schema';
-import streetMapillaryimageFiltersFormSchema, { defaultStreetMapillaryImageFiltersInputFormValue } from './StreetMapillaryImageFiltersInput/schema';
+import streetImageFiltersFormSchema, { defaultStreetImageFiltersInputFormValue } from './StreetImageFiltersInput/schema';
 
 export type PartialStreetSpecificFields = PartialForm<
     DeepNonNullable<StreetProjectPropertyInput>,
@@ -24,7 +25,8 @@ type StreetSpecificFormSchema = ObjectSchema<
 >;
 
 export const defaultStreetSpecificFormValue: PartialStreetSpecificFields = {
-    mapillaryImageFilters: defaultStreetMapillaryImageFiltersInputFormValue,
+    mapillaryImageFilters: defaultStreetImageFiltersInputFormValue,
+    imageProvider: defaultStreetImageProviderValue,
 };
 
 const streetSpecificFormSchema: StreetSpecificFormSchema = {
@@ -34,7 +36,8 @@ const streetSpecificFormSchema: StreetSpecificFormSchema = {
             member: () => customOptionSchema,
         },
         aoiGeometry: {},
-        mapillaryImageFilters: streetMapillaryimageFiltersFormSchema,
+        mapillaryImageFilters: streetImageFiltersFormSchema,
+        imageProvider: streetImageProviderSchema,
     }),
 };
 

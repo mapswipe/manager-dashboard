@@ -1,0 +1,9 @@
+.panoramax-image-preview {
+    isolation: isolate;
+    height: 20rem;
+
+    .viewer {
+        width: 100%;
+        height: 100%;
+    }
+}

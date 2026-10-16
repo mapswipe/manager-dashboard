@@ -35,7 +35,7 @@ function StreetPropertyInput(props: Props) {
     return (
         <div className={_cs(className, styles.streetPropertyInput)}>
             <TextInput
-                label="Mapillary Image ID"
+                label="Street-level Image ID"
                 name="mapillaryImageId"
                 value={value?.mapillaryImageId}
                 error={error?.mapillaryImageId}

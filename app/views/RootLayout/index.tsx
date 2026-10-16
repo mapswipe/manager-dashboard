@@ -107,6 +107,10 @@ query AllEnums {
             key
             label
         }
+        StreetImageProviderNameEnum {
+            key
+            label
+        }
     }
 }
 `;
@@ -200,6 +204,7 @@ function RootLayout() {
         tutorialStatusOptions: allEnumsResponse?.enums.TutorialStatusEnum ?? [],
         firebasePushStatusOptions: allEnumsResponse?.enums.FirebasePushStatusEnum ?? [],
         subGridSizeOptions: allEnumsResponse?.enums.SubGridSizeEnum ?? [],
+        streetImageProviderNameOptions: allEnumsResponse?.enums.StreetImageProviderNameEnum ?? [],
         validateObjectSourceTypeMapping: listToMap(
             allEnumsResponse?.enums.ValidateObjectSourceTypeEnum,
             ({ key }) => key,
@@ -230,6 +235,10 @@ function RootLayout() {
         ),
         firebasePushStatusMapping: listToMap(
             allEnumsResponse?.enums.FirebasePushStatusEnum,
+            ({ key }) => key,
+        ),
+        streetImageProviderNameMapping: listToMap(
+            allEnumsResponse?.enums.StreetImageProviderNameEnum,
             ({ key }) => key,
         ),
     } satisfies EnumsContextProps), [allEnumsResponse]);
