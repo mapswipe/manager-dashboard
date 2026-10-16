@@ -1,9 +1,11 @@
 import {
+    useCallback,
     useContext,
     useMemo,
 } from 'react';
 import {
     isDefined,
+    isFalsyString,
     isNotDefined,
 } from '@togglecorp/fujs';
 import {
@@ -33,7 +35,10 @@ import {
     labelSelector,
 } from '#utils/common';
 
-import { PartialValidateObjectSourceInputFields } from './schema';
+import {
+    defaultObjectSourceInputFormValue,
+    PartialValidateObjectSourceInputFields,
+} from './schema';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TEST_AOI_OBJECTS_QUERY = gql`
@@ -123,6 +128,18 @@ function ObjectSourceInput(props: Props) {
         ObjectGeojsonUrl,
         TaskingManager,
     } = ValidateObjectSourceTypeEnum;
+
+    const handleSourceTypeChange = useCallback(
+        (newSourceType: ValidateObjectSourceTypeEnum | undefined) => {
+            setFieldValue(newSourceType, 'sourceType');
+            const usesOhsomeFilter = newSourceType === AoiGeojsonFile
+                || newSourceType === TaskingManager;
+            if (usesOhsomeFilter && isFalsyString(value?.ohsomeFilter)) {
+                setFieldValue(defaultObjectSourceInputFormValue.ohsomeFilter, 'ohsomeFilter');
+            }
+        },
+        [setFieldValue, value?.ohsomeFilter, AoiGeojsonFile, TaskingManager],
+    );
 
     const headerDescription = useMemo(() => {
         if (isNotDefined(value?.sourceType)) {
@@ -299,7 +316,7 @@ function ObjectSourceInput(props: Props) {
                 name="sourceType"
                 options={validateObjectSourceTypeOptions}
                 value={value?.sourceType}
-                onChange={setFieldValue}
+                onChange={handleSourceTypeChange}
                 keySelector={keySelector}
                 labelSelector={labelSelector}
                 error={error?.sourceType}

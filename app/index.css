@@ -59,6 +59,8 @@
     --color-backdrop: rgba(0, 0, 0, .7);
     --color-backdrop-light: rgba(255, 255, 255, .7);
     --color-background-accent-hint: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    --color-background-info: color-mix(in srgb, var(--color-accent) 9%, var(--color-foreground));
+    --color-border-info: color-mix(in srgb, var(--color-accent) 20%, var(--color-foreground));
 
     --color-black: #000000;
 

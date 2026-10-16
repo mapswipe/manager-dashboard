@@ -14,4 +14,8 @@
             }
         }
     }
+
+    .external-link {
+        text-decoration: underline;
+    }
 }

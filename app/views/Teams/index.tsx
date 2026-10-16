@@ -76,6 +76,7 @@ function Teams() {
         setFilterField,
         resetFilters,
     } = useListManagement<TeamFilterValue, keyof ContributorTeamOrder>({
+        syncWithUrl: true,
         defaultFilters: {
             name: undefined,
             isArchived: undefined,
@@ -92,7 +93,10 @@ function Teams() {
     }] = useTeamsListQuery({
         variables: {
             filters: {
-                name: filters.name,
+                AND: isDefined(filters.name) ? {
+                    name: filters.name,
+                    OR: { firebaseId: { exact: filters.name } },
+                } : undefined,
                 isArchived: { exact: filters.isArchived },
             },
             order: isDefined(sort) ? ({
@@ -119,7 +123,7 @@ function Teams() {
                         icons={<PiMagnifyingGlass />}
                         value={rawFilters.name}
                         onChange={setFilterField}
-                        placeholder="Search by title"
+                        placeholder="Search by title or Firebase ID"
                     />
                     <Checkbox
                         name="isArchived"
