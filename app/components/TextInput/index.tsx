@@ -12,6 +12,7 @@ function TextInput<const N>(props: TextInputProps<N>) {
         className,
         disabled,
         error,
+        warning,
         hint,
         icons,
         label,
@@ -30,6 +31,7 @@ function TextInput<const N>(props: TextInputProps<N>) {
             className={className}
             disabled={disabled}
             error={error}
+            warning={warning}
             hint={hint}
             icons={icons}
             label={label}

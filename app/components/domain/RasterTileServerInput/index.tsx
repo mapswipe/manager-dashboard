@@ -29,6 +29,7 @@ import { RasterTileServerNameEnum } from '#generated/types/graphql';
 import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
+import TileCorsErrorWatcher from '../TileCorsErrorWatcher';
 import {
     PartialCommonRasterTileServerConfigFields,
     PartialCustomRasterTileServerConfigFields,
@@ -62,6 +63,7 @@ interface Props {
     containerHeadingLevel?: ContainerProps['headingLevel'];
     withoutPreview?: boolean;
     zoomLevel?: number;
+    customUrlWarning?: string;
 }
 
 function RasterTileServerInput(props: Props) {
@@ -78,12 +80,15 @@ function RasterTileServerInput(props: Props) {
         containerHeadingLevel = 4,
         withoutPreview = false,
         zoomLevel,
+        customUrlWarning,
     } = props;
 
     const error = getErrorObject(formError);
 
     const { raster: rasterTileServerNameOptions } = useContext(TileServerContext);
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
+    const [tileServerWarning, setTileServerWarning] = useState<string | undefined>();
+    const urlWarning = customUrlWarning ?? tileServerWarning;
 
     const workingRasterTileServerNameOptions = useMemo(
         () => [
@@ -183,6 +188,7 @@ function RasterTileServerInput(props: Props) {
                                     hint="Make sure you have permission. Add a custom tile server URL that uses {x}, {y} (or {-y}) & {z} or {quad_key} as placeholders and that already includes the api key."
                                     value={value.custom?.url}
                                     error={getErrorObject(error?.custom)?.url}
+                                    warning={urlWarning}
                                     onChange={setCustomRasterTileServerFieldValue}
                                     disabled={disabled}
                                 />
@@ -227,6 +233,13 @@ function RasterTileServerInput(props: Props) {
                                 zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
                                 withPadding={zoomView === 'aoiBounds'}
                             />
+                            {value?.name === RasterTileServerNameEnum.Custom && (
+                                <TileCorsErrorWatcher
+                                    sourceId="base-tile-source"
+                                    tileUrl={value.custom?.url}
+                                    onChange={setTileServerWarning}
+                                />
+                            )}
                         </BaseMap>
                         {isDefined(zoomLevel) && (
                             <InlineLayout withCenteredContent>
