@@ -333,6 +333,8 @@ function ScenarioPageInput(props: Props) {
                     <ValidateScenarioPreview
                         scenario={value}
                         tileServerProperty={projectData.projectTypeSpecifics?.tileServerProperty}
+                        preEventTileServerProperty={projectData
+                            .projectTypeSpecifics?.preEventTileServerProperty}
                         projectInstruction={projectData.projectInstruction}
                         customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
                         preview={preview}

@@ -1,6 +1,8 @@
+import { isDefined } from '@togglecorp/fujs';
 import {
     ObjectSchema,
     PartialForm,
+    undefinedValue,
 } from '@togglecorp/toggle-form';
 
 import customOptionSchema from '#components/domain/CustomOptionInput/schema';
@@ -30,13 +32,16 @@ export const defaultValidateSpecificFormValue: PartialValidateSpecificFields = {
 };
 
 const validateSpecificFormSchema: ValidateSpecificFormSchema = {
-    fields: (): ReturnType<ValidateSpecificFormSchema['fields']> => ({
+    fields: (value): ReturnType<ValidateSpecificFormSchema['fields']> => ({
         customOptions: {
-            keySelector: (value) => value.clientId,
+            keySelector: (customOption) => customOption.clientId,
             member: () => customOptionSchema,
         },
         objectSource: objectSourceFormSchema,
         tileServerProperty: rasterTileServerFormSchema,
+        preEventTileServerProperty: isDefined(value?.preEventTileServerProperty)
+            ? rasterTileServerFormSchema
+            : { forceValue: undefinedValue },
     }),
 };
 

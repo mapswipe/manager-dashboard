@@ -6,6 +6,7 @@ import {
 } from 'react';
 import {
     isDefined,
+    isNotDefined,
     listToMap,
 } from '@togglecorp/fujs';
 import {
@@ -30,6 +31,7 @@ import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
 import {
+    defaultCustomRasterTileServerValue,
     PartialCommonRasterTileServerConfigFields,
     PartialCustomRasterTileServerConfigFields,
     type PartialRasterTileServerInputFields,
@@ -62,6 +64,7 @@ interface Props {
     containerHeadingLevel?: ContainerProps['headingLevel'];
     withoutPreview?: boolean;
     zoomLevel?: number;
+    headerActions?: ContainerProps['headerActions'];
 }
 
 function RasterTileServerInput(props: Props) {
@@ -78,6 +81,7 @@ function RasterTileServerInput(props: Props) {
         containerHeadingLevel = 4,
         withoutPreview = false,
         zoomLevel,
+        headerActions,
     } = props;
 
     const error = getErrorObject(formError);
@@ -124,7 +128,16 @@ function RasterTileServerInput(props: Props) {
     const handleImageryServerChange = useCallback((newValue: RasterTileServerNameEnum) => {
         setFieldValue(newValue, 'name');
 
-        if (newValue !== RasterTileServerNameEnum.Custom) {
+        if (newValue === RasterTileServerNameEnum.Custom) {
+            setFieldValue(
+                (oldValue: PartialCustomRasterTileServerConfigFields | undefined) => (
+                    isNotDefined(oldValue?.url) && isNotDefined(oldValue?.maxZoom)
+                        ? { ...oldValue, ...defaultCustomRasterTileServerValue }
+                        : oldValue
+                ),
+                'custom',
+            );
+        } else {
             setFieldValue(
                 {
                     credits: tileServerMapping[newValue]?.credits,
@@ -141,6 +154,7 @@ function RasterTileServerInput(props: Props) {
             withBackground={withContainerBackground}
             withPadding={withContainerPadding}
             spacing={containerSpacing}
+            headerActions={headerActions}
         >
             <ListLayout
                 layout={withoutPreview ? 'block' : 'grid'}

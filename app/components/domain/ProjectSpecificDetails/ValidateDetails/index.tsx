@@ -57,17 +57,45 @@ function ValidateDetails(props: Props) {
                     value={data.objectSource.ohsomeFilter}
                 />
             )}
+            {isDefined(data.preEventTileServerProperty) && (
+                <ListLayout layout="grid">
+                    <BaseMap
+                        baseTileServer={removeNull(data.preEventTileServerProperty)}
+                        disablePan
+                    >
+                        <DefaultMapContainer />
+                        <GeoJsonAssetMapSource
+                            geoJsonAssetId={removeNull(data.objectSource.aoiGeometry)}
+                            defaultBounds={defaultBounds}
+                            zoomLevel={undefined}
+                            withPadding
+                        />
+                    </BaseMap>
+                    <RasterTileServerOutput
+                        heading="Pre-event tile server"
+                        value={data.preEventTileServerProperty}
+                        withPadding
+                        withHeaderBorder
+                    />
+                </ListLayout>
+            )}
             <ListLayout layout="grid">
-                <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
+                <BaseMap
+                    baseTileServer={removeNull(data.tileServerProperty)}
+                    disablePan={isDefined(data.preEventTileServerProperty)}
+                >
                     <DefaultMapContainer />
                     <GeoJsonAssetMapSource
-                        geoJsonAssetId={removeNull(data?.objectSource.aoiGeometry)}
+                        geoJsonAssetId={removeNull(data.objectSource.aoiGeometry)}
                         defaultBounds={defaultBounds}
                         zoomLevel={undefined}
                         withPadding
                     />
                 </BaseMap>
                 <RasterTileServerOutput
+                    heading={isDefined(data.preEventTileServerProperty)
+                        ? 'Post-event tile server'
+                        : undefined}
                     value={data.tileServerProperty}
                     withPadding
                     withHeaderBorder
