@@ -353,6 +353,8 @@ function ScenarioPageInput(props: Props) {
                         scenario={value}
                         projectInstruction={projectData.projectInstruction}
                         customOptions={removeNull(projectData.projectTypeSpecifics.customOptions)}
+                        provider={projectData.projectTypeSpecifics.provider}
+                        panoramaxCustom={projectData.projectTypeSpecifics.panoramaxCustom}
                         preview={preview}
                     />
                 )}

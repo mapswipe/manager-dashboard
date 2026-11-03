@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import { IoAdd } from 'react-icons/io5';
-import { isNotDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -16,16 +19,19 @@ import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
+import StreetImageProviderInput from '#components/domain/StreetImageProviderInput';
+import {
+    defaultStreetImageFiltersValue,
+    PartialStreetImageProviderConfigFields,
+    StreetImageProviderConfigKey,
+    streetImageProviderToConfigKey,
+} from '#components/domain/StreetImageProviderInput/schema';
 import ListLayout from '#components/ListLayout';
 import NonFieldError from '#components/NonFieldError';
 import { ProjectAssetInputTypeEnum } from '#generated/types/graphql';
 
-import {
-    defaultStreetMapillaryImageFiltersInputFormValue,
-    PartialStreetMapillaryImageFiltersInputFields,
-} from './StreetMapillaryImageFiltersInput/schema';
 import { type PartialStreetSpecificFields } from './schema';
-import StreetMapillaryImageFiltersInput from './StreetMapillaryImageFiltersInput';
+import StreetImageFiltersInput from './StreetImageFiltersInput';
 
 interface Props {
     projectId: string;
@@ -68,10 +74,17 @@ function StreetProjectSpecifics(props: Props) {
         );
     }, [setFieldValue]);
 
-    const setStreetMapillaryImageFiltersInputFieldValue = useFormObject<'mapillaryImageFilters', PartialStreetMapillaryImageFiltersInputFields>(
-        'mapillaryImageFilters' as const,
+    const providerConfigKey = isDefined(value?.provider)
+        ? streetImageProviderToConfigKey[value.provider]
+        : 'mapillary';
+
+    const setProviderConfigFieldValue = useFormObject<
+        StreetImageProviderConfigKey,
+        PartialStreetImageProviderConfigFields
+    >(
+        providerConfigKey,
         setFieldValue,
-        defaultStreetMapillaryImageFiltersInputFormValue,
+        defaultStreetImageFiltersValue,
     );
 
     return (
@@ -127,11 +140,18 @@ function StreetProjectSpecifics(props: Props) {
                     hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
                 />
             </Container>
-            <StreetMapillaryImageFiltersInput
-                value={value?.mapillaryImageFilters}
-                setFieldValue={setStreetMapillaryImageFiltersInputFieldValue}
+            <StreetImageProviderInput
+                value={value ?? undefined}
+                error={formError}
+                setFieldValue={setFieldValue}
                 disabled={disabled}
-                error={error?.mapillaryImageFilters}
+            />
+            <StreetImageFiltersInput
+                value={value?.[providerConfigKey]}
+                setFieldValue={setProviderConfigFieldValue}
+                disabled={disabled}
+                error={error?.[providerConfigKey]}
+                provider={value?.provider}
             />
         </>
     );

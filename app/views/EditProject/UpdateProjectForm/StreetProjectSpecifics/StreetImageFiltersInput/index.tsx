@@ -7,34 +7,36 @@ import {
 
 import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
+import { PartialStreetImageProviderConfigFields } from '#components/domain/StreetImageProviderInput/schema';
 import ListLayout from '#components/ListLayout';
 import NumberInput from '#components/NumberInput';
 import TextInput from '#components/TextInput';
-
-import { PartialStreetMapillaryImageFiltersInputFields } from './schema';
+import { StreetImageProviderEnum } from '#generated/types/graphql';
 
 interface Props {
-    value: PartialStreetMapillaryImageFiltersInputFields | undefined | null;
-    error: LeafError | ObjectError<PartialStreetMapillaryImageFiltersInputFields>;
+    value: PartialStreetImageProviderConfigFields | undefined | null;
+    error: LeafError | ObjectError<PartialStreetImageProviderConfigFields>;
     setFieldValue: (
-        ...entries: EntriesAsList<PartialStreetMapillaryImageFiltersInputFields>
+        ...entries: EntriesAsList<PartialStreetImageProviderConfigFields>
     ) => void;
     disabled?: boolean;
+    provider: StreetImageProviderEnum | undefined;
 }
 
-function StreetMapillaryImageFiltersInput(props: Props) {
+function StreetImageFiltersInput(props: Props) {
     const {
         value,
         error: formError,
         setFieldValue,
         disabled,
+        provider,
     } = props;
 
     const error = getErrorObject(formError);
 
     return (
         <Container
-            heading="Mapillary Image Filters"
+            heading="Street-level Image Filters"
             headingLevel={4}
         >
             <ListLayout layout="grid">
@@ -63,17 +65,19 @@ function StreetMapillaryImageFiltersInput(props: Props) {
                     error={error?.creatorId}
                     onChange={setFieldValue}
                     disabled={disabled}
-                    hint="Provide a valid Mapillary creator ID to filter for images belonging to a specific Mapillary user."
+                    hint="Provide a valid ID to filter for images belonging to a specific Mapillary/Panoramax user."
                 />
-                <TextInput
-                    name="organizationId"
-                    label="Mapillary Organization ID"
-                    value={value?.organizationId}
-                    error={error?.organizationId}
-                    onChange={setFieldValue}
-                    disabled={disabled}
-                    hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization."
-                />
+                {provider === StreetImageProviderEnum.Mapillary && (
+                    <TextInput
+                        name="organizationId"
+                        label="Organization ID"
+                        value={value?.organizationId}
+                        error={error?.organizationId}
+                        onChange={setFieldValue}
+                        disabled={disabled}
+                        hint="Provide a valid Mapillary organization ID to filter for images belonging to a specific organization. Empty indicates that no filter is set on organization."
+                    />
+                )}
                 <NumberInput
                     name="samplingThreshold"
                     label="Image Sampling Threshold"
@@ -81,15 +85,15 @@ function StreetMapillaryImageFiltersInput(props: Props) {
                     error={error?.samplingThreshold}
                     onChange={setFieldValue}
                     disabled={disabled}
-                    hint="What should be the minimum distance (in km) between images on the same Mapillary sequence? Empty indicates that all images on each sequence are used."
+                    hint="What should be the minimum distance (in m) between images on the same sequence? Empty or 0 indicates that all images on each sequence are used."
                 />
             </ListLayout>
             <Checkbox
-                name="isPano"
-                label="Only use 360 degree panaroma images"
-                value={value?.isPano}
-                error={error?.isPano}
+                name="panoOnly"
+                label="Only use 360 degree panorama images"
+                value={value?.panoOnly}
                 onChange={setFieldValue}
+                error={error?.panoOnly}
                 disabled={disabled}
                 hint="If unchecked, both 360 degree panorama and classic images are used in the project"
             />
@@ -106,4 +110,4 @@ function StreetMapillaryImageFiltersInput(props: Props) {
     );
 }
 
-export default StreetMapillaryImageFiltersInput;
+export default StreetImageFiltersInput;

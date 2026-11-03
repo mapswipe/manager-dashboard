@@ -1,12 +1,18 @@
+import { useContext } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 import { removeNull } from '@togglecorp/toggle-form';
 
 import Container from '#components/Container';
 import CustomOptionPreview from '#components/domain/CustomOptionsPreview';
 import ProjectAssetPreview from '#components/domain/ProjectAssetPreview';
+import { streetImageProviderToConfigKey } from '#components/domain/StreetImageProviderInput/schema';
 import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
-import { StreetProjectPropertyType } from '#generated/types/graphql';
+import EnumsContext from '#contexts/EnumsContext';
+import {
+    StreetImageProviderEnum,
+    StreetProjectPropertyType,
+} from '#generated/types/graphql';
 
 interface Props {
     data: StreetProjectPropertyType | undefined;
@@ -14,10 +20,13 @@ interface Props {
 
 function StreetDetails(props: Props) {
     const { data } = props;
+    const { streetImageProviderMapping } = useContext(EnumsContext);
 
     if (isNotDefined(data)) {
         return null;
     }
+
+    const filters = data[streetImageProviderToConfigKey[data.provider]];
 
     return (
         <>
@@ -36,7 +45,32 @@ function StreetDetails(props: Props) {
                 </Container>
             </ListLayout>
             <Container
-                heading="Mapillary Image Filters"
+                heading="Street-level imagery provider"
+                headingLevel={5}
+            >
+                <ListLayout
+                    layout="block"
+                    spacing="sm"
+                >
+                    <TextOutput
+                        label="Image provider"
+                        value={streetImageProviderMapping?.[data.provider]?.label}
+                        valueType="text"
+                    />
+                    {(
+                        data.provider === StreetImageProviderEnum.PanoramaxCustom
+                        && data.panoramaxCustom?.url
+                    ) && (
+                        <TextOutput
+                            label="Panoramax instance URL"
+                            value={data.panoramaxCustom.url}
+                            valueType="text"
+                        />
+                    )}
+                </ListLayout>
+            </Container>
+            <Container
+                heading="Street-level Image Filters"
                 headingLevel={5}
             >
                 <ListLayout
@@ -45,24 +79,27 @@ function StreetDetails(props: Props) {
                 >
                     <TextOutput
                         label="Start date"
-                        value={data.mapillaryImageFilters.startTime}
+                        value={filters?.startTime}
                     />
                     <TextOutput
                         label="End date"
-                        value={data.mapillaryImageFilters.endTime}
+                        value={filters?.endTime}
                     />
                     <TextOutput
                         label="Image Creator ID"
-                        value={data.mapillaryImageFilters.creatorId}
+                        value={filters?.creatorId}
                     />
-                    <TextOutput
-                        label="Mapillary Organization ID"
-                        value={data.mapillaryImageFilters.organizationId}
-                    />
+                    {data.provider === StreetImageProviderEnum.Mapillary && (
+                        <TextOutput
+                            label="Organization ID"
+                            value={data.mapillary?.organizationId}
+                        />
+                    )}
                     <TextOutput
                         label="Image Sampling Threshold"
-                        value={data.mapillaryImageFilters.samplingThreshold}
+                        value={filters?.samplingThreshold}
                         valueType="number"
+                        unit="meter"
                     />
                 </ListLayout>
                 <ListLayout
@@ -70,13 +107,13 @@ function StreetDetails(props: Props) {
                     spacing="sm"
                 >
                     <TextOutput
-                        label="Only use 360 degree panaroma images"
-                        value={data.mapillaryImageFilters.isPano}
+                        label="Only use 360 degree panorama images"
+                        value={filters?.panoOnly}
                         valueType="boolean"
                     />
                     <TextOutput
                         label="Randomize the order of images in the project"
-                        value={data.mapillaryImageFilters.randomizeOrder}
+                        value={filters?.randomizeOrder}
                         valueType="boolean"
                     />
                 </ListLayout>
