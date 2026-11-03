@@ -150,6 +150,43 @@ export function imageryUrlCondition(value: string | null | undefined) {
     return 'Imagery url must contain {x}, {y} (or {-y}) & {z} placeholders or {quad_key} placeholder.';
 }
 
+// NOTE: IPv6 and non-ASCII hosts are rejected, so IDNs must be entered in punycode
+const URL_RE = /^https?:\/\/(?<authority>[^/?#]*)(?<rest>[\s\S]*)$/;
+const HOST_PORT_RE = new RegExp(
+    '^(?:'
+    + '(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)'
+    + '|(?![\\d.]+(?::|$))[a-z\\d](?:[a-z\\d-]{0,61}[a-z\\d])?(?:\\.[a-z\\d](?:[a-z\\d-]{0,61}[a-z\\d])?)*'
+    + ')(?::(?<port>[1-9]\\d{0,4}))?$',
+    'i',
+);
+
+export function domainUrlCondition(value: string | null | undefined) {
+    if (!value) {
+        return undefined;
+    }
+
+    if (value !== value.trim()) {
+        return 'Url must not have leading or trailing whitespace.';
+    }
+    // NOTE: API paths are appended to the url as entered, so only the scheme and host are accepted
+    const urlMatch = URL_RE.exec(value);
+    if (!urlMatch?.groups) {
+        return 'Url must start with http:// or https://.';
+    }
+    const { authority, rest } = urlMatch.groups;
+    if (rest !== '' && rest !== '/') {
+        return 'Url must not have a path, query or fragment.';
+    }
+    if (authority.includes('@')) {
+        return 'Url must not have credentials.';
+    }
+    const hostPortMatch = HOST_PORT_RE.exec(authority);
+    if (!hostPortMatch?.groups || Number(hostPortMatch.groups.port ?? 0) > 65535) {
+        return 'Url must have a valid hostname or IPv4 address and an optional port.';
+    }
+    return undefined;
+}
+
 export const projectTypeToKeyMap: Record<ProjectTypeEnum, keyof(ProjectTypeSpecificInput)> = {
     [ProjectTypeEnum.Find]: 'find',
     [ProjectTypeEnum.Compare]: 'compare',

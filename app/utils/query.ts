@@ -138,14 +138,32 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         customOptions {
             ...ProjectCustomOptionFields
         }
-        mapillaryImageFilters {
+        provider
+        mapillary {
             creatorId
             endTime
-            isPano
+            panoOnly
             organizationId
             randomizeOrder
             samplingThreshold
             startTime
+        }
+        panoramax {
+            creatorId
+            endTime
+            panoOnly
+            randomizeOrder
+            samplingThreshold
+            startTime
+        }
+        panoramaxCustom {
+            creatorId
+            endTime
+            panoOnly
+            randomizeOrder
+            samplingThreshold
+            startTime
+            url
         }
     }
     ... on LocateProjectPropertyType {
