@@ -259,17 +259,84 @@ function checkReferenceValues(
     return [`invalid reference value(s): ${description}; valid values are ${validReferenceValues.join(', ')}`];
 }
 
+interface TileGroupedFeatureProperties {
+    screen: number;
+    reference: number;
+    tile_x: number;
+    tile_y: number;
+    tile_z: number;
+}
+
+interface TileGridSize {
+    columns: number;
+    rows: number;
+}
+
+const TILE_SCREEN_GRID: TileGridSize = { columns: 2, rows: 3 };
+const COMPARE_SCREEN_GRID: TileGridSize = { columns: 1, rows: 1 };
+
+// Checks that the tiles of every screen form a contiguous block of
+// columns (tile_x) × rows (tile_y) cells on a single zoom level. Screens with
+// the wrong number of features are skipped as they are already reported by
+// checkScreenFeatureCount.
+
+function checkTileGrid(
+    features: { properties: TileGroupedFeatureProperties }[],
+    { columns, rows }: TileGridSize,
+): string[] {
+    const featuresByScreen = listToGroupList(
+        features,
+        (feature) => feature.properties.screen,
+    );
+
+    return Object.values(featuresByScreen).toSorted(
+        (a, b) => compareNumber(a[0].properties.screen, b[0].properties.screen),
+    ).flatMap((group) => {
+        if (group.length !== columns * rows) {
+            return [];
+        }
+
+        const { screen } = group[0].properties;
+
+        const zooms = unique(group.map((feature) => feature.properties.tile_z))
+            .toSorted(compareNumber);
+        if (zooms.length > 1) {
+            return [`screen ${screen}: expected all tiles to share the same tile_z; found ${zooms.join(', ')}`];
+        }
+        const xs = group.map((feature) => feature.properties.tile_x);
+        const ys = group.map((feature) => feature.properties.tile_y);
+        const spanX = Math.max(...xs) - Math.min(...xs) + 1;
+        const spanY = Math.max(...ys) - Math.min(...ys) + 1;
+        const expected = `expected a ${columns} (tile_x) × ${rows} (tile_y) block of adjacent tiles`;
+        if (spanX !== columns || spanY !== rows) {
+            return [`screen ${screen}: ${expected}; found ${spanX} × ${spanY}`];
+        }
+
+        const distinctCells = unique(
+            group,
+            ({ properties }) => `${properties.tile_x},${properties.tile_y}`,
+        );
+        if (distinctCells.length !== group.length) {
+            return [`screen ${screen}: ${expected}; found duplicate tiles`];
+        }
+
+        return [];
+    });
+}
+
 // Validation common to the tile based project types, where multiple features
-// share a screen and the reference values come from the default tile options.
+// share a screen, the tiles of every screen form the given grid and the
+// reference values come from the default tile options.
 function checkTileGroupedFeatures(
-    features: { properties: { screen: number, reference: number } }[],
-    expectedCount: number,
+    features: { properties: TileGroupedFeatureProperties }[],
+    grid: TileGridSize,
 ): string[] {
     const screens = features.map((feature) => feature.properties.screen);
 
     return [
-        ...checkScreenFeatureCount(screens, expectedCount),
+        ...checkScreenFeatureCount(screens, grid.columns * grid.rows),
         ...checkScreensSerial(screens),
+        ...checkTileGrid(features, grid),
         ...checkReferenceValues(
             features.map((feature) => ({
                 screen: feature.properties.screen,
@@ -307,14 +374,6 @@ function checkSingletonFeatures(
     ));
 
     return problems;
-}
-
-interface TileGroupedFeatureProperties {
-    screen: number;
-    reference: number;
-    tile_x: number;
-    tile_y: number;
-    tile_z: number;
 }
 
 // Groups features by screen into one scenario page per screen, with one task
@@ -407,7 +466,7 @@ export function transformFindGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features, 6);
+    const problems = checkTileGroupedFeatures(result.features, TILE_SCREEN_GRID);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
@@ -435,7 +494,7 @@ export function transformCompareGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features, 1);
+    const problems = checkTileGroupedFeatures(result.features, COMPARE_SCREEN_GRID);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
@@ -463,7 +522,7 @@ export function transformCompletenessGeoJson(
         return { ok: false, error: result.summary };
     }
 
-    const problems = checkTileGroupedFeatures(result.features, 6);
+    const problems = checkTileGroupedFeatures(result.features, TILE_SCREEN_GRID);
     if (problems.length > 0) {
         return { ok: false, error: problems.join('\n') };
     }
