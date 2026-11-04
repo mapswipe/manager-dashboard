@@ -6,7 +6,6 @@ import {
 } from 'react';
 import {
     isDefined,
-    isNotDefined,
     listToMap,
 } from '@togglecorp/fujs';
 import {
@@ -31,7 +30,6 @@ import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
 import {
-    defaultCustomRasterTileServerValue,
     PartialCommonRasterTileServerConfigFields,
     PartialCustomRasterTileServerConfigFields,
     type PartialRasterTileServerInputFields,
@@ -128,16 +126,7 @@ function RasterTileServerInput(props: Props) {
     const handleImageryServerChange = useCallback((newValue: RasterTileServerNameEnum) => {
         setFieldValue(newValue, 'name');
 
-        if (newValue === RasterTileServerNameEnum.Custom) {
-            setFieldValue(
-                (oldValue: PartialCustomRasterTileServerConfigFields | undefined) => (
-                    isNotDefined(oldValue?.url) && isNotDefined(oldValue?.maxZoom)
-                        ? { ...oldValue, ...defaultCustomRasterTileServerValue }
-                        : oldValue
-                ),
-                'custom',
-            );
-        } else {
+        if (newValue !== RasterTileServerNameEnum.Custom) {
             setFieldValue(
                 {
                     credits: tileServerMapping[newValue]?.credits,

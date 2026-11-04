@@ -1,5 +1,5 @@
-import { isDefined } from '@togglecorp/fujs';
 import {
+    addCondition,
     ObjectSchema,
     PartialForm,
     undefinedValue,
@@ -29,20 +29,35 @@ type ValidateSpecificFormSchema = ObjectSchema<
 export const defaultValidateSpecificFormValue: PartialValidateSpecificFields = {
     objectSource: defaultObjectSourceInputFormValue,
     tileServerProperty: defaultRasterTileServerInputValue,
+    hasPreImagery: false,
 };
 
+type ValidateSpecificFormFields = ReturnType<ValidateSpecificFormSchema['fields']>;
+
 const validateSpecificFormSchema: ValidateSpecificFormSchema = {
-    fields: (value): ReturnType<ValidateSpecificFormSchema['fields']> => ({
-        customOptions: {
-            keySelector: (customOption) => customOption.clientId,
-            member: () => customOptionSchema,
-        },
-        objectSource: objectSourceFormSchema,
-        tileServerProperty: rasterTileServerFormSchema,
-        preEventTileServerProperty: isDefined(value?.preEventTileServerProperty)
-            ? rasterTileServerFormSchema
-            : { forceValue: undefinedValue },
-    }),
+    fields: (value): ValidateSpecificFormFields => {
+        const baseSchema: ValidateSpecificFormFields = {
+            customOptions: {
+                keySelector: (customOption) => customOption.clientId,
+                member: () => customOptionSchema,
+            },
+            objectSource: objectSourceFormSchema,
+            tileServerProperty: rasterTileServerFormSchema,
+            hasPreImagery: {},
+        };
+
+        return addCondition(
+            baseSchema,
+            value,
+            ['hasPreImagery'],
+            ['preEventTileServerProperty'],
+            (val): Pick<ValidateSpecificFormFields, 'preEventTileServerProperty'> => ({
+                preEventTileServerProperty: val?.hasPreImagery
+                    ? rasterTileServerFormSchema
+                    : { forceValue: undefinedValue },
+            }),
+        );
+    },
 };
 
 export default validateSpecificFormSchema;

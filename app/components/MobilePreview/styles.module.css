@@ -74,6 +74,13 @@
                     transform: translateY(-50%);
                 }
 
+                &.inline {
+                    position: static;
+                    align-self: stretch;
+                    flex-shrink: 0;
+                    width: auto;
+                }
+
                 .icons {
                     font-size: var(--font-size-4xl);
                 }

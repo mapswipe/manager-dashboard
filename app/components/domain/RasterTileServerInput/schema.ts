@@ -51,23 +51,54 @@ export type PartialCommonRasterTileServerConfigFields = PartialForm<
 type CommonRasterTileServerConfigSchema = ObjectSchema<PartialCommonRasterTileServerConfigFields>;
 
 const MIN_ZOOM_LEVEL = 0;
-const MAX_ZOOM_LEVEL = 22;
 const DEFAULT_CUSTOM_MAX_ZOOM = 19;
-
-export const defaultCustomRasterTileServerValue: PartialCustomRasterTileServerConfigFields = {
-    maxZoom: DEFAULT_CUSTOM_MAX_ZOOM,
-};
 
 export const defaultRasterTileServerInputValue: PartialRasterTileServerInputFields = {
     name: RasterTileServerNameEnum.Custom,
-    custom: defaultCustomRasterTileServerValue,
+    custom: {
+        maxZoom: DEFAULT_CUSTOM_MAX_ZOOM,
+    },
 };
 
+// NOTE: no upper bound as drone imagery can go beyond the usual zoom levels
 const zoomLevelValidations = [
     integerCondition,
     greaterThanOrEqualToCondition(MIN_ZOOM_LEVEL),
-    lessThanOrEqualToCondition(MAX_ZOOM_LEVEL),
 ];
+
+type CustomRasterTileServerConfigFields = ReturnType<CustomRasterTileServerConfigSchema['fields']>;
+
+const customRasterTileServerConfigSchema: CustomRasterTileServerConfigSchema = {
+    fields: (value): CustomRasterTileServerConfigFields => {
+        const baseSchema: CustomRasterTileServerConfigFields = {
+            url: {
+                required: true,
+                validations: [imageryUrlCondition],
+            },
+            credits: {
+                required: true,
+                requiredValidation: requiredStringCondition,
+            },
+            maxZoom: {
+                validations: zoomLevelValidations,
+            },
+        };
+
+        return addCondition(
+            baseSchema,
+            value,
+            ['maxZoom'],
+            ['minZoom'],
+            (val): Pick<CustomRasterTileServerConfigFields, 'minZoom'> => ({
+                minZoom: {
+                    validations: isDefined(val?.maxZoom)
+                        ? [...zoomLevelValidations, lessThanOrEqualToCondition(val.maxZoom)]
+                        : zoomLevelValidations,
+                },
+            }),
+        );
+    },
+};
 
 const tileServerFormSchema: RasterTileServerFormSchema = {
     fields: (value): RasterTileServerFormFields => {
@@ -87,6 +118,11 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
             },
         };
 
+        // NOTE: addCondition cannot read the dependencies of an undefined value
+        if (isNotDefined(value)) {
+            return baseSchema;
+        }
+
         const schema = addCondition(
             baseSchema,
             value,
@@ -94,10 +130,6 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
             ['bing', 'esri', 'esriBeta', 'mapbox', 'maxarPremium', 'maxarStandard', 'custom'],
             (): RasterTileServerFormFields => {
                 const defaultValue = {};
-
-                if (isNotDefined(value)) {
-                    return defaultValue;
-                }
 
                 const { name } = value;
 
@@ -110,31 +142,7 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
                 if (name === RasterTileServerNameEnum.Custom) {
                     return {
                         ...defaultRasterTileServerFieldSchema,
-                        [key]: {
-                            fields: (
-                                customValue: PartialCustomRasterTileServerConfigFields | undefined,
-                            ): ReturnType<CustomRasterTileServerConfigSchema['fields']> => ({
-                                url: {
-                                    required: true,
-                                    validations: [imageryUrlCondition],
-                                },
-                                credits: {
-                                    required: true,
-                                    requiredValidation: requiredStringCondition,
-                                },
-                                minZoom: {
-                                    validations: isDefined(customValue?.maxZoom)
-                                        ? [
-                                            ...zoomLevelValidations,
-                                            lessThanOrEqualToCondition(customValue.maxZoom),
-                                        ]
-                                        : zoomLevelValidations,
-                                },
-                                maxZoom: {
-                                    validations: zoomLevelValidations,
-                                },
-                            }),
-                        },
+                        [key]: customRasterTileServerConfigSchema,
                     };
                 }
 
