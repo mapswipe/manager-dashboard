@@ -1,4 +1,7 @@
-import { useContext } from 'react';
+import {
+    useContext,
+    useMemo,
+} from 'react';
 import {
     isDefined,
     isNotDefined,
@@ -29,6 +32,30 @@ function ValidateDetails(props: Props) {
 
     const { validateObjectSourceTypeMapping } = useContext(EnumsContext);
 
+    const preEventTileServerProperty = data?.preEventTileServerProperty;
+    const tileServerProperty = data?.tileServerProperty;
+    const layers = useMemo(() => [
+        isDefined(preEventTileServerProperty)
+            ? {
+                key: 'pre',
+                heading: 'Pre-event tile server',
+                tileServerProperty: preEventTileServerProperty,
+            }
+            : undefined,
+        isDefined(tileServerProperty)
+            ? {
+                key: 'post',
+                heading: isDefined(preEventTileServerProperty)
+                    ? 'Post-event tile server'
+                    : undefined,
+                tileServerProperty,
+            }
+            : undefined,
+    ].filter(isDefined).map((layer) => ({
+        ...layer,
+        baseTileServer: removeNull(layer.tileServerProperty),
+    })), [preEventTileServerProperty, tileServerProperty]);
+
     if (isNotDefined(data) || isNotDefined(data.objectSource)) {
         return null;
     }
@@ -57,22 +84,28 @@ function ValidateDetails(props: Props) {
                     value={data.objectSource.ohsomeFilter}
                 />
             )}
-            <ListLayout layout="grid">
-                <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
-                    <DefaultMapContainer />
-                    <GeoJsonAssetMapSource
-                        geoJsonAssetId={removeNull(data?.objectSource.aoiGeometry)}
-                        defaultBounds={defaultBounds}
-                        zoomLevel={undefined}
+            {layers.map((layer) => (
+                <ListLayout key={layer.key} layout="grid">
+                    <BaseMap
+                        baseTileServer={layer.baseTileServer}
+                        disablePan={layers.length > 1}
+                    >
+                        <DefaultMapContainer />
+                        <GeoJsonAssetMapSource
+                            geoJsonAssetId={removeNull(data.objectSource?.aoiGeometry)}
+                            defaultBounds={defaultBounds}
+                            zoomLevel={undefined}
+                            withPadding
+                        />
+                    </BaseMap>
+                    <RasterTileServerOutput
+                        heading={layer.heading}
+                        value={layer.tileServerProperty}
                         withPadding
+                        withHeaderBorder
                     />
-                </BaseMap>
-                <RasterTileServerOutput
-                    value={data.tileServerProperty}
-                    withPadding
-                    withHeaderBorder
-                />
-            </ListLayout>
+                </ListLayout>
+            ))}
             <Container
                 headingLevel={5}
                 heading="Custom options"

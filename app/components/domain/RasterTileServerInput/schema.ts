@@ -1,6 +1,12 @@
-import { isNotDefined } from '@togglecorp/fujs';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     addCondition,
+    greaterThanOrEqualToCondition,
+    integerCondition,
+    lessThanOrEqualToCondition,
     ObjectSchema,
     PartialForm,
     requiredStringCondition,
@@ -44,11 +50,24 @@ export type PartialCommonRasterTileServerConfigFields = PartialForm<
 >;
 type CommonRasterTileServerConfigSchema = ObjectSchema<PartialCommonRasterTileServerConfigFields>;
 
+const MIN_ZOOM_LEVEL = 0;
+const MAX_ZOOM_LEVEL = 22;
+const DEFAULT_CUSTOM_MAX_ZOOM = 19;
+
+export const defaultCustomRasterTileServerValue: PartialCustomRasterTileServerConfigFields = {
+    maxZoom: DEFAULT_CUSTOM_MAX_ZOOM,
+};
+
 export const defaultRasterTileServerInputValue: PartialRasterTileServerInputFields = {
     name: RasterTileServerNameEnum.Custom,
-    custom: {
-    },
+    custom: defaultCustomRasterTileServerValue,
 };
+
+const zoomLevelValidations = [
+    integerCondition,
+    greaterThanOrEqualToCondition(MIN_ZOOM_LEVEL),
+    lessThanOrEqualToCondition(MAX_ZOOM_LEVEL),
+];
 
 const tileServerFormSchema: RasterTileServerFormSchema = {
     fields: (value): RasterTileServerFormFields => {
@@ -92,7 +111,9 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
                     return {
                         ...defaultRasterTileServerFieldSchema,
                         [key]: {
-                            fields: (): ReturnType<CustomRasterTileServerConfigSchema['fields']> => ({
+                            fields: (
+                                customValue: PartialCustomRasterTileServerConfigFields | undefined,
+                            ): ReturnType<CustomRasterTileServerConfigSchema['fields']> => ({
                                 url: {
                                     required: true,
                                     validations: [imageryUrlCondition],
@@ -101,8 +122,17 @@ const tileServerFormSchema: RasterTileServerFormSchema = {
                                     required: true,
                                     requiredValidation: requiredStringCondition,
                                 },
-                                minZoom: {},
-                                maxZoom: {},
+                                minZoom: {
+                                    validations: isDefined(customValue?.maxZoom)
+                                        ? [
+                                            ...zoomLevelValidations,
+                                            lessThanOrEqualToCondition(customValue.maxZoom),
+                                        ]
+                                        : zoomLevelValidations,
+                                },
+                                maxZoom: {
+                                    validations: zoomLevelValidations,
+                                },
                             }),
                         },
                     };

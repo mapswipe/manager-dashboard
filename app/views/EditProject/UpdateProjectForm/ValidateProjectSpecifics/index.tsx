@@ -1,6 +1,10 @@
 import { useCallback } from 'react';
 import { IoAdd } from 'react-icons/io5';
-import { isNotDefined } from '@togglecorp/fujs';
+import { PiTrash } from 'react-icons/pi';
+import {
+    isDefined,
+    isNotDefined,
+} from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
@@ -54,6 +58,25 @@ function ValidateProjectSpecifics(props: Props) {
         setFieldValue,
         defaultRasterTileServerInputValue,
     );
+
+    const setPreEventTileServerInputFieldValue = useFormObject<
+        'preEventTileServerProperty',
+        PartialRasterTileServerInputFields
+    >(
+        'preEventTileServerProperty' as const,
+        setFieldValue,
+        defaultRasterTileServerInputValue,
+    );
+
+    const handlePreEventTileServerAdd = useCallback(() => {
+        setFieldValue(defaultRasterTileServerInputValue, 'preEventTileServerProperty');
+    }, [setFieldValue]);
+
+    const handlePreEventTileServerRemove = useCallback(() => {
+        setFieldValue(undefined, 'preEventTileServerProperty');
+    }, [setFieldValue]);
+
+    const hasPreEventTileServer = isDefined(value?.preEventTileServerProperty);
 
     const setObjectSourceInputFieldValue = useFormObject<'objectSource', PartialValidateObjectSourceInputFields>(
         'objectSource' as const,
@@ -127,13 +150,50 @@ function ValidateProjectSpecifics(props: Props) {
                 error={error?.objectSource}
                 projectId={projectId}
             />
+            {hasPreEventTileServer && (
+                <RasterTileServerInput
+                    label="Pre-event Tile Server"
+                    value={value?.preEventTileServerProperty}
+                    error={error?.preEventTileServerProperty}
+                    setFieldValue={setPreEventTileServerInputFieldValue}
+                    disabled={disabled}
+                    aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
+                    zoomLevel={undefined}
+                    headerActions={(
+                        <Button
+                            name={undefined}
+                            onClick={handlePreEventTileServerRemove}
+                            styleVariant="translucent"
+                            colorVariant="danger"
+                            disabled={disabled}
+                            spacing="sm"
+                            title="Remove pre-event imagery"
+                        >
+                            <PiTrash />
+                        </Button>
+                    )}
+                />
+            )}
             <RasterTileServerInput
+                label={hasPreEventTileServer ? 'Post-event Tile Server' : 'Tile Server'}
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
                 zoomLevel={undefined}
+                headerActions={!hasPreEventTileServer && (
+                    <Button
+                        name={undefined}
+                        onClick={handlePreEventTileServerAdd}
+                        styleVariant="transparent"
+                        start={<IoAdd />}
+                        disabled={disabled}
+                        withoutPadding
+                    >
+                        Add pre-event imagery
+                    </Button>
+                )}
             />
         </>
     );

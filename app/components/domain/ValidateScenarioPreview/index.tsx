@@ -38,6 +38,7 @@ const layerOptions: Omit<LineLayerSpecification, 'id' | 'source'> = {
 interface Props {
     className?: string;
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
+    preEventTileServerProperty?: ProjectRasterTileServerConfig | null;
     projectInstruction: string | undefined | null;
     customOptions: PartialCustomOptionInputFields[] | undefined;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
@@ -49,6 +50,7 @@ function ValidateScenarioPreview(props: Props) {
         className,
         scenario,
         tileServerProperty,
+        preEventTileServerProperty,
         projectInstruction,
         customOptions,
         preview,
@@ -88,16 +90,39 @@ function ValidateScenarioPreview(props: Props) {
                 popupVariant={preview?.popupVariant}
                 contentClassName={styles.content}
             >
-                <GeoJsonPreview
-                    // NOTE: this should match --size-tile-validate
-                    tileSize={280}
-                    className={styles.mapContainer}
-                    geoJson={generatedGeojson}
-                    baseTileServer={removeNull(tileServerProperty)}
-                    geoJsonLayerOptions={layerOptions}
-                    fitInSingleTile
-                    disablePan
-                />
+                {isDefined(preEventTileServerProperty) && (
+                    <div className={styles.imagery}>
+                        <div className={styles.imageryLabel}>
+                            Pre-event
+                        </div>
+                        <GeoJsonPreview
+                            tileSize={280}
+                            className={styles.mapContainer}
+                            geoJson={generatedGeojson}
+                            baseTileServer={removeNull(preEventTileServerProperty)}
+                            geoJsonLayerOptions={layerOptions}
+                            fitInSingleTile
+                            disablePan
+                        />
+                    </div>
+                )}
+                <div className={styles.imagery}>
+                    {isDefined(preEventTileServerProperty) && (
+                        <div className={styles.imageryLabel}>
+                            Post-event
+                        </div>
+                    )}
+                    <GeoJsonPreview
+                        // NOTE: this should match --size-tile-validate
+                        tileSize={280}
+                        className={styles.mapContainer}
+                        geoJson={generatedGeojson}
+                        baseTileServer={removeNull(tileServerProperty)}
+                        geoJsonLayerOptions={layerOptions}
+                        fitInSingleTile
+                        disablePan
+                    />
+                </div>
                 <CustomOptionPreview
                     value={customOptions}
                 />

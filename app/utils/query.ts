@@ -121,6 +121,9 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         tileServerProperty {
             ...RasterTileServerPropertyFields
         }
+        preEventTileServerProperty {
+            ...RasterTileServerPropertyFields
+        }
         customOptions {
             ...ProjectCustomOptionFields
         }
