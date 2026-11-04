@@ -77,6 +77,24 @@ function ValidateScenarioPreview(props: Props) {
         };
     }, [scenario]);
 
+    const panes = useMemo(() => {
+        const hasPreEvent = isDefined(preEventTileServerProperty);
+        return [
+            hasPreEvent
+                ? {
+                    key: 'pre',
+                    label: 'Before',
+                    tileServer: removeNull(preEventTileServerProperty),
+                }
+                : undefined,
+            {
+                key: 'post',
+                label: hasPreEvent ? 'After' : undefined,
+                tileServer: removeNull(tileServerProperty),
+            },
+        ].filter(isDefined);
+    }, [preEventTileServerProperty, tileServerProperty]);
+
     return (
         <ListLayout
             className={_cs(styles.validateScenarioPreview, className)}
@@ -88,40 +106,31 @@ function ValidateScenarioPreview(props: Props) {
                 popupTitle={preview?.title || '{title}'}
                 popupDescription={preview?.description || '{description}'}
                 popupVariant={preview?.popupVariant}
+                popupVerticalPosition="inline"
                 contentClassName={styles.content}
             >
-                {isDefined(preEventTileServerProperty) && (
-                    <div className={styles.imagery}>
-                        <div className={styles.imageryLabel}>
-                            Pre-event
+                <div className={styles.panes}>
+                    {panes.map((pane) => (
+                        <div
+                            key={pane.key}
+                            className={styles.pane}
+                        >
+                            <GeoJsonPreview
+                                tileSize={280}
+                                className={styles.paneMap}
+                                geoJson={generatedGeojson}
+                                baseTileServer={pane.tileServer}
+                                geoJsonLayerOptions={layerOptions}
+                                fitInSingleTile
+                                disablePan
+                            />
+                            {isDefined(pane.label) && (
+                                <div className={styles.paneLabel}>
+                                    {pane.label}
+                                </div>
+                            )}
                         </div>
-                        <GeoJsonPreview
-                            tileSize={280}
-                            className={styles.mapContainer}
-                            geoJson={generatedGeojson}
-                            baseTileServer={removeNull(preEventTileServerProperty)}
-                            geoJsonLayerOptions={layerOptions}
-                            fitInSingleTile
-                            disablePan
-                        />
-                    </div>
-                )}
-                <div className={styles.imagery}>
-                    {isDefined(preEventTileServerProperty) && (
-                        <div className={styles.imageryLabel}>
-                            Post-event
-                        </div>
-                    )}
-                    <GeoJsonPreview
-                        // NOTE: this should match --size-tile-validate
-                        tileSize={280}
-                        className={styles.mapContainer}
-                        geoJson={generatedGeojson}
-                        baseTileServer={removeNull(tileServerProperty)}
-                        geoJsonLayerOptions={layerOptions}
-                        fitInSingleTile
-                        disablePan
-                    />
+                    ))}
                 </div>
                 <CustomOptionPreview
                     value={customOptions}
