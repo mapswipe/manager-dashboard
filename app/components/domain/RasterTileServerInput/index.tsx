@@ -64,6 +64,7 @@ interface Props {
     withoutPreview?: boolean;
     zoomLevel?: number;
     headerActions?: ContainerProps['headerActions'];
+    showZoomRange?: boolean;
 }
 
 function RasterTileServerInput(props: Props) {
@@ -81,6 +82,7 @@ function RasterTileServerInput(props: Props) {
         withoutPreview = false,
         zoomLevel,
         headerActions,
+        showZoomRange = false,
     } = props;
 
     const error = getErrorObject(formError);
@@ -118,6 +120,10 @@ function RasterTileServerInput(props: Props) {
         {},
     );
 
+    const setZoomRangeFieldValue = fieldName === 'custom'
+        ? setCustomRasterTileServerFieldValue
+        : setCommonRasterTileServerFieldValue;
+
     const { raster: rasterTileServers } = useContext(TileServerContext);
 
     const tileServerMapping = useMemo(() => (
@@ -135,9 +141,12 @@ function RasterTileServerInput(props: Props) {
                 'custom',
             );
         } else {
+            const tileServer = tileServerMapping[newValue];
             setFieldValue(
                 {
-                    credits: tileServerMapping[newValue]?.credits,
+                    credits: tileServer?.credits,
+                    minZoom: tileServer?.minZoom ?? undefined,
+                    maxZoom: tileServer?.maxZoom ?? undefined,
                 },
                 rasterTileServerNameToTileInputKey[newValue],
             );
@@ -206,27 +215,32 @@ function RasterTileServerInput(props: Props) {
                                     onChange={setCustomRasterTileServerFieldValue}
                                     disabled={disabled}
                                 />
-                                <ListLayout layout="grid">
-                                    <NumberInput
-                                        name="minZoom"
-                                        label="Min zoom"
-                                        value={value.custom?.minZoom}
-                                        onChange={setCustomRasterTileServerFieldValue}
-                                        disabled={disabled}
-                                        error={getErrorObject(error?.custom)?.minZoom}
-                                        hint="Minimum zoom level supported by the imagery server"
-                                    />
-                                    <NumberInput
-                                        name="maxZoom"
-                                        label="Max zoom"
-                                        value={value.custom?.maxZoom}
-                                        onChange={setCustomRasterTileServerFieldValue}
-                                        disabled={disabled}
-                                        error={getErrorObject(error?.custom)?.maxZoom}
-                                        hint="Maximum zoom level supported by the imagery server"
-                                    />
-                                </ListLayout>
                             </>
+                        )}
+                    {showZoomRange
+                        && isDefined(value)
+                        && isDefined(value.name)
+                        && (
+                            <ListLayout layout="grid">
+                                <NumberInput
+                                    name="minZoom"
+                                    label="Min zoom"
+                                    value={value[fieldName]?.minZoom}
+                                    onChange={setZoomRangeFieldValue}
+                                    disabled={disabled}
+                                    error={getErrorObject(error?.[fieldName])?.minZoom}
+                                    hint="Minimum zoom level supported by the imagery server. Leave empty to use the map library default."
+                                />
+                                <NumberInput
+                                    name="maxZoom"
+                                    label="Max zoom"
+                                    value={value[fieldName]?.maxZoom}
+                                    onChange={setZoomRangeFieldValue}
+                                    disabled={disabled}
+                                    error={getErrorObject(error?.[fieldName])?.maxZoom}
+                                    hint="Maximum zoom level supported by the imagery server. Leave empty to use the map library default."
+                                />
+                            </ListLayout>
                         )}
                 </ListLayout>
                 {!withoutPreview && isDefined(aoiGeoJsonAssetId) && (

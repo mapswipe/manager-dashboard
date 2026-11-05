@@ -69,106 +69,130 @@ const zoomLevelValidations = [
 ];
 
 type CustomRasterTileServerConfigFields = ReturnType<CustomRasterTileServerConfigSchema['fields']>;
+type CommonRasterTileServerConfigFields = ReturnType<CommonRasterTileServerConfigSchema['fields']>;
 
-const customRasterTileServerConfigSchema: CustomRasterTileServerConfigSchema = {
-    fields: (value): CustomRasterTileServerConfigFields => {
-        const baseSchema: CustomRasterTileServerConfigFields = {
-            url: {
-                required: true,
-                validations: [imageryUrlCondition],
-            },
-            credits: {
-                required: true,
-                requiredValidation: requiredStringCondition,
-            },
-            maxZoom: {
-                validations: zoomLevelValidations,
-            },
-        };
+function getMinZoomSchema(maxZoom: number | undefined) {
+    return {
+        validations: isDefined(maxZoom)
+            ? [...zoomLevelValidations, lessThanOrEqualToCondition(maxZoom)]
+            : zoomLevelValidations,
+    };
+}
 
-        // NOTE: addCondition cannot read the dependencies of an undefined value
-        if (isNotDefined(value)) {
-            return baseSchema;
-        }
-
-        return addCondition(
-            baseSchema,
-            value,
-            ['maxZoom'],
-            ['minZoom'],
-            (val): Pick<CustomRasterTileServerConfigFields, 'minZoom'> => ({
-                minZoom: {
-                    validations: isDefined(val?.maxZoom)
-                        ? [...zoomLevelValidations, lessThanOrEqualToCondition(val.maxZoom)]
-                        : zoomLevelValidations,
+// NOTE: accumulateValues only sends the fields in the schema,
+// so the zoom range is not sent without withZoomRange
+function getTileServerFormSchema(withZoomRange: boolean): RasterTileServerFormSchema {
+    const customRasterTileServerConfigSchema: CustomRasterTileServerConfigSchema = {
+        fields: (value): CustomRasterTileServerConfigFields => {
+            const baseSchema: CustomRasterTileServerConfigFields = {
+                url: {
+                    required: true,
+                    validations: [imageryUrlCondition],
                 },
-            }),
-        );
-    },
-};
+                credits: {
+                    required: true,
+                    requiredValidation: requiredStringCondition,
+                },
+            };
 
-const tileServerFormSchema: RasterTileServerFormSchema = {
-    fields: (value): RasterTileServerFormFields => {
-        const defaultRasterTileServerFieldSchema: RasterTileServerFormFields = {
-            custom: { forceValue: undefinedValue },
-            bing: { forceValue: undefinedValue },
-            mapbox: { forceValue: undefinedValue },
-            maxarStandard: { forceValue: undefinedValue },
-            maxarPremium: { forceValue: undefinedValue },
-            esri: { forceValue: undefinedValue },
-            esriBeta: { forceValue: undefinedValue },
-        };
+            // NOTE: addCondition cannot read the dependencies of an undefined value
+            if (!withZoomRange || isNotDefined(value)) {
+                return baseSchema;
+            }
 
-        const baseSchema: RasterTileServerFormFields = {
-            name: {
-                required: true,
-            },
-        };
+            return addCondition(
+                { ...baseSchema, maxZoom: { validations: zoomLevelValidations } },
+                value,
+                ['maxZoom'],
+                ['minZoom'],
+                (val) => ({ minZoom: getMinZoomSchema(val?.maxZoom) }),
+            );
+        },
+    };
 
-        // NOTE: addCondition cannot read the dependencies of an undefined value
-        if (isNotDefined(value)) {
-            return baseSchema;
-        }
+    const commonRasterTileServerConfigSchema: CommonRasterTileServerConfigSchema = {
+        fields: (value): CommonRasterTileServerConfigFields => {
+            const baseSchema: CommonRasterTileServerConfigFields = {
+                credits: {
+                    required: true,
+                    requiredValidation: requiredStringCondition,
+                },
+            };
 
-        const schema = addCondition(
-            baseSchema,
-            value,
-            ['name'],
-            ['bing', 'esri', 'esriBeta', 'mapbox', 'maxarPremium', 'maxarStandard', 'custom'],
-            (): RasterTileServerFormFields => {
-                const defaultValue = {};
+            // NOTE: addCondition cannot read the dependencies of an undefined value
+            if (!withZoomRange || isNotDefined(value)) {
+                return baseSchema;
+            }
 
-                const { name } = value;
+            return addCondition(
+                { ...baseSchema, maxZoom: { validations: zoomLevelValidations } },
+                value,
+                ['maxZoom'],
+                ['minZoom'],
+                (val) => ({ minZoom: getMinZoomSchema(val?.maxZoom) }),
+            );
+        },
+    };
+    return {
+        fields: (value): RasterTileServerFormFields => {
+            const defaultRasterTileServerFieldSchema: RasterTileServerFormFields = {
+                custom: { forceValue: undefinedValue },
+                bing: { forceValue: undefinedValue },
+                mapbox: { forceValue: undefinedValue },
+                maxarStandard: { forceValue: undefinedValue },
+                maxarPremium: { forceValue: undefinedValue },
+                esri: { forceValue: undefinedValue },
+                esriBeta: { forceValue: undefinedValue },
+            };
 
-                if (isNotDefined(name)) {
-                    return defaultValue;
-                }
+            const baseSchema: RasterTileServerFormFields = {
+                name: {
+                    required: true,
+                },
+            };
 
-                const key = rasterTileServerNameToTileInputKey[name];
+            // NOTE: addCondition cannot read the dependencies of an undefined value
+            if (isNotDefined(value)) {
+                return baseSchema;
+            }
 
-                if (name === RasterTileServerNameEnum.Custom) {
+            const schema = addCondition(
+                baseSchema,
+                value,
+                ['name'],
+                ['bing', 'esri', 'esriBeta', 'mapbox', 'maxarPremium', 'maxarStandard', 'custom'],
+                (): RasterTileServerFormFields => {
+                    const defaultValue = {};
+
+                    const { name } = value;
+
+                    if (isNotDefined(name)) {
+                        return defaultValue;
+                    }
+
+                    const key = rasterTileServerNameToTileInputKey[name];
+
+                    if (name === RasterTileServerNameEnum.Custom) {
+                        return {
+                            ...defaultRasterTileServerFieldSchema,
+                            [key]: customRasterTileServerConfigSchema,
+                        };
+                    }
+
                     return {
                         ...defaultRasterTileServerFieldSchema,
-                        [key]: customRasterTileServerConfigSchema,
+                        [key]: commonRasterTileServerConfigSchema,
                     };
-                }
+                },
+            );
 
-                return {
-                    ...defaultRasterTileServerFieldSchema,
-                    [key]: {
-                        fields: (): ReturnType<CommonRasterTileServerConfigSchema['fields']> => ({
-                            credits: {
-                                required: true,
-                                requiredValidation: requiredStringCondition,
-                            },
-                        }),
-                    },
-                };
-            },
-        );
+            return schema;
+        },
+    };
+}
 
-        return schema;
-    },
-};
+const tileServerFormSchema = getTileServerFormSchema(false);
+
+export const tileServerWithZoomRangeFormSchema = getTileServerFormSchema(true);
 
 export default tileServerFormSchema;
