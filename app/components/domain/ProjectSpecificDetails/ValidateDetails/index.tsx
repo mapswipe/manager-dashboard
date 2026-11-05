@@ -18,6 +18,7 @@ import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
 import EnumsContext from '#contexts/EnumsContext';
 import { ValidateProjectPropertyType } from '#generated/types/graphql';
+import { RASTER_TILE_SIZE } from '#utils/geo';
 
 interface Props {
     data: ValidateProjectPropertyType | undefined;
@@ -73,6 +74,7 @@ function ValidateDetails(props: Props) {
                 <ListLayout layout="grid">
                     <BaseMap
                         baseTileServer={preEventTileServer}
+                        tileSize={RASTER_TILE_SIZE}
                         withSavedZoomRange
                         disablePan
                     >
@@ -96,6 +98,7 @@ function ValidateDetails(props: Props) {
             <ListLayout layout="grid">
                 <BaseMap
                     baseTileServer={tileServer}
+                    tileSize={RASTER_TILE_SIZE}
                     withSavedZoomRange
                     disablePan={data.hasPreImagery}
                 >
