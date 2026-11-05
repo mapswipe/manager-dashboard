@@ -11,6 +11,7 @@ import {
 
 import Button from '#components/Button';
 import Container, { ContainerProps } from '#components/Container';
+import { rasterTileServerNameToTileInputKey } from '#components/domain/RasterTileServerInput/schema';
 import TextOutput from '#components/TextOutput';
 import TileServerContext from '#contexts/TileServerContext';
 import {
@@ -22,6 +23,8 @@ import { formatNumber } from '#utils/common';
 interface Props extends Omit<ContainerProps, 'children'> {
     className?: string;
     value: ProjectRasterTileServerConfig;
+    // Show the zoom range saved on the layer, as BaseMap uses it for Validate
+    withSavedZoomRange?: boolean;
 }
 
 function RasterTileServerOutput(props: Props) {
@@ -29,6 +32,7 @@ function RasterTileServerOutput(props: Props) {
         heading = 'Tile server',
         className,
         value,
+        withSavedZoomRange,
 
         headingLevel = 5,
         spacing = 'sm',
@@ -53,8 +57,6 @@ function RasterTileServerOutput(props: Props) {
     const {
         url,
         credits,
-        minZoom,
-        maxZoom,
     } = useMemo(() => {
         const rasterTileServerMapping = listToMap(
             rasterTileServers,
@@ -67,18 +69,20 @@ function RasterTileServerOutput(props: Props) {
             return {
                 url: value.custom?.url,
                 credits: value.custom?.credits,
-                minZoom: value.custom?.minZoom,
-                maxZoom: value.custom?.maxZoom,
             };
         }
 
         return {
             url: rasterTileServerMapping[name]?.url,
             credits: rasterTileServerMapping[name]?.credits,
-            minZoom: rasterTileServerMapping[name]?.minZoom,
-            maxZoom: rasterTileServerMapping[name]?.maxZoom,
         };
     }, [rasterTileServers, value]);
+
+    const zoomRange = withSavedZoomRange
+        ? value[rasterTileServerNameToTileInputKey[value.name]]
+        : undefined;
+    const minZoom = zoomRange?.minZoom;
+    const maxZoom = zoomRange?.maxZoom;
 
     const handleCopyUrlClick = useCallback((urlToCopy: string) => {
         navigator.clipboard.writeText(urlToCopy);
@@ -114,10 +118,14 @@ function RasterTileServerOutput(props: Props) {
                 value={url}
             />
             */}
-            <TextOutput
-                label="Supported zoom"
-                value={`${formatNumber(minZoom) ?? '--'} to ${formatNumber(maxZoom) ?? '--'}`}
-            />
+            {withSavedZoomRange && (
+                <TextOutput
+                    label="Supported zoom"
+                    value={(isDefined(minZoom) || isDefined(maxZoom))
+                        ? `${formatNumber(minZoom) ?? '--'} to ${formatNumber(maxZoom) ?? '--'}`
+                        : undefined}
+                />
+            )}
             <TextOutput
                 label="Credits"
                 value={credits}

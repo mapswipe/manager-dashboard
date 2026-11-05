@@ -34,6 +34,7 @@ interface Props {
     className?: string;
     children?: React.ReactNode;
     withPadding?: boolean;
+    withSavedZoomRange?: boolean;
 }
 
 function GeoJsonPreview(props: Props) {
@@ -47,6 +48,7 @@ function GeoJsonPreview(props: Props) {
         className,
         children,
         withPadding,
+        withSavedZoomRange,
     } = props;
 
     return (
@@ -54,6 +56,7 @@ function GeoJsonPreview(props: Props) {
             baseTileServer={baseTileServer}
             tileSize={tileSize}
             disablePan={disablePan}
+            withSavedZoomRange={withSavedZoomRange}
         >
             <DefaultMapContainer className={className} />
             <GeoJsonMapSource
