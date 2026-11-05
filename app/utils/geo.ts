@@ -39,6 +39,11 @@ export function getBbox(geoJson: GeoJSON.GeoJSON | undefined): BoundingBox | und
 // (the project zoom), as the app loads those tiles as images at that zoom.
 export const RASTER_TILE_SIZE = 256;
 
+// NOTE: The view limit, not the imagery limit, same as the mobile app. Each
+// layer's own zoom range goes to its raster source, and tiles above it are enlarged.
+export const MAP_MIN_ZOOM_LEVEL = 0;
+export const MAP_MAX_ZOOM_LEVEL = 24;
+
 // NOTE: A point or a very small feature is shown with this much ground around
 // it, enough context for satellite imagery
 const MIN_FIT_SIZE_IN_METERS = 20;
