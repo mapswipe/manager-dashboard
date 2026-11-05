@@ -32,29 +32,14 @@ function ValidateDetails(props: Props) {
 
     const { validateObjectSourceTypeMapping } = useContext(EnumsContext);
 
-    const preEventTileServerProperty = data?.preEventTileServerProperty;
-    const tileServerProperty = data?.tileServerProperty;
-    const layers = useMemo(() => [
-        isDefined(preEventTileServerProperty)
-            ? {
-                key: 'pre',
-                heading: 'Pre-event tile server',
-                tileServerProperty: preEventTileServerProperty,
-            }
-            : undefined,
-        isDefined(tileServerProperty)
-            ? {
-                key: 'post',
-                heading: isDefined(preEventTileServerProperty)
-                    ? 'Post-event tile server'
-                    : undefined,
-                tileServerProperty,
-            }
-            : undefined,
-    ].filter(isDefined).map((layer) => ({
-        ...layer,
-        baseTileServer: removeNull(layer.tileServerProperty),
-    })), [preEventTileServerProperty, tileServerProperty]);
+    const preEventTileServer = useMemo(
+        () => removeNull(data?.preEventTileServerProperty),
+        [data?.preEventTileServerProperty],
+    );
+    const tileServer = useMemo(
+        () => removeNull(data?.tileServerProperty),
+        [data?.tileServerProperty],
+    );
 
     if (isNotDefined(data) || isNotDefined(data.objectSource)) {
         return null;
@@ -84,28 +69,48 @@ function ValidateDetails(props: Props) {
                     value={data.objectSource.ohsomeFilter}
                 />
             )}
-            {layers.map((layer) => (
-                <ListLayout key={layer.key} layout="grid">
+            {data.hasPreImagery && isDefined(data.preEventTileServerProperty) && (
+                <ListLayout layout="grid">
                     <BaseMap
-                        baseTileServer={layer.baseTileServer}
-                        disablePan={layers.length > 1}
+                        baseTileServer={preEventTileServer}
+                        disablePan
                     >
                         <DefaultMapContainer />
                         <GeoJsonAssetMapSource
-                            geoJsonAssetId={removeNull(data.objectSource?.aoiGeometry)}
+                            geoJsonAssetId={removeNull(data.objectSource.aoiGeometry)}
                             defaultBounds={defaultBounds}
                             zoomLevel={undefined}
                             withPadding
                         />
                     </BaseMap>
                     <RasterTileServerOutput
-                        heading={layer.heading}
-                        value={layer.tileServerProperty}
+                        heading="Pre-event tile server"
+                        value={data.preEventTileServerProperty}
                         withPadding
                         withHeaderBorder
                     />
                 </ListLayout>
-            ))}
+            )}
+            <ListLayout layout="grid">
+                <BaseMap
+                    baseTileServer={tileServer}
+                    disablePan={data.hasPreImagery}
+                >
+                    <DefaultMapContainer />
+                    <GeoJsonAssetMapSource
+                        geoJsonAssetId={removeNull(data.objectSource.aoiGeometry)}
+                        defaultBounds={defaultBounds}
+                        zoomLevel={undefined}
+                        withPadding
+                    />
+                </BaseMap>
+                <RasterTileServerOutput
+                    heading={data.hasPreImagery ? 'Post-event tile server' : undefined}
+                    value={data.tileServerProperty}
+                    withPadding
+                    withHeaderBorder
+                />
+            </ListLayout>
             <Container
                 headingLevel={5}
                 heading="Custom options"

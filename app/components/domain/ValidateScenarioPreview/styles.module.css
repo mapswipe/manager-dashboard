@@ -40,7 +40,7 @@
                 left: var(--spacing-xs);
                 z-index: 1;
                 border-radius: var(--radius-tag-border);
-                background-color: rgb(0 0 0 / 60%);
+                background-color: var(--color-backdrop);
                 padding: var(--spacing-2xs) var(--spacing-xs);
                 color: var(--color-text-on-dark);
                 font-size: var(--font-size-xs);

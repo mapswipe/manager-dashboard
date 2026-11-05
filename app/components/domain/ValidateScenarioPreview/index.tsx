@@ -38,7 +38,8 @@ const layerOptions: Omit<LineLayerSpecification, 'id' | 'source'> = {
 interface Props {
     className?: string;
     tileServerProperty: ProjectRasterTileServerConfig | undefined;
-    preEventTileServerProperty?: ProjectRasterTileServerConfig | null;
+    hasPreImagery: boolean | undefined;
+    preEventTileServerProperty: ProjectRasterTileServerConfig | undefined | null;
     projectInstruction: string | undefined | null;
     customOptions: PartialCustomOptionInputFields[] | undefined;
     scenario: PartialForm<TutorialScenarioPageCreateInput> | undefined;
@@ -50,6 +51,7 @@ function ValidateScenarioPreview(props: Props) {
         className,
         scenario,
         tileServerProperty,
+        hasPreImagery,
         preEventTileServerProperty,
         projectInstruction,
         customOptions,
@@ -77,23 +79,14 @@ function ValidateScenarioPreview(props: Props) {
         };
     }, [scenario]);
 
-    const panes = useMemo(() => {
-        const hasPreEvent = isDefined(preEventTileServerProperty);
-        return [
-            hasPreEvent
-                ? {
-                    key: 'pre',
-                    label: 'Before',
-                    tileServer: removeNull(preEventTileServerProperty),
-                }
-                : undefined,
-            {
-                key: 'post',
-                label: hasPreEvent ? 'After' : undefined,
-                tileServer: removeNull(tileServerProperty),
-            },
-        ].filter(isDefined);
-    }, [preEventTileServerProperty, tileServerProperty]);
+    const preEventTileServer = useMemo(
+        () => removeNull(preEventTileServerProperty),
+        [preEventTileServerProperty],
+    );
+    const tileServer = useMemo(
+        () => removeNull(tileServerProperty),
+        [tileServerProperty],
+    );
 
     return (
         <ListLayout
@@ -110,27 +103,38 @@ function ValidateScenarioPreview(props: Props) {
                 contentClassName={styles.content}
             >
                 <div className={styles.panes}>
-                    {panes.map((pane) => (
-                        <div
-                            key={pane.key}
-                            className={styles.pane}
-                        >
+                    {hasPreImagery && (
+                        <div className={styles.pane}>
                             <GeoJsonPreview
                                 tileSize={280}
                                 className={styles.paneMap}
                                 geoJson={generatedGeojson}
-                                baseTileServer={pane.tileServer}
+                                baseTileServer={preEventTileServer}
                                 geoJsonLayerOptions={layerOptions}
                                 fitInSingleTile
                                 disablePan
                             />
-                            {isDefined(pane.label) && (
-                                <div className={styles.paneLabel}>
-                                    {pane.label}
-                                </div>
-                            )}
+                            <div className={styles.paneLabel}>
+                                Before
+                            </div>
                         </div>
-                    ))}
+                    )}
+                    <div className={styles.pane}>
+                        <GeoJsonPreview
+                            tileSize={280}
+                            className={styles.paneMap}
+                            geoJson={generatedGeojson}
+                            baseTileServer={tileServer}
+                            geoJsonLayerOptions={layerOptions}
+                            fitInSingleTile
+                            disablePan
+                        />
+                        {hasPreImagery && (
+                            <div className={styles.paneLabel}>
+                                After
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <CustomOptionPreview
                     value={customOptions}

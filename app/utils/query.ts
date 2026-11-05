@@ -121,6 +121,7 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
         tileServerProperty {
             ...RasterTileServerPropertyFields
         }
+        hasPreImagery
         preEventTileServerProperty {
             ...RasterTileServerPropertyFields
         }
