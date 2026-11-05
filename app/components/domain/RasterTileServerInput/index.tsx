@@ -245,7 +245,10 @@ function RasterTileServerInput(props: Props) {
                 </ListLayout>
                 {!withoutPreview && isDefined(aoiGeoJsonAssetId) && (
                     <ListLayout layout="block">
-                        <BaseMap baseTileServer={value}>
+                        <BaseMap
+                            baseTileServer={value}
+                            withSavedZoomRange={showZoomRange}
+                        >
                             <DefaultMapContainer compact />
                             <GeoJsonAssetMapSource
                                 geoJsonAssetId={aoiGeoJsonAssetId}

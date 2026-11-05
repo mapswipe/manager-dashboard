@@ -112,6 +112,7 @@ function ValidateScenarioPreview(props: Props) {
                                 baseTileServer={preEventTileServer}
                                 geoJsonLayerOptions={layerOptions}
                                 fitInSingleTile
+                                withSavedZoomRange
                                 disablePan
                             />
                             <div className={styles.paneLabel}>
@@ -127,6 +128,7 @@ function ValidateScenarioPreview(props: Props) {
                             baseTileServer={tileServer}
                             geoJsonLayerOptions={layerOptions}
                             fitInSingleTile
+                            withSavedZoomRange
                             disablePan
                         />
                         {hasPreImagery && (
