@@ -39,6 +39,31 @@ export function getBbox(geoJson: GeoJSON.GeoJSON | undefined): BoundingBox | und
 // (the project zoom), as the app loads those tiles as images at that zoom.
 export const RASTER_TILE_SIZE = 256;
 
+// NOTE: A point or a very small feature is shown with this much ground around
+// it, enough context for satellite imagery
+const MIN_FIT_SIZE_IN_METERS = 20;
+const METERS_PER_DEGREE_LATITUDE = 111_320;
+
+// Grow the bbox around its center to at least the given size on the ground
+function expandBbox(bbox: BoundingBox, minSizeInMeters: number): BoundingBox {
+    const [minLon, minLat, maxLon, maxLat] = bbox;
+    const [centerLon, centerLat] = getCenterFromBBox(bbox);
+
+    const halfLat = minSizeInMeters / 2 / METERS_PER_DEGREE_LATITUDE;
+    const halfLon = halfLat / Math.cos((centerLat * Math.PI) / 180);
+
+    return [
+        Math.min(minLon, centerLon - halfLon),
+        Math.min(minLat, centerLat - halfLat),
+        Math.max(maxLon, centerLon + halfLon),
+        Math.max(maxLat, centerLat + halfLat),
+    ];
+}
+
+export function getFitBbox(bbox: BoundingBox): BoundingBox {
+    return expandBbox(bbox, MIN_FIT_SIZE_IN_METERS);
+}
+
 export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
     if (isNotDefined(bbox)) {
         return 14;

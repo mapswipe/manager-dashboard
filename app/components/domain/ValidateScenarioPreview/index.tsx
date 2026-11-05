@@ -26,6 +26,9 @@ import { PreviewItem } from '../TutorialPreviewScreenSelectInput';
 
 import styles from './styles.module.css';
 
+// NOTE: this should match the padding of the mobile app's feature fit
+const FIT_PADDING_RATIO = 0.1;
+
 const layerOptions: Omit<LineLayerSpecification, 'id' | 'source'> = {
     type: 'line',
     paint: {
@@ -112,7 +115,7 @@ function ValidateScenarioPreview(props: Props) {
                                 geoJson={generatedGeojson}
                                 baseTileServer={preEventTileServer}
                                 geoJsonLayerOptions={layerOptions}
-                                fitInSingleTile
+                                fitPaddingRatio={FIT_PADDING_RATIO}
                                 withSavedZoomRange
                                 disablePan
                             />
@@ -128,7 +131,7 @@ function ValidateScenarioPreview(props: Props) {
                             geoJson={generatedGeojson}
                             baseTileServer={tileServer}
                             geoJsonLayerOptions={layerOptions}
-                            fitInSingleTile
+                            fitPaddingRatio={FIT_PADDING_RATIO}
                             withSavedZoomRange
                             disablePan
                         />
