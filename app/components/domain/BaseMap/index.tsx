@@ -18,13 +18,19 @@ import {
 } from '#components/domain/RasterTileServerInput/schema';
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
-import { standardizeQuadKey } from '#utils/geo';
+import {
+    MAP_MAX_ZOOM_LEVEL,
+    MAP_MIN_ZOOM_LEVEL,
+    standardizeQuadKey,
+} from '#utils/geo';
 
 const FALLBACK_TILE_URL = 'https://tiles.versatiles.org/assets/styles/eclipse/style.json';
 
 const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'children'> = {
     center: [0, 0],
     zoom: 1,
+    minZoom: MAP_MIN_ZOOM_LEVEL,
+    maxZoom: MAP_MAX_ZOOM_LEVEL,
     attributionControl: false,
     scrollZoom: false,
     boxZoom: false,
