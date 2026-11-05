@@ -53,11 +53,13 @@ type CommonRasterTileServerConfigSchema = ObjectSchema<PartialCommonRasterTileSe
 const MIN_ZOOM_LEVEL = 0;
 const DEFAULT_CUSTOM_MAX_ZOOM = 19;
 
+export const defaultCustomRasterTileServerValue: PartialCustomRasterTileServerConfigFields = {
+    maxZoom: DEFAULT_CUSTOM_MAX_ZOOM,
+};
+
 export const defaultRasterTileServerInputValue: PartialRasterTileServerInputFields = {
     name: RasterTileServerNameEnum.Custom,
-    custom: {
-        maxZoom: DEFAULT_CUSTOM_MAX_ZOOM,
-    },
+    custom: defaultCustomRasterTileServerValue,
 };
 
 // NOTE: no upper bound as drone imagery can go beyond the usual zoom levels
@@ -83,6 +85,11 @@ const customRasterTileServerConfigSchema: CustomRasterTileServerConfigSchema = {
                 validations: zoomLevelValidations,
             },
         };
+
+        // NOTE: addCondition cannot read the dependencies of an undefined value
+        if (isNotDefined(value)) {
+            return baseSchema;
+        }
 
         return addCondition(
             baseSchema,

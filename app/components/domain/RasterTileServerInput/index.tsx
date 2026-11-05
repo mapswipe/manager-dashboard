@@ -30,6 +30,7 @@ import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
 import {
+    defaultCustomRasterTileServerValue,
     PartialCommonRasterTileServerConfigFields,
     PartialCustomRasterTileServerConfigFields,
     type PartialRasterTileServerInputFields,
@@ -126,7 +127,14 @@ function RasterTileServerInput(props: Props) {
     const handleImageryServerChange = useCallback((newValue: RasterTileServerNameEnum) => {
         setFieldValue(newValue, 'name');
 
-        if (newValue !== RasterTileServerNameEnum.Custom) {
+        if (newValue === RasterTileServerNameEnum.Custom) {
+            setFieldValue(
+                (oldValue: PartialCustomRasterTileServerConfigFields | undefined) => (
+                    oldValue ?? defaultCustomRasterTileServerValue
+                ),
+                'custom',
+            );
+        } else {
             setFieldValue(
                 {
                     credits: tileServerMapping[newValue]?.credits,
