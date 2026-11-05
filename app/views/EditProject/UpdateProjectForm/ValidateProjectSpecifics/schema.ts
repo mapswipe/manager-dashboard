@@ -6,7 +6,10 @@ import {
 } from '@togglecorp/toggle-form';
 
 import customOptionSchema from '#components/domain/CustomOptionInput/schema';
-import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/domain/RasterTileServerInput/schema';
+import {
+    defaultRasterTileServerInputValue,
+    tileServerWithZoomRangeFormSchema,
+} from '#components/domain/RasterTileServerInput/schema';
 import { ValidateProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -42,7 +45,7 @@ const validateSpecificFormSchema: ValidateSpecificFormSchema = {
                 member: () => customOptionSchema,
             },
             objectSource: objectSourceFormSchema,
-            tileServerProperty: rasterTileServerFormSchema,
+            tileServerProperty: tileServerWithZoomRangeFormSchema,
             hasPreImagery: {},
         };
 
@@ -53,7 +56,7 @@ const validateSpecificFormSchema: ValidateSpecificFormSchema = {
             ['preEventTileServerProperty'],
             (val): Pick<ValidateSpecificFormFields, 'preEventTileServerProperty'> => ({
                 preEventTileServerProperty: val?.hasPreImagery
-                    ? rasterTileServerFormSchema
+                    ? tileServerWithZoomRangeFormSchema
                     : { forceValue: undefinedValue },
             }),
         );
