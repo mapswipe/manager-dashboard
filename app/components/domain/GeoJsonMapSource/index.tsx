@@ -1,5 +1,6 @@
 import {
     ComponentProps,
+    useContext,
     useMemo,
 } from 'react';
 import { pointToTileFraction } from '@mapbox/tilebelt';
@@ -10,6 +11,7 @@ import {
 import {
     MapBounds,
     MapCenter,
+    MapChildContext,
     MapLayer,
     MapSource,
 } from '@togglecorp/re-map';
@@ -17,6 +19,7 @@ import {
 import {
     BoundingBox,
     getBbox,
+    getFitBbox,
 } from '#utils/geo';
 
 function getTileZ(bbox: BoundingBox) {
@@ -85,6 +88,10 @@ interface Props {
     overrideZoomLevel?: number;
     overrideBounds?: GeoJSON.Polygon | null;
     withPadding?: boolean;
+    // Fraction of the map width and height kept clear on each side when
+    // fitting the bounds, as the app fits a Validate feature; takes precedence
+    // over withPadding and also grows small features to the minimum fit size
+    fitPaddingRatio?: number;
 }
 
 function GeoJsonMapSource(props: Props) {
@@ -97,7 +104,10 @@ function GeoJsonMapSource(props: Props) {
         layerOptions = geoJsonLayerOptions,
         overrideBounds,
         fit = 'default',
+        fitPaddingRatio,
     } = props;
+
+    const { map } = useContext(MapChildContext);
 
     const bounds = useMemo(
         () => {
@@ -127,6 +137,31 @@ function GeoJsonMapSource(props: Props) {
             return undefined;
         },
         [bounds, overrideZoomLevel, fit],
+    );
+
+    const fitBounds = useMemo(
+        () => (isDefined(bounds) && isDefined(fitPaddingRatio) ? getFitBbox(bounds) : bounds),
+        [bounds, fitPaddingRatio],
+    );
+
+    const fitPadding = useMemo(
+        () => {
+            if (isNotDefined(fitPaddingRatio) || isNotDefined(map)) {
+                return withPadding ? 20 : 0;
+            }
+
+            const container = map.getContainer();
+            const horizontal = container.clientWidth * fitPaddingRatio;
+            const vertical = container.clientHeight * fitPaddingRatio;
+
+            return {
+                top: vertical,
+                bottom: vertical,
+                left: horizontal,
+                right: horizontal,
+            };
+        },
+        [map, fitPaddingRatio, withPadding],
     );
 
     const center = useMemo<[number, number] | undefined>(() => {
@@ -161,11 +196,11 @@ function GeoJsonMapSource(props: Props) {
                     />
                 </MapSource>
             )}
-            {isNotDefined(zoomLevel) && isDefined(bounds) && (
+            {isNotDefined(zoomLevel) && isDefined(fitBounds) && (
                 <MapBounds
-                    bounds={bounds}
+                    bounds={fitBounds}
                     duration={0}
-                    padding={withPadding ? 20 : 0}
+                    padding={fitPadding}
                 />
             )}
             {isDefined(zoomLevel) && isDefined(center) && (

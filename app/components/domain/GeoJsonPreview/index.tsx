@@ -34,6 +34,7 @@ interface Props {
     className?: string;
     children?: React.ReactNode;
     withPadding?: boolean;
+    fitPaddingRatio?: number;
     withSavedZoomRange?: boolean;
 }
 
@@ -48,6 +49,7 @@ function GeoJsonPreview(props: Props) {
         className,
         children,
         withPadding,
+        fitPaddingRatio,
         withSavedZoomRange,
     } = props;
 
@@ -66,6 +68,7 @@ function GeoJsonPreview(props: Props) {
                 layerOptions={geoJsonLayerOptions}
                 fit={fitInSingleTile ? 'single-tile' : 'default'}
                 withPadding={withPadding}
+                fitPaddingRatio={fitPaddingRatio}
             />
             {children}
         </BaseMap>
