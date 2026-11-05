@@ -32,6 +32,13 @@ export function getBbox(geoJson: GeoJSON.GeoJSON | undefined): BoundingBox | und
     return [bounds[0], bounds[1], bounds[2], bounds[3]];
 }
 
+// NOTE: maplibre fetches tile zoom = round(map zoom + log2(512 / tileSize)).
+// Validate maps use 256, the real size of the tile images, as the app's
+// maplibre map does, so both fetch the same imagery for the same view.
+// Other project types keep 512, so the fetched tile zoom equals the map zoom
+// (the project zoom), as the app loads those tiles as images at that zoom.
+export const RASTER_TILE_SIZE = 256;
+
 export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
     if (isNotDefined(bbox)) {
         return 14;

@@ -25,6 +25,7 @@ import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
+import { RASTER_TILE_SIZE } from '#utils/geo';
 
 import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
@@ -247,6 +248,8 @@ function RasterTileServerInput(props: Props) {
                     <ListLayout layout="block">
                         <BaseMap
                             baseTileServer={value}
+                            // NOTE: See RASTER_TILE_SIZE for why Validate differs
+                            tileSize={showZoomRange ? RASTER_TILE_SIZE : undefined}
                             withSavedZoomRange={showZoomRange}
                         >
                             <DefaultMapContainer compact />

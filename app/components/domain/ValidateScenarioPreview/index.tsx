@@ -20,6 +20,7 @@ import {
     ProjectRasterTileServerConfig,
     TutorialScenarioPageCreateInput,
 } from '#generated/types/graphql';
+import { RASTER_TILE_SIZE } from '#utils/geo';
 
 import { PreviewItem } from '../TutorialPreviewScreenSelectInput';
 
@@ -106,7 +107,7 @@ function ValidateScenarioPreview(props: Props) {
                     {hasPreImagery && (
                         <div className={styles.pane}>
                             <GeoJsonPreview
-                                tileSize={280}
+                                tileSize={RASTER_TILE_SIZE}
                                 className={styles.paneMap}
                                 geoJson={generatedGeojson}
                                 baseTileServer={preEventTileServer}
@@ -122,7 +123,7 @@ function ValidateScenarioPreview(props: Props) {
                     )}
                     <div className={styles.pane}>
                         <GeoJsonPreview
-                            tileSize={280}
+                            tileSize={RASTER_TILE_SIZE}
                             className={styles.paneMap}
                             geoJson={generatedGeojson}
                             baseTileServer={tileServer}

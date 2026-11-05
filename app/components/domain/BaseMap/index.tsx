@@ -38,6 +38,7 @@ const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'ch
 interface Props {
     baseTileServer: PartialRasterTileServerInputFields | undefined;
     children?: React.ReactNode;
+    // NOTE: See RASTER_TILE_SIZE for when to use 256 instead of 512
     tileSize?: number;
     disablePan?: boolean;
     // Limit tiles to the zoom range saved on the layer, as the app does for
