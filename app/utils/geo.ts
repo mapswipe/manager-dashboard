@@ -32,6 +32,43 @@ export function getBbox(geoJson: GeoJSON.GeoJSON | undefined): BoundingBox | und
     return [bounds[0], bounds[1], bounds[2], bounds[3]];
 }
 
+// NOTE: maplibre fetches tile zoom = round(map zoom + log2(512 / tileSize)).
+// Validate maps use 256, the real size of the tile images, as the app's
+// maplibre map does, so both fetch the same imagery for the same view.
+// Other project types keep 512, so the fetched tile zoom equals the map zoom
+// (the project zoom), as the app loads those tiles as images at that zoom.
+export const RASTER_TILE_SIZE = 256;
+
+// NOTE: The view limit, not the imagery limit, same as the mobile app. Each
+// layer's own zoom range goes to its raster source, and tiles above it are enlarged.
+export const MAP_MIN_ZOOM_LEVEL = 0;
+export const MAP_MAX_ZOOM_LEVEL = 24;
+
+// NOTE: A point or a very small feature is shown with this much ground around
+// it, enough context for satellite imagery
+const MIN_FIT_SIZE_IN_METERS = 20;
+const METERS_PER_DEGREE_LATITUDE = 111_320;
+
+// Grow the bbox around its center to at least the given size on the ground
+function expandBbox(bbox: BoundingBox, minSizeInMeters: number): BoundingBox {
+    const [minLon, minLat, maxLon, maxLat] = bbox;
+    const [centerLon, centerLat] = getCenterFromBBox(bbox);
+
+    const halfLat = minSizeInMeters / 2 / METERS_PER_DEGREE_LATITUDE;
+    const halfLon = halfLat / Math.cos((centerLat * Math.PI) / 180);
+
+    return [
+        Math.min(minLon, centerLon - halfLon),
+        Math.min(minLat, centerLat - halfLat),
+        Math.max(maxLon, centerLon + halfLon),
+        Math.max(maxLat, centerLat + halfLat),
+    ];
+}
+
+export function getFitBbox(bbox: BoundingBox): BoundingBox {
+    return expandBbox(bbox, MIN_FIT_SIZE_IN_METERS);
+}
+
 export function getZoomLevelFromBbox(bbox: BoundingBox | undefined) {
     if (isNotDefined(bbox)) {
         return 14;

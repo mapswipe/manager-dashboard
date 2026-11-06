@@ -1,10 +1,15 @@
 import {
+    addCondition,
     ObjectSchema,
     PartialForm,
+    undefinedValue,
 } from '@togglecorp/toggle-form';
 
 import customOptionSchema from '#components/domain/CustomOptionInput/schema';
-import rasterTileServerFormSchema, { defaultRasterTileServerInputValue } from '#components/domain/RasterTileServerInput/schema';
+import {
+    defaultRasterTileServerInputValue,
+    tileServerWithZoomRangeFormSchema,
+} from '#components/domain/RasterTileServerInput/schema';
 import { ValidateProjectPropertyInput } from '#generated/types/graphql';
 import { DeepNonNullable } from '#utils/types';
 
@@ -27,17 +32,35 @@ type ValidateSpecificFormSchema = ObjectSchema<
 export const defaultValidateSpecificFormValue: PartialValidateSpecificFields = {
     objectSource: defaultObjectSourceInputFormValue,
     tileServerProperty: defaultRasterTileServerInputValue,
+    hasPreImagery: false,
 };
 
+type ValidateSpecificFormFields = ReturnType<ValidateSpecificFormSchema['fields']>;
+
 const validateSpecificFormSchema: ValidateSpecificFormSchema = {
-    fields: (): ReturnType<ValidateSpecificFormSchema['fields']> => ({
-        customOptions: {
-            keySelector: (value) => value.clientId,
-            member: () => customOptionSchema,
-        },
-        objectSource: objectSourceFormSchema,
-        tileServerProperty: rasterTileServerFormSchema,
-    }),
+    fields: (value): ValidateSpecificFormFields => {
+        const baseSchema: ValidateSpecificFormFields = {
+            customOptions: {
+                keySelector: (customOption) => customOption.clientId,
+                member: () => customOptionSchema,
+            },
+            objectSource: objectSourceFormSchema,
+            tileServerProperty: tileServerWithZoomRangeFormSchema,
+            hasPreImagery: {},
+        };
+
+        return addCondition(
+            baseSchema,
+            value,
+            ['hasPreImagery'],
+            ['preEventTileServerProperty'],
+            (val): Pick<ValidateSpecificFormFields, 'preEventTileServerProperty'> => ({
+                preEventTileServerProperty: val?.hasPreImagery
+                    ? tileServerWithZoomRangeFormSchema
+                    : { forceValue: undefinedValue },
+            }),
+        );
+    },
 };
 
 export default validateSpecificFormSchema;

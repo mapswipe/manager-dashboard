@@ -1,4 +1,7 @@
-import { useContext } from 'react';
+import {
+    useContext,
+    useMemo,
+} from 'react';
 import {
     isDefined,
     isNotDefined,
@@ -15,6 +18,7 @@ import ListLayout from '#components/ListLayout';
 import TextOutput from '#components/TextOutput';
 import EnumsContext from '#contexts/EnumsContext';
 import { ValidateProjectPropertyType } from '#generated/types/graphql';
+import { RASTER_TILE_SIZE } from '#utils/geo';
 
 interface Props {
     data: ValidateProjectPropertyType | undefined;
@@ -28,6 +32,15 @@ function ValidateDetails(props: Props) {
     } = props;
 
     const { validateObjectSourceTypeMapping } = useContext(EnumsContext);
+
+    const preEventTileServer = useMemo(
+        () => removeNull(data?.preEventTileServerProperty),
+        [data?.preEventTileServerProperty],
+    );
+    const tileServer = useMemo(
+        () => removeNull(data?.tileServerProperty),
+        [data?.tileServerProperty],
+    );
 
     if (isNotDefined(data) || isNotDefined(data.objectSource)) {
         return null;
@@ -57,18 +70,50 @@ function ValidateDetails(props: Props) {
                     value={data.objectSource.ohsomeFilter}
                 />
             )}
+            {data.hasPreImagery && isDefined(data.preEventTileServerProperty) && (
+                <ListLayout layout="grid">
+                    <BaseMap
+                        baseTileServer={preEventTileServer}
+                        tileSize={RASTER_TILE_SIZE}
+                        withSavedZoomRange
+                        disablePan
+                    >
+                        <DefaultMapContainer />
+                        <GeoJsonAssetMapSource
+                            geoJsonAssetId={removeNull(data.objectSource.aoiGeometry)}
+                            defaultBounds={defaultBounds}
+                            zoomLevel={undefined}
+                            withPadding
+                        />
+                    </BaseMap>
+                    <RasterTileServerOutput
+                        heading="Pre-event tile server"
+                        value={data.preEventTileServerProperty}
+                        withSavedZoomRange
+                        withPadding
+                        withHeaderBorder
+                    />
+                </ListLayout>
+            )}
             <ListLayout layout="grid">
-                <BaseMap baseTileServer={removeNull(data?.tileServerProperty)}>
+                <BaseMap
+                    baseTileServer={tileServer}
+                    tileSize={RASTER_TILE_SIZE}
+                    withSavedZoomRange
+                    disablePan={data.hasPreImagery}
+                >
                     <DefaultMapContainer />
                     <GeoJsonAssetMapSource
-                        geoJsonAssetId={removeNull(data?.objectSource.aoiGeometry)}
+                        geoJsonAssetId={removeNull(data.objectSource.aoiGeometry)}
                         defaultBounds={defaultBounds}
                         zoomLevel={undefined}
                         withPadding
                     />
                 </BaseMap>
                 <RasterTileServerOutput
+                    heading={data.hasPreImagery ? 'Post-event tile server' : undefined}
                     value={data.tileServerProperty}
+                    withSavedZoomRange
                     withPadding
                     withHeaderBorder
                 />

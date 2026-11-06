@@ -25,7 +25,7 @@ interface Props {
     popupIcons?: React.ReactNode;
     contentClassName?: string;
     popupClassName?: string;
-    popupVerticalPosition?: 'top' | 'center';
+    popupVerticalPosition?: 'top' | 'center' | 'inline';
     popupVariant?: 'default' | 'success';
 }
 
@@ -96,6 +96,7 @@ function MobilePreview(props: Props) {
                             styles.popup,
                             popupClassName,
                             popupVerticalPosition === 'center' && styles.verticallyCentered,
+                            popupVerticalPosition === 'inline' && styles.inline,
                             popupVariant === 'success' && styles.successVariant,
                         )}
                         withPadding

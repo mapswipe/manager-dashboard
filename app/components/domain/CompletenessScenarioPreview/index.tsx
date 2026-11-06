@@ -107,6 +107,8 @@ function CompletenessScenarioPreview(props: Props) {
                     {!(rasterTileConfigValue instanceof type.errors) && (
                         <RasterTileMapSource
                             tileConfig={rasterTileConfigValue}
+                            // NOTE: this should match the tile size of the base map
+                            tileSize={160}
                         />
                     )}
                 </GeoJsonPreview>

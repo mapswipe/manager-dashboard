@@ -25,11 +25,13 @@ import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
+import { RASTER_TILE_SIZE } from '#utils/geo';
 
 import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
 import {
+    defaultCustomRasterTileServerValue,
     PartialCommonRasterTileServerConfigFields,
     PartialCustomRasterTileServerConfigFields,
     type PartialRasterTileServerInputFields,
@@ -62,6 +64,8 @@ interface Props {
     containerHeadingLevel?: ContainerProps['headingLevel'];
     withoutPreview?: boolean;
     zoomLevel?: number;
+    headerActions?: ContainerProps['headerActions'];
+    showZoomRange?: boolean;
 }
 
 function RasterTileServerInput(props: Props) {
@@ -78,6 +82,8 @@ function RasterTileServerInput(props: Props) {
         containerHeadingLevel = 4,
         withoutPreview = false,
         zoomLevel,
+        headerActions,
+        showZoomRange = false,
     } = props;
 
     const error = getErrorObject(formError);
@@ -115,6 +121,10 @@ function RasterTileServerInput(props: Props) {
         {},
     );
 
+    const setZoomRangeFieldValue = fieldName === 'custom'
+        ? setCustomRasterTileServerFieldValue
+        : setCommonRasterTileServerFieldValue;
+
     const { raster: rasterTileServers } = useContext(TileServerContext);
 
     const tileServerMapping = useMemo(() => (
@@ -124,10 +134,20 @@ function RasterTileServerInput(props: Props) {
     const handleImageryServerChange = useCallback((newValue: RasterTileServerNameEnum) => {
         setFieldValue(newValue, 'name');
 
-        if (newValue !== RasterTileServerNameEnum.Custom) {
+        if (newValue === RasterTileServerNameEnum.Custom) {
+            setFieldValue(
+                (oldValue: PartialCustomRasterTileServerConfigFields | undefined) => (
+                    oldValue ?? defaultCustomRasterTileServerValue
+                ),
+                'custom',
+            );
+        } else {
+            const tileServer = tileServerMapping[newValue];
             setFieldValue(
                 {
-                    credits: tileServerMapping[newValue]?.credits,
+                    credits: tileServer?.credits,
+                    minZoom: tileServer?.minZoom ?? undefined,
+                    maxZoom: tileServer?.maxZoom ?? undefined,
                 },
                 rasterTileServerNameToTileInputKey[newValue],
             );
@@ -141,6 +161,7 @@ function RasterTileServerInput(props: Props) {
             withBackground={withContainerBackground}
             withPadding={withContainerPadding}
             spacing={containerSpacing}
+            headerActions={headerActions}
         >
             <ListLayout
                 layout={withoutPreview ? 'block' : 'grid'}
@@ -195,32 +216,42 @@ function RasterTileServerInput(props: Props) {
                                     onChange={setCustomRasterTileServerFieldValue}
                                     disabled={disabled}
                                 />
-                                <ListLayout layout="grid">
-                                    <NumberInput
-                                        name="minZoom"
-                                        label="Min zoom"
-                                        value={value.custom?.minZoom}
-                                        onChange={setCustomRasterTileServerFieldValue}
-                                        disabled={disabled}
-                                        error={getErrorObject(error?.custom)?.minZoom}
-                                        hint="Minimum zoom level supported by the imagery server"
-                                    />
-                                    <NumberInput
-                                        name="maxZoom"
-                                        label="Max zoom"
-                                        value={value.custom?.maxZoom}
-                                        onChange={setCustomRasterTileServerFieldValue}
-                                        disabled={disabled}
-                                        error={getErrorObject(error?.custom)?.maxZoom}
-                                        hint="Maximum zoom level supported by the imagery server"
-                                    />
-                                </ListLayout>
                             </>
+                        )}
+                    {showZoomRange
+                        && isDefined(value)
+                        && isDefined(value.name)
+                        && (
+                            <ListLayout layout="grid">
+                                <NumberInput
+                                    name="minZoom"
+                                    label="Min zoom"
+                                    value={value[fieldName]?.minZoom}
+                                    onChange={setZoomRangeFieldValue}
+                                    disabled={disabled}
+                                    error={getErrorObject(error?.[fieldName])?.minZoom}
+                                    hint="Minimum zoom level supported by the imagery server. Leave empty to use the map library default."
+                                />
+                                <NumberInput
+                                    name="maxZoom"
+                                    label="Max zoom"
+                                    value={value[fieldName]?.maxZoom}
+                                    onChange={setZoomRangeFieldValue}
+                                    disabled={disabled}
+                                    error={getErrorObject(error?.[fieldName])?.maxZoom}
+                                    hint="Maximum zoom level supported by the imagery server. Leave empty to use the map library default."
+                                />
+                            </ListLayout>
                         )}
                 </ListLayout>
                 {!withoutPreview && isDefined(aoiGeoJsonAssetId) && (
                     <ListLayout layout="block">
-                        <BaseMap baseTileServer={value}>
+                        <BaseMap
+                            baseTileServer={value}
+                            // NOTE: See RASTER_TILE_SIZE for why Validate differs
+                            tileSize={showZoomRange ? RASTER_TILE_SIZE : undefined}
+                            withSavedZoomRange={showZoomRange}
+                        >
                             <DefaultMapContainer compact />
                             <GeoJsonAssetMapSource
                                 geoJsonAssetId={aoiGeoJsonAssetId}

@@ -5,21 +5,33 @@ fragment RasterTileServerPropertyFields on ProjectRasterTileServerConfig {
     name
     bing {
         credits
+        minZoom
+        maxZoom
     }
     esri {
         credits
+        minZoom
+        maxZoom
     }
     esriBeta {
         credits
+        minZoom
+        maxZoom
     }
     mapbox {
         credits
+        minZoom
+        maxZoom
     }
     maxarPremium {
         credits
+        minZoom
+        maxZoom
     }
     maxarStandard {
         credits
+        minZoom
+        maxZoom
     }
     custom {
         credits
@@ -119,6 +131,10 @@ fragment ProjectTypeSpecificFields on CompareProjectPropertyTypeFindProjectPrope
             taskingManagerProjectId
         }
         tileServerProperty {
+            ...RasterTileServerPropertyFields
+        }
+        hasPreImagery
+        preEventTileServerProperty {
             ...RasterTileServerPropertyFields
         }
         customOptions {
