@@ -12,16 +12,25 @@ import Map from '@togglecorp/re-map';
 import { removeNull } from '@togglecorp/toggle-form';
 import { type } from 'arktype';
 
-import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
+import {
+    type PartialRasterTileServerInputFields,
+    rasterTileServerNameToTileInputKey,
+} from '#components/domain/RasterTileServerInput/schema';
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
-import { standardizeQuadKey } from '#utils/geo';
+import {
+    MAP_MAX_ZOOM_LEVEL,
+    MAP_MIN_ZOOM_LEVEL,
+    standardizeQuadKey,
+} from '#utils/geo';
 
 const FALLBACK_TILE_URL = 'https://tiles.versatiles.org/assets/styles/eclipse/style.json';
 
 const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'children'> = {
     center: [0, 0],
     zoom: 1,
+    minZoom: MAP_MIN_ZOOM_LEVEL,
+    maxZoom: MAP_MAX_ZOOM_LEVEL,
     attributionControl: false,
     scrollZoom: false,
     boxZoom: false,
@@ -35,8 +44,13 @@ const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'ch
 interface Props {
     baseTileServer: PartialRasterTileServerInputFields | undefined;
     children?: React.ReactNode;
+    // NOTE: See RASTER_TILE_SIZE for when to use 256 instead of 512
     tileSize?: number;
     disablePan?: boolean;
+    // Limit tiles to the zoom range saved on the layer, as the app does for
+    // Validate. Without it, tiles are fetched at the map zoom, as the app does
+    // for the other project types.
+    withSavedZoomRange?: boolean;
 }
 
 function BaseMap(props: Props) {
@@ -45,6 +59,7 @@ function BaseMap(props: Props) {
         children,
         tileSize = 512,
         disablePan,
+        withSavedZoomRange,
     } = props;
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
@@ -61,8 +76,11 @@ function BaseMap(props: Props) {
 
     const tileUrl = isDefined(name) ? rasterTileServerMapping[name]?.url : undefined;
     const tileCredits = isDefined(name) ? rasterTileServerMapping[name]?.credits : undefined;
-    const minZoom = isDefined(name) ? rasterTileServerMapping[name]?.minZoom : undefined;
-    const maxZoom = isDefined(name) ? rasterTileServerMapping[name]?.maxZoom : undefined;
+    const zoomRange = isDefined(name) && withSavedZoomRange
+        ? baseTileServer?.[rasterTileServerNameToTileInputKey[name]]
+        : undefined;
+    const minZoom = zoomRange?.minZoom;
+    const maxZoom = zoomRange?.maxZoom;
 
     const baseTileServerDefined = isDefined(baseTileServer);
 
@@ -83,8 +101,8 @@ function BaseMap(props: Props) {
             return {
                 url: custom.url,
                 credits: custom.credits,
-                minzoom: custom.minZoom,
-                maxzoom: custom.maxZoom,
+                minzoom: minZoom,
+                maxzoom: maxZoom,
             };
         }
 

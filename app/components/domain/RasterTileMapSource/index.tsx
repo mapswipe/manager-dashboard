@@ -22,18 +22,20 @@ import { standardizeQuadKey } from '#utils/geo';
 
 interface Props {
     tileConfig: ProjectOverlayRasterTileServerConfig | undefined;
+    tileSize?: number;
 }
 
 function RasterTileMapSource(props: Props) {
-    const { tileConfig } = props;
+    const {
+        tileConfig,
+        tileSize,
+    } = props;
 
     const { raster: rasterTileServers } = useContext(TileServerContext);
 
     const {
         url,
         credits,
-        minZoom,
-        maxZoom,
     } = useMemo(() => {
         const rasterTileServerMapping = listToMap(
             rasterTileServers,
@@ -54,16 +56,12 @@ function RasterTileMapSource(props: Props) {
             return {
                 url: tileConfig.tileServer.custom?.url,
                 credits: tileConfig.tileServer.custom?.credits,
-                minZoom: tileConfig.tileServer.custom?.minZoom,
-                maxZoom: tileConfig.tileServer.custom?.maxZoom,
             };
         }
 
         return {
             url: rasterTileServerMapping[name]?.url,
             credits: rasterTileServerMapping[name]?.credits,
-            minZoom: rasterTileServerMapping[name]?.minZoom,
-            maxZoom: rasterTileServerMapping[name]?.maxZoom,
         };
     }, [tileConfig, rasterTileServers]);
 
@@ -72,15 +70,15 @@ function RasterTileMapSource(props: Props) {
             return undefined;
         }
 
+        // NOTE: No zoom range, as the app fetches the overlay at the project zoom
         return removeNull({
             type: 'raster',
             // NOTE: maplibre uses `quadkey` but mapswipe backend uses `quad_key`
             tiles: [standardizeQuadKey(url)],
+            tileSize: tileSize ?? null,
             attribution: credits ?? '',
-            minzoom: minZoom ?? null,
-            maxzoom: maxZoom ?? null,
         });
-    }, [url, credits, minZoom, maxZoom]);
+    }, [url, credits, tileSize]);
 
     const rasterLayerOptions = useMemo<Omit<maplibregl.RasterLayerSpecification, 'id' | 'source'> | undefined>(() => {
         if (isNotDefined(tileConfig)) {

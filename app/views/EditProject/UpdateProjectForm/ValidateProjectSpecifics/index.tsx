@@ -171,6 +171,7 @@ function ValidateProjectSpecifics(props: Props) {
                     disabled={disabled}
                     aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
                     zoomLevel={undefined}
+                    showZoomRange
                 />
             )}
             <RasterTileServerInput
@@ -181,6 +182,7 @@ function ValidateProjectSpecifics(props: Props) {
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
                 zoomLevel={undefined}
+                showZoomRange
             />
         </>
     );
