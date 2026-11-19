@@ -19,8 +19,9 @@ import {
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
 import {
-    MAP_MAX_ZOOM_LEVEL,
-    MAP_MIN_ZOOM_LEVEL,
+    MAP_MAX_VIEWPORT_ZOOM_LEVEL,
+    MAP_MIN_VIEWPORT_ZOOM_LEVEL,
+    MAPLIBRE_TILE_SIZE,
     standardizeQuadKey,
 } from '#utils/geo';
 
@@ -29,8 +30,8 @@ const FALLBACK_TILE_URL = 'https://tiles.versatiles.org/assets/styles/eclipse/st
 const defaultMapOptions: Omit<maplibregl.MapOptions, 'container' | 'style' | 'children'> = {
     center: [0, 0],
     zoom: 1,
-    minZoom: MAP_MIN_ZOOM_LEVEL,
-    maxZoom: MAP_MAX_ZOOM_LEVEL,
+    minZoom: MAP_MIN_VIEWPORT_ZOOM_LEVEL,
+    maxZoom: MAP_MAX_VIEWPORT_ZOOM_LEVEL,
     attributionControl: false,
     scrollZoom: false,
     boxZoom: false,
@@ -57,7 +58,7 @@ function BaseMap(props: Props) {
     const {
         baseTileServer,
         children,
-        tileSize = 512,
+        tileSize = MAPLIBRE_TILE_SIZE,
         disablePan,
         withSavedZoomRange,
     } = props;
