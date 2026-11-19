@@ -7,6 +7,8 @@ import {
 import {
     BoundingBox,
     getFitBbox,
+    getRasterMaxViewZoom,
+    getRasterTileZoom,
 } from './geo';
 
 describe('getFitBbox', () => {
@@ -34,5 +36,39 @@ describe('getFitBbox', () => {
         expect(minLon).toBe(85.3);
         expect(maxLon).toBe(85.31);
         expect((maxLat - minLat) * 111_320).toBeCloseTo(20);
+    });
+});
+
+describe('getRasterTileZoom', () => {
+    it('fetches 256 px tiles one zoom above the map zoom', () => {
+        expect(getRasterTileZoom(16, 256, 22)).toBe(17);
+    });
+
+    it('fetches 512 px tiles at the map zoom', () => {
+        expect(getRasterTileZoom(16, 512, 22)).toBe(16);
+    });
+
+    it('rounds a fractional map zoom', () => {
+        expect(getRasterTileZoom(16.4, 256, 22)).toBe(17);
+        expect(getRasterTileZoom(16.6, 256, 22)).toBe(18);
+    });
+
+    it('caps at the max zoom', () => {
+        expect(getRasterTileZoom(21, 256, 19)).toBe(19);
+    });
+
+    it('does not go below zoom 0', () => {
+        expect(getRasterTileZoom(0, 512, 22)).toBe(0);
+    });
+});
+
+describe('getRasterMaxViewZoom', () => {
+    it('is one zoom below the max zoom for 256 px tiles', () => {
+        expect(getRasterMaxViewZoom(256, 19)).toBe(18);
+        expect(getRasterTileZoom(18, 256, 19)).toBe(19);
+    });
+
+    it('is the max zoom for 512 px tiles', () => {
+        expect(getRasterMaxViewZoom(512, 19)).toBe(19);
     });
 });
