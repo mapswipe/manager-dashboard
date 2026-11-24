@@ -34,6 +34,14 @@ export const defaultObjectSourceInputFormValue: PartialValidateObjectSourceInput
     ohsomeFilter: 'building=* and geometry:polygon',
 };
 
+// NOTE: A Tasking Manager or GeoJSON URL source gets its AOI from its test
+const testedAoiGeometrySchema = {
+    required: true,
+    requiredValidation: (value: unknown) => (
+        isNotDefined(value) ? 'The AOI needs to be validated' : undefined
+    ),
+};
+
 const objectSourceFormSchema: ValidateSourceFormSchema = {
     fields: (value): ValidateSourceInputFields => {
         const baseSchema: ValidateSourceInputFields = {
@@ -80,6 +88,7 @@ const objectSourceFormSchema: ValidateSourceFormSchema = {
                 if (sourceType === ValidateObjectSourceTypeEnum.ObjectGeojsonUrl) {
                     return {
                         ...defaultValue,
+                        aoiGeometry: testedAoiGeometrySchema,
                         objectGeojsonUrl: {
                             required: true,
                         },
@@ -89,6 +98,7 @@ const objectSourceFormSchema: ValidateSourceFormSchema = {
                 if (sourceType === ValidateObjectSourceTypeEnum.TaskingManager) {
                     return {
                         ...defaultValue,
+                        aoiGeometry: testedAoiGeometrySchema,
                         taskingManagerProjectId: {
                             required: true,
                         },

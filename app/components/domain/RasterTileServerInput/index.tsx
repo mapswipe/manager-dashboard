@@ -25,7 +25,10 @@ import RadioInput from '#components/RadioInput';
 import TextInput from '#components/TextInput';
 import TileServerContext from '#contexts/TileServerContext';
 import { RasterTileServerNameEnum } from '#generated/types/graphql';
-import { RASTER_TILE_SIZE } from '#utils/geo';
+import {
+    getRasterMaxViewZoom,
+    RASTER_TILE_SIZE,
+} from '#utils/geo';
 
 import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
@@ -69,6 +72,9 @@ interface Props {
     showZoomRange?: boolean;
 }
 
+// NOTE: maplibre's raster source max zoom when none is given
+const MAPLIBRE_DEFAULT_MAX_ZOOM = 22;
+
 function RasterTileServerInput(props: Props) {
     const {
         label = 'Tile Server',
@@ -90,7 +96,9 @@ function RasterTileServerInput(props: Props) {
     const error = getErrorObject(formError);
 
     const { raster: rasterTileServerNameOptions } = useContext(TileServerContext);
-    const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
+    const [zoomView, setZoomView] = useState<MapZoomViewType>(
+        showZoomRange ? 'zoomLevel' : 'aoiBounds',
+    );
 
     const workingRasterTileServerNameOptions = useMemo(
         () => [
@@ -103,6 +111,17 @@ function RasterTileServerInput(props: Props) {
     const fieldName = (isDefined(value)
         && isDefined(value.name)
     ) ? rasterTileServerNameToTileInputKey[value.name] : 'custom';
+
+    const zoomRange = isDefined(value?.name) ? value[fieldName] : undefined;
+
+    // NOTE: With a zoom range, the preview opens at the max zoom of the imagery,
+    // and the zoom buttons let users zoom out from it
+    const previewZoomLevel = showZoomRange
+        ? getRasterMaxViewZoom(
+            RASTER_TILE_SIZE,
+            zoomRange?.maxZoom ?? MAPLIBRE_DEFAULT_MAX_ZOOM,
+        )
+        : zoomLevel;
 
     const setCommonRasterTileServerFieldValue = useFormObject<
         Exclude<TileInputKeys, 'custom'>,
@@ -260,11 +279,11 @@ function RasterTileServerInput(props: Props) {
                             ) : <DefaultMapContainer compact />}
                             <GeoJsonAssetMapSource
                                 geoJsonAssetId={aoiGeoJsonAssetId}
-                                zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
+                                zoomLevel={zoomView === 'zoomLevel' ? previewZoomLevel : undefined}
                                 withPadding={zoomView === 'aoiBounds'}
                             />
                         </BaseMap>
-                        {isDefined(zoomLevel) && (
+                        {isDefined(previewZoomLevel) && (
                             <InlineLayout withCenteredContent>
                                 <MapZoomViewSelectInput
                                     value={zoomView}
