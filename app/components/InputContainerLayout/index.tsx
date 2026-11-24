@@ -8,6 +8,7 @@ import { _cs } from '@togglecorp/fujs';
 import InputError from '#components/InputError';
 import InputHint from '#components/InputHint';
 import InputLabel from '#components/InputLabel';
+import InputWarning from '#components/InputWarning';
 import ListLayout from '#components/ListLayout';
 import InputInteractivityContext, { InputInteractivityContextProps } from '#contexts/InputInteractivityContext';
 import { SpacingType } from '#utils/styles';
@@ -21,6 +22,7 @@ export interface Props {
     label?: React.ReactNode;
     hint?: React.ReactNode;
     error?: React.ReactNode;
+    warning?: React.ReactNode;
     disabled?: boolean;
     readOnly?: boolean;
     elementRef?: React.RefObject<HTMLDivElement>;
@@ -34,6 +36,7 @@ function InputContainerLayout(props: Props) {
         disabled = false,
         elementRef,
         error,
+        warning,
         hint,
         inputId,
         children,
@@ -97,6 +100,11 @@ function InputContainerLayout(props: Props) {
                     <InputHint>
                         {hint}
                     </InputHint>
+                )}
+                {warning && (
+                    <InputWarning>
+                        {warning}
+                    </InputWarning>
                 )}
             </ListLayout>
         </InputInteractivityContext.Provider>

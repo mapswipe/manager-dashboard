@@ -17,11 +17,15 @@ import BaseMap from '#components/domain/BaseMap';
 import GeoJsonAssetMapSource from '#components/domain/GeoJsonAssetMapSource';
 import MapZoomViewSelectInput, { MapZoomViewType } from '#components/domain/MapZoomViewSelectInput';
 import { type PartialRasterTileServerInputFields } from '#components/domain/RasterTileServerInput/schema';
+import TileCorsErrorWatcher from '#components/domain/TileCorsErrorWatcher';
 import VectorTileMapSource from '#components/domain/VectorTileMapSource';
 import { vectorTileServerNameToTileInputKey } from '#components/domain/VectorTileServerInput/schema';
 import InlineLayout from '#components/InlineLayout';
 import ListLayout from '#components/ListLayout';
-import { ProjectOverlayVectorTileServerConfig } from '#generated/types/graphql';
+import {
+    ProjectOverlayVectorTileServerConfig,
+    VectorTileServerNameEnum,
+} from '#generated/types/graphql';
 
 import { PartialOverlayVectorTileConfigInputFields } from '../schema';
 
@@ -31,6 +35,7 @@ interface Props {
     aoiGeometryAssetId?: string;
     vectorTileConfig: PartialOverlayVectorTileConfigInputFields | undefined;
     zoomLevel?: number;
+    onTileServerWarningChange: (warning: string | undefined) => void;
 }
 
 function VectorTilePreview(props: Props) {
@@ -40,6 +45,7 @@ function VectorTilePreview(props: Props) {
         vectorTileConfig,
         aoiGeometryAssetId,
         zoomLevel,
+        onTileServerWarningChange,
     } = props;
 
     const [zoomView, setZoomView] = useState<MapZoomViewType>('aoiBounds');
@@ -76,6 +82,13 @@ function VectorTilePreview(props: Props) {
                 {!(vectorTileConfigValue instanceof type.errors) && (
                     <VectorTileMapSource
                         tileConfig={vectorTileConfigValue}
+                    />
+                )}
+                {vectorTileConfig?.tileServer?.name === VectorTileServerNameEnum.Custom && (
+                    <TileCorsErrorWatcher
+                        sourceId={`overlay-source-${vectorTileConfig.tileServer.name}`}
+                        tileUrl={vectorTileConfig.tileServer.custom?.url}
+                        onChange={onTileServerWarningChange}
                     />
                 )}
                 <GeoJsonAssetMapSource
