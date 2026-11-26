@@ -1,0 +1,47 @@
+.map-zoom-control {
+    position: relative;
+
+    .zoom-label {
+        position: absolute;
+        top: var(--spacing-md);
+        left: var(--spacing-md);
+        border-radius: var(--radius-button-border);
+        background-color: var(--color-backdrop);
+        padding: var(--spacing-2xs) var(--spacing-xs);
+        color: var(--color-text-on-dark);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-bold);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .zoom-buttons {
+        display: flex;
+        position: absolute;
+        top: var(--spacing-md);
+        right: var(--spacing-md);
+        flex-direction: column;
+        border-radius: var(--radius-button-border);
+        background-color: var(--color-backdrop);
+        overflow: hidden;
+        color: var(--color-text-on-dark);
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: var(--spacing-2xs);
+        color: inherit;
+        font-size: var(--font-size-md);
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        &:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}

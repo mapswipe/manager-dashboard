@@ -4,6 +4,7 @@ import {
     tileToGeoJSON,
 } from '@mapbox/tilebelt';
 import {
+    bound,
     compareNumber,
     isDefined,
     isNotDefined,
@@ -41,8 +42,28 @@ export const RASTER_TILE_SIZE = 256;
 
 // NOTE: The view limit, not the imagery limit, same as the mobile app. Each
 // layer's own zoom range goes to its raster source, and tiles above it are enlarged.
-export const MAP_MIN_ZOOM_LEVEL = 0;
-export const MAP_MAX_ZOOM_LEVEL = 24;
+export const MAP_MIN_VIEWPORT_ZOOM_LEVEL = 0;
+export const MAP_MAX_VIEWPORT_ZOOM_LEVEL = 24;
+
+export const MAPLIBRE_TILE_SIZE = 512;
+
+// NOTE: maplibre fetches tile zoom = round(map zoom + log2(512 / tileSize))
+export function getRasterTileZoom(
+    viewZoom: number,
+    tileSize: number,
+    tileMaxZoom: number,
+) {
+    return bound(
+        Math.round(viewZoom + Math.log2(MAPLIBRE_TILE_SIZE / tileSize)),
+        0,
+        tileMaxZoom,
+    );
+}
+
+// NOTE: The view zoom at which the tiles reach their max zoom
+export function getRasterMaxViewZoom(tileSize: number, tileMaxZoom: number) {
+    return tileMaxZoom - Math.log2(MAPLIBRE_TILE_SIZE / tileSize);
+}
 
 // NOTE: A point or a very small feature is shown with this much ground around
 // it, enough context for satellite imagery
