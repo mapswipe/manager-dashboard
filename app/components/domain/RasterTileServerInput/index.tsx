@@ -29,6 +29,7 @@ import { RASTER_TILE_SIZE } from '#utils/geo';
 
 import BaseMap from '../BaseMap';
 import GeoJsonAssetMapSource from '../GeoJsonAssetMapSource';
+import MapZoomControl from '../MapZoomControl';
 import MapZoomViewSelectInput, { MapZoomViewType } from '../MapZoomViewSelectInput';
 import {
     defaultCustomRasterTileServerValue,
@@ -252,7 +253,11 @@ function RasterTileServerInput(props: Props) {
                             tileSize={showZoomRange ? RASTER_TILE_SIZE : undefined}
                             withSavedZoomRange={showZoomRange}
                         >
-                            <DefaultMapContainer compact />
+                            {showZoomRange ? (
+                                <MapZoomControl>
+                                    <DefaultMapContainer compact />
+                                </MapZoomControl>
+                            ) : <DefaultMapContainer compact />}
                             <GeoJsonAssetMapSource
                                 geoJsonAssetId={aoiGeoJsonAssetId}
                                 zoomLevel={zoomView === 'zoomLevel' ? zoomLevel : undefined}
