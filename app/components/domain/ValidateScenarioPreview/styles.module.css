@@ -2,15 +2,51 @@
     isolation: isolate;
 
     .content {
+        display: flex;
         align-items: center;
+        flex-direction: column;
         justify-content: space-between;
-        padding: 0 var(--spacing-lg);
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) var(--spacing-lg);
+        min-height: 0;
+        overflow: hidden;
     }
 
-    .map-container {
-        z-index: 0;
-        border-radius: var(--radius-card-border);
-        width: var(--size-tile-validate);
-        height: calc(1.5 * var(--size-tile-validate));
+    .panes {
+        display: flex;
+        align-self: stretch;
+        flex-direction: column;
+        flex-grow: 1;
+        min-height: 0;
+        gap: var(--spacing-sm);
+
+        .pane {
+            position: relative;
+            flex-basis: 0;
+            flex-grow: 1;
+            min-height: 0;
+
+            .pane-map {
+                z-index: 0;
+                border-radius: var(--radius-card-border);
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .pane-label {
+                position: absolute;
+                top: var(--spacing-xs);
+                left: var(--spacing-xs);
+                z-index: 1;
+                border-radius: var(--radius-tag-border);
+                background-color: var(--color-backdrop);
+                padding: var(--spacing-2xs) var(--spacing-xs);
+                color: var(--color-text-on-dark);
+                font-size: var(--font-size-xs);
+                font-weight: var(--font-weight-medium);
+                pointer-events: none;
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ import {
 import { ulid } from 'ulid';
 
 import Button from '#components/Button';
+import Checkbox from '#components/Checkbox';
 import Container from '#components/Container';
 import CustomOptionInput from '#components/domain/CustomOptionInput';
 import { PartialCustomOptionInputFields } from '#components/domain/CustomOptionInput/schema';
@@ -54,6 +55,31 @@ function ValidateProjectSpecifics(props: Props) {
         setFieldValue,
         defaultRasterTileServerInputValue,
     );
+
+    const setPreEventTileServerInputFieldValue = useFormObject<
+        'preEventTileServerProperty',
+        PartialRasterTileServerInputFields
+    >(
+        'preEventTileServerProperty' as const,
+        setFieldValue,
+        defaultRasterTileServerInputValue,
+    );
+
+    const handleHasPreImageryChange = useCallback((newValue: boolean) => {
+        // NOTE: the schema ignores preEventTileServerProperty while the toggle
+        // is off, so it is kept and restored when the toggle is turned back on
+        if (newValue) {
+            setFieldValue(
+                (oldValue: PartialRasterTileServerInputFields | undefined) => (
+                    oldValue ?? defaultRasterTileServerInputValue
+                ),
+                'preEventTileServerProperty',
+            );
+        }
+        setFieldValue(newValue, 'hasPreImagery');
+    }, [setFieldValue]);
+
+    const hasPreImagery = !!value?.hasPreImagery;
 
     const setObjectSourceInputFieldValue = useFormObject<'objectSource', PartialValidateObjectSourceInputFields>(
         'objectSource' as const,
@@ -127,13 +153,36 @@ function ValidateProjectSpecifics(props: Props) {
                 error={error?.objectSource}
                 projectId={projectId}
             />
+            <Checkbox
+                name="hasPreImagery"
+                label="Include pre-event imagery"
+                hint="Show imagery from before the event alongside the post-event imagery"
+                value={value?.hasPreImagery}
+                onChange={handleHasPreImageryChange}
+                error={error?.hasPreImagery}
+                disabled={disabled}
+            />
+            {hasPreImagery && (
+                <RasterTileServerInput
+                    label="Pre-event Tile Server"
+                    value={value?.preEventTileServerProperty}
+                    error={error?.preEventTileServerProperty}
+                    setFieldValue={setPreEventTileServerInputFieldValue}
+                    disabled={disabled}
+                    aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
+                    zoomLevel={undefined}
+                    showZoomRange
+                />
+            )}
             <RasterTileServerInput
+                label={hasPreImagery ? 'Post-event Tile Server' : 'Tile Server'}
                 value={value?.tileServerProperty}
                 error={error?.tileServerProperty}
                 setFieldValue={setTileServerInputFieldValue}
                 disabled={disabled}
                 aoiGeoJsonAssetId={value?.objectSource?.aoiGeometry}
                 zoomLevel={undefined}
+                showZoomRange
             />
         </>
     );

@@ -1,21 +1,17 @@
 import {
+    useCallback,
     useContext,
-    useMemo,
+    useState,
 } from 'react';
-import {
-    isDefined,
-    isNotDefined,
-} from '@togglecorp/fujs';
+import { isDefined } from '@togglecorp/fujs';
 import {
     EntriesAsList,
     getErrorObject,
     LeafError,
     ObjectError,
 } from '@togglecorp/toggle-form';
-import { gql } from 'urql';
 
 import Alert from '#components/Alert';
-import Button from '#components/Button';
 import Container from '#components/Container';
 import AssetInput from '#components/domain/AssetInput';
 import RadioInput from '#components/RadioInput';
@@ -23,10 +19,9 @@ import TextInput from '#components/TextInput';
 import EnumsContext from '#contexts/EnumsContext';
 import {
     ProjectAssetInputTypeEnum,
-    useTestAoiObjectsQuery,
-    useTestTaskingManagerProjectQuery,
     ValidateObjectSourceTypeEnum,
 } from '#generated/types/graphql';
+import useAlert from '#hooks/useAlert';
 import {
     formatNumber,
     keySelector,
@@ -34,33 +29,10 @@ import {
 } from '#utils/common';
 
 import { PartialValidateObjectSourceInputFields } from './schema';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TEST_AOI_OBJECTS_QUERY = gql`
-query TestAoiObjects($assetId: ID!, $projectId: ID!, $ohsomeFilter: String!) {
-    testAoiObjects(assetId: $assetId, projectId: $projectId, ohsomeFilter: $ohsomeFilter) {
-        ok
-        error
-        objectCount
-        assetId
-        projectId
-        ohsomeFilter
-    }
-}
-`;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TEST_TASKING_MANAGER_PROJECT_QUERY = gql`
-query TestTaskingManagerProject($hotTmId: String!, $ohsomeFilter: String!) {
-    testTaskingManagerProject(hotTmId: $hotTmId, ohsomeFilter: $ohsomeFilter) {
-        ok
-        error
-        objectCount
-        hotTmId
-        ohsomeFilter
-    }
-}
-`;
+import TestAoiObjectsButton from './TestAoiObjectsButton';
+import TestObjectGeojsonUrlButton from './TestObjectGeojsonUrlButton';
+import TestTaskingManagerProjectButton from './TestTaskingManagerProjectButton';
+import { type ObjectSourceTestResult } from './utils';
 
 interface Props {
     value: PartialValidateObjectSourceInputFields | undefined,
@@ -68,7 +40,6 @@ interface Props {
     setFieldValue: (...entries: EntriesAsList<PartialValidateObjectSourceInputFields>) => void;
     disabled?: boolean;
     projectId: string;
-    // aoiGeoJsonAssetId?: string;
 }
 
 function ObjectSourceInput(props: Props) {
@@ -78,41 +49,10 @@ function ObjectSourceInput(props: Props) {
         error: formError,
         setFieldValue,
         disabled,
-        // aoiGeoJsonAssetId,
     } = props;
 
     const error = getErrorObject(formError);
-
-    const [
-        {
-            data: testAoiObjectsResponse,
-            fetching: testAoiObjectsPending,
-            error: testAoiObjectsError,
-        },
-        triggerTestAoiObjects,
-    ] = useTestAoiObjectsQuery({
-        variables: {
-            projectId,
-            assetId: value?.aoiGeometry ?? '',
-            ohsomeFilter: value?.ohsomeFilter ?? '',
-        },
-        pause: true,
-    });
-
-    const [
-        {
-            data: testTaskingManagerProjectResponse,
-            fetching: testTaskingManagerProjectPending,
-            error: testTaskingManagerProjectError,
-        },
-        triggerTestTaskingManagerProject,
-    ] = useTestTaskingManagerProjectQuery({
-        variables: {
-            hotTmId: value?.taskingManagerProjectId ?? '',
-            ohsomeFilter: value?.ohsomeFilter ?? '',
-        },
-        pause: true,
-    });
+    const alert = useAlert();
 
     const {
         validateObjectSourceTypeOptions,
@@ -124,230 +64,153 @@ function ObjectSourceInput(props: Props) {
         TaskingManager,
     } = ValidateObjectSourceTypeEnum;
 
-    const headerDescription = useMemo(() => {
-        if (isNotDefined(value?.sourceType)) {
-            return null;
+    const sourceType = value?.sourceType;
+
+    // NOTE: A Tasking Manager or GeoJSON URL source gets its AOI from its test
+    const isAoiFromTest = sourceType === TaskingManager || sourceType === ObjectGeojsonUrl;
+
+    const [testPending, setTestPending] = useState(false);
+    const inputsDisabled = disabled || testPending;
+
+    const handleTestComplete = useCallback((result: ObjectSourceTestResult) => {
+        if (!result.ok) {
+            alert.show('Failed to validate AOI', {
+                variant: 'danger',
+                description: result.message,
+            });
+            return;
         }
-
-        if (value.sourceType === AoiGeojsonFile) {
-            if (isDefined(testAoiObjectsError)) {
-                return (
-                    <Alert
-                        name="test-aoi-message"
-                        type="danger"
-                        title="Failed to validate AOI"
-                        description={testAoiObjectsError.message}
-                        fullWidth
-                        withoutShadow
-                    />
-                );
-            }
-
-            if (isNotDefined(testAoiObjectsResponse)) {
-                return null;
-            }
-
-            const {
-                testAoiObjects: {
-                    ok,
-                    error: testError,
-                    objectCount,
-                    assetId,
-                    ohsomeFilter,
-                },
-            } = testAoiObjectsResponse;
-
-            if (assetId !== value.aoiGeometry || ohsomeFilter !== value.ohsomeFilter) {
-                return null;
-            }
-
-            return (
-                <Alert
-                    name="test-aoi-message"
-                    type={ok ? 'success' : 'danger'}
-                    title={ok
-                        ? `AOI is valid. It contains ${formatNumber(objectCount)} object(s)`
-                        : 'Failed to validate AOI'}
-                    description={testError}
-                    fullWidth
-                    withoutShadow
-                />
-            );
+        if (isAoiFromTest) {
+            setFieldValue(result.aoiGeometry, 'aoiGeometry');
         }
+        alert.show(
+            `AOI is valid. It contains ${formatNumber(result.objectCount)} object(s)`,
+            { variant: 'success' },
+        );
+    }, [alert, isAoiFromTest, setFieldValue]);
 
-        if (value.sourceType === TaskingManager) {
-            if (isDefined(testTaskingManagerProjectError)) {
-                return (
-                    <Alert
-                        name="test-tasking-manager-project-message"
-                        type="danger"
-                        title="Failed to validate project AOI"
-                        description={testTaskingManagerProjectError.message}
-                        fullWidth
-                        withoutShadow
-                    />
-                );
-            }
-            if (isNotDefined(testTaskingManagerProjectResponse)) {
-                return null;
-            }
-
-            const {
-                testTaskingManagerProject: {
-                    ok,
-                    error: testError,
-                    objectCount,
-                    hotTmId,
-                    ohsomeFilter,
-                },
-            } = testTaskingManagerProjectResponse;
-
-            if (hotTmId !== value.taskingManagerProjectId || ohsomeFilter !== value.ohsomeFilter) {
-                return null;
-            }
-
-            return (
-                <Alert
-                    name="test-tasking-manager-project-message"
-                    type={ok ? 'success' : 'danger'}
-                    title={ok
-                        ? `Project is valid. It contains ${formatNumber(objectCount)} object(s)`
-                        : 'Failed to validate project AOI'}
-                    description={testError}
-                    fullWidth
-                    withoutShadow
-                />
-            );
+    const handleSourceTypeChange = useCallback((newSourceType: ValidateObjectSourceTypeEnum) => {
+        if (newSourceType === sourceType) {
+            return;
         }
+        setFieldValue(newSourceType, 'sourceType');
+        setFieldValue(undefined, 'aoiGeometry');
+    }, [sourceType, setFieldValue]);
 
-        return null;
-    }, [
-        AoiGeojsonFile,
-        TaskingManager,
-        testAoiObjectsResponse,
-        testAoiObjectsError,
-        testTaskingManagerProjectResponse,
-        testTaskingManagerProjectError,
-        value?.sourceType,
-        value?.taskingManagerProjectId,
-        value?.ohsomeFilter,
-        value?.aoiGeometry,
-    ]);
-
-    const actions = useMemo(() => {
-        if (isNotDefined(value?.sourceType)) {
-            return null;
+    // NOTE: The tested AOI no longer applies once its source changes
+    const handleTestedSourceChange = useCallback((
+        ...entries: EntriesAsList<PartialValidateObjectSourceInputFields>
+    ) => {
+        setFieldValue(...entries);
+        if (isAoiFromTest) {
+            setFieldValue(undefined, 'aoiGeometry');
         }
-
-        if (value.sourceType === AoiGeojsonFile) {
-            if (isNotDefined(value?.aoiGeometry) || isNotDefined(value.ohsomeFilter)) {
-                return null;
-            }
-
-            return (
-                <Button
-                    name={undefined}
-                    onClick={triggerTestAoiObjects}
-                    disabled={testAoiObjectsPending}
-                >
-                    {testAoiObjectsPending ? 'Testing AOI on ohsome...' : 'Test AOI on ohsome'}
-                </Button>
-            );
-        }
-
-        if (value.sourceType === TaskingManager) {
-            if (isNotDefined(value.taskingManagerProjectId) || isNotDefined(value.ohsomeFilter)) {
-                return null;
-            }
-
-            return (
-                <Button
-                    name={undefined}
-                    onClick={triggerTestTaskingManagerProject}
-                    disabled={testTaskingManagerProjectPending}
-                >
-                    {testTaskingManagerProjectPending
-                        ? 'Testing Tasking Manager project AOI on ohsome...'
-                        : 'Test Tasking Manager project AOI on ohsome'}
-                </Button>
-            );
-        }
-
-        return null;
-    }, [
-        AoiGeojsonFile,
-        TaskingManager,
-        testAoiObjectsPending,
-        testTaskingManagerProjectPending,
-        triggerTestAoiObjects,
-        triggerTestTaskingManagerProject,
-        value?.aoiGeometry,
-        value?.ohsomeFilter,
-        value?.sourceType,
-        value?.taskingManagerProjectId,
-    ]);
+    }, [isAoiFromTest, setFieldValue]);
 
     return (
         <Container
             heading="Validation Object Source"
             headingLevel={4}
-            headerDescription={headerDescription}
-            footerActions={actions}
+            headerDescription={isAoiFromTest && isDefined(error?.aoiGeometry) && (
+                <Alert
+                    name="object-source-aoi-error"
+                    type="danger"
+                    title={error.aoiGeometry}
+                    fullWidth
+                    withoutShadow
+                />
+            )}
+            footerActions={(
+                <>
+                    {sourceType === AoiGeojsonFile && (
+                        <TestAoiObjectsButton
+                            projectId={projectId}
+                            aoiGeometry={value?.aoiGeometry}
+                            ohsomeFilter={value?.ohsomeFilter}
+                            disabled={disabled}
+                            onPendingChange={setTestPending}
+                            onTestComplete={handleTestComplete}
+                        />
+                    )}
+                    {sourceType === ObjectGeojsonUrl && (
+                        <TestObjectGeojsonUrlButton
+                            projectId={projectId}
+                            objectGeojsonUrl={value?.objectGeojsonUrl}
+                            disabled={disabled}
+                            onPendingChange={setTestPending}
+                            onTestComplete={handleTestComplete}
+                        />
+                    )}
+                    {sourceType === TaskingManager && (
+                        <TestTaskingManagerProjectButton
+                            projectId={projectId}
+                            taskingManagerProjectId={value?.taskingManagerProjectId}
+                            ohsomeFilter={value?.ohsomeFilter}
+                            disabled={disabled}
+                            onPendingChange={setTestPending}
+                            onTestComplete={handleTestComplete}
+                        />
+                    )}
+                </>
+            )}
         >
             <RadioInput
                 label="Source type"
                 name="sourceType"
                 options={validateObjectSourceTypeOptions}
-                value={value?.sourceType}
-                onChange={setFieldValue}
+                value={sourceType}
+                onChange={handleSourceTypeChange}
                 keySelector={keySelector}
                 labelSelector={labelSelector}
                 error={error?.sourceType}
-                disabled={disabled}
+                disabled={inputsDisabled}
             />
 
-            {value?.sourceType === AoiGeojsonFile && (
+            {sourceType === AoiGeojsonFile && (
                 <AssetInput
                     label="AOI geometry"
                     projectId={projectId}
                     name="aoiGeometry"
-                    onChange={setFieldValue}
-                    value={value.aoiGeometry}
+                    onChange={handleTestedSourceChange}
+                    value={value?.aoiGeometry}
                     error={error?.aoiGeometry}
                     inputType={ProjectAssetInputTypeEnum.AoiGeometry}
                     hint="Upload your project area as GeoJSON File (max. 1MB). Make sure that you provide a single polygon geometry."
-                    disabled={disabled}
+                    disabled={inputsDisabled}
                     withoutPreview
                 />
             )}
-            {value?.sourceType === ObjectGeojsonUrl && (
+            {sourceType === ObjectGeojsonUrl && (
                 <TextInput
                     label="URL for geojson"
                     name="objectGeojsonUrl"
-                    value={value.objectGeojsonUrl}
+                    value={value?.objectGeojsonUrl}
                     error={error?.objectGeojsonUrl}
-                    onChange={setFieldValue}
+                    onChange={handleTestedSourceChange}
                     hint="Provide a direct link to a GeoJSON file containing your building footprint geometries."
+                    disabled={inputsDisabled}
                 />
             )}
-            {value?.sourceType === TaskingManager && (
+            {sourceType === TaskingManager && (
                 <TextInput
                     label="HOT Tasking Manager Project ID"
                     name="taskingManagerProjectId"
-                    value={value.taskingManagerProjectId}
+                    value={value?.taskingManagerProjectId}
                     error={error?.taskingManagerProjectId}
-                    onChange={setFieldValue}
+                    onChange={handleTestedSourceChange}
                     hint="Provide the ID of a HOT Tasking Manager Project (only numbers, e.g. 6526)."
+                    disabled={inputsDisabled}
                 />
             )}
-            {(value?.sourceType === AoiGeojsonFile || value?.sourceType === TaskingManager) && (
+            {(sourceType === AoiGeojsonFile || sourceType === TaskingManager) && (
                 <TextInput
                     label="Ohsome filter"
                     name="ohsomeFilter"
-                    value={value.ohsomeFilter}
+                    value={value?.ohsomeFilter}
                     error={error?.ohsomeFilter}
-                    onChange={setFieldValue}
+                    onChange={handleTestedSourceChange}
                     hint="Please specify which objects should be included in your project."
+                    disabled={inputsDisabled}
                 />
             )}
         </Container>
