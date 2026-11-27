@@ -179,14 +179,15 @@ describe('transformValidateGeoJson', () => {
 });
 
 describe('transformFindGeoJson', () => {
-    // tile_x encodes the screen so mis-grouped tasks are detectable
+    // A 2 (tile_x) × 3 (tile_y) block; tile_x encodes the screen so
+    // mis-grouped tasks are detectable
     const makeScreen = (screen: number) => Array.from(
         new Array(6).keys(),
     ).map((i) => ({
         screen,
         reference: i % 2,
-        tile_x: screen * 100 + i,
-        tile_y: 20 + i,
+        tile_x: screen * 100 + (i % 2),
+        tile_y: 20 + Math.floor(i / 2),
         tile_z: 18,
     }));
 
@@ -207,10 +208,10 @@ describe('transformFindGeoJson', () => {
 
         expect(result.scenarioPages[0].tasks?.map(
             (task) => task.projectTypeSpecifics?.find?.tileX,
-        )).toEqual([100, 101, 102, 103, 104, 105]);
+        )).toEqual([100, 101, 100, 101, 100, 101]);
         expect(result.scenarioPages[1].tasks?.map(
             (task) => task.projectTypeSpecifics?.find?.tileX,
-        )).toEqual([200, 201, 202, 203, 204, 205]);
+        )).toEqual([200, 201, 200, 201, 200, 201]);
 
         const [task] = result.scenarioPages[0].tasks ?? [];
         expect(task.projectTypeSpecifics?.find).toEqual({
@@ -268,6 +269,91 @@ describe('transformFindGeoJson', () => {
 
         expect(result.error).toContain('invalid reference value(s): 9 for screen 1');
         expect(result.error).toContain('valid values are 0, 1, 2, 3');
+    });
+
+    it('rejects a 3 × 2 block of tiles', () => {
+        const result = transformFindGeoJson(createFeatureCollection(
+            makeScreen(1).map((feature, i) => ({
+                ...feature,
+                tile_x: 100 + (i % 3),
+                tile_y: 20 + Math.floor(i / 3),
+            })),
+        ));
+
+        expect(result.ok).toBe(false);
+        if (result.ok) {
+            return;
+        }
+
+        expect(result.error).toContain(
+            'screen 1: expected a 2 (tile_x) × 3 (tile_y) block of adjacent tiles; found 3 × 2',
+        );
+    });
+
+    it('rejects non-adjacent columns', () => {
+        const result = transformFindGeoJson(createFeatureCollection(
+            makeScreen(1).map((feature, i) => ({
+                ...feature,
+                tile_x: 100 + (i % 2) * 2,
+            })),
+        ));
+
+        expect(result.ok).toBe(false);
+        if (result.ok) {
+            return;
+        }
+
+        expect(result.error).toContain(
+            'screen 1: expected a 2 (tile_x) × 3 (tile_y) block of adjacent tiles; found 3 × 3',
+        );
+    });
+
+    it('rejects duplicated cells', () => {
+        const [first, ...others] = makeScreen(1);
+        const result = transformFindGeoJson(createFeatureCollection([
+            ...others,
+            { ...first, tile_x: others[0].tile_x, tile_y: others[0].tile_y },
+        ]));
+
+        expect(result.ok).toBe(false);
+        if (result.ok) {
+            return;
+        }
+
+        expect(result.error).toContain(
+            'screen 1: expected a 2 (tile_x) × 3 (tile_y) block of adjacent tiles; found duplicate tiles',
+        );
+    });
+
+    it('rejects tiles on different zoom levels', () => {
+        const [first, ...others] = makeScreen(1);
+        const result = transformFindGeoJson(createFeatureCollection([
+            { ...first, tile_z: 19 },
+            ...others,
+        ]));
+
+        expect(result.ok).toBe(false);
+        if (result.ok) {
+            return;
+        }
+
+        expect(result.error).toContain(
+            'screen 1: expected all tiles to share the same tile_z; found 18, 19',
+        );
+    });
+
+    it('skips the grid check for screens with the wrong feature count', () => {
+        const result = transformFindGeoJson(createFeatureCollection(
+            makeScreen(1).slice(0, 5),
+        ));
+
+        expect(result.ok).toBe(false);
+        if (result.ok) {
+            return;
+        }
+
+        expect(result.error).toContain('expected to have 6 instance(s)');
+        expect(result.error).not.toContain('block of adjacent tiles');
     });
 });
 
@@ -390,14 +476,15 @@ describe('transformCompareGeoJson', () => {
 });
 
 describe('transformCompletenessGeoJson', () => {
-    // tile_x encodes the screen so mis-grouped tasks are detectable
+    // A 2 (tile_x) × 3 (tile_y) block; tile_x encodes the screen so
+    // mis-grouped tasks are detectable
     const makeScreen = (screen: number) => Array.from(
         new Array(6).keys(),
     ).map((i) => ({
         screen,
         reference: i % 2,
-        tile_x: screen * 100 + i,
-        tile_y: 20 + i,
+        tile_x: screen * 100 + (i % 2),
+        tile_y: 20 + Math.floor(i / 2),
         tile_z: 18,
     }));
 
@@ -459,6 +546,25 @@ describe('transformCompletenessGeoJson', () => {
         }
 
         expect(result.error).toContain('invalid reference value(s): 9 for screen 1');
+    });
+
+    it('rejects a 3 × 2 block of tiles', () => {
+        const result = transformCompletenessGeoJson(createFeatureCollection(
+            makeScreen(1).map((feature, i) => ({
+                ...feature,
+                tile_x: 100 + (i % 3),
+                tile_y: 20 + Math.floor(i / 3),
+            })),
+        ));
+
+        expect(result.ok).toBe(false);
+        if (result.ok) {
+            return;
+        }
+
+        expect(result.error).toContain(
+            'screen 1: expected a 2 (tile_x) × 3 (tile_y) block of adjacent tiles; found 3 × 2',
+        );
     });
 });
 
